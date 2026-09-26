@@ -5,7 +5,7 @@
 **Product name:** Relay
 **Created:** 2026-09-26
 **Revised:** 2026-09-26, twice. Second full fact re-audit applied. See `AUDIT-FINDINGS-2026-09-26.md`
-**Status:** PRD **v0.4**, third audit applied (`AUDIT-2026-09-26-pass3.md`). Prototype scaffold only; surfaces not built.
+**Status:** PRD **v0.4**, third audit applied (`AUDIT-2026-09-26-pass3.md`). Prototype built: all nine surfaces, on the client data in `data/` (R-17).
 
 This file exists because most of the decisions below were made in conversation, and a decision that
 lives only in a chat is not state. Everything here is auditable and was settled with Nik explicitly.
@@ -114,20 +114,20 @@ Assistant Platform" would read wrong in that building.
 
 ## 4. Prototype scope, as agreed
 
-**Nine surfaces across the whole advisor journey. Six built functional, three designed and visibly
-labelled as not built.** Labelling them is deliberate: claiming everything is real and then hitting a
-dead click costs more than the honesty does.
+**Nine surfaces across the whole advisor journey, all now built (R-17).** The original agreement was six
+built and three designed and labelled, because hitting a dead click costs more than the honesty does;
+building the last three removed the dead clicks instead. The demo still spends its time on the six in §7.
 
 | # | Surface | JD capability type | Build state |
 |---|---|---|---|
-| 1 | Pipeline and prospecting | Insights and analytics | Designed |
-| 2 | Onboarding and re-papering | Advisor workflow | Designed |
+| 1 | Pipeline and prospecting | Insights and analytics | Build |
+| 2 | Onboarding and re-papering | Advisor workflow | Build |
 | 3 | Household advice state (Wealth Way) | Advisor workflow | Build |
 | 4 | Evidence and explain | Chat and assistive | Build |
 | 5 | Action proposals, bounded | Agentic | Build |
 | 6 | Book triage, opportunity to household | Insights and analytics | Build |
 | 7 | Client communications and review packs | Productivity | Build |
-| 8 | Servicing and operations triage | Agentic | Designed |
+| 8 | Servicing and operations triage | Agentic | Build |
 | 9 | Supervision and control console | Control plane | Build |
 
 **Decisions inside that scope:**

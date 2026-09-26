@@ -15,7 +15,7 @@ module.exports = {
       comment:
         "Relay has no path to a client. Nothing may import an email, SMS, HTTP-send or socket transport.",
       severity: "error",
-      from: { path: "^(app|lib)/" },
+      from: { path: "^(app|components|lib)/" },
       to: {
         path: [
           "^(node:)?(net|tls|dgram|http|https|http2)$",
@@ -26,10 +26,18 @@ module.exports = {
     {
       name: "deterministic-no-model",
       comment:
-        "lib/constraints, lib/ranking and lib/recipients are deterministic. They may not import a model client.",
+        "lib/constraints, lib/ranking, lib/recipients, lib/policy, lib/learning and lib/profile are deterministic. They may not import a model client.",
       severity: "error",
-      from: { path: "^lib/(constraints|ranking|recipients)/" },
+      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile)/" },
       to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)" },
+    },
+    {
+      name: "personalization-cannot-widen",
+      comment:
+        "Eligibility, compliance checks, the recipient counter and evidence retrieval never read a profile or the learning loop, so no setting or learned preference can change what is allowed (R-19).",
+      severity: "error",
+      from: { path: "^lib/(constraints|recipients|policy|evidence)/" },
+      to: { path: ["^lib/(profile|learning)/", "^data/(profiles/|events\\.json)"] },
     },
   ],
   options: {

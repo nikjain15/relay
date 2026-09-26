@@ -1,0 +1,230 @@
+{
+  "id": "hh-thornbury",
+  "name": "Thornbury",
+  "archetype": "Business owner",
+  "tier": "$5M+",
+  "advisorId": "adv-a",
+  "totalUsd": 23100000,
+  "monthlySpendUsd": 50000,
+  "hardPart": "Illiquid operating stake, near-term liquidity need against marketable assets",
+  "persons": [
+    {
+      "id": "p-thornbury-1",
+      "name": "K. Thornbury",
+      "role": "primary",
+      "age": 58
+    },
+    {
+      "id": "p-thornbury-2",
+      "name": "L. Thornbury",
+      "role": "spouse",
+      "age": 56
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Operating business stake (illiquid)",
+      "valueUsd": 17800000,
+      "singleName": true
+    },
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 5000000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 300000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 6,
+      "target": 24,
+      "unit": "months",
+      "assumption": "Near-term capital call on the operating business"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 5000000,
+      "target": 9000000,
+      "unit": "USD",
+      "assumption": "Sale of the business in 5 to 7 years"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 4000000,
+      "unit": "USD",
+      "assumption": "Succession to two children"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 80
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 12
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 4
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -14,
+      "channel": "Call",
+      "summary": "Discussed the company's late-stage funding round"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": 0,
+      "text": "K. Thornbury's CFO emailed the capital call notice this morning."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Succession planning with the estate attorney",
+      "owner": "Advisor",
+      "dueDay": 21
+    },
+    {
+      "text": "Model the sale scenario for retirement",
+      "owner": "Wealth strategist",
+      "dueDay": 14
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Standing wire instructions for capital calls",
+      "requestedDay": -1
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-thornbury-cashflow",
+      "householdId": "hh-thornbury",
+      "triggerClass": "household_threshold",
+      "title": "Expected cash outflow: $1.2M capital call in 60 days",
+      "materiality": 79,
+      "observedDay": 4,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Large expected cash-flow event, $1.2M"
+        },
+        {
+          "kind": "Household",
+          "label": "Thornbury household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Liquidity funded 6 of 24 target months"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note"
+      ],
+      "plainTitle": "$1.2M capital call due in 60 days",
+      "clientNote": "Ahead of the $1.2M capital call, we reviewed your cash."
+    },
+    {
+      "id": "opp-thornbury-funding",
+      "householdId": "hh-thornbury",
+      "triggerClass": "external_event",
+      "title": "Late-stage funding round recorded for the operating business",
+      "materiality": 76,
+      "observedDay": 5,
+      "action": "review",
+      "strategy": "Legacy",
+      "reasonPath": [
+        {
+          "kind": "ExternalEvent",
+          "label": "Late-stage funding round recorded, day 5"
+        },
+        {
+          "kind": "Household",
+          "label": "Thornbury household"
+        },
+        {
+          "kind": "Holding",
+          "label": "Operating business stake, 77% of assets, illiquid"
+        },
+        {
+          "kind": "Goal",
+          "label": "Legacy funded 0 of $4.0M"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-concentration-note"
+      ],
+      "plainTitle": "The family company raised a late-stage funding round"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS entrepreneurs and business-owner practice (Entrepreneurs Group)",
+      "url": "https://advisors.ubs.com/entrepreneursgroup/"
+    },
+    {
+      "label": "Late-stage business funding as a STAAT signal type",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+    }
+  ],
+  "walkthrough": {
+    "order": 3,
+    "tab": "Thornbury family",
+    "tabSub": "Business owner, $23.1M",
+    "shows": "A batch that stays under the line",
+    "opportunityId": "opp-thornbury-cashflow",
+    "chooseProductId": "prod-tsy-ladder",
+    "summary": "A business owner (K.) and spouse (L.). 77% of their wealth is the family company, which cannot be sold quickly. The company just raised a late-stage funding round, and a $1.2M capital call is due in 60 days.",
+    "chain": [
+      "$1.2M capital call in 60 days",
+      "Cash covers 6 of 24 months",
+      "77% of wealth is the business",
+      "It cannot be sold quickly"
+    ],
+    "leftover": "Moved ahead of the $1.2M capital call.",
+    "talkingPoints": [
+      "Confirm the capital call date with the CFO",
+      "Show the 6 of 24 months gap",
+      "Move the money before the call date",
+      "Book the succession conversation"
+    ],
+    "audience": {
+      "one": [
+        "Only the Thornburys",
+        2
+      ],
+      "many": [
+        "9 business-owner families",
+        16
+      ]
+    },
+    "audienceNote": "9 families is 16 people: still 25 or fewer, so standard review applies. Relay does not over-escalate either.",
+    "queue": "1st in the queue",
+    "afterApproval": [
+      "Call K. Thornbury first, then send the approved note",
+      "Log the call and the note in the CRM",
+      "Relay records the approval, the reasons and the options considered"
+    ]
+  },
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Early morning, before the plant opens"
+    }
+  }
+}

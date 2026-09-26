@@ -1,0 +1,212 @@
+{
+  "id": "hh-pell",
+  "name": "Pell",
+  "archetype": "Mass-affluent, Wealth Advice Center",
+  "tier": "Wealth Advice Center",
+  "advisorId": "adv-b",
+  "totalUsd": 180000,
+  "monthlySpendUsd": 5000,
+  "hardPart": "Pooled coverage, contact-rate constrained, the calibrated-supervision test case",
+  "persons": [
+    {
+      "id": "p-pell-1",
+      "name": "C. Pell",
+      "role": "primary",
+      "age": 44
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 160000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 20000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 4,
+      "target": 6,
+      "unit": "months",
+      "assumption": "6 months of spending"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 150000,
+      "target": 900000,
+      "unit": "USD",
+      "assumption": "Retirement at 67"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 0,
+      "unit": "USD",
+      "assumption": "No stated legacy goal"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 3
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -150,
+      "channel": "Video",
+      "summary": "Onboarding call; set the 6-month cash target"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Callback queue",
+      "day": -6,
+      "text": "C. Pell asked last week how much cash to keep on hand."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Confirm the monthly spending figure",
+      "owner": "Advisor",
+      "dueDay": 0
+    },
+    {
+      "text": "Schedule the annual check-in",
+      "owner": "Callback queue",
+      "dueDay": 2
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Address change confirmation",
+      "requestedDay": -4,
+      "signedDay": -3
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-pell-liquidity",
+      "householdId": "hh-pell",
+      "triggerClass": "household_threshold",
+      "title": "Cash cushion covers 4 of 6 months",
+      "materiality": 45,
+      "observedDay": 3,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Liquidity strategy underfunded"
+        },
+        {
+          "kind": "Household",
+          "label": "Pell household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Liquidity funded 4 of 6 target months"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note",
+        "doc-tsy-onepager"
+      ],
+      "plainTitle": "Cash covers 4 of 6 months",
+      "clientNote": "We reviewed the cash you keep for planned spending."
+    },
+    {
+      "id": "opp-pell-market",
+      "householdId": "hh-pell",
+      "triggerClass": "market_view",
+      "title": "Illustrative note: reduce single-sector exposure",
+      "materiality": 35,
+      "observedDay": 2,
+      "action": "trim",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "Publication",
+          "label": "Illustrative research note, prototype corpus"
+        },
+        {
+          "kind": "Theme",
+          "label": "Reduce single-sector exposure"
+        },
+        {
+          "kind": "Household",
+          "label": "Pell household"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-sector-note-not-in-corpus"
+      ],
+      "evidenceExpectedMissing": true,
+      "plainTitle": "Research note: reduce single-sector funds"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "Wealth Advice Center serves clients under $250K (UBS disclosure)",
+      "url": "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf"
+    }
+  ],
+  "walkthrough": {
+    "order": 4,
+    "tab": "C. Pell",
+    "tabSub": "Wealth Advice Center, $180K",
+    "shows": "Scale, and a flag Relay refuses",
+    "opportunityId": "opp-pell-liquidity",
+    "chooseProductId": "prod-mmf",
+    "summary": "A single client saving for retirement at 67, covered remotely by the Wealth Advice Center. Cash covers 4 of the 6 months planned. Overnight, a research note on sector funds was also linked to this client.",
+    "chain": [
+      "Spending $5K a month",
+      "Cash covers 4 of 6 months",
+      "Retirement: $150K of $900K"
+    ],
+    "leftover": "",
+    "talkingPoints": [
+      "Keep it to one topic: the cash cushion",
+      "Confirm the $5K monthly figure",
+      "Offer the annual check-in slot"
+    ],
+    "audience": {
+      "one": [
+        "Only C. Pell",
+        1
+      ],
+      "many": [
+        "41 clients with this gap",
+        41
+      ]
+    },
+    "audienceNote": "At the Wealth Advice Center, batches cross 25 people quickly. This is where calibrated review pays off first.",
+    "queue": "5th in the queue",
+    "afterApproval": [
+      "Send the approved note, then offer a callback slot",
+      "Log the note in the CRM",
+      "Relay records the approval, the reasons and the options considered"
+    ]
+  },
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "After 6pm on weekdays"
+    }
+  }
+}
