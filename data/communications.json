@@ -1,0 +1,69 @@
+{
+  "prototypeToday": "2026-01-30",
+  "demoCommunication": "note-liquidity-review-v1",
+  "priorDistributions": [
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-1",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-2",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-3",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-4",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-5",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-client-6",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2026-01-12"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-old-1",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2025-12-20"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-old-2",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2025-12-20"
+    },
+    {
+      "communicationId": "note-liquidity-review-v1",
+      "personId": "adv-b-old-3",
+      "advisorId": "adv-b",
+      "institutional": false,
+      "date": "2025-12-20"
+    }
+  ]
+}

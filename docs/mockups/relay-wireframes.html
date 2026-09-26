@@ -1,0 +1,560 @@
+<title>Relay Wireframes</title>
+<style>
+:root {
+  --ink: #1a1a1a;
+  --ink-2: #5c5c5c;
+  --ink-3: #8a8a8a;
+  --line: #e4e2dd;
+  --line-strong: #bcb9b2;
+  --surface: #ffffff;
+  --subtle: #f6f5f2;
+  --selected: #ecebe6;
+  --accent: #1a1a1a;
+  --critical: #b3121f;
+  --critical-soft: #fbecec;
+  --positive: #2d6a4f;
+  --positive-soft: #e9f2ed;
+  --caution: #7a5200;
+  --caution-soft: #faf3e1;
+  --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --radius: 2px;
+}
+
+:root {
+  --paper: var(--subtle); --panel: var(--surface); --soft: var(--ink-2); --fill: var(--selected);
+  --accent-bg: var(--selected); --ok: var(--positive); --ok-bg: var(--positive-soft); --no: var(--critical); --no-bg: var(--critical-soft);
+  --sans: var(--font);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  color-scheme: dark;
+    --ink: #ecebe7; --ink-2: #b0aea8; --ink-3: #8c8a85; --line: #3a3936; --line-strong: #5a5853;
+    --surface: #1b1b1a; --subtle: #232321; --selected: #2e2d2a; --accent: #ecebe7;
+    --critical: #ff8a8f; --critical-soft: #3a1c1e; --positive: #7fc4a0; --positive-soft: #1c2f25; --caution: #e3b35c; --caution-soft: #33291a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #ecebe7; --ink-2: #b0aea8; --ink-3: #8c8a85; --line: #3a3936; --line-strong: #5a5853;
+  --surface: #1b1b1a; --subtle: #232321; --selected: #2e2d2a; --accent: #ecebe7;
+  --critical: #ff8a8f; --critical-soft: #3a1c1e; --positive: #7fc4a0; --positive-soft: #1c2f25; --caution: #e3b35c; --caution-soft: #33291a;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); padding-inline: 16px; padding-block: 24px 48px; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 20px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+button:focus-visible, [tabindex]:focus-visible, a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+a { color: var(--accent); }
+
+.intro { display: grid; gap: 10px; }
+.eyebrow { font-size: 13px; font-weight: 400; color: var(--ink-3); }
+.intro h1 { font-size: 30px; line-height: 1.2; font-weight: 300; letter-spacing: -.01em; }
+.intro p { color: var(--soft); max-width: 66ch; }
+
+/* journey map */
+.journey { display: grid; grid-template-columns: 1fr auto 2fr auto 1fr auto 1fr auto 1fr; gap: 8px; align-items: stretch; }
+.journey .phase { display: grid; gap: 2px; text-decoration: none; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; font-size: 14px; }
+.journey .phase.now { border-color: var(--accent); background: var(--accent-bg); }
+.journey .ph { font-size: 12px; font-weight: 400; color: var(--ink-3); }
+.journey .jarrow { align-self: center; color: var(--soft); font-size: 20px; }
+.chapters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 820px) { .journey { grid-template-columns: minmax(0, 1fr); } .journey .jarrow { display: none; } .chapters { grid-template-columns: minmax(0, 1fr); } }
+
+/* story picker */
+.picker { display: grid; gap: 8px; }
+.picker .lbl { font-size: 13px; font-weight: 400; color: var(--ink-3); }
+.stories { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.stories button { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; display: grid; gap: 3px; }
+.stories button[aria-pressed="true"] { border: 2.5px solid var(--accent); background: var(--accent-bg); }
+.stories .nm { font-weight: 700; }
+.stories .sub { font-size: 13px; color: var(--soft); line-height: 1.35; }
+.stories .shows { font-size: 12px; font-weight: 600; color: var(--accent); }
+
+/* who's who */
+.who { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.person { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.person .role { font-size: 12px; font-weight: 400; color: var(--ink-3); }
+.person h3 { font-size: 18px; }
+.person .src { font-size: 13px; color: var(--soft); border-top: 1px solid var(--line); padding-top: 6px; }
+.who-note { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
+
+/* stepper */
+.steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0; }
+.steps button { width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; height: 100%; }
+.steps .num { font-size: 12px; color: var(--soft); font-weight: 600; }
+.steps .nm { font-size: 14px; font-weight: 500; line-height: 1.25; }
+.steps button[aria-current="step"] { border: 1px solid var(--accent); background: var(--accent-bg); }
+.steps button.done .num::after { content: "  \2713"; color: var(--ok); }
+
+.step { display: grid; gap: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+.step-head { display: grid; gap: 6px; }
+.step-head .of { font-size: 13px; font-weight: 400; color: var(--ink-3); }
+.step-head h2 { font-size: 24px; line-height: 1.25; }
+.step-head .goal { color: var(--soft); max-width: 66ch; }
+
+.screen { border: 1px solid var(--ink); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+.bar-top { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-bottom: 1px solid var(--ink); background: var(--fill); font-size: 13px; color: var(--soft); flex-wrap: wrap; }
+.bar-top i { display: none; }
+.bar-top .who-am-i { margin-left: auto; }
+.screen-body { padding: 16px; display: grid; gap: 12px; }
+.screen-title { font-size: 19px; font-weight: 600; }
+.muted { color: var(--soft); font-size: 14px; }
+.sect { font-size: 12px; font-weight: 400; color: var(--ink-3); }
+
+.cal { display: flex; flex-wrap: wrap; gap: 8px; }
+.cal span { border: 1px solid var(--line); border-radius: var(--radius); padding: 4px 10px; font-size: 14px; }
+.cal b { font-weight: 600; }
+.stat { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; color: var(--soft); }
+.stat strong { color: var(--ink); font-size: 18px; margin-right: 4px; }
+
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.item.faint { opacity: .6; }
+.item .t { font-weight: 600; }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; border-radius: var(--radius); padding: 1px 9px; border: 1px solid currentColor; white-space: nowrap; }
+.tag.ok { color: var(--ok); background: var(--ok-bg); }
+.tag.no { color: var(--no); background: var(--no-bg); }
+.tag.plain { color: var(--soft); }
+.btn { display: inline-block; border: 1px solid var(--ink); border-radius: var(--radius); padding: 4px 12px; font-size: 14px; font-weight: 600; background: var(--panel); white-space: nowrap; }
+.btn.dark { background: var(--ink); color: var(--panel); }
+.go { cursor: pointer; box-shadow: inset 3px 0 0 var(--ink); background: var(--subtle); }
+@media (prefers-reduced-motion: reduce) { .go { cursor: pointer; box-shadow: inset 3px 0 0 var(--ink); background: var(--subtle); } }
+
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.chain .link { border: 1px solid var(--ink); border-radius: var(--radius); padding: 6px 10px; font-size: 15px; }
+.chain .arrow { color: var(--soft); font-size: 18px; }
+.quote { border-left: 4px solid var(--accent); padding: 4px 12px; font-style: italic; }
+.quote small { display: block; font-style: normal; color: var(--soft); font-size: 13px; margin-top: 4px; }
+.memo { border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; display: grid; gap: 2px; }
+.refused { border: 1px solid var(--no); background: var(--no-bg); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; }
+
+.goalrow { display: grid; grid-template-columns: 200px minmax(0, 1fr) 150px; gap: 12px; align-items: center; }
+.goalrow .why { grid-column: 2 / -1; font-size: 13px; color: var(--soft); margin-top: -8px; }
+.meter { height: 14px; border: 1px solid var(--ink); border-radius: var(--radius); background: var(--panel); position: relative; overflow: hidden; }
+.meter b { position: absolute; inset: 0 auto 0 0; background: var(--fill); border-right: 1px solid var(--ink); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.panel { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 6px; font-size: 14px; }
+.panel ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+.kv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; font-size: 14px; }
+.kv span:nth-child(even) { text-align: right; font-weight: 600; }
+
+.opt { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.8fr) 90px auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; font-size: 14px; }
+.opt .t { font-weight: 600; font-size: 15px; }
+.opt .cost { text-align: right; }
+.math { background: var(--fill); border-radius: var(--radius); padding: 8px 12px; font-size: 15px; }
+
+.letter { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; font-size: 15px; display: grid; gap: 8px; }
+.pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.pick button { border: 1px solid var(--ink); border-radius: var(--radius); background: var(--panel); padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.pick button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.counter { border: 1px solid var(--ink); border-radius: var(--radius); padding: 14px; text-align: center; display: grid; gap: 6px; }
+.counter .big { font-size: 46px; font-weight: 700; line-height: 1; }
+.counter.flip { border-color: var(--no); background: var(--no-bg); }
+.counter.ok { border-color: var(--ok); background: var(--ok-bg); }
+.check { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 8px; align-items: start; }
+.check .mk { color: var(--ok); font-weight: 700; }
+.two { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+
+.note { font-size: 14px; line-height: 1.5; background: var(--caution-soft); color: var(--ink); border-left: 2px solid var(--caution); padding: 8px 12px; }
+.note::before { content: "\2191  "; }
+
+.takeaway { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; background: var(--subtle); border-left: 2px solid var(--ink); border-radius: var(--radius); padding: 12px 14px; }
+.takeaway .k { font-size: 12px; font-weight: 400; color: var(--ink-3); padding-top: 2px; }
+.nav { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.nav button { border-radius: var(--radius); padding: 10px 18px; font-weight: 600; cursor: pointer; border: 1px solid var(--ink); background: var(--panel); }
+.nav button.next { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+.nav button:disabled { opacity: .35; cursor: default; }
+.hint { font-size: 13px; color: var(--soft); text-align: center; }
+
+.after { display: grid; gap: 14px; scroll-margin-top: 16px; }
+.after h2 { font-size: 20px; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 4px; background: var(--panel); }
+.card h3 { font-size: 16px; }
+.card p { font-size: 14px; color: var(--soft); }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+summary { cursor: pointer; font-weight: 600; }
+dl.gl { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 6px 14px; margin: 12px 0 0; font-size: 15px; }
+dl.gl dt { font-weight: 600; }
+dl.gl dd { margin: 0; color: var(--soft); }
+
+@media (max-width: 820px) {
+  .stories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps { grid-template-columns: repeat(3, 1fr); }
+  .two, .grid2, .who { grid-template-columns: minmax(0, 1fr); }
+  .goalrow { grid-template-columns: minmax(0, 1fr) 130px; }
+  .goalrow .meter { grid-column: 1 / -1; order: 3; }
+  .goalrow .why { grid-column: 1 / -1; order: 4; margin-top: 0; }
+  .opt { grid-template-columns: minmax(0, 1fr) auto; }
+  .opt .why-o { grid-column: 1 / -1; }
+  .cards { grid-template-columns: minmax(0, 1fr); }
+  dl.gl { grid-template-columns: minmax(0, 1fr); }
+  .step { padding: 16px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">Relay &middot; low-fidelity mockup</span>
+    <h1>The advisor journey, with four client stories</h1>
+    <p>UBS's AI flags more than 20 million client opportunities a year. Relay is what happens next: it helps an advisor turn one into an approved action for a client, with the reasons and the compliance sign-off on record. Start with the daily work below, then see what happens before and after it.</p>
+  </header>
+
+  <nav class="journey" aria-label="Advisor journey">
+    <a href="#before" class="phase" data-chapter-link="0"><span class="ph">Before</span><span>Finding new clients &middot; Paperwork</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#daily" class="phase now"><span class="ph">Daily work</span><span>Today's list &middot; Why &middot; Picture &middot; Options &middot; Note &middot; Compliance</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#before" class="phase" data-chapter-link="2"><span class="ph">Meetings</span><span>Today's diary &middot; Review pack</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#before" class="phase" data-chapter-link="4"><span class="ph">After</span><span>Service requests &middot; Follow-ups</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#before" class="phase" data-chapter-link="6"><span class="ph">Always on</span><span>Personalized &middot; Learns</span></a>
+  </nav>
+
+  <div class="picker" id="daily">
+    <span class="lbl">Choose a client story</span>
+    <div class="stories" id="stories" role="group" aria-label="Client stories"></div>
+  </div>
+
+  <section class="who" id="who" aria-label="Who's who"></section>
+
+  <ol class="steps" id="steps" aria-label="Steps"></ol>
+
+  <section class="step" id="step" aria-live="polite"><p class="muted">Loading client data&hellip;</p></section>
+
+  <section class="after" id="before">
+    <h2>Before, around and after the daily work, and always on</h2>
+    <p class="muted">The same client data drives these screens. Pick a stage.</p>
+    <div class="stories chapters" id="chapters" role="group" aria-label="Journey stages"></div>
+    <section class="step" id="chapter" aria-live="polite"><p class="muted">Loading&hellip;</p></section>
+    <details>
+      <summary>Words used on these screens</summary>
+      <dl class="gl">
+        <dt>Opportunity</dt><dd>Something UBS's AI flags about a client overnight, for example a large property sale.</dd>
+        <dt>Cash cushion</dt><dd>Months of planned spending held in cash-like investments. UBS's Wealth Way framework calls it Liquidity and sizes it at 2 to 5 years.</dd>
+        <dt>Approved products</dt><dd>The investments the firm allows advisors to recommend.</dd>
+        <dt>Family's rules</dt><dd>Limits agreed with the client, for example "keep at least two years of cash" or "no private credit". Formally, the investment policy statement.</dd>
+        <dt>Required withdrawals</dt><dd>Required minimum distributions from retirement accounts, which start at age 73 under SECURE 2.0.</dd>
+        <dt>Escalated</dt><dd>A form unsigned for more than 14 days goes to the branch supervisor, per the illustrative procedure.</dd>
+        <dt>Callback</dt><dd>Before money moves on an emailed instruction, the team calls the client on a number already on file. A standard control against wire fraud.</dd>
+        <dt>Compliance check</dt><dd>A supervising manager reviews what goes to clients before it is sent.</dd>
+        <dt>The 25-person rule</dt><dd>Under FINRA Rule 2210, a note that reaches more than 25 individual clients in 30 days needs a manager's approval before it is sent. Relay counts people, not families, across every advisor using the same note.</dd>
+        <dt>Composite</dt><dd>An invented person or family, built from situations UBS and public sources describe. Every source is listed in the Relay repo's PERSONAS.md.</dd>
+      </dl>
+    </details>
+  </section>
+</div>
+
+<script>
+(function () {
+  const KIND = { life_event: "Life event", external_event: "Outside event", household_threshold: "Over a limit", plan_service_event: "Paperwork", market_view: "Market view" };
+  const GOAL = { Liquidity: "Cash for planned spending", Longevity: "Retirement", Legacy: "For the next generation" };
+  const STEP_NAMES = ["Today's list", "Why this client", "Their picture", "The options", "Note and audience", "Compliance check"];
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const links = (list) => list.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noreferrer">${esc(s.label)}</a>`).join("; ");
+  const ago = (d) => (d === 0 ? "today" : d === -1 ? "yesterday" : `${-d} days ago`);
+  let DATA = [], story = 0, cur = 0, audience = "one";
+
+  function steps(s) {
+    const A = s.advisor;
+    const shown = s.list.length;
+    return [
+      {
+        title: "The advisor opens today's list",
+        goal: `${A.households} client households. Which need attention today, and why?`,
+        screen: `
+          <div class="stat"><span><strong>${A.meetings.length}</strong>meetings today</span><span><strong>${A.alertsOvernight}</strong>alerts overnight</span><span><strong>${J ? J.policy.dailyCap : 12}</strong>on your list</span></div>
+          <div class="cal">${A.meetings.map((m) => `<span><b>${esc(m.time)}</b> ${esc(m.title)}</span>`).join("")}</div>
+          <div class="sect">Your list, most important first</div>
+          ${s.list.map((r, i) => `
+            <div class="item ${r.top ? "go" : "faint"}" ${r.top ? 'data-next tabindex="0" role="button"' : ""}>
+              <div><div class="t">${esc(r.who)}</div><div>${esc(r.what)}</div></div>
+              <span><span class="tag plain">${KIND[r.kind] || r.kind}</span> ${r.top ? '<span class="btn">Why? &rarr;</span>' : ""}</span>
+            </div>${i === 0 ? '<div class="note">Click the highlighted row. Alerts are ranked, and capped at 12 a day.</div>' : ""}`).join("")}
+          <div class="muted">+ ${12 - shown} more on the list. Each row can be dismissed with a reason, which goes back to the team that builds the alerts.</div>`,
+        take: `${A.alertsOvernight} overnight alerts become a short list the advisor can act on before the first meeting.`,
+      },
+      {
+        title: "Relay shows why",
+        goal: "Before acting, the advisor needs the reason, the source, and what the team already knows.",
+        screen: `
+          <div class="screen-title">Why ${esc(s.client.name.split(",")[0].replace(/^The /, "the "))}, and why today</div>
+          <div class="chain">${s.chain.map((c, i) => `${i ? '<span class="arrow">&rarr;</span>' : ""}<span class="link">${esc(c)}</span>`).join("")}</div>
+          <div class="note">Each link is a fact Relay can point to. Nothing is guessed.</div>
+          ${s.quotes.map((q) => `<div class="quote">"${esc(q.text)}"<small>Source: ${esc(q.source)}</small></div>`).join("")}
+          <div class="grid2">
+            <div class="memo"><strong>History</strong>${s.history.map((h) => `<span>${esc(h.channel)}, ${ago(h.day)}: ${esc(h.summary)}</span>`).join("")}</div>
+            <div class="memo">${s.notes.map((n) => `<strong>${esc(n.from)}, ${ago(n.day)}</strong><span>${esc(n.text)}</span>`).join("")}</div>
+          </div>
+          ${s.refused ? `<div class="refused">Also flagged: "${esc(s.refused.title)}". <strong>Refused.</strong> No document links this to the client, so Relay says so instead of inventing a reason.</div><div class="note">This is the refusal. No source, no suggestion.</div>` : ""}
+          <div class="muted">Grounded only in this client's file and: ${s.groundingBundle.documents.map(esc).join("; ")}.</div>
+          <div><span class="btn go" data-next tabindex="0" role="button">See the full picture &rarr;</span></div>`,
+        take: "Every suggestion comes with its reasons, its sources and the client's recent history.",
+      },
+      {
+        title: "The client's full picture",
+        goal: "Where does the client stand against their own goals, and what have they agreed to?",
+        screen: `
+          <div class="screen-title">${esc(s.client.name)}</div>
+          <div class="muted">${s.people.map(esc).join(" &middot; ")}</div>
+          ${s.goals.map((g) => `<div class="goalrow"><strong>${GOAL[g.strategy] || g.strategy}</strong><span class="meter"><b style="width:${Math.max(2, g.pct)}%"></b></span><span class="tag ${g.gap ? "no" : "ok"}">${esc(g.value)}</span><span class="why">${esc(g.assumption)}</span></div>`).join("")}
+          <div class="note">Gaps are in red. Each bar shows the assumption behind it.</div>
+          <div class="grid2">
+            <div class="panel"><strong>Accounts</strong><div class="kv">${s.accounts.map((x) => `<span>${esc(x.name)}${x.note ? `<br><span class="muted">${esc(x.note)}</span>` : ""}</span><span>${esc(x.value)}</span>`).join("")}</div></div>
+            <div class="panel"><strong>${s.people.length > 1 ? "The family's" : "The client's"} rules</strong><ul>${s.rules.map((r) => `<li>${esc(r)}</li>`).join("")}</ul></div>
+          </div>
+          <div class="panel"><strong>Open tasks</strong><ul>${s.tasks.map((r) => `<li>${esc(r.text)} <span class="muted">(${esc(r.owner)}, ${r.dueDay < 0 ? `${-r.dueDay} days overdue` : r.dueDay === 0 ? "due today" : `due in ${r.dueDay} days`})</span></li>`).join("")}</ul></div>
+          <div><span class="btn go" data-next tabindex="0" role="button">See the options &rarr;</span></div>`,
+        take: "The advisor sees the gap, the accounts and the client's own rules on one screen.",
+      },
+      {
+        title: "Relay suggests options, and shows what it ruled out",
+        goal: "Which approved products fit this gap, within the client's rules?",
+        screen: `
+          <div class="math">Need: (${s.math.months[0]} &minus; ${s.math.months[1]}) months &times; ${esc(s.math.monthly)} = <strong>${esc(s.math.amount)}</strong>, ${esc(s.math.source)}. ${esc(s.math.leftover)}</div>
+          <div class="sect">Allowed (${s.allowed.length})</div>
+          ${s.allowed.map((o) => `<div class="opt ${o.id === s.choose ? "go" : ""}" ${o.id === s.choose ? 'data-next tabindex="0" role="button"' : ""}><span class="t">${esc(o.name)}</span><span class="why-o muted">${esc(o.desc)}</span><span class="cost muted">${esc(o.cost)} a year</span><span class="tag ok">&#10003; Allowed</span></div>`).join("")}
+          <div class="sect">Blocked (${s.blocked.length}), with the reason</div>
+          ${s.blocked.map((o) => `<div class="opt"><span class="t">${esc(o.name)}</span><span class="why-o muted">${esc(o.reason)}</span><span></span><span class="tag no">&#10007; Blocked</span></div>`).join("")}
+          <div class="note">Blocked options stay on screen with the reason. That record is what compliance needs.</div>
+          <div class="muted">Click the highlighted option to choose it. Relay saves the reason, every alternative and the costs.</div>`,
+        take: "Relay only offers approved products that fit the client's rules, and explains each one it rules out.",
+      },
+      {
+        title: "A draft note, talking points, and who will receive it",
+        goal: "Most advisors call first and follow up in writing. The same note may also suit other clients.",
+        screen: (() => {
+          const [l1, n1] = s.audience.one, [l2, n2] = s.audience.many;
+          const many = audience === "many", n = many ? n2 : n1, over = n > 25;
+          return `
+          <div class="two">
+            <div style="display:grid;gap:12px">
+              <div class="letter"><strong>Draft note</strong>${s.draft.split("\n").filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("")}</div>
+              <div class="panel"><strong>Talking points for your call</strong><ul>${s.talkingPoints.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+            </div>
+            <div class="counter ${over ? "flip" : "ok"}">
+              <span class="muted">Who will receive this note?</span>
+              <div class="pick" role="group" aria-label="Choose recipients" style="justify-content:center">
+                <button type="button" data-aud="one" aria-pressed="${!many}">${esc(l1)}</button>
+                <button type="button" data-aud="many" aria-pressed="${many}">${esc(l2)}</button>
+              </div>
+              <span class="big">${n}</span>
+              <span>${n === 1 ? "person" : "people"}</span>
+              <strong>${over ? "Over 25 people: a manager must approve before it is sent" : "25 or fewer people: standard review"}</strong>
+            </div>
+          </div>
+          <div class="note">Try both buttons. ${esc(s.audienceNote)}</div>
+          <div><span class="btn dark go" data-next tabindex="0" role="button">Send for compliance check &rarr;</span> <span class="muted">&nbsp;There is no "Send to client" button.</span></div>`;
+        })(),
+        take: "Relay shows which approval rule applies before anything leaves the advisor's hands.",
+      },
+      {
+        title: "A compliance manager checks it",
+        goal: "Nothing reaches a client until a supervising manager has reviewed it.",
+        screen: `
+          <div class="screen-title">Review queue &middot; ${esc(s.queue)} &middot; typical review same day</div>
+          <div class="two">
+            <div class="letter"><strong>The manager sees what the advisor saw</strong><span>The draft, the reasons and sources, the options considered and blocked, and the number of people it will reach.</span></div>
+            <div class="letter">
+              <strong>Automatic checks</strong>
+              <div class="check"><span class="mk">&#10003;</span><span>No promises about future returns</span></div>
+              <div class="check"><span class="mk">&#10003;</span><span>Every number has a source</span></div>
+              <div class="check"><span class="mk">&#10003;</span><span>Source is cited</span></div>
+              <div class="check"><span class="mk">&#10003;</span><span>Right approval level for the number of people</span></div>
+              <div class="check"><span class="mk">&#10003;</span><span>Standard disclaimer included</span></div>
+            </div>
+          </div>
+          <div class="note">If any check fails, the Approve button is disabled.</div>
+          <div class="pick"><span class="btn dark">Approve</span><span class="btn">Send back with comment</span><span class="btn">Block</span></div>
+          <div class="panel"><strong>After approval, the advisor</strong><ul>${s.afterApproval.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>`,
+        take: "One number matters: how many flagged opportunities become approved client actions. Relay drafts; people send.",
+      },
+    ];
+  }
+
+  function renderStories() {
+    $("stories").innerHTML = DATA.map((s, k) =>
+      `<button type="button" data-story="${k}" aria-pressed="${k === story}"><span class="nm">${esc(s.tab)}</span><span class="sub">${esc(s.tabSub)} &middot; ${esc(s.advisor.label.split(",")[0])}</span><span class="shows">${esc(s.shows)}</span></button>`).join("");
+    const s = DATA[story];
+    $("who").innerHTML = `
+      <div class="person"><span class="role">The advisor</span><h3>${esc(s.advisor.label)}</h3><p>${esc(s.advisor.summary)}</p><p class="src"><strong>Built from:</strong> ${links(s.advisor.groundedIn)}</p></div>
+      <div class="person"><span class="role">The client</span><h3>${esc(s.client.name)}</h3><p>${esc(s.client.summary)}</p><p class="src"><strong>Built from:</strong> ${links(s.client.groundedIn)}</p></div>
+      <p class="who-note">Both are composites: invented names and exact figures, set inside situations UBS describes publicly. No real client or advisor is shown. Every figure on this page loads from the client files in the Relay repo (data/clients).</p>`;
+  }
+
+  function render(i) {
+    const s0 = DATA[story], list = steps(s0);
+    cur = Math.max(0, Math.min(list.length - 1, i));
+    const s = list[cur], last = cur === list.length - 1, next = (story + 1) % DATA.length;
+    $("steps").innerHTML = STEP_NAMES.map((x, k) =>
+      `<li><button type="button" data-to="${k}" class="${k < cur ? "done" : ""}" ${k === cur ? 'aria-current="step"' : ""}><span class="num">Step ${k + 1}</span><span class="nm">${x}</span></button></li>`).join("");
+    $("step").innerHTML = `
+      <div class="step-head"><span class="of">${esc(s0.tab)} &middot; Step ${cur + 1} of ${list.length}</span><h2>${s.title}</h2><p class="goal">${s.goal}</p></div>
+      <div class="screen">
+        <div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${esc(s0.advisor.label)} &middot; ${esc(s0.advisor.day)}</span></div>
+        <div class="screen-body">${s.screen}</div>
+      </div>
+      <div class="takeaway"><span class="k">In short</span><p>${s.take}</p></div>
+      <div class="nav">
+        <button type="button" data-to="${cur - 1}" ${cur === 0 ? "disabled" : ""}>&larr; Back</button>
+        ${last ? `<button type="button" class="next" data-story="${next}">Next story: ${esc(DATA[next].tab)} &rarr;</button>` : `<button type="button" class="next" data-to="${cur + 1}">Next: ${STEP_NAMES[cur + 1]} &rarr;</button>`}
+      </div>
+      <p class="hint">Use Next, the highlighted item on the screen, or the arrow keys. Switch client at the top at any time.</p>`;
+    try { history.replaceState(null, "", `#${DATA[story].id.replace(/^hh-/, "")}-${cur + 1}`); } catch (e) {}
+  }
+
+  function setStory(k) { story = k; audience = "one"; renderStories(); render(0); }
+
+  let J = null, chapter = 0;
+  const CHAPTERS = [
+    { key: "prospects", id: "before", tab: "Finding new clients", sub: "Before", shows: "Warm paths first; Relay drafts the ask" },
+    { key: "paperwork", id: "before", tab: "Paperwork", sub: "Before and ongoing", shows: "Unsigned too long escalates" },
+    { key: "meetings", id: "meetings", tab: "Today's meetings", sub: "Meetings", shows: "Every client meeting has a pack" },
+    { key: "review", id: "meetings", tab: "Review pack", sub: "Meetings", shows: "Built only from the client file" },
+    { key: "service", id: "after", tab: "Service requests", sub: "After", shows: "Routed by rule; wires need a callback" },
+    { key: "followups", id: "after", tab: "Follow-ups", sub: "After", shows: "Tasks by owner, overdue first" },
+    { key: "personal", id: "always", tab: "Personalized", sub: "Always on", shows: "Firm, segment, advisor, client" },
+    { key: "learning", id: "always", tab: "Relay learns", sub: "Always on", shows: "Proposes with evidence; you decide" },
+  ];
+  function renderChapter() {
+    $("chapters").innerHTML = CHAPTERS.map((c, k) => `<button type="button" data-chapter="${k}" aria-pressed="${k === chapter}"><span class="nm">${c.tab}</span><span class="sub">${c.sub}</span><span class="shows">${c.shows}</span></button>`).join("");
+    const c = CHAPTERS[chapter];
+    let head = "", body = "", take = "";
+    if (c.key === "prospects") {
+      head = `<h2>Finding new clients</h2><p class="goal">Who is worth an introduction this week, and how warm is the path in?</p>`;
+      body = `<div class="screen-title">${esc(J.prospectsAdvisor)}: prospects, warmest first</div>` + J.prospects.map((p, i) => `
+        <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1.6fr) 90px auto">
+          <span><span class="t">${esc(p.label)}</span><br><span class="muted">${esc(p.signal)}</span></span>
+          <span class="muted">${esc(p.path)}: ${esc(p.pathDetail)}</span>
+          <span class="cost">${esc(p.estimated)}</span>
+          <span class="tag plain">score ${p.score}</span>
+        </div>${i === 0 ? `<div class="note">${esc(p.draft)}</div>` : ""}`).join("") +
+        `<div class="muted">Score: path in (existing or referral 3, event 2, signal only 1) + fit to the practice (0 to 2) + size (0 to 2).</div>`;
+      take = "The advisor spends prospecting time on warm paths, and sends every introduction personally.";
+    } else if (c.key === "paperwork") {
+      const esc2 = J.paperwork.filter((w) => w.status === "escalated").length;
+      head = `<h2>Paperwork</h2><p class="goal">Which forms are stuck, and which need the supervisor now?</p>`;
+      body = `<div class="stat"><span><strong>${J.paperwork.length}</strong>open forms</span><span><strong>${esc2}</strong>escalated</span></div>` + J.paperwork.map((w, i) => `
+        <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) 90px auto">
+          <span class="t">${esc(w.client)}</span>
+          <span>${esc(w.form)}${w.note ? `<br><span class="muted">${esc(w.note)}</span>` : ""}</span>
+          <span class="cost muted">${w.daysOpen} days</span>
+          <span class="tag ${w.status === "escalated" ? "no" : "plain"}">${w.status}</span>
+        </div>${i === 0 ? `<div class="note">Unsigned for more than ${J.policy.escalateAfterDays} days, so it went to the branch supervisor. ${esc(w.draft)}</div>` : ""}`).join("");
+      take = "Nothing sits unsigned quietly: the rule escalates it, and the reminder is already drafted.";
+    } else if (c.key === "meetings") {
+      head = `<h2>Today's meetings</h2><p class="goal">What is in the diary, and is there a pack ready for each client?</p>`;
+      body = J.meetings.map((a) => `<div class="screen-title">${esc(a.advisor)}</div>` + a.items.map((m) => `
+        <div class="opt ${m.client === J.reviewPack.client ? "go" : ""}" style="grid-template-columns:60px minmax(0,1.4fr) minmax(0,1.6fr) auto">
+          <span class="t">${esc(m.time)}</span>
+          <span>${esc(m.title)}${m.prospect ? `<br><span class="muted">${esc(m.prospect)}</span>` : ""}</span>
+          <span class="muted">${esc(m.purpose)}</span>
+          <span class="tag ${m.client ? "ok" : "plain"}">${m.client ? "review pack" : esc(m.kind)}</span>
+        </div>`).join("")).join("");
+      take = "Every client meeting opens with a pack Relay assembled from the client file; prospects link to their notes.";
+    } else if (c.key === "review") {
+      const r = J.reviewPack;
+      const list = (xs) => `<ul>${xs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+      head = `<h2>Review pack: ${esc(r.client)}</h2><p class="goal">${esc(r.meeting || "Next meeting")}. ${esc(r.purpose || "")}</p>`;
+      body = `<div class="muted">${esc(r.people)} &middot; ${esc(r.total)}${r.lastContact ? ` &middot; last contact: ${esc(r.lastContact)}` : ""}</div>
+        <div class="grid2">
+          <div class="panel"><strong>1. What has changed</strong>${list(r.changed)}</div>
+          <div class="panel"><strong>2. Goals with a gap</strong>${list(r.gaps)}</div>
+          <div class="panel"><strong>3. Decisions to make</strong>${r.decisions.length ? list(r.decisions) : '<p class="muted">None pending</p>'}</div>
+          <div class="panel"><strong>4. Open items</strong>${list(r.openItems)}<ul>${r.tasks.map((x) => `<li>${esc(x.text)} <span class="muted">(${esc(x.owner)}, ${esc(x.due)})</span></li>`).join("")}</ul></div>
+          <div class="panel"><strong>5. Talking points</strong><ol>${r.talkingPoints.map((x) => `<li>${esc(x)}</li>`).join("")}</ol></div>
+          <div class="panel"><strong>Documents to hand</strong>${list(r.documents)}</div>
+        </div>`;
+      take = "The advisor walks in knowing what changed, what is short, and what needs a decision, and nothing in the pack is invented.";
+    } else if (c.key === "personal") {
+      head = `<h2>Personalized for each advisor and client</h2><p class="goal">Same engine, different settings: who set each one, and what can never be personalized?</p>`;
+      body = `<div class="grid2">` + J.personalization.map((p) => `<div class="panel"><strong>${esc(p.client)}</strong><span class="muted">${esc(p.advisor)}</span>
+        <ul>${p.settings.map((s) => `<li>${esc(s.label)}: <b>${esc(s.value)}</b> <span class="muted">(${esc(s.from)})</span>${s.kind === "rule" ? ' <span class="tag no">rule</span>' : ""}</li>`).join("")}</ul></div>`).join("") + `</div>
+        <div class="note">Preferences: the most specific layer wins. Rules: the strictest layer wins, and nobody can loosen the firm's. Constraints, the approved shelf, compliance checks and the recipient counter are never personalized.</div>`;
+      take = "One resolver answers what applies to this advisor and this client, and records which layer said so on every decision.";
+    } else if (c.key === "learning") {
+      const open = J.suggestions.filter((s) => !s.heldBack);
+      head = `<h2>Relay learns, the advisor decides</h2><p class="goal">What patterns has Relay seen, and what would it change?</p>`;
+      body = `<div class="stat"><span><strong>${open.length}</strong>suggestions</span><span><strong>${J.suggestions.length - open.length}</strong>held back</span></div>` + J.suggestions.map((s, i) => `
+        <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1.8fr) auto">
+          <span class="t">${esc(s.who)}</span>
+          <span>${esc(s.setting)}: ${esc(s.from)} &rarr; <b>${esc(s.to)}</b></span>
+          <span class="muted">${esc(s.because)}</span>
+          <span class="tag ${s.heldBack ? "plain" : "ok"}">${s.heldBack ? "held back" : "accept?"}</span>
+        </div>`).join("") + `<div class="note">Capture &rarr; learn &rarr; propose &rarr; the advisor accepts &rarr; apply as a new version &rarr; measure &rarr; keep or undo. A declined suggestion waits before it is asked again. Rules are never learned.</div>`;
+      take = "The experience gets smoother every week, and every change was proposed with its evidence and accepted by a person.";
+    } else if (c.key === "followups") {
+      head = `<h2>Follow-ups</h2><p class="goal">What does the team still owe clients, and what is overdue?</p>`;
+      body = `<div class="stat"><span><strong>${J.followUps.length}</strong>open tasks</span><span><strong>${J.followUps.filter((x) => x.overdue).length}</strong>overdue</span></div>` + J.followUps.map((x) => `
+        <div class="opt ${x.overdue ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1fr) auto">
+          <span class="t">${esc(x.client)}</span>
+          <span>${esc(x.text)}</span>
+          <span class="muted">${esc(x.owner)}</span>
+          <span class="tag ${x.overdue ? "no" : "plain"}">${esc(x.due)}</span>
+        </div>`).join("") + `<div class="note">Approved notes also land here until the advisor sends them from their own email and logs it. Relay never sends.</div>`;
+      take = "After the advice, nothing is left to memory: every promise has an owner and a date.";
+    } else {
+      head = `<h2>Service requests</h2><p class="goal">What came in, who handles it, and what must never happen on an email alone?</p>`;
+      body = `<div class="stat"><span><strong>${J.service.length}</strong>open</span><span><strong>${J.service.filter((r) => r.overdue).length}</strong>overdue</span><span><strong>${J.service.filter((r) => r.callbackRequired).length}</strong>need a callback</span></div>` + J.service.map((r, i) => `
+        <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1fr) auto">
+          <span><span class="t">${esc(r.client)}</span><br><span class="muted">${esc(r.channel)}</span></span>
+          <span>"${esc(r.text)}"</span>
+          <span class="muted">${esc(r.kind)} &rarr; ${esc(r.route)}</span>
+          <span class="tag ${r.callbackRequired || r.overdue ? "no" : "plain"}">${r.callbackRequired ? "callback first" : r.overdue ? `overdue ${-r.hoursLeft}h` : `${r.hoursLeft}h left`}</span>
+        </div>${i === 0 && r.callbackRequired ? `<div class="note">Money movement requested by ${esc(r.channel.toLowerCase())}. The team calls the client back on a number already on file before any money moves.</div>` : ""}`).join("");
+      take = "Requests are routed by rule and measured on time to resolution, never on volume handled.";
+    }
+    $("chapter").innerHTML = `<div class="step-head"><span class="of">${c.sub}</span>${head}</div>
+      <div class="screen"><div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${c.key === "prospects" ? esc(J.prospectsAdvisor) : c.key === "review" ? esc(J.reviewAdvisor) : c.key === "personal" || c.key === "learning" ? "Both advisors" : "Branch team, both advisors"} &middot; ${esc(J.today)}</span></div><div class="screen-body">${body}</div></div>
+      <div class="takeaway"><span class="k">In short</span><p>${take}</p></div>`;
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!DATA.length) return;
+    const cl = e.target.closest("[data-chapter-link]");
+    if (cl && J) { chapter = +cl.dataset.chapterLink; renderChapter(); }
+    const ch = e.target.closest("[data-chapter]");
+    if (ch && J) { chapter = +ch.dataset.chapter; renderChapter(); return; }
+    const st = e.target.closest("[data-story]");
+    if (st) { setStory(+st.dataset.story); $("stories").scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+    const aud = e.target.closest("[data-aud]");
+    if (aud) { audience = aud.dataset.aud; render(cur); return; }
+    const to = e.target.closest("[data-to]");
+    if (to && !to.disabled) { render(+to.dataset.to); $("step").scrollIntoView({ block: "start", behavior: "smooth" }); return; }
+    const nx = e.target.closest("[data-next]");
+    if (nx) { render(cur + 1); $("step").scrollIntoView({ block: "start", behavior: "smooth" }); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!DATA.length) return;
+    if (e.target.closest && e.target.closest("[data-next]") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); render(cur + 1); return; }
+    if (e.key === "ArrowRight") render(cur + 1);
+    if (e.key === "ArrowLeft") render(cur - 1);
+  });
+
+  // Published alongside the page as walkthrough.json; locally it sits in data/generated.
+  async function load() {
+    for (const url of ["walkthrough.json", "../../data/generated/walkthrough.json"]) {
+      try { const r = await fetch(url); if (r.ok) return await r.json(); } catch (e) {}
+    }
+    throw new Error("walkthrough.json not found");
+  }
+  function fromHash() {
+    const m = /^#([a-z-]+)-([1-6])$/.exec(location.hash || "");
+    const k = m ? DATA.findIndex((s) => s.id === "hh-" + m[1]) : -1;
+    if (k >= 0 && (k !== story || +m[2] - 1 !== cur)) { if (k !== story) { story = k; audience = "one"; } renderStories(); render(+m[2] - 1); return true; }
+    return k >= 0;
+  }
+  load().then((all) => {
+    DATA = all.stories;
+    J = all.journey;
+    renderChapter();
+    if (!fromHash()) { renderStories(); render(0); }
+    window.addEventListener("hashchange", fromHash);
+  }).catch(() => {
+    $("step").innerHTML = '<p>Could not load the client data (walkthrough.json). Rebuild it with <code>npm run data:build</code>.</p>';
+  });
+})();
+</script>

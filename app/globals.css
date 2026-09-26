@@ -1,7 +1,9 @@
+@import "./tokens.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --accent: #3a5a78;
-}
+html { font-family: var(--font); }
+body { background: var(--surface); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+a { text-underline-offset: 3px; }

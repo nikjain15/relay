@@ -1,0 +1,194 @@
+{
+  "id": "hh-okafor-lind",
+  "name": "Okafor-Lind",
+  "archetype": "Multigenerational family trust",
+  "tier": "$5M+",
+  "advisorId": "adv-a",
+  "totalUsd": 31600000,
+  "monthlySpendUsd": 30000,
+  "hardPart": "Grantor is 79, next generation unengaged. The asset-retention archetype",
+  "persons": [
+    {
+      "id": "p-ol-1",
+      "name": "A. Okafor-Lind",
+      "role": "trustee",
+      "age": 79
+    },
+    {
+      "id": "p-ol-2",
+      "name": "T. Okafor-Lind",
+      "role": "beneficiary",
+      "age": 25
+    },
+    {
+      "id": "p-ol-3",
+      "name": "N. Okafor-Lind",
+      "role": "beneficiary",
+      "age": 22
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 29800000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 1800000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 60,
+      "target": 24,
+      "unit": "months",
+      "assumption": "24 months of trust distributions"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 12000000,
+      "target": 10000000,
+      "unit": "USD",
+      "assumption": "Grantor, age 79"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 18000000,
+      "target": 20000000,
+      "unit": "USD",
+      "assumption": "Next generation, currently unengaged"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 12
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -60,
+      "channel": "Meeting",
+      "summary": "Trustee meeting; next generation did not attend"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -3,
+      "text": "T. Okafor-Lind turns 25 this month; the trust's distribution provision activates."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Invite both beneficiaries to a next-generation session",
+      "owner": "Advisor",
+      "dueDay": 14
+    },
+    {
+      "text": "Refresh client information for two beneficiaries",
+      "owner": "Client service associate",
+      "dueDay": -1
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Client information refresh: T. Okafor-Lind",
+      "requestedDay": -5
+    },
+    {
+      "form": "Client information refresh: N. Okafor-Lind",
+      "requestedDay": -5
+    },
+    {
+      "form": "Trust certification",
+      "requestedDay": -400,
+      "signedDay": -390
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-okafor-life",
+      "householdId": "hh-okafor-lind",
+      "triggerClass": "life_event",
+      "title": "Beneficiary reaches 25; trust distribution provision activates",
+      "materiality": 70,
+      "observedDay": 6,
+      "action": "review",
+      "strategy": "Legacy",
+      "reasonPath": [
+        {
+          "kind": "LifeEvent",
+          "label": "Beneficiary reaches age 25"
+        },
+        {
+          "kind": "Household",
+          "label": "Okafor-Lind trust"
+        },
+        {
+          "kind": "Goal",
+          "label": "Legacy funded $18.0M of $20.0M"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "A beneficiary turns 25; a trust payout rule starts"
+    },
+    {
+      "id": "opp-okafor-kyc",
+      "householdId": "hh-okafor-lind",
+      "triggerClass": "plan_service_event",
+      "title": "KYC refresh due for two beneficiaries",
+      "materiality": 40,
+      "observedDay": 10,
+      "action": "review",
+      "strategy": "Legacy",
+      "reasonPath": [
+        {
+          "kind": "ServiceEvent",
+          "label": "KYC refresh due"
+        },
+        {
+          "kind": "Household",
+          "label": "Okafor-Lind trust"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "Client information due for refresh (two beneficiaries)"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS families and foundations practice (Families & Foundations Investment Group)",
+      "url": "https://advisors.ubs.com/ffig/"
+    },
+    {
+      "label": "UBS on multigenerational families",
+      "url": "https://www.ubs.com/us/en/wealth-management/our-solutions/private-wealth-management/family-office-solutions/quarterlies/fostering-successful-multigenerational-families.html"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.callBeforeNote": true,
+      "contact.channel": "call",
+      "contact.window": "Tuesdays, with the trustee's daughter joining"
+    }
+  }
+}

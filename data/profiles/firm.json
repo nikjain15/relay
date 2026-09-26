@@ -1,0 +1,27 @@
+{
+  "_note": "Firm defaults for every setting in schema.json. Rules set here are the floor: no lower layer can loosen them.",
+  "version": 1,
+  "values": {
+    "triage.dailyCap": 12,
+    "triage.classWeights": {
+      "external_event": 1,
+      "life_event": 1,
+      "household_threshold": 0.95,
+      "plan_service_event": 0.85,
+      "market_view": 0.7
+    },
+    "proposals.sortBy": "risk",
+    "review.sectionOrder": [
+      "changed",
+      "gaps",
+      "decisions",
+      "open",
+      "talking",
+      "documents"
+    ],
+    "note.length": "full",
+    "contact.channel": "email",
+    "paperwork.escalateAfterDays": 14,
+    "contact.callBeforeNote": false
+  }
+}

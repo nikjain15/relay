@@ -1,0 +1,98 @@
+[
+  {
+    "id": "prod-tsy-ladder",
+    "name": "Treasury ladder, 0 to 3 years",
+    "type": "treasury_ladder",
+    "riskLevel": 1,
+    "liquidityDays": 2,
+    "costBps": 10,
+    "description": "Laddered US Treasuries matched to 36 months of spending",
+    "plainName": "Short-term US Treasury bonds",
+    "plainDescription": "Low risk, available within 2 days",
+    "plainPhrase": "short-term US Treasury bonds"
+  },
+  {
+    "id": "prod-mmf",
+    "name": "Government money market fund",
+    "type": "money_market",
+    "riskLevel": 1,
+    "liquidityDays": 1,
+    "costBps": 15,
+    "description": "Same-day liquidity for near-term spending",
+    "plainName": "Government money market fund",
+    "plainDescription": "Available next day",
+    "plainPhrase": "a government money market fund"
+  },
+  {
+    "id": "prod-exchange-fund",
+    "name": "Exchange fund (7-year lockup)",
+    "type": "exchange_fund",
+    "riskLevel": 3,
+    "liquidityDays": 2555,
+    "costBps": 90,
+    "description": "Contributes concentrated stock for a diversified unit interest without a sale",
+    "plainName": "7-year locked fund",
+    "plainDescription": "Swaps one stock for a diversified fund, locked for 7 years",
+    "plainPhrase": "a 7-year locked fund"
+  },
+  {
+    "id": "prod-core-model",
+    "name": "Diversified core model",
+    "type": "diversified_model",
+    "riskLevel": 3,
+    "liquidityDays": 3,
+    "costBps": 45,
+    "description": "The firm's core multi-asset model portfolio",
+    "plainName": "Core investment portfolio",
+    "plainDescription": "The firm's diversified model portfolio",
+    "plainPhrase": "the core investment portfolio"
+  },
+  {
+    "id": "prod-structured-note",
+    "name": "Buffered structured note, 5-year",
+    "type": "structured_note",
+    "riskLevel": 4,
+    "liquidityDays": 1825,
+    "costBps": 150,
+    "description": "Downside buffer on an index, capped upside, issuer credit risk",
+    "plainName": "5-year structured note",
+    "plainDescription": "Limits losses, caps gains, locked for 5 years",
+    "plainPhrase": "a 5-year structured note"
+  },
+  {
+    "id": "prod-private-credit",
+    "name": "Private credit feeder",
+    "type": "private_credit",
+    "riskLevel": 5,
+    "liquidityDays": 1095,
+    "costBps": 175,
+    "description": "Quarterly liquidity with gates",
+    "plainName": "Private credit fund",
+    "plainDescription": "Loans to private companies, withdrawals limited",
+    "plainPhrase": "a private credit fund"
+  },
+  {
+    "id": "prod-muni-ladder",
+    "name": "Municipal ladder, 1 to 7 years",
+    "type": "municipal_ladder",
+    "riskLevel": 2,
+    "liquidityDays": 3,
+    "costBps": 25,
+    "description": "Tax-exempt income for high-bracket households",
+    "plainName": "Municipal bond ladder",
+    "plainDescription": "Tax-free income, available within 3 days",
+    "plainPhrase": "a municipal bond ladder"
+  },
+  {
+    "id": "prod-sector-etf",
+    "name": "Single-sector ETF",
+    "type": "sector_etf",
+    "riskLevel": 5,
+    "liquidityDays": 1,
+    "costBps": 40,
+    "description": "Concentrated exposure to one sector",
+    "plainName": "Single-sector fund",
+    "plainDescription": "All in one industry",
+    "plainPhrase": "a single-sector fund"
+  }
+]
