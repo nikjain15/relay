@@ -1,0 +1,505 @@
+<title>Relay Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Patrick+Hand&display=swap">
+<style>
+:root {
+  --paper: #f7f8f6;
+  --panel: #ffffff;
+  --ink: #252b36;
+  --ink-soft: #5b6472;
+  --wire: #c5cbd3;
+  --fill: #ebeef1;
+  --fill-2: #dde2e7;
+  --note: #2e6da8;
+  --note-bg: #e8f0f8;
+  --key: #d99a1e;
+  --key-bg: #fbf1dc;
+  --pass: #2f7d57;
+  --fail: #b23a3a;
+  --sketch: "Patrick Hand", "Comic Sans MS", "Segoe Print", cursive;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #171b21; --panel: #1f242c; --ink: #e5e8ed; --ink-soft: #a3abb8;
+    --wire: #4b5462; --fill: #272d36; --fill-2: #313843;
+    --note: #86b4e3; --note-bg: #1d2b3a; --key: #e7b24a; --key-bg: #332a18;
+    --pass: #6cc497; --fail: #ec8a8a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #171b21; --panel: #1f242c; --ink: #e5e8ed; --ink-soft: #a3abb8;
+  --wire: #4b5462; --fill: #272d36; --fill-2: #313843;
+  --note: #86b4e3; --note-bg: #1d2b3a; --key: #e7b24a; --key-bg: #332a18;
+  --pass: #6cc497; --fail: #ec8a8a;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 14px/1.5 var(--sans);
+  padding-inline: 16px;
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 18px; }
+
+header.top { display: grid; gap: 6px; }
+header.top h1 { font-size: 22px; font-weight: 600; margin: 0; text-wrap: balance; }
+header.top p { margin: 0; color: var(--ink-soft); max-width: 72ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 22px; height: 10px; border-radius: 3px; display: inline-block; }
+.sw.bar { background: var(--fill-2); }
+.sw.dash { border: 1.5px dashed var(--ink-soft); height: 12px; }
+.sw.note { background: var(--note-bg); border: 1px solid var(--note); }
+.sw.key { background: var(--key-bg); border: 1.5px solid var(--key); }
+
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+.flow .lbl { text-transform: uppercase; letter-spacing: .06em; color: var(--ink-soft); font-weight: 600; margin-right: 4px; }
+.flow button { font: 500 12px var(--sans); color: var(--ink); background: var(--panel); border: 1px solid var(--wire); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+.flow button[aria-pressed="true"] { border-color: var(--note); color: var(--note); background: var(--note-bg); }
+.flow .arr { color: var(--ink-soft); }
+
+.layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; align-items: start; }
+nav.rail { display: grid; gap: 2px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+nav.rail h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin: 0 0 6px 8px; font-weight: 600; }
+nav.rail button {
+  display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: baseline; text-align: left;
+  font: 13px/1.35 var(--sans); color: var(--ink); background: transparent; border: 0; border-radius: 6px;
+  padding: 6px 8px; cursor: pointer;
+}
+nav.rail button .n { font: 500 12px var(--mono); color: var(--ink-soft); }
+nav.rail button .st { display: block; font-size: 11px; color: var(--ink-soft); }
+nav.rail button[aria-current="true"] { background: var(--fill); font-weight: 600; }
+nav.rail button:hover { background: var(--fill); }
+
+button:focus-visible, .hot:focus-visible { outline: 2px solid var(--note); outline-offset: 2px; }
+
+.surface { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 18px; align-items: start; }
+.surface-head { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+.surface-head h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.state { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ink-soft); color: var(--ink-soft); }
+.state.build { border-color: var(--pass); color: var(--pass); }
+.pager { margin-left: auto; display: flex; gap: 6px; }
+.pager button { font: 12px var(--sans); color: var(--ink); background: var(--panel); border: 1px solid var(--wire); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+
+/* the wireframe */
+.frame-scroll { overflow-x: auto; }
+.frame { min-width: 640px; background: var(--panel); border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; font-family: var(--sketch); font-size: 16px; line-height: 1.3; }
+.frame.designed { border-style: dashed; }
+.chrome { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-bottom: 1.5px solid var(--ink); background: var(--fill); }
+.chrome i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--ink); display: inline-block; }
+.chrome .url { margin-left: 8px; flex: 1; font: 12px var(--mono); color: var(--ink-soft); background: var(--panel); border: 1px solid var(--wire); border-radius: 4px; padding: 1px 8px; }
+.banner { font-size: 13px; padding: 2px 12px; border-bottom: 1px dashed var(--wire); color: var(--ink-soft); }
+.app { display: grid; grid-template-columns: 110px 1fr; min-height: 380px; }
+.side { border-right: 1.5px solid var(--ink); padding: 10px 8px; display: grid; gap: 6px; align-content: start; font-size: 14px; color: var(--ink-soft); }
+.side .on { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.main { padding: 12px 14px; display: grid; gap: 10px; align-content: start; position: relative; }
+.h { font-size: 21px; }
+.sub { color: var(--ink-soft); font-size: 15px; }
+.bar { height: 9px; border-radius: 4px; background: var(--fill-2); display: block; }
+.bar.w30 { width: 30%; } .bar.w45 { width: 45%; } .bar.w60 { width: 60%; } .bar.w75 { width: 75%; } .bar.w90 { width: 90%; }
+.row { display: grid; gap: 10px; align-items: center; }
+.box { border: 1.5px solid var(--ink); border-radius: 6px; padding: 8px 10px; display: grid; gap: 6px; }
+.box.soft { border-color: var(--wire); }
+.box.dash { border-style: dashed; }
+.tbl { display: grid; border-top: 1.5px solid var(--ink); }
+.tbl > div { display: grid; gap: 10px; align-items: center; padding: 6px 2px; border-bottom: 1px solid var(--wire); }
+.tbl .th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
+.chip { display: inline-block; border: 1.5px solid var(--ink); border-radius: 999px; padding: 0 8px; font-size: 13px; white-space: nowrap; }
+.chip.pass { border-color: var(--pass); color: var(--pass); }
+.chip.fail { border-color: var(--fail); color: var(--fail); }
+.btn { display: inline-block; border: 1.5px solid var(--ink); border-radius: 5px; padding: 0 8px; font-size: 14px; white-space: nowrap; }
+.btn.primary { background: var(--ink); color: var(--panel); }
+.path { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 14px; }
+.path .node { border: 1.5px solid var(--ink); border-radius: 4px; padding: 0 6px; }
+.path .k { color: var(--ink-soft); font-size: 12px; margin-right: 3px; }
+.meter { height: 12px; border: 1.5px solid var(--ink); border-radius: 3px; position: relative; background: var(--panel); }
+.meter b { position: absolute; inset: 0 auto 0 0; background: var(--fill-2); border-right: 1.5px solid var(--ink); }
+.big { font-size: 40px; line-height: 1; }
+.fig { font-family: var(--mono); font-size: 13px; }
+
+.key { outline: 2px solid var(--key); outline-offset: 3px; background: var(--key-bg); border-radius: 6px; }
+.hot { cursor: pointer; border-radius: 5px; outline: 1.5px dashed var(--note); outline-offset: 2px; }
+.hot:hover { background: var(--note-bg); }
+.co { position: relative; }
+.pin {
+  display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--note); color: var(--panel); font: 600 11px var(--sans); vertical-align: middle; margin-left: 4px;
+}
+
+/* notes */
+aside.notes { display: grid; gap: 12px; font-size: 13px; }
+aside.notes h3 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); font-weight: 600; }
+.job { background: var(--note-bg); border: 1px solid var(--note); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
+.job p { margin: 0; }
+.callouts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.callouts li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; align-items: start; }
+.callouts .pin { margin: 1px 0 0; }
+.meta { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+.meta dt { color: var(--ink-soft); }
+.meta dd { margin: 0; }
+.hint { font-size: 12px; color: var(--ink-soft); }
+
+@media (max-width: 980px) {
+  .surface { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  nav.rail { position: static; display: flex; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  nav.rail h2 { display: none; }
+  nav.rail button { flex: 0 0 auto; grid-template-columns: auto auto; }
+  nav.rail button .st { display: none; }
+  .pager { margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .surface { animation: fade .18s ease-out; }
+  @keyframes fade { from { opacity: .4; } to { opacity: 1; } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Relay: low-fidelity wireframes of all nine surfaces</h1>
+    <p>Advisor advice-to-action layer. One screen per surface in PRD §4.1, numbered as the PRD numbers them. Sketch-level on purpose: layout, the decision each screen supports, and the one control that carries the argument. Synthetic households, no UBS branding.</p>
+    <div class="legend" aria-label="Legend">
+      <span><i class="sw bar"></i>placeholder text</span>
+      <span><i class="sw dash"></i>designed, not built</span>
+      <span><i class="sw note"></i>clickable: goes to the next screen</span>
+      <span><i class="sw key"></i>the control that carries the argument</span>
+    </div>
+  </header>
+
+  <div class="flow" role="group" aria-label="Demo path">
+    <span class="lbl">Demo path</span>
+    <button data-go="6">6 Triage</button><span class="arr" aria-hidden="true">&rarr;</span>
+    <button data-go="4">4 Evidence</button><span class="arr" aria-hidden="true">&rarr;</span>
+    <button data-go="3">3 Household</button><span class="arr" aria-hidden="true">&rarr;</span>
+    <button data-go="5">5 Proposals</button><span class="arr" aria-hidden="true">&rarr;</span>
+    <button data-go="7">7 Communications</button><span class="arr" aria-hidden="true">&rarr;</span>
+    <button data-go="9">9 Supervision</button>
+  </div>
+
+  <div class="layout">
+    <nav class="rail" aria-label="Surfaces">
+      <h2>Surfaces</h2>
+    </nav>
+    <main id="stage"></main>
+  </div>
+</div>
+
+<template id="t1">
+  <div class="frame designed">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / pipeline</span></div>
+    <div class="banner">Designed, not built. Illustrative, synthetic data.</div>
+    <div class="app">
+      <div class="side"><span class="on">Pipeline</span><span>Book</span><span>Queue</span></div>
+      <div class="main">
+        <div class="h">Pipeline and prospecting</div>
+        <div class="sub">Prospects and referral paths, ranked like the book</div>
+        <div class="tbl">
+          <div class="th" style="grid-template-columns: 1.4fr 1.2fr 1fr .8fr">Prospect<span>Signal</span><span>Path in</span><span>Next step</span></div>
+          <div style="grid-template-columns: 1.4fr 1.2fr 1fr .8fr"><span class="co key">Held-away assets, $2M+ <span class="pin">A</span></span><span><span class="bar w75"></span></span><span>Existing client referral <span class="pin">B</span></span><span class="btn">Plan intro</span></div>
+          <div style="grid-template-columns: 1.4fr 1.2fr 1fr .8fr"><span class="bar w60"></span><span class="bar w45"></span><span class="bar w60"></span><span class="btn">Plan intro</span></div>
+          <div style="grid-template-columns: 1.4fr 1.2fr 1fr .8fr"><span class="bar w45"></span><span class="bar w60"></span><span class="bar w30"></span><span class="btn">Plan intro</span></div>
+        </div>
+        <div class="box soft dash"><span class="sub">Introductions are drafted for the advisor to send. Relay never sends.</span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t2">
+  <div class="frame designed">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / onboarding / vasquez-hale</span></div>
+    <div class="banner">Designed, not built. Illustrative, synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Book</span><span class="on">Onboarding</span><span>Queue</span></div>
+      <div class="main">
+        <div class="h">Vasquez-Hale: onboarding and re-papering</div>
+        <div class="box">
+          <div class="row" style="grid-template-columns: 22px 1fr auto">&#9745;<span>Client agreement signed</span><span class="chip pass">done</span></div>
+          <div class="row co key" style="grid-template-columns: 22px 1fr auto">&#9744;<span>401(k) rollover form, unsigned 21 days <span class="pin">A</span></span><span class="chip fail">escalated</span></div>
+          <div class="row" style="grid-template-columns: 22px 1fr auto">&#9744;<span>Investment profile, refresh due <span class="pin">B</span></span><span class="chip">due</span></div>
+          <div class="row" style="grid-template-columns: 22px 1fr auto">&#9745;<span class="bar w45"></span><span class="chip pass">done</span></div>
+        </div>
+        <div class="row" style="grid-template-columns: auto auto 1fr"><span class="btn">Draft reminder</span><span class="btn">Assign to client associate</span><span></span></div>
+        <div class="sub">Supervisory record written as each item closes <span class="pin">C</span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t3">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / household / renner</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Triage</span><span class="on">Household</span><span>Proposals</span><span>Comms</span><span>Supervision</span></div>
+      <div class="main">
+        <div class="h">Renner household</div>
+        <div class="sub">Pre-liquidity founder &middot; $50M+ tier &middot; <span class="fig">$62.4M</span> &middot; 2 persons</div>
+        <div class="box co key">
+          <div class="row" style="grid-template-columns: 90px 1fr 120px"><span>Liquidity</span><span class="meter"><b style="width:2%"></b></span><span class="chip fail">0 of 36 mo</span></div>
+          <div class="row" style="grid-template-columns: 90px 1fr 120px"><span>Longevity</span><span class="meter"><b style="width:82%"></b></span><span class="chip fail">gap $4M</span></div>
+          <div class="row" style="grid-template-columns: 90px 1fr 120px"><span>Legacy</span><span class="meter"><b style="width:2%"></b></span><span class="chip fail">unfunded</span></div>
+          <span class="sub">Each gap names its driving assumption <span class="pin">A</span></span>
+        </div>
+        <div class="row" style="grid-template-columns: 1fr 1fr">
+          <div class="box soft"><span>Holdings</span><span>Single name <span class="fig">71%</span> <span class="pin">B</span></span><span class="bar w75"></span><span class="bar w45"></span></div>
+          <div class="box soft"><span>IPS constraints <span class="pin">C</span></span><span class="bar w90"></span><span class="bar w75"></span><span class="bar w60"></span></div>
+        </div>
+        <div class="row" style="grid-template-columns: auto auto 1fr"><span class="btn hot" tabindex="0" role="link" data-go="5">Proposals &rarr;</span><span class="btn hot" tabindex="0" role="link" data-go="4">Evidence</span><span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t4">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / evidence / renner-property</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Triage</span><span>Household</span><span class="on">Evidence</span><span>Proposals</span></div>
+      <div class="main">
+        <div class="h">Why this household, why today</div>
+        <div class="path co key">
+          <span class="node"><span class="k">ExternalEvent</span>Property sale, $4.1M</span>&rarr;
+          <span class="node"><span class="k">Household</span>Renner</span>&rarr;
+          <span class="node"><span class="k">Goal</span>Liquidity 0 of 36</span>&rarr;
+          <span class="node"><span class="k">Holding</span>Single name 71%</span>
+          <span class="pin">A</span>
+        </div>
+        <div class="box soft">
+          <span>Cited passage <span class="pin">B</span></span>
+          <span class="bar w90"></span><span class="bar w75"></span>
+          <span class="sub">Sizing a Liquidity strategy, prototype corpus, day 2</span>
+        </div>
+        <div class="box" style="border-color: var(--fail)">
+          <span style="color: var(--fail)">Refused: no supporting evidence <span class="pin">C</span></span>
+          <span class="sub">Shown instead of a narrative when nothing in the corpus links the trigger to this household</span>
+        </div>
+        <div class="row" style="grid-template-columns: auto auto 1fr"><span class="btn hot" tabindex="0" role="link" data-go="3">Household &rarr;</span><span class="btn hot" tabindex="0" role="link" data-go="5">Proposals</span><span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t5">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / household / renner / proposal</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Triage</span><span>Household</span><span class="on">Proposals</span><span>Comms</span></div>
+      <div class="main">
+        <div class="h">Bounded proposals: trim concentration</div>
+        <div class="sub">Approved shelf only. 9 candidates: 4 eligible, 5 rejected</div>
+        <div class="tbl">
+          <div class="th" style="grid-template-columns: 24px 1.3fr 1fr .7fr 1.6fr"><span></span>Product<span>Funding</span><span>Amount</span><span>Result</span></div>
+          <div style="grid-template-columns: 24px 1.3fr 1fr .7fr 1.6fr"><span>&#9673;</span><span>Core model</span><span>Long-term lots</span><span class="fig">$28.7M</span><span class="chip pass">eligible</span></div>
+          <div class="co key" style="grid-template-columns: 24px 1.3fr 1fr .7fr 1.6fr"><span>&#9675;</span><span>Core model</span><span>All lots</span><span class="fig">$28.7M</span><span><span class="chip fail">Tax-lot holding period</span> <span class="pin">A</span></span></div>
+          <div style="grid-template-columns: 24px 1.3fr 1fr .7fr 1.6fr"><span>&#9675;</span><span>Exchange fund</span><span>In kind</span><span class="fig">$28.7M</span><span class="chip fail">Liquidity minimum</span></div>
+          <div style="grid-template-columns: 24px 1.3fr 1fr .7fr 1.6fr"><span>&#9675;</span><span class="bar w75"></span><span class="bar w60"></span><span class="bar w60"></span><span class="chip fail">Risk level</span></div>
+        </div>
+        <div class="box soft">
+          <span>Rationale record, structured <span class="pin">B</span></span>
+          <div class="row" style="grid-template-columns: 130px 1fr"><span class="sub">Basis</span><span class="bar w90"></span></div>
+          <div class="row" style="grid-template-columns: 130px 1fr"><span class="sub">Alternatives</span><span class="bar w75"></span></div>
+          <div class="row" style="grid-template-columns: 130px 1fr"><span class="sub">Costs compared</span><span class="bar w60"></span></div>
+        </div>
+        <div class="row" style="grid-template-columns: auto auto 1fr"><span class="btn primary">Accept proposal</span><span class="btn hot" tabindex="0" role="link" data-go="7">Draft client note &rarr;</span><span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t6">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / triage</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span class="on">Triage</span><span>Household</span><span>Proposals</span><span>Comms</span><span>Supervision</span></div>
+      <div class="main">
+        <div class="h">Book triage</div>
+        <div class="sub">Advisor A &middot; 183 households &middot; capped at 12 a day <span class="pin">A</span></div>
+        <div class="tbl">
+          <div class="th" style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr">#<span>Trigger</span><span>Household</span><span>Why today</span><span>Decide</span></div>
+          <div class="co key" style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr"><span>1</span><span class="chip">External event</span><span>Renner</span>
+            <span class="hot" tabindex="0" role="link" data-go="4">Property sale $4.1M &rarr; Liquidity 0 of 36 <span class="pin">B</span></span>
+            <span><span class="btn hot" tabindex="0" role="link" data-go="5">Propose</span> <span class="btn">Dismiss</span></span></div>
+          <div style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr"><span>2</span><span class="chip">Threshold</span><span>Renner</span><span class="bar w75"></span><span><span class="btn">Propose</span> <span class="btn">Dismiss</span></span></div>
+          <div style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr"><span>3</span><span class="chip">Threshold</span><span>Alcott</span><span class="bar w60"></span><span><span class="btn">Propose</span> <span class="btn">Dismiss</span></span></div>
+          <div style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr"><span>6</span><span class="chip">Life event</span><span class="bar w60"></span><span class="bar w90"></span><span class="sub">Review task</span></div>
+          <div style="grid-template-columns: 30px 1.1fr .8fr 2.4fr 1fr"><span>11</span><span class="chip">Market view</span><span>Pell</span><span class="bar w45"></span><span style="color: var(--fail)">Refused <span class="pin">C</span></span></div>
+        </div>
+        <div class="sub">Dismiss asks for a reason, returned upstream as labelled feedback <span class="pin">D</span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t7">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / communications</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Triage</span><span>Proposals</span><span class="on">Comms</span><span>Supervision</span></div>
+      <div class="main">
+        <div class="h">Client communication: Renner</div>
+        <div class="row" style="grid-template-columns: 1.6fr 1fr; align-items: start">
+          <div style="display:grid; gap:10px">
+            <div class="box soft">
+              <span>Draft, from the accepted proposal only <span class="pin">A</span></span>
+              <span class="bar w90"></span><span class="bar w90"></span><span class="bar w75"></span>
+              <span class="sub">[Source: Sizing a Liquidity strategy, day 2]</span>
+              <span class="bar w60"></span>
+            </div>
+            <div class="box soft">
+              <span>Batch: same note to other households <span class="pin">B</span></span>
+              <div class="row" style="grid-template-columns: 1fr 1fr 1fr; font-size: 14px">
+                <span>&#9745; Achterberg (2)</span><span>&#9745; Bellweather (2)</span><span>&#9745; Castellano (2)</span>
+                <span>&#9745; Ilves (2)</span><span>&#9744; Norcross (1)</span><span>&#9744; Quiller (1)</span>
+              </div>
+              <span class="sub">&#9744; include another advisor's sends of this note</span>
+            </div>
+          </div>
+          <div class="box co key" style="text-align:center">
+            <span class="big">26</span>
+            <span>retail investors, firm-wide, last 30 days</span>
+            <span><span class="chip fail">retail communication</span></span>
+            <span class="sub">Counts people, not households <span class="pin">C</span></span>
+          </div>
+        </div>
+        <div class="row" style="grid-template-columns: auto 1fr"><span class="btn primary hot" tabindex="0" role="link" data-go="9">Submit for supervision &rarr;</span><span class="sub">No send button exists <span class="pin">D</span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t8">
+  <div class="frame designed">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / servicing</span></div>
+    <div class="banner">Designed, not built. Illustrative, synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Book</span><span class="on">Servicing</span><span>Queue</span></div>
+      <div class="main">
+        <div class="h">Servicing and operations triage</div>
+        <div class="sub">Requests classified and routed to the client associate</div>
+        <div class="tbl">
+          <div class="th" style="grid-template-columns: 1.4fr 1fr 1fr .8fr">Request<span>Class</span><span>Owner</span><span>Age</span></div>
+          <div class="co key" style="grid-template-columns: 1.4fr 1fr 1fr .8fr"><span>Beneficiary change, Okafor-Lind</span><span class="chip">Documents <span class="pin">A</span></span><span>Client associate <span class="pin">B</span></span><span class="fig">2 d</span></div>
+          <div style="grid-template-columns: 1.4fr 1fr 1fr .8fr"><span class="bar w75"></span><span class="chip">Transfer</span><span class="bar w60"></span><span class="fig">1 d</span></div>
+          <div style="grid-template-columns: 1.4fr 1fr 1fr .8fr"><span class="bar w60"></span><span class="chip">Statement</span><span class="bar w45"></span><span class="fig">4 h</span></div>
+        </div>
+        <div class="box soft dash"><span class="sub">Measured on time to resolution, not on volume handled <span class="pin">C</span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="t9">
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span class="url">relay / supervision</span></div>
+    <div class="banner">Illustrative prototype. Synthetic data.</div>
+    <div class="app">
+      <div class="side"><span>Triage</span><span>Comms</span><span class="on">Supervision</span><span>Measurement</span></div>
+      <div class="main">
+        <div class="h">Supervision console</div>
+        <div class="sub">q-1 &middot; Renner &middot; <span class="chip fail">retail communication</span> 26 retail investors, 13 households</div>
+        <div class="row" style="grid-template-columns: 1.2fr 1fr; align-items: start">
+          <div class="box soft"><span>Draft, as the advisor saw it <span class="pin">A</span></span><span class="bar w90"></span><span class="bar w75"></span><span class="bar w90"></span><span class="bar w45"></span></div>
+          <div class="box co key">
+            <span>Automated checks <span class="pin">B</span></span>
+            <div class="row" style="grid-template-columns: 1fr auto; font-size: 14px"><span>No performance projection</span><span class="chip pass">pass</span></div>
+            <div class="row" style="grid-template-columns: 1fr auto; font-size: 14px"><span>Every figure sourced</span><span class="chip pass">pass</span></div>
+            <div class="row" style="grid-template-columns: 1fr auto; font-size: 14px"><span>Citation present</span><span class="chip pass">pass</span></div>
+            <div class="row" style="grid-template-columns: 1fr auto; font-size: 14px"><span>Regime matches count</span><span class="chip pass">pass</span></div>
+            <div class="row" style="grid-template-columns: 1fr auto; font-size: 14px"><span>Disclosure present</span><span class="chip pass">pass</span></div>
+          </div>
+        </div>
+        <div class="row" style="grid-template-columns: auto auto auto 1fr"><span class="btn primary">Approve</span><span class="btn">Return with comment</span><span class="btn">Block</span><span class="sub">A failing check disables Approve <span class="pin">C</span></span></div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+(function () {
+  const S = {
+    1: { name: "Pipeline and prospecting", state: "Designed", job: "Find the next relationship worth an introduction, using the same ranking discipline as the book.", jd: "Insights and analytics", beat: "Not in the demo. Parked: not the constraint on conversion (PRD §9.1).",
+         notes: { A: "Held-away assets are the primary prospecting signal UBS names publicly for STAAT.", B: "The path in is a person, so the output is an introduction the advisor drafts and sends." } },
+    2: { name: "Onboarding and re-papering", state: "Designed", job: "Close every open document item without the advisor chasing it.", jd: "Advisor workflow", beat: "Not in the demo. Parked for the same reason.",
+         notes: { A: "Unsigned for more than 14 days escalates to the branch supervisor, per the illustrative procedure.", B: "Profile refresh on a 36-month cycle or a material life event.", C: "The supervisory record is a by-product of closing items, not a separate task." } },
+    3: { name: "Household advice state", state: "Build", job: "Show where one household stands against Liquidity, Longevity and Legacy, and why.", jd: "Advisor workflow", beat: "Beat 2, after the evidence.",
+         notes: { A: "Every gap carries its assumption, for example 36 months at $85K a month.", B: "Single-name at 71% of investable assets against a 25% policy.", C: "The IPS constraints the proposal engine will check, written as data." } },
+    4: { name: "Evidence and explain", state: "Build", job: "Answer 'why this household, why today' with the object the system decided with.", jd: "Chat and assistive", beat: "Beat 2 opens here; beat 3 shows the refusal.",
+         notes: { A: "The reason path is a typed array of graph nodes, not a sentence written afterwards.", B: "Every claim cites a passage with title and relative date.", C: "When nothing supports the link, Relay refuses and says what is missing. Refusal is a feature." } },
+    5: { name: "Action proposals, bounded", state: "Build", job: "Offer only actions that already satisfy this household's constraints, and show what was ruled out.", jd: "Agentic", beat: "Beat 3: the rejected candidate.",
+         notes: { A: "Rejected candidates stay on screen with the failing constraint named. Selling all lots realises short-term gains.", B: "Care-obligation evidence as structured fields: basis, reasonably available alternatives, costs compared." } },
+    6: { name: "Book triage", state: "Build", job: "Decide where to spend the morning: act, defer or dismiss, one decision per row.", jd: "Insights and analytics", beat: "Beat 2 starts here.",
+         notes: { A: "A hard daily cap, so Relay replaces a queue rather than adding one.", B: "The flagship row is an external event, a property sale, not a market view.", C: "A market-view row with no supporting evidence cannot be proposed on.", D: "Dismissal reasons flow back to the upstream engine, where precision can actually be fixed." } },
+    7: { name: "Client communications", state: "Build", job: "Turn an accepted proposal into a client note, and show which supervisory regime it falls under before it moves.", jd: "Productivity", beat: "Beat 4: the counter flips the regime.",
+         notes: { A: "Composed only from the accepted proposal, the household's figures and a cited passage.", B: "Batch is where FINRA 2210 bites: the same note to many clients.", C: "More than 25 retail investors in any 30 days is a retail communication. Persons, firm-wide, across every advisor using the note.", D: "Relay drafts; a human sends. The build enforces it: no outbound path passes the checks." } },
+    8: { name: "Servicing and operations triage", state: "Designed", job: "Route each service request to the right person with the evidence attached.", jd: "Agentic", beat: "Not in the demo. Parked for the same reason.",
+         notes: { A: "Requests are classified by type so routing is a rule, not a judgement call.", B: "Default owner is the client associate, who does most follow-through.", C: "The metric is resolution time, never throughput." } },
+    9: { name: "Supervision console", state: "Build", job: "Let the principal disposition every client-facing artifact with the same objects the advisor saw.", jd: "Control plane", beat: "Beat 4 ends here; beat 5 moves to measurement.",
+         notes: { A: "The principal sees the draft, proposal, evidence and count exactly as the advisor did.", B: "Each automated check shows pass or fail with its reason.", C: "Approve is disabled while any check fails. Every disposition writes an audit record." } },
+  };
+  const order = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const rail = document.querySelector("nav.rail");
+  const stage = document.getElementById("stage");
+
+  order.forEach((n) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.go = n;
+    b.innerHTML = `<span class="n">${n}</span><span>${S[n].name}<span class="st">${S[n].state === "Build" ? "Built" : "Designed, not built"}</span></span>`;
+    rail.appendChild(b);
+  });
+
+  function render(n) {
+    const s = S[n];
+    const i = order.indexOf(n);
+    const prev = order[(i + order.length - 1) % order.length];
+    const next = order[(i + 1) % order.length];
+    const notes = Object.entries(s.notes).map(([k, v]) => `<li><span class="pin">${k}</span><span>${v}</span></li>`).join("");
+    stage.innerHTML = `
+      <section class="surface" aria-labelledby="sh">
+        <div class="surface-head">
+          <h2 id="sh">${n}. ${s.name}</h2>
+          <span class="state ${s.state === "Build" ? "build" : ""}">${s.state === "Build" ? "Built in prototype" : "Designed, not built"}</span>
+          <div class="pager"><button type="button" data-go="${prev}">&larr; ${prev}</button><button type="button" data-go="${next}">${next} &rarr;</button></div>
+        </div>
+        <div class="frame-scroll">${document.getElementById("t" + n).innerHTML}</div>
+        <aside class="notes" aria-label="Annotations">
+          <div class="job"><h3>Job of this screen</h3><p>${s.job}</p></div>
+          <div><h3>Callouts</h3><ol class="callouts">${notes}</ol></div>
+          <dl class="meta"><dt>JD type</dt><dd>${s.jd}</dd><dt>Demo</dt><dd>${s.beat}</dd></dl>
+          <p class="hint">Dashed blue outlines are clickable and move to the next screen in the flow.</p>
+        </aside>
+      </section>`;
+    rail.querySelectorAll("button").forEach((b) => b.setAttribute("aria-current", String(+b.dataset.go === n)));
+    document.querySelectorAll(".flow button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.go === n)));
+    try { history.replaceState(null, "", "#s" + n); } catch (e) {}
+  }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-go]");
+    if (!t) return;
+    render(+t.dataset.go);
+    if (t.closest(".frame") || t.closest(".pager")) stage.scrollIntoView({ block: "start", behavior: "smooth" });
+  });
+  document.addEventListener("keydown", (e) => {
+    const t = e.target.closest && e.target.closest(".hot[data-go]");
+    if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); render(+t.dataset.go); }
+  });
+
+  const m = /^#s([1-9])$/.exec(location.hash || "");
+  render(m ? +m[1] : 6);
+})();
+</script>
