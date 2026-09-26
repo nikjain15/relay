@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "agents": [
+    {
+      "id": "communications-surveillance",
+      "name": "Communications surveillance",
+      "mission": "Read every outbound draft and inbound client message, decide the supervisory regime, and hold anything that cannot go out as written.",
+      "scope": "communication",
+      "ruleIds": ["finra-2210-regime", "finra-3110-correspondence", "sec-marketing-206-4-1", "genai-supervision-24-09", "reg-s-p-safeguards"],
+      "cadence": "on_draft",
+      "enabled": true
+    },
+    {
+      "id": "record-completeness",
+      "name": "Record completeness",
+      "mission": "Compare what the advisor says they use against what is actually captured, and name the exposure on every gap.",
+      "scope": "coverage",
+      "ruleIds": ["off-channel-gap", "sec-17a4-completeness"],
+      "cadence": "daily",
+      "enabled": true
+    },
+    {
+      "id": "recommendation-evidence",
+      "name": "Recommendation evidence",
+      "mission": "Before a recommendation is released, check the care-obligation record is complete: basis, alternatives, costs, why this client.",
+      "scope": "proposal",
+      "ruleIds": ["reg-bi-care-evidence"],
+      "cadence": "on_proposal",
+      "enabled": true
+    },
+    {
+      "id": "client-protection",
+      "name": "Client protection",
+      "mission": "Watch for exploitation indicators on specified adults, grievances that were never logged, and concentration past the household ceiling.",
+      "scope": "account",
+      "ruleIds": ["senior-investor-2165", "complaint-identification-4513", "finra-2111-suitability"],
+      "cadence": "daily",
+      "enabled": true
+    },
+    {
+      "id": "conduct",
+      "name": "Conduct",
+      "mission": "Outside business activities and private securities transactions, where the firm has switched the rule on.",
+      "scope": "account",
+      "ruleIds": ["outside-business-3270"],
+      "cadence": "weekly",
+      "enabled": true
+    }
+  ]
+}

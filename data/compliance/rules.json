@@ -1,0 +1,267 @@
+{
+  "note": "Firm baseline compliance rules, as data. The supervision console edits these at runtime and the next evaluation uses them. Advisor and client layers may enable and tighten, never disable a mandatory rule or soften one. Citations are to real rules; thresholds are the firm's choice within them.",
+  "version": 4,
+  "rules": [
+    {
+      "id": "finra-2210-regime",
+      "title": "Retail communication crossing the pre-approval threshold",
+      "authority": "FINRA",
+      "citation": "FINRA Rule 2210(a), (b)(1)",
+      "scope": "communication",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "recipientCount30d", "cmp": "gt", "param": "threshold" },
+        { "fact": "principalApproved", "cmp": "eq", "value": false }
+      ]},
+      "params": [
+        { "key": "threshold", "label": "Retail investors in a rolling 30 days", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 25, "note": "Rule 2210(a) sets 25. A firm may supervise below it; it may not supervise above it." }
+      ],
+      "evidence": ["recipientCount30d", "templateId", "channel", "regime"],
+      "finding": "This note reaches {recipientCount30d} retail investors in a rolling 30 days, over the {threshold} threshold, so it is a retail communication and needs principal approval before use.",
+      "remediation": "Route to a principal for pre-use approval, or reduce the distribution below the threshold.",
+      "confidenceFloor": 0.95,
+      "requires": ["microsoft-365", "archive"]
+    },
+    {
+      "id": "finra-3110-correspondence",
+      "title": "Correspondence not reviewed under written supervisory procedures",
+      "authority": "FINRA",
+      "citation": "FINRA Rule 3110(b), 3110.06 to .09",
+      "scope": "communication",
+      "severity": "flag",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "recipientCount30d", "cmp": "lte", "param": "threshold" },
+        { "fact": "reviewed", "cmp": "eq", "value": false },
+        { "fact": "containsRecommendation", "cmp": "eq", "value": true }
+      ]},
+      "params": [
+        { "key": "threshold", "label": "Correspondence ceiling", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 25 },
+        { "key": "sampleRate", "label": "Review sample rate for non-recommendation correspondence", "type": "number", "value": 0.1, "stricter": "higher", "min": 0, "max": 1, "note": "Correspondence is reviewed, not pre-approved. Recommendations are reviewed every time." }
+      ],
+      "evidence": ["recipientCount30d", "containsRecommendation", "channel", "clientId"],
+      "finding": "Correspondence carrying a recommendation has not been through supervisory review.",
+      "remediation": "Queue for review under the written supervisory procedures. Pre-approval is not required at this distribution.",
+      "confidenceFloor": 0.9,
+      "requires": ["microsoft-365"]
+    },
+    {
+      "id": "off-channel-gap",
+      "title": "Business conducted on an uncaptured channel",
+      "authority": "SEC",
+      "citation": "SEC Rule 17a-4; Exchange Act Section 17(a)",
+      "scope": "coverage",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "any": [
+        { "fact": "gapChannels", "cmp": "exists" },
+        { "fact": "completeness", "cmp": "lt", "param": "minCompleteness" }
+      ]},
+      "params": [
+        { "key": "minCompleteness", "label": "Minimum record completeness", "type": "number", "value": 1, "stricter": "higher", "min": 0, "max": 1, "note": "The industry has paid billions in fines for exactly this. The firm default is total coverage." }
+      ],
+      "evidence": ["gapChannels", "completeness", "advisorId"],
+      "finding": "{gapChannels} in use with nothing capturing them. Record completeness is {completeness}.",
+      "remediation": "Connect a capture source for each channel, or prohibit the channel and attest to it.",
+      "confidenceFloor": 1,
+      "requires": []
+    },
+    {
+      "id": "sec-17a4-completeness",
+      "title": "No retained copy behind a captured channel",
+      "authority": "SEC",
+      "citation": "SEC Rule 17a-4(b)(4), 17a-4(f)",
+      "scope": "coverage",
+      "severity": "flag",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "fact": "partialChannels", "cmp": "exists" },
+      "params": [],
+      "evidence": ["partialChannels", "advisorId"],
+      "finding": "{partialChannels} captured but held by no system of record. Evidence exists and retention does not.",
+      "remediation": "Point the channel at the archive, which is the 17a-4 copy, by WORM or the audit-trail alternative.",
+      "confidenceFloor": 1,
+      "requires": ["archive"]
+    },
+    {
+      "id": "reg-bi-care-evidence",
+      "title": "Recommendation without a documented reasonable basis",
+      "authority": "SEC",
+      "citation": "SEC Rule 15l-1(a)(2)(ii), care obligation",
+      "scope": "proposal",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "isRecommendation", "cmp": "eq", "value": true },
+        { "any": [
+          { "fact": "alternativesConsidered", "cmp": "lt", "param": "minAlternatives" },
+          { "fact": "costsCompared", "cmp": "eq", "value": false },
+          { "fact": "basisRecorded", "cmp": "eq", "value": false }
+        ]}
+      ]},
+      "params": [
+        { "key": "minAlternatives", "label": "Reasonably available alternatives on record", "type": "number", "value": 2, "stricter": "higher", "min": 1, "max": 10, "note": "Reg BI requires reasonably available alternatives, not all of them. The rule does not itself mandate documenting the analysis; this is the firm's evidence standard." }
+      ],
+      "evidence": ["alternativesConsidered", "costsCompared", "basisRecorded", "clientId", "productId"],
+      "finding": "Recommendation lacks complete care-obligation evidence: {alternativesConsidered} alternatives on record against a standard of {minAlternatives}.",
+      "remediation": "Complete the rationale record before release: basis, reasonably available alternatives, costs compared, why this client.",
+      "confidenceFloor": 0.95,
+      "requires": ["custodian-feed"]
+    },
+    {
+      "id": "sec-marketing-206-4-1",
+      "title": "Performance or testimonial content in advisory-capacity material",
+      "authority": "SEC",
+      "citation": "SEC Rule 206(4)-1, Advisers Act marketing rule",
+      "scope": "communication",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "any": [
+        { "fact": "containsProjection", "cmp": "eq", "value": true },
+        { "fact": "containsTestimonial", "cmp": "eq", "value": true }
+      ]},
+      "params": [],
+      "evidence": ["containsProjection", "containsTestimonial", "channel", "capacity"],
+      "finding": "Client-facing text contains performance projection or testimonial content.",
+      "remediation": "Remove it. The firm blocks projections in client-facing drafts entirely while the FINRA projections proposal is unadopted.",
+      "confidenceFloor": 0.85,
+      "requires": []
+    },
+    {
+      "id": "senior-investor-2165",
+      "title": "Possible diminished capacity or financial exploitation",
+      "authority": "FINRA",
+      "citation": "FINRA Rules 2165 and 4512(a)(1)(F)",
+      "scope": "account",
+      "severity": "flag",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "clientAge", "cmp": "gte", "param": "age" },
+        { "any": [
+          { "fact": "unusualDisbursement", "cmp": "eq", "value": true },
+          { "fact": "newThirdPartyContact", "cmp": "eq", "value": true },
+          { "fact": "trustedContactOnFile", "cmp": "eq", "value": false }
+        ]}
+      ]},
+      "params": [
+        { "key": "age", "label": "Specified adult age", "type": "number", "value": 65, "stricter": "lower", "min": 18, "max": 90, "note": "Rule 2165 defines a specified adult as 65 or older, or 18 plus with a reasonable belief of impairment." }
+      ],
+      "evidence": ["clientAge", "unusualDisbursement", "newThirdPartyContact", "trustedContactOnFile", "clientId"],
+      "finding": "Specified adult aged {clientAge} with an exploitation indicator present.",
+      "remediation": "Escalate for a hold decision under Rule 2165 and confirm a trusted contact is on file.",
+      "confidenceFloor": 0.8,
+      "requires": ["custodian-feed", "salesforce-fsc"]
+    },
+    {
+      "id": "complaint-identification-4513",
+      "title": "Unlogged client complaint",
+      "authority": "FINRA",
+      "citation": "FINRA Rule 4513",
+      "scope": "communication",
+      "severity": "flag",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "complaintLanguage", "cmp": "eq", "value": true },
+        { "fact": "complaintLogged", "cmp": "eq", "value": false }
+      ]},
+      "params": [],
+      "evidence": ["complaintLanguage", "complaintExcerpt", "clientId", "channel"],
+      "finding": "Client message reads as a grievance and no complaint record exists.",
+      "remediation": "Log it in the complaint register and route per the firm's complaint procedure.",
+      "confidenceFloor": 0.7,
+      "requires": ["microsoft-365"]
+    },
+    {
+      "id": "finra-2111-suitability",
+      "title": "Holdings drifted outside the stated profile",
+      "authority": "FINRA",
+      "citation": "FINRA Rule 2111",
+      "scope": "account",
+      "severity": "flag",
+      "mandatory": false,
+      "enabled": true,
+      "when": { "fact": "concentrationPct", "cmp": "gt", "param": "maxConcentration" },
+      "params": [
+        { "key": "maxConcentration", "label": "Single-name concentration ceiling", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 100, "note": "A client IPS may set a tighter ceiling. It may not set a looser one." }
+      ],
+      "evidence": ["concentrationPct", "instrument", "clientId"],
+      "finding": "{instrument} is {concentrationPct} percent of investable assets against a ceiling of {maxConcentration}.",
+      "remediation": "Document the rationale for holding, or propose a bounded reduction from the approved shelf.",
+      "confidenceFloor": 1,
+      "requires": ["custodian-feed"]
+    },
+    {
+      "id": "reg-s-p-safeguards",
+      "title": "Client identifying data on an unapproved channel",
+      "authority": "SEC",
+      "citation": "Regulation S-P, as amended 2024",
+      "scope": "communication",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "containsSensitiveData", "cmp": "eq", "value": true },
+        { "fact": "channelApproved", "cmp": "eq", "value": false }
+      ]},
+      "params": [],
+      "evidence": ["containsSensitiveData", "channel", "clientId"],
+      "finding": "Client identifying information sent over an unapproved channel.",
+      "remediation": "Recall is not possible. Record the incident and assess notification under the amended safeguards rule.",
+      "confidenceFloor": 0.85,
+      "requires": []
+    },
+    {
+      "id": "genai-supervision-24-09",
+      "title": "Generated client-facing text released without grounding",
+      "authority": "FINRA",
+      "citation": "FINRA Regulatory Notice 24-09; 2026 Annual Regulatory Oversight Report, GenAI",
+      "scope": "communication",
+      "severity": "block",
+      "mandatory": true,
+      "enabled": true,
+      "when": { "all": [
+        { "fact": "machineDrafted", "cmp": "eq", "value": true },
+        { "any": [
+          { "fact": "unsourcedFigures", "cmp": "gt", "value": 0 },
+          { "fact": "citationCount", "cmp": "lt", "param": "minCitations" }
+        ]}
+      ]},
+      "params": [
+        { "key": "minCitations", "label": "Minimum citations in generated client text", "type": "number", "value": 1, "stricter": "higher", "min": 0, "max": 10, "note": "Existing rules apply to AI tools. Grounding is the firm's evidence that they did." }
+      ],
+      "evidence": ["machineDrafted", "unsourcedFigures", "citationCount", "modelVersion", "promptVersion"],
+      "finding": "Machine-drafted client text with {unsourcedFigures} unsourced figures and {citationCount} citations.",
+      "remediation": "Block release. Every quantitative claim must trace to a cited passage or a computed value.",
+      "confidenceFloor": 1,
+      "requires": []
+    },
+    {
+      "id": "outside-business-3270",
+      "title": "Undisclosed outside business activity signal",
+      "authority": "FINRA",
+      "citation": "FINRA Rules 3270 and 3280",
+      "scope": "communication",
+      "severity": "note",
+      "mandatory": false,
+      "enabled": false,
+      "when": { "all": [
+        { "fact": "outsideBusinessLanguage", "cmp": "eq", "value": true },
+        { "fact": "obaOnFile", "cmp": "eq", "value": false }
+      ]},
+      "params": [],
+      "evidence": ["outsideBusinessLanguage", "advisorId", "channel"],
+      "finding": "Message suggests an outside business activity with nothing on file.",
+      "remediation": "Confirm with the advisor and collect a disclosure if one is owed.",
+      "confidenceFloor": 0.6,
+      "requires": ["microsoft-365"]
+    }
+  ]
+}
