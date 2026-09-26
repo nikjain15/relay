@@ -11,19 +11,22 @@ inside situations UBS and public sources describe. No real client or advisor dat
 
 | File | What it holds |
 |---|---|
-| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, open tasks, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
+| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, open tasks, paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
 | `advisors.json` | Advisor A and Advisor B, with sources and their day for the walkthrough |
 | `shelf.json` | The approved products, with plain-English names used in client notes |
 | `documents.json` | The illustrative research notes, one-pagers and procedures that evidence cites. Relative dates only |
 | `book.json` | Other households in Advisor A's book, for the batch-send demo |
 | `communications.json` | The prototype's fixed "today" and earlier sends of the demo note by a second advisor |
+| `prospects.json` | Prospects per advisor: signal, path in, estimated assets, fit, sources |
+| `service-requests.json` | Incoming client requests: text, channel, hours since received |
 | `funnel.json` | Synthetic conversion funnel for the measurement page |
 | `generated/walkthrough.json` | **Generated. Do not edit.** Built from the files above by the real engines |
 
 ## Fetching a client
 
 `getClientFile(id)` in `lib/data/index.ts` returns the grounding bundle for one client: the full record,
-their advisor, their opportunities, and the full text of every document those opportunities cite.
+their advisor, their opportunities, the full text of every document those opportunities cite, their
+paperwork and their open service requests.
 Retrieval and any chat about a client should be grounded in that bundle and nothing else.
 
 ```ts

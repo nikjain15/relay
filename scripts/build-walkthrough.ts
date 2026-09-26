@@ -2,7 +2,10 @@
 // the mockup shows exactly what the prototype computes. Never hand-edit the
 // output: edit data/, then run `npm run data:build`. `--check` fails if stale.
 import { readFileSync, writeFileSync } from "node:fs";
-import { CLIENTS, ADVISORS_DATA, SHELF_DATA, getClientFile, toHousehold } from "@/lib/data";
+import { CLIENTS, ADVISORS_DATA, SHELF_DATA, PROSPECTS, SERVICE_REQUESTS, getClientFile, toHousehold } from "@/lib/data";
+import { rankProspects, prospectScore, introDraft, PATH_LABEL } from "@/lib/prospecting/rank";
+import { paperStatus, reminderDraft } from "@/lib/onboarding/status";
+import { triage } from "@/lib/servicing/classify";
 import { evaluateAll } from "@/lib/constraints/evaluate";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { compose } from "@/lib/drafting/compose";
@@ -108,7 +111,26 @@ const stories = CLIENTS.filter((c) => c.walkthrough)
     };
   });
 
-const out = JSON.stringify({ generatedFrom: "data/ via scripts/build-walkthrough.ts; do not hand-edit", stories }, null, 2) + "\n";
+const nameOf = (id: string) => {
+  const c = CLIENTS.find((x) => x.id === id)!;
+  return c.persons.length > 1 ? `${c.name} family` : c.persons[0].name;
+};
+const journey = {
+  prospects: rankProspects(PROSPECTS, "adv-a").map((p) => ({
+    label: p.label, signal: p.signal, path: PATH_LABEL[p.path], pathDetail: p.pathDetail,
+    estimated: usd(p.estimatedUsd), score: prospectScore(p), draft: introDraft(p), groundedIn: p.groundedIn,
+  })),
+  paperwork: CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, ...paperStatus(w) })))
+    .filter((r) => r.status !== "signed")
+    .sort((a, b) => Number(b.status === "escalated") - Number(a.status === "escalated") || b.daysOpen - a.daysOpen)
+    .map(({ c, w, status, daysOpen }) => ({ client: nameOf(c.id), form: w.form, status, daysOpen, note: w.note ?? "", draft: reminderDraft(c, w) })),
+  service: triage(SERVICE_REQUESTS).map((r) => ({
+    client: nameOf(r.clientId), channel: r.channel, text: r.text, kind: r.kind, route: r.route,
+    targetHours: r.targetHours, hoursLeft: r.hoursLeft, overdue: r.overdue, callbackRequired: r.callbackRequired,
+  })),
+};
+
+const out = JSON.stringify({ generatedFrom: "data/ via scripts/build-walkthrough.ts; do not hand-edit", stories, journey }, null, 2) + "\n";
 if (process.argv.includes("--check")) {
   let cur = "";
   try { cur = readFileSync(OUT, "utf8"); } catch {}

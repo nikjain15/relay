@@ -111,6 +111,17 @@
     "Introduce estate attorney for the grandchildren's trust",
     "Review the stock trading plan before next quarter"
   ],
+  "paperwork": [
+    {
+      "form": "Stock trading plan (10b5-1) copy",
+      "requestedDay": -60,
+      "signedDay": -55
+    },
+    {
+      "form": "Grandchildren's trust account opening",
+      "requestedDay": -4
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-renner-property",

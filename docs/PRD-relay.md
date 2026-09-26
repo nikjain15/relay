@@ -240,19 +240,20 @@ shipped, or improving a metric the team already wins on, costs a quarter.
 
 ### 4.1 Surface map
 
-Nine surfaces span the advisor journey. Six are specified for build; three are specified but not built
-in the prototype, and are labelled as such in the product.
+Nine surfaces span the advisor journey, all built in the prototype (the last three were added in build
+spec v2.1). Roadmap priority is separate from build state: §9.1 still sequences releases by supervisory
+surface.
 
 | # | Surface | JD capability type | Build state |
 |---|---|---|---|
-| 1 | Pipeline and prospecting | Insights and analytics | Designed |
-| 2 | Onboarding and re-papering | Advisor workflow | Designed |
+| 1 | Pipeline and prospecting | Insights and analytics | **Build** |
+| 2 | Onboarding and re-papering | Advisor workflow | **Build** |
 | 3 | Household advice state (Wealth Way) | Advisor workflow | **Build** |
 | 4 | Evidence and explain | Chat and assistive | **Build** |
 | 5 | Action proposals, bounded | Agentic | **Build** |
 | 6 | Book triage, opportunity to household | Insights and analytics | **Build** |
 | 7 | Client communications and review packs | Productivity | **Build** |
-| 8 | Servicing and operations triage | Agentic | Designed |
+| 8 | Servicing and operations triage | Agentic | **Build** |
 | 9 | Supervision and control console | Control plane | **Build** |
 
 ### 4.2 Coverage against the JD's four named types

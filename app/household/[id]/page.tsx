@@ -6,6 +6,9 @@ import { investableUsd, singleNamePct } from "@/lib/household-math";
 import { usd, pct } from "@/lib/format";
 import type { Goal } from "@/lib/types";
 import { constraintText } from "@/lib/constraint-text";
+import { getClientFile } from "@/lib/data";
+import { paperStatus } from "@/lib/onboarding/status";
+import { classify } from "@/lib/servicing/classify";
 import { PageTitle, Pill, Section, td, th } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -99,6 +102,82 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
           </p>
         </Section>
       </div>
+      {(() => {
+        const f = getClientFile(h.id)!;
+        const ago = (d: number) => (d === 0 ? "today" : `${-d} days ago`);
+        return (
+          <div className="grid max-w-6xl gap-6 md:grid-cols-2">
+            <Section title="People">
+              <ul className="space-y-0.5">
+                {h.persons.map((p) => (
+                  <li key={p.id}>
+                    {p.name}
+                    {p.age ? `, ${p.age}` : ""} <span className="text-neutral-500">({p.role})</span>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+            <Section title="Contact history and team notes">
+              <ul className="space-y-1">
+                {f.client.contactHistory.map((e, i) => (
+                  <li key={i}>
+                    <strong>{e.channel}</strong>, {ago(e.day)}: {e.summary}
+                  </li>
+                ))}
+                {f.client.notes.map((n, i) => (
+                  <li key={`n${i}`} className="rounded bg-amber-50 px-2 py-1 text-amber-900">
+                    <strong>{n.from}</strong>, {ago(n.day)}: {n.text}
+                  </li>
+                ))}
+              </ul>
+            </Section>
+            <Section title="Open tasks">
+              <ul className="list-inside list-disc space-y-0.5">
+                {f.client.tasks.map((x) => (
+                  <li key={x}>{x}</li>
+                ))}
+              </ul>
+            </Section>
+            <Section title="Paperwork">
+              <ul className="space-y-0.5">
+                {f.paperwork.map((w) => {
+                  const s = paperStatus(w);
+                  return (
+                    <li key={w.form}>
+                      <Pill tone={s.status === "escalated" ? "fail" : s.status === "signed" ? "pass" : "neutral"}>{s.status}</Pill> {w.form}
+                      {s.status !== "signed" && <span className="text-neutral-500"> ({s.daysOpen} days open)</span>}
+                    </li>
+                  );
+                })}
+              </ul>
+              <Link className="text-xs text-accent underline" href="/onboarding">All paperwork</Link>
+            </Section>
+            <Section title="Service requests">
+              {f.serviceRequests.length ? (
+                <ul className="space-y-1">
+                  {f.serviceRequests.map((r) => (
+                    <li key={r.id}>
+                      <Pill tone={classify(r).callbackRequired ? "fail" : "accent"}>{classify(r).kind}</Pill> &ldquo;{r.text}&rdquo;
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-neutral-500">None open.</p>
+              )}
+              <Link className="text-xs text-accent underline" href="/servicing">All service requests</Link>
+            </Section>
+            <Section title="Documents this client's view is grounded in">
+              <ul className="list-inside list-disc space-y-0.5 text-xs">
+                {f.documents.map((d) => (
+                  <li key={d.id}>
+                    {d.title} <span className="text-neutral-500">({d.kind}, prototype corpus day {d.day})</span>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          </div>
+        );
+      })()}
       <Section title="Composite persona: built from">
         <ul className="space-y-0.5 text-xs">
           {h.groundedIn.map((s) => (

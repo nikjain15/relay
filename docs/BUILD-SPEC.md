@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.0, 2026-09-26. **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.1, 2026-09-26 (v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (job-search D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -8,7 +8,7 @@ file. A decision not written here is not made; an engineer who has to invent one
 
 ## 1. Scope of the prototype
 
-Six surfaces built and working against fixtures, three designed and visibly labelled as not built
+All nine surfaces built and working against the client data in `data/`, plus a journey home page and a measurement page (the three that were designed-only in v2.0 are built in v2.1)
 (PRD §4.1). One measurement surface. **No model calls anywhere.** Where the PRD says "the model composes
 language," the prototype composes from approved template fragments deterministically, and every screen
 says so. This keeps the demo reproducible and keeps the claim honest: the prototype shows the control
@@ -29,17 +29,28 @@ resets on reload, which is what a demo wants.
 | 7 | Client communications | `/communications` | **Build** | Draft composed from an approved proposal; batch selector across the book; **recipient counter in persons, firm-wide, with the regime shown before submit** |
 | 9 | Supervision console | `/supervision` | **Build** | Queue items with draft, rationale, evidence, recipient count and regime, per-check pass or fail; approve, return, block |
 | - | Measurement | `/measurement` | **Build** | Conversion funnel (synthetic), zero-tolerance gate list with live pass or fail from the test suite's same functions |
-| 1 | Pipeline and prospecting | `/designed/pipeline` | Designed | One-paragraph description, labelled "Designed, not built" |
-| 2 | Onboarding and re-papering | `/designed/onboarding` | Designed | Same |
-| 8 | Servicing and operations triage | `/designed/servicing` | Designed | Same |
+| 1 | Pipeline and prospecting | `/pipeline` | **Build** | Prospects ranked by warmth of the path in, fit to the advisor's practice and size; the signal behind each (held-away assets, expected liquidity, rollover); a drafted introduction request the advisor sends |
+| 2 | Onboarding and re-papering | `/onboarding` | **Build** | Every open form per client with status computed by rule: signed, due, or **escalated after 14 days unsigned**; a drafted reminder; the supervisory record written as items close |
+| 8 | Servicing and operations triage | `/servicing` | **Build** | Incoming requests classified by rule, routed to the right person with a response-time target, overdue shown; **money movement requires a callback to a number on file before release**; a drafted reply the team sends |
+| - | Advisor journey | `/` | **Build** | The whole journey on one page, before, during and after the daily work, each stage with a live count and a link |
 
-`/` redirects to `/triage`. A left navigation lists all ten, with the three designed ones visibly
+`/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
 marked. Every page carries the banner "Illustrative prototype. Synthetic data. No model calls."
 
 **Layout, all Build surfaces:** dense tables, 13px base, tabular numerals for money and percentages,
 one accent colour from `--accent`, no cards-with-shadows. Evidence is one click from any row (PRD §6.1
 principle 2). WCAG 2.2 AA: every interactive control is a real `button` or link with a visible focus
 ring, and state is never conveyed by colour alone (pass and fail carry text).
+
+### 2.1 Depth added in v2.1
+
+| Surface | Added |
+|---|---|
+| Triage | Advisor switcher (A or B); the advisor's day (meetings, overnight alerts); last contact per row |
+| Household | People with ages; contact history; team notes; open tasks; paperwork status; service requests; the grounding bundle of documents |
+| Evidence | The client's contact history and team notes beside the reason path |
+| Proposals | The amount arithmetic: (target minus current) months times monthly spending |
+| Communications | Talking points for the call before the note |
 
 ## 3. Data model
 
@@ -92,6 +103,12 @@ All in `data/` as JSON (one file per client; see `data/README.md`), loaded and v
 - The batch demo cohort reaches exactly 26 persons from 13 two-person households with the second
   advisor's prior sends excluded, and exceeds 25 earlier when they are included.
 
+### 5.1 Data added in v2.1
+
+- `data/prospects.json`: prospects for each advisor with the signal, path in, estimated assets and a source.
+- `paperwork` in each client file: form, requested day, signed day if signed.
+- `data/service-requests.json`: request text, client, received day.
+
 ## 6. Deterministic modules
 
 | Module | Responsibility | May import a model client |
@@ -101,6 +118,9 @@ All in `data/` as JSON (one file per client; see `data/README.md`), loaded and v
 | `lib/recipients/count.ts` | Persons, firm-wide, 30 calendar days, regime (R-12) | No (enforced) |
 | `lib/policy/checks.ts` | Zero-tolerance checks on a draft: no performance projection language, every figure in the draft appears in its source set, at least one citation, regime recorded matches counter | No (enforced) |
 | `lib/evidence/retrieve.ts` | Passages for an opportunity's `evidenceDocIds`; returns `{ refused: true, missing }` when none resolve | n/a |
+| `lib/prospecting/rank.ts` | Score = warmth of path (existing relationship 3, referral 3, event 2, event only 1) + fit to the practice (0 to 2) + size band (0 to 2); drafted introduction request | n/a |
+| `lib/onboarding/status.ts` | Signed, due, or escalated when unsigned for more than 14 days (the illustrative procedure); counts open items per client | n/a |
+| `lib/servicing/classify.ts` | Keyword rules to a class; route and response-time target per class; overdue flag; money movement flagged for callback verification | n/a |
 | `lib/drafting/compose.ts` | Composes the client note **only** from the approved proposal, the household's figures and the cited passage, using fixed fragments | n/a in prototype |
 
 ## 7. Demo click path
@@ -131,7 +151,7 @@ Dependency-ordered; each step's tests pass before the next starts.
 1. `lib/types.ts`, then fixtures, with the fixture tests.
 2. Constraint engine and ranking, with tests.
 3. Evidence, policy checks, compose, with tests.
-4. Layout and navigation, designed-not-built pages.
+4. Layout and navigation (v2.1: journey page, grouped navigation).
 5. Triage, evidence, household, proposal.
 6. Communications with the counter, supervision, measurement.
 

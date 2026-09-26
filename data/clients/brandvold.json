@@ -95,6 +95,16 @@
     "Cross-border tax review of legacy UK funds",
     "Map deferred compensation vesting dates"
   ],
+  "paperwork": [
+    {
+      "form": "US tax status confirmation",
+      "requestedDay": -9
+    },
+    {
+      "form": "Foreign pension disclosure",
+      "requestedDay": -16
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-brandvold-held-away",

@@ -84,6 +84,13 @@
     "Confirm the monthly spending figure",
     "Schedule the annual check-in"
   ],
+  "paperwork": [
+    {
+      "form": "Address change confirmation",
+      "requestedDay": -4,
+      "signedDay": -3
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-pell-liquidity",

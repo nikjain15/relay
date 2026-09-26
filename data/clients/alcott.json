@@ -102,6 +102,16 @@
     "Confirm this year's withdrawal amount",
     "Update beneficiary forms"
   ],
+  "paperwork": [
+    {
+      "form": "Beneficiary designation update",
+      "requestedDay": -30
+    },
+    {
+      "form": "Required withdrawal election",
+      "requestedDay": -2
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-alcott-liquidity",

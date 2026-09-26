@@ -96,6 +96,21 @@
     "Invite both beneficiaries to a next-generation session",
     "Refresh client information for two beneficiaries"
   ],
+  "paperwork": [
+    {
+      "form": "Client information refresh: T. Okafor-Lind",
+      "requestedDay": -5
+    },
+    {
+      "form": "Client information refresh: N. Okafor-Lind",
+      "requestedDay": -5
+    },
+    {
+      "form": "Trust certification",
+      "requestedDay": -400,
+      "signedDay": -390
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-okafor-life",

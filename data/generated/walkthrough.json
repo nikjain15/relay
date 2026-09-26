@@ -1018,5 +1018,249 @@
         ]
       }
     }
-  ]
+  ],
+  "journey": {
+    "prospects": [
+      {
+        "label": "Co-founder of a Series D software company",
+        "signal": "Late-stage funding round; a sale or IPO likely in 12 to 24 months",
+        "path": "Referral",
+        "pathDetail": "M. Renner's co-founder; the Renners offered an introduction",
+        "estimated": "$40M",
+        "score": 7,
+        "draft": "Draft for you to send: \"Thank you for offering to introduce me. Would a short call in the next two weeks suit? I work with clients around late-stage funding round.\"",
+        "groundedIn": [
+          {
+            "label": "Late-stage business funding as a signal UBS's AI flags",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+          },
+          {
+            "label": "UBS New York founder practices (Founders Group)",
+            "url": "https://advisors.ubs.com/founders/"
+          }
+        ]
+      },
+      {
+        "label": "T. Okafor-Lind, trust beneficiary turning 25",
+        "signal": "Trust payout rule starts this month; next generation not engaged",
+        "path": "Existing relationship",
+        "pathDetail": "Beneficiary of the Okafor-Lind trust, not yet engaged with the team",
+        "estimated": "$9M",
+        "score": 6,
+        "draft": "Draft for you to send: \"It would be good to meet and walk through what the family has in place, with no agenda beyond that.\"",
+        "groundedIn": [
+          {
+            "label": "UBS families and foundations practice: next-generation education",
+            "url": "https://advisors.ubs.com/ffig/"
+          }
+        ]
+      },
+      {
+        "label": "CFO at a public company",
+        "signal": "About $6M held at another firm; stock grants vesting",
+        "path": "Referral",
+        "pathDetail": "Referred by the Thornburys' accountant",
+        "estimated": "$6M",
+        "score": 6,
+        "draft": "Draft for you to send: \"Thank you for offering to introduce me. Would a short call in the next two weeks suit? I work with clients around about $6m held at another firm.\"",
+        "groundedIn": [
+          {
+            "label": "Assets held at other firms as a UBS AI signal (Financial Planning)",
+            "url": "https://www.financial-planning.com/news/ubs-turns-to-ai-to-gain-wallet-share-find-new-clients"
+          }
+        ]
+      },
+      {
+        "label": "Surgeon retiring next year",
+        "signal": "401(k) of about $2.4M eligible to roll over",
+        "path": "Met at an event",
+        "pathDetail": "Attended the team's retirement income seminar",
+        "estimated": "$3M",
+        "score": 4,
+        "draft": "Draft for you to send: \"Thank you for coming to the seminar. Happy to look at your options in a 30-minute call.\"",
+        "groundedIn": [
+          {
+            "label": "SEC staff bulletin on account and rollover recommendations",
+            "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
+          }
+        ]
+      },
+      {
+        "label": "Dentist selling a group practice",
+        "signal": "Practice sale announced",
+        "path": "Signal only, no connection",
+        "pathDetail": "No connection yet",
+        "estimated": "$4.5M",
+        "score": 3,
+        "draft": "No warm path yet. Estimated $4.5M. Ask your clients and centers of influence for an introduction before any outreach.",
+        "groundedIn": [
+          {
+            "label": "Business sale as a liquidity event (UBS Entrepreneurs Group)",
+            "url": "https://advisors.ubs.com/entrepreneursgroup/"
+          }
+        ]
+      }
+    ],
+    "paperwork": [
+      {
+        "client": "Alcott family",
+        "form": "Beneficiary designation update",
+        "status": "escalated",
+        "daysOpen": 30,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi R. Alcott, a quick reminder that the beneficiary designation update is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "D. Vasquez-Hale",
+        "form": "401(k) rollover form",
+        "status": "escalated",
+        "daysOpen": 21,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi D. Vasquez-Hale, a quick reminder that the 401(k) rollover form is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "E. Brandvold",
+        "form": "Foreign pension disclosure",
+        "status": "escalated",
+        "daysOpen": 16,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi E. Brandvold, a quick reminder that the foreign pension disclosure is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "E. Brandvold",
+        "form": "US tax status confirmation",
+        "status": "due",
+        "daysOpen": 9,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi E. Brandvold, a quick reminder that the us tax status confirmation is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Okafor-Lind family",
+        "form": "Client information refresh: T. Okafor-Lind",
+        "status": "due",
+        "daysOpen": 5,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi A. Okafor-Lind, a quick reminder that the client information refresh: t. okafor-lind is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Okafor-Lind family",
+        "form": "Client information refresh: N. Okafor-Lind",
+        "status": "due",
+        "daysOpen": 5,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi A. Okafor-Lind, a quick reminder that the client information refresh: n. okafor-lind is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Renner family",
+        "form": "Grandchildren's trust account opening",
+        "status": "due",
+        "daysOpen": 4,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi M. Renner, a quick reminder that the grandchildren's trust account opening is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "D. Vasquez-Hale",
+        "form": "Rollover recommendation record",
+        "status": "due",
+        "daysOpen": 3,
+        "note": "Drafted; advisor to review before it is sent",
+        "draft": "Draft for you to send: \"Hi D. Vasquez-Hale, a quick reminder that the rollover recommendation record is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Alcott family",
+        "form": "Required withdrawal election",
+        "status": "due",
+        "daysOpen": 2,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi R. Alcott, a quick reminder that the required withdrawal election is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Thornbury family",
+        "form": "Standing wire instructions for capital calls",
+        "status": "due",
+        "daysOpen": 1,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi K. Thornbury, a quick reminder that the standing wire instructions for capital calls is still waiting for your signature. I can walk you through it on a short call.\""
+      }
+    ],
+    "service": [
+      {
+        "client": "Thornbury family",
+        "channel": "Email from the client's CFO",
+        "text": "Please wire $1.2M to the fund for the capital call on the 15th.",
+        "kind": "Money movement",
+        "route": "Advisor, then operations",
+        "targetHours": 4,
+        "hoursLeft": 2,
+        "overdue": false,
+        "callbackRequired": true
+      },
+      {
+        "client": "E. Brandvold",
+        "channel": "Phone",
+        "text": "Can you get the transfer value of my UK pension moved here?",
+        "kind": "Transfer in",
+        "route": "Advisor and wealth strategist",
+        "targetHours": 72,
+        "hoursLeft": -8,
+        "overdue": true,
+        "callbackRequired": false
+      },
+      {
+        "client": "Alcott family",
+        "channel": "Email",
+        "text": "Set up this year's required withdrawal, paid monthly.",
+        "kind": "Distribution set-up",
+        "route": "Client service associate",
+        "targetHours": 48,
+        "hoursLeft": -4,
+        "overdue": true,
+        "callbackRequired": false
+      },
+      {
+        "client": "D. Vasquez-Hale",
+        "channel": "Email",
+        "text": "What happens to my old 401(k) if I don't sign the form yet?",
+        "kind": "Question",
+        "route": "Advisor",
+        "targetHours": 24,
+        "hoursLeft": -2,
+        "overdue": true,
+        "callbackRequired": false
+      },
+      {
+        "client": "Renner family",
+        "channel": "Email",
+        "text": "Our accountant needs last year's tax documents.",
+        "kind": "Documents",
+        "route": "Client service associate",
+        "targetHours": 24,
+        "hoursLeft": 4,
+        "overdue": false,
+        "callbackRequired": false
+      },
+      {
+        "client": "Okafor-Lind family",
+        "channel": "Phone",
+        "text": "Please change the primary beneficiary on the trust account to N. Okafor-Lind.",
+        "kind": "Beneficiary change",
+        "route": "Client service associate",
+        "targetHours": 48,
+        "hoursLeft": 18,
+        "overdue": false,
+        "callbackRequired": false
+      },
+      {
+        "client": "C. Pell",
+        "channel": "Callback queue",
+        "text": "Please update my mailing address.",
+        "kind": "Account details",
+        "route": "Service team",
+        "targetHours": 24,
+        "hoursLeft": 20,
+        "overdue": false,
+        "callbackRequired": false
+      }
+    ]
+  }
 }

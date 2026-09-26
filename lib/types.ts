@@ -213,12 +213,42 @@ export interface Walkthrough {
   afterApproval: string[];
 }
 
+export interface PaperworkItem {
+  form: string;
+  requestedDay: number;
+  signedDay?: number;
+  note?: string;
+}
+
+export interface Prospect {
+  id: string;
+  advisorId: string;
+  label: string;
+  path: "existing" | "referral" | "event" | "signal";
+  pathDetail: string;
+  signal: string;
+  estimatedUsd: number;
+  /** Fit to the advisor's practice, 0 to 2. */
+  fit: number;
+  lastTouchDays: number | null;
+  groundedIn: Source[];
+}
+
+export interface ServiceRequest {
+  id: string;
+  clientId: string;
+  receivedHoursAgo: number;
+  channel: string;
+  text: string;
+}
+
 /** One client's complete record, as stored in data/clients/<id>.json. */
 export interface ClientFile extends Household {
   advisorId: string;
   contactHistory: ContactEvent[];
   notes: TeamNote[];
   tasks: string[];
+  paperwork: PaperworkItem[];
   opportunities: Opportunity[];
   walkthrough?: Walkthrough;
 }
