@@ -122,6 +122,21 @@ describe("engine", () => {
     expect(v.requiresHuman).toBe(true);
   });
 
+  it("judges a rule only on the facts it read", () => {
+    const p = resolvePolicy([]);
+    const suitability = activeRules(p).find((r) => r.id === "finra-2111-suitability")!;
+    // An inferred fact belonging to a different rule must not drag this verdict
+    // under its floor: the finding would name no fact this rule uses.
+    const v = evaluateRule(suitability, {
+      facts: { concentrationPct: 10, instrument: "X", clientId: "c", unusualDisbursement: false },
+      availableConnectors: ALL_CONNECTORS,
+      factConfidence: { unusualDisbursement: 0.7 },
+    });
+    expect(v.outcome).toBe("clear");
+    expect(v.confidence).toBe(1);
+    expect(v.requiresHuman).toBe(false);
+  });
+
   it("separates blocking from flagged and reports overall confidence", () => {
     const p = resolvePolicy([]);
     const f = runPolicy(p, {

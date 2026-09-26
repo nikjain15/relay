@@ -4,6 +4,7 @@ import { BASELINE, resolvePolicy } from "@/lib/compliance/policy";
 import { accountFacts, communicationFacts, coverageFacts, proposalFacts, INFERRED } from "@/lib/compliance/facts";
 import { agentsFrom, appendEdit, changeLog, editsAsOf, policyFrom, SEED_EDITS, toLayers, type RuleEdit } from "@/lib/compliance/store";
 import { coverageFor } from "@/lib/connectors/coverage";
+import { sweep, connectedIds } from "@/lib/compliance/sweep";
 import { CLIENTS, CONNECTORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 
 const ALL = ["microsoft-365", "archive", "custodian-feed", "salesforce-fsc", "zoom", "compliant-texting", "esign"];
@@ -206,5 +207,67 @@ describe("the change log is the state", () => {
 
   it("every seeded edit gives a reason", () => {
     for (const e of SEED_EDITS) expect(e.reason.length, e.id).toBeGreaterThan(20);
+  });
+});
+
+describe("the standing sweep", () => {
+  const policy = resolvePolicy([]);
+
+  it("finds the specified-adult case nobody opened", () => {
+    const s = sweep("adv-a", policy, CONNECTORS_DATA.connections);
+    expect(s.accountsScanned).toBeGreaterThan(0);
+    const senior = s.cases.find((c) => c.ruleId === "senior-investor-2165");
+    expect(senior).toBeDefined();
+    // The oldest holder on that household is 79 and a third-party interest changed.
+    expect(senior!.finding).toContain("79");
+    expect(senior!.citation).toContain("2165");
+    expect(senior!.disposition).toBe("pending");
+  });
+
+  it("covers record completeness in the same sweep", () => {
+    const s = sweep("adv-a", policy, CONNECTORS_DATA.connections);
+    expect(s.cases.some((c) => c.ruleId === "off-channel-gap")).toBe(true);
+  });
+
+  it("reports a missing connector instead of clearing silently", () => {
+    const none: typeof CONNECTORS_DATA.connections = [];
+    const s = sweep("adv-a", policy, none);
+    expect(s.blockedBy.length).toBeGreaterThan(0);
+    expect(s.cases.some((c) => c.reason === "cannot_evaluate")).toBe(true);
+  });
+
+  it("a tightened threshold changes what the sweep raises, with no rebuild", () => {
+    const loose = sweep("adv-a", policyFrom([]), CONNECTORS_DATA.connections);
+    const tight = sweep(
+      "adv-a",
+      policyFrom([
+        {
+          id: "t-1",
+          at: "2026-09-26T09:00:00Z",
+          actor: "Test",
+          target: "rule",
+          layer: "firm",
+          layerId: "firm",
+          ruleId: "finra-2111-suitability",
+          field: "maxConcentration",
+          from: "25",
+          to: "5",
+          reason: "Test tightening",
+        },
+      ]),
+      CONNECTORS_DATA.connections,
+    );
+    // Every finding the sweep raises now cites the new ceiling, from the same
+    // records, with nothing rebuilt or redeployed.
+    const cited = (s: typeof loose) => s.cases.filter((c) => c.ruleId === "finra-2111-suitability").map((c) => c.finding);
+    expect(cited(loose).length).toBeGreaterThan(0);
+    expect(cited(loose).every((f) => f.includes("ceiling of 25"))).toBe(true);
+    expect(cited(tight).every((f) => f.includes("ceiling of 5"))).toBe(true);
+  });
+
+  it("only sweeps this advisor's book", () => {
+    const a = sweep("adv-a", policy, CONNECTORS_DATA.connections);
+    const b = sweep("adv-b", policy, CONNECTORS_DATA.connections);
+    expect(a.accountsScanned + b.accountsScanned).toBe(CLIENTS.length);
   });
 });
