@@ -1,0 +1,17 @@
+# Relay decisions
+
+Append-only. Relay-local decisions use the **R-** sequence. Job-search decisions **D-49 to D-76** live in
+`nikjain15/nik-jain-jobos` `DECISIONS.md`, stay binding, and are not restated here.
+
+**R-01 to R-08 were lost.** They were written in a session that could not create this repository and
+committed them only inside an ephemeral container. Their content survives only where the job-search
+repo describes it (commit `281aed5`, D-71 to D-73, and the third audit). **Numbering resumes at R-09**
+so that nothing collides if a copy of the original R-01 to R-08 ever resurfaces.
+
+| # | Decision | Notes |
+|---|---|---|
+| **R-09** | **This repository was rebuilt on 2026-09-26 from the last reachable Relay documents, PRD v0.3, not from the lost v1.0** | The v1.0 PRD, `ARCHITECTURE.md`, `BUILD-SPEC.md` and the five diagrams were never pushed and are not reconstructed here: rewriting them from memory would produce a confident second version nobody can check. If the original bundle turns up, push it to a branch and reconcile; do not overwrite `main` with it. Source of the rebuild: `nik-jain-jobos` commit `25e49e3` |
+| **R-10** | **The opening does not divide the two published STAAT figures. It sets volume against preparation time and asks for the conversion in between** | Third audit, Finding 1. v0.3's "11 to 22 seconds of saved preparation per opportunity" was correct arithmetic over two numbers that measure different things: the hours come from meeting briefings. To the engine's builder it read as a verdict on the engine, against D-58. Reversible: v0.3 is in git history if Nik prefers it |
+| **R-11** | **People leadership is out of the PRD and lives in `00-BRIEF.md` §12 as talk track** | Restates the lost R-07, which was Nik's decision. It overrides job-search D-61 explicitly, recorded there as D-76. Consequence: the PRD alone no longer answers the JD's hiring and coaching ask, so it has to be said |
+| **R-12** | **The recipient counter counts persons, firm-wide, per communication, excluding institutional investors, over the 30 calendar days ending on each send** | Third audit, Finding 2. FINRA 2210(a) counts retail investors; a household of two is two, and a template used by several advisors is one communication. Implemented in `lib/recipients/count.ts` with boundary tests at 24, 25 and 26, a 13-household case and a two-advisor case |
+| **R-13** | **The human-gated-outward invariant is enforced, and has been seen failing** | `npm run check` runs typecheck, lint, `invariant:imports` and tests. Proven 2026-09-26: `node:https`, bare `https` and `undici` in `app/` or `lib/` fail dependency-cruiser; a global `fetch` POST and a send verb in `ACTION_VERBS` fail vitest; a model client in `lib/ranking/` fails dependency-cruiser; the clean tree passes. Patterns carry the fix found in `roleos-app` (dependency-cruiser resolves `node:https` to `https`) |
