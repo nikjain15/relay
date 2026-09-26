@@ -6,6 +6,9 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Regime } from "@/lib/recipients/count";
 import type { Overlay } from "@/lib/profile";
 import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
+import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
+import type { ConnectionState, ConnectionStatus } from "@/lib/connectors/types";
+import { CONNECTORS_DATA } from "@/lib/data";
 
 export type Disposition = "approved" | "returned" | "blocked";
 
@@ -54,6 +57,21 @@ interface State {
   acceptSuggestion: (s: Suggestion) => void;
   declineSuggestion: (s: Suggestion) => void;
   undoSuggestion: (s: Suggestion) => void;
+  /**
+   * The compliance change log. A rule is never mutated: the console appends an
+   * edit and every screen resolves its policy from this list, so a change made
+   * on the rules page is in force on the next evaluation anywhere in the app.
+   */
+  ruleEdits: RuleEdit[];
+  editRule: (e: Omit<RuleEdit, "id" | "at">) => void;
+  revertEdit: (id: string) => void;
+  /**
+   * Per-advisor connection state. Connecting a channel here changes what the
+   * compliance agents can evaluate on every other screen, which is the point of
+   * keeping it in one place: a gap closes everywhere at once.
+   */
+  connections: ConnectionState[];
+  setConnectorStatus: (advisorId: string, connectorId: string, status: ConnectionStatus) => void;
 }
 
 const Ctx = createContext<State | null>(null);
@@ -65,6 +83,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [log, setLog] = useState<LogEntry[]>([]);
   const [learned, setLearned] = useState<Suggestion[]>([]);
   const [rejected, setRejected] = useState<Rejection[]>([]);
+  const [ruleEdits, setRuleEdits] = useState<RuleEdit[]>(SEED_EDITS);
+  const [connections, setConnections] = useState<ConnectionState[]>(CONNECTORS_DATA.connections);
   const overlay: Overlay = {};
   for (const s of learned) {
     const side = (overlay[s.scope] ??= {});
@@ -94,6 +114,24 @@ export function StateProvider({ children }: { children: ReactNode }) {
     acceptSuggestion: (s) => setLearned((l) => [...l.filter((x) => x.id !== s.id), s]),
     declineSuggestion: (s) => setRejected((r) => [...r, { scopeId: s.scopeId, key: s.key, detail: s.detail, day: 0 }]),
     undoSuggestion: (s) => setLearned((l) => l.filter((x) => x.id !== s.id)),
+    ruleEdits,
+    editRule: (e) =>
+      setRuleEdits((l) => [...l, { ...e, id: `e-${String(l.length + 1).padStart(3, "0")}`, at: new Date().toISOString() }]),
+    // Reverting appends nothing and removes the entry, which is honest only
+    // because this is a prototype with session state. In production a revert is
+    // itself an edit, so the log stays append-only.
+    revertEdit: (id) => setRuleEdits((l) => l.filter((x) => x.id !== id)),
+    connections,
+    setConnectorStatus: (advisorId, connectorId, status) =>
+      setConnections((c) => {
+        const found = c.some((x) => x.advisorId === advisorId && x.connectorId === connectorId);
+        if (!found) return [...c, { advisorId, connectorId, status }];
+        return c.map((x) =>
+          x.advisorId === advisorId && x.connectorId === connectorId
+            ? { ...x, status, issue: status === "degraded" ? x.issue : undefined, lastIngestAt: status === "connected" ? (x.lastIngestAt ?? "just now") : x.lastIngestAt }
+            : x,
+        );
+      }),
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

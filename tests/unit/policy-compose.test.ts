@@ -18,6 +18,10 @@ describe("each policy check fails on a planted draft", () => {
   it("missing citation", () => expect(failed(ok.replace("[Source: Sizing a Liquidity strategy, day 2]", ""))).toContain("citation"));
   it("regime mismatch", () => expect(failed(ok, { recipients: 26 })).toContain("regime"));
   it("missing disclosure", () => expect(failed(ok.replace("not a projection of future performance", "")) ).toContain("disclosure"));
+  // Regression: a sourced figure ending a sentence used to carry the full stop
+  // into the token, so "$3.06M." read as unsourced against "$3.06M".
+  it("a sourced figure at the end of a sentence is not reported as unsourced", () =>
+    expect(failed("Move $3.06M. [Source: Sizing a Liquidity strategy, day 2] It is not a projection of future performance.")).not.toContain("figures-sourced"));
 });
 
 describe("every composed draft passes every check", () => {
