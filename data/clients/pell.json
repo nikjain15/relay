@@ -202,5 +202,11 @@
       "Log the note in the CRM",
       "Relay records the approval, the reasons and the options considered"
     ]
+  },
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "After 6pm on weekdays"
+    }
   }
 }

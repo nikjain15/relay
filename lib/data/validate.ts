@@ -2,6 +2,7 @@
 // test suite, so a broken edit to data/ fails `npm run check`.
 import type { ClientFile } from "@/lib/types";
 import { POLICY, APP } from "@/lib/data/policy";
+import { validateProfiles } from "@/lib/profile/validate";
 import { evaluateAll } from "@/lib/constraints/evaluate";
 import { toHousehold, ADVISORS_DATA, CLIENTS, DOCUMENTS, PROSPECTS, SERVICE_REQUESTS, SHELF_DATA } from "@/lib/data";
 
@@ -80,10 +81,9 @@ export function validate(): string[] {
   if (!productIds.has(POLICY.liquidity.cashProductId)) err(`policy.json: unknown cashProductId`);
   if (!productIds.has(POLICY.proposals.coreProductId)) err(`policy.json: unknown coreProductId`);
   if (!docIds.has(POLICY.communications.disclosureDocId)) err(`policy.json: unknown disclosureDocId`);
-  if (POLICY.triage.dailyCap < 1) err(`policy.json: dailyCap must be at least 1`);
-  if (POLICY.paperwork.escalateAfterDays < 1) err(`policy.json: escalateAfterDays must be at least 1`);
   for (const r of POLICY.servicing.rules) {
     try { new RegExp(r.pattern); } catch { err(`policy.json: bad servicing pattern ${r.pattern}`); }
   }
+  errors.push(...validateProfiles());
   return errors;
 }

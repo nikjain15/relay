@@ -4,6 +4,8 @@
 // queue. Lives in React state and resets on reload (BUILD-SPEC §1).
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Regime } from "@/lib/recipients/count";
+import type { Overlay } from "@/lib/profile";
+import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 
 export type Disposition = "approved" | "returned" | "blocked";
 
@@ -41,6 +43,13 @@ interface State {
   markSent: (id: string) => void;
   log: LogEntry[];
   addLog: (e: LogEntry) => void;
+  /** Settings the advisor accepted from the learning loop. In production this is a versioned write to the settings service. */
+  overlay: Overlay;
+  learned: Suggestion[];
+  rejected: Rejection[];
+  acceptSuggestion: (s: Suggestion) => void;
+  declineSuggestion: (s: Suggestion) => void;
+  undoSuggestion: (s: Suggestion) => void;
 }
 
 const Ctx = createContext<State | null>(null);
@@ -50,6 +59,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [accepted, setAccepted] = useState<Record<string, string>>({});
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [log, setLog] = useState<LogEntry[]>([]);
+  const [learned, setLearned] = useState<Suggestion[]>([]);
+  const [rejected, setRejected] = useState<Rejection[]>([]);
+  const overlay: Overlay = {};
+  for (const s of learned) {
+    const side = (overlay[s.scope] ??= {});
+    const vals = (side[s.scopeId] ??= {});
+    vals[s.key] = applied(s, vals[s.key]);
+  }
   const value: State = {
     dismissed,
     dismiss: (id, reason) => setDismissed((s) => ({ ...s, [id]: reason })),
@@ -67,6 +84,12 @@ export function StateProvider({ children }: { children: ReactNode }) {
     markSent: (id) => setQueue((q) => q.map((x) => (x.id === id ? { ...x, sentByAdvisor: true } : x))),
     log,
     addLog: (e) => setLog((l) => [...l, e]),
+    overlay,
+    learned,
+    rejected,
+    acceptSuggestion: (s) => setLearned((l) => [...l.filter((x) => x.id !== s.id), s]),
+    declineSuggestion: (s) => setRejected((r) => [...r, { scopeId: s.scopeId, key: s.key, detail: s.detail, day: 0 }]),
+    undoSuggestion: (s) => setLearned((l) => l.filter((x) => x.id !== s.id)),
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

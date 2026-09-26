@@ -1,0 +1,27 @@
+[
+  {
+    "id": "private-wealth",
+    "label": "Private wealth, advisor-led",
+    "version": 1,
+    "values": {}
+  },
+  {
+    "id": "wealth-advice-center",
+    "label": "Wealth Advice Center, remote pooled coverage",
+    "version": 1,
+    "values": {
+      "triage.dailyCap": 20,
+      "note.length": "brief",
+      "contact.channel": "video",
+      "paperwork.escalateAfterDays": 7,
+      "review.sectionOrder": [
+        "open",
+        "gaps",
+        "changed",
+        "decisions",
+        "talking",
+        "documents"
+      ]
+    }
+  }
+]

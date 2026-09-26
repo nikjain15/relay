@@ -1,0 +1,575 @@
+{
+  "_note": "Synthetic behavior signals Relay captures as advisors work: triage decisions, list completion, options chosen, draft edits, which review-pack section is opened first, and how clients respond by channel. The learning loop reads only this. Relative days; 0 is today.",
+  "events": [
+    {
+      "day": -1,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 12
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 10
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 11
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 9
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "portal",
+      "responded": true
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 12
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "draft_edited",
+      "change": "shortened"
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 11
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-a",
+      "clientId": "hh-brandvold",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 12
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "draft_edited",
+      "change": "unchanged"
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 10
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 10
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "call",
+      "responded": true
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 9
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-b",
+      "type": "suggestion_rejected",
+      "scope": "advisor",
+      "scopeId": "adv-b",
+      "key": "triage.classWeights",
+      "detail": "plan_service_event"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "pack_opened",
+      "firstSection": "changed"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "portal",
+      "responded": true
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "email",
+      "responded": false
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-a",
+      "clientId": "hh-okafor-lind",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "acted"
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 12
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-a",
+      "clientId": "hh-okafor-lind",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 10
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "video",
+      "responded": false
+    },
+    {
+      "day": -9,
+      "advisorId": "adv-a",
+      "clientId": "hh-brandvold",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -9,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 11
+    },
+    {
+      "day": -9,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "draft_edited",
+      "change": "shortened"
+    },
+    {
+      "day": -9,
+      "advisorId": "adv-b",
+      "type": "day_end",
+      "worked": 11
+    },
+    {
+      "day": -9,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -10,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -10,
+      "advisorId": "adv-a",
+      "type": "day_end",
+      "worked": 12
+    },
+    {
+      "day": -10,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "acted"
+    },
+    {
+      "day": -10,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "portal",
+      "responded": true
+    },
+    {
+      "day": -11,
+      "advisorId": "adv-a",
+      "clientId": "hh-brandvold",
+      "type": "option_chosen",
+      "chosen": "other"
+    },
+    {
+      "day": -11,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "call",
+      "responded": true
+    },
+    {
+      "day": -12,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -12,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -12,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "draft_edited",
+      "change": "unchanged"
+    },
+    {
+      "day": -13,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -13,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -14,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "external_event",
+      "decision": "acted"
+    },
+    {
+      "day": -14,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "email",
+      "responded": false
+    },
+    {
+      "day": -15,
+      "advisorId": "adv-a",
+      "clientId": "hh-brandvold",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -15,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "pack_opened",
+      "firstSection": "changed"
+    },
+    {
+      "day": -15,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "portal",
+      "responded": true
+    },
+    {
+      "day": -16,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -16,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "draft_edited",
+      "change": "shortened"
+    },
+    {
+      "day": -17,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -18,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -18,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "call",
+      "responded": true
+    },
+    {
+      "day": -19,
+      "advisorId": "adv-a",
+      "clientId": "hh-renner",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -19,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "video",
+      "responded": false
+    },
+    {
+      "day": -20,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "option_chosen",
+      "chosen": "cheapest"
+    },
+    {
+      "day": -20,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "email",
+      "responded": false
+    },
+    {
+      "day": -21,
+      "advisorId": "adv-a",
+      "clientId": "hh-okafor-lind",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "acted"
+    },
+    {
+      "day": -21,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "video",
+      "responded": true
+    },
+    {
+      "day": -22,
+      "advisorId": "adv-a",
+      "clientId": "hh-okafor-lind",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -23,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "triage_decision",
+      "triggerClass": "plan_service_event",
+      "decision": "dismissed",
+      "reason": "Already discussed with client"
+    },
+    {
+      "day": -24,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "draft_edited",
+      "change": "shortened"
+    },
+    {
+      "day": -25,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "call",
+      "responded": true
+    },
+    {
+      "day": -27,
+      "advisorId": "adv-b",
+      "clientId": "hh-pell",
+      "type": "client_response",
+      "channel": "portal",
+      "responded": true
+    },
+    {
+      "day": -29,
+      "advisorId": "adv-a",
+      "clientId": "hh-alcott",
+      "type": "client_response",
+      "channel": "call",
+      "responded": true
+    },
+    {
+      "day": -45,
+      "advisorId": "adv-a",
+      "clientId": "hh-vasquez-hale",
+      "type": "draft_edited",
+      "change": "shortened"
+    }
+  ]
+}

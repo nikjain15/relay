@@ -13,6 +13,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { compose } from "@/lib/drafting/compose";
 import { regimeAfter, RETAIL_THRESHOLD, type Distribution } from "@/lib/recipients/count";
 import { useRelay } from "@/components/state";
+import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { clientFile } from "@/lib/data";
 import { APP } from "@/lib/data/policy";
 import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
@@ -21,7 +22,7 @@ const F = APP.featured;
 
 export function Communications() {
   const params = useSearchParams();
-  const { accepted, accept, submit, queue } = useRelay();
+  const { accepted, accept, submit, queue, overlay } = useRelay();
   const acceptedOpps = OPPORTUNITIES.filter((o) => accepted[o.id]);
   const oppId = params.get("opp") && accepted[params.get("opp")!] ? params.get("opp")! : acceptedOpps[0]?.id;
   const [batch, setBatch] = useState<Set<string>>(new Set());
@@ -30,9 +31,10 @@ export function Communications() {
 
   const o = oppId ? opportunity(oppId) : undefined;
   const h = o ? household(o.householdId) : undefined;
+  const prof = h ? resolveProfile({ clientId: h.id }, overlay) : undefined;
   const ev = o && h ? evaluateAll(o, h).find((e) => e.candidate.id === accepted[o.id]) : undefined;
   const evidence = o ? retrieve(o) : undefined;
-  const draft = o && h && ev && evidence && !evidence.refused ? compose(h, o, ev, product(ev.candidate.productId)!, evidence.passages) : null;
+  const draft = o && h && ev && evidence && !evidence.refused ? compose(h, o, ev, product(ev.candidate.productId)!, evidence.passages, { length: prof?.values["note.length"] }) : null;
 
   const dists = useMemo(() => {
     const d: Distribution[] = [];
@@ -78,12 +80,21 @@ export function Communications() {
       <PageTitle title="Client communications" sub={`${h.name}: ${o.title}`} />
       <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div>
+          {prof && (
+            <p className="mb-3 rounded border border-neutral-300 px-3 py-2 text-xs">
+              <strong>For this client:</strong> {prof.values["contact.channel"]} ({sourceLabel(prof.provenance["contact.channel"])})
+              {prof.values["contact.window"] ? `, ${prof.values["contact.window"]}` : ""}; {prof.values["note.length"]} note ({sourceLabel(prof.provenance["note.length"])}).
+              {prof.values["contact.callBeforeNote"] && (
+                <> <Pill tone="fail">Call first</Pill> Rule for this client ({sourceLabel(prof.provenance["contact.callBeforeNote"])}): speak to them before any written note.</>
+              )}
+            </p>
+          )}
           <Section title="Draft, composed from the accepted proposal and cited evidence only">
             <pre className="whitespace-pre-wrap rounded border border-neutral-300 bg-neutral-50 p-3 font-sans">{draft.text}</pre>
           </Section>
           <Section title="Talking points for your call first">
             <ul className="list-inside list-disc space-y-0.5">
-              {(clientFile(h.id)?.walkthrough?.talkingPoints ?? ["Explain the gap in plain terms", "Walk through the option and its cost", "Agree the next step"]).map((x) => (
+              {(clientFile(h.id)?.walkthrough?.talkingPoints ?? APP.defaultTalkingPoints).map((x) => (
                 <li key={x}>{x}</li>
               ))}
             </ul>

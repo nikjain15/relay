@@ -152,5 +152,11 @@
       "label": "$5M+ coverage tier, Dec 2024 restructuring",
       "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
     }
-  ]
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Evenings UK time, 5 to 7pm"
+    }
+  }
 }

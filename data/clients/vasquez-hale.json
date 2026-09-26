@@ -152,5 +152,11 @@
       "label": "SEC staff bulletin on account and rollover recommendations",
       "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
     }
-  ]
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Lunchtime"
+    }
+  }
 }

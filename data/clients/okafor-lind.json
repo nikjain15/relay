@@ -182,5 +182,13 @@
       "label": "UBS on multigenerational families",
       "url": "https://www.ubs.com/us/en/wealth-management/our-solutions/private-wealth-management/family-office-solutions/quarterlies/fostering-successful-multigenerational-families.html"
     }
-  ]
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.callBeforeNote": true,
+      "contact.channel": "call",
+      "contact.window": "Tuesdays, with the trustee's daughter joining"
+    }
+  }
 }

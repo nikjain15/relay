@@ -264,6 +264,8 @@ export interface ClientFile extends Household {
   contactHistory: ContactEvent[];
   notes: TeamNote[];
   tasks: Task[];
+  /** Client-layer settings (data/profiles/schema.json). */
+  preferences?: { version: number; values: Record<string, unknown> };
   paperwork: PaperworkItem[];
   opportunities: Opportunity[];
   walkthrough?: Walkthrough;

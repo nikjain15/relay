@@ -13,7 +13,10 @@ import { liquidityMonths } from "@/lib/household-math";
 import { constraintText } from "@/lib/constraint-text";
 import { usd } from "@/lib/format";
 import type { Evaluation, Failure } from "@/lib/types";
-import { APP, POLICY } from "@/lib/data/policy";
+import { APP } from "@/lib/data/policy";
+import { FIRM, KEYS, SCHEMA, resolveProfile, sourceLabel } from "@/lib/profile";
+import { fmtValue, fmtChange } from "@/lib/profile/format";
+import { suggest } from "@/lib/learning/learn";
 import { reviewPack, prospectFor } from "@/lib/meetings/prep";
 import { allTasks, dueLabel } from "@/lib/followups";
 
@@ -51,7 +54,7 @@ const stories = CLIENTS.filter((c) => c.walkthrough)
     if (!chosen) throw new Error(`${c.id}: chosen product ${w.chooseProductId} is not eligible`);
     const ev = retrieve(opp);
     if (ev.refused) throw new Error(`${c.id}: walkthrough opportunity has no evidence`);
-    const draft = compose(h, opp, chosen, plain(chosen.candidate.productId), ev.passages);
+    const draft = compose(h, opp, chosen, plain(chosen.candidate.productId), ev.passages, { length: resolveProfile({ clientId: c.id }).values["note.length"] });
     const goal = c.goals.find((g) => g.strategy === opp.strategy)!;
     const have = liquidityMonths(h);
     const who = c.persons.length > 1 ? "The family's" : "The client's";
@@ -139,7 +142,7 @@ const fmtGoal = (unit: string, v: number) => (unit === "months" ? `${v} months` 
 const labelOf = (id: string) => { const a = ADVISORS_DATA.find((x) => x.id === id)!; return a.walkthrough?.label ?? a.name; };
 const journeyMore = {
   today: APP.todayLabel,
-  policy: { dailyCap: POLICY.triage.dailyCap, escalateAfterDays: POLICY.paperwork.escalateAfterDays },
+  policy: { dailyCap: FIRM.values["triage.dailyCap"], escalateAfterDays: FIRM.values["paperwork.escalateAfterDays"] },
   prospectsAdvisor: labelOf(APP.defaultAdvisorId),
   reviewAdvisor: labelOf(rp.client.advisorId),
   meetings: ADVISORS_DATA.map((a) => ({
@@ -167,6 +170,24 @@ const journeyMore = {
     talkingPoints: rp.talkingPoints,
     documents: rp.documents.map((d) => d.title),
   },
+  personalization: [APP.featured.clientId, ...CLIENTS.filter((c) => c.advisorId !== ADVISORS_DATA.find((a) => a.id === CLIENTS.find((x) => x.id === APP.featured.clientId)!.advisorId)!.id).slice(0, 1).map((c) => c.id)].map((id) => {
+    const r = resolveProfile({ clientId: id });
+    return {
+      client: nameOf(id),
+      advisor: labelOf(CLIENTS.find((c) => c.id === id)!.advisorId),
+      version: r.version,
+      settings: KEYS.filter((k) => r.values[k as keyof typeof r.values] !== undefined).map((k) => ({
+        label: SCHEMA[k].label, kind: SCHEMA[k].kind, value: fmtValue(k, r.values[k as keyof typeof r.values]), from: sourceLabel(r.provenance[k]),
+      })),
+    };
+  }),
+  suggestions: suggest().map((s) => ({
+    who: s.scope === "client" ? nameOf(s.scopeId) : labelOf(s.scopeId),
+    setting: SCHEMA[s.key].label,
+    from: fmtChange(s.key, s.from, s.to, s.detail)[0] + fmtChange(s.key, s.from, s.to, s.detail)[1],
+    to: fmtChange(s.key, s.from, s.to, s.detail)[2],
+    because: s.because, measure: s.measure, heldBack: s.heldBack ?? null,
+  })),
   followUps: allTasks().map((t) => ({ client: t.clientName, text: t.text, owner: t.owner, due: dueLabel(t.dueDay), overdue: t.dueDay < 0 })),
 };
 
