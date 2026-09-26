@@ -4,7 +4,8 @@ import { household } from "@/lib/fixtures/households";
 import { product } from "@/lib/fixtures/shelf";
 import { evaluateAll } from "@/lib/constraints/evaluate";
 import { retrieve } from "@/lib/evidence/retrieve";
-import { compose } from "@/lib/drafting/compose";
+import { addressees, compose } from "@/lib/drafting/compose";
+import { classify } from "@/lib/recipients/count";
 import { runChecks } from "@/lib/policy/checks";
 import { PageTitle, Pill, Section, td, th } from "@/components/ui";
 
@@ -25,19 +26,24 @@ function gates() {
     for (const e of evaluateAll(o, h)) {
       if (e.pass && e.failures.length) breaches++;
       if (!e.pass) continue;
-      const d = compose(h, o, e, product(e.candidate.productId)!, ev.passages);
-      drafts++;
-      for (const c of runChecks({ draft: d.text, sources: d.sources, citedTitles: d.citedTitles, recipients: h.persons.length, recordedRegime: "correspondence" })) {
-        if (!c.pass) failures[c.id] = (failures[c.id] ?? 0) + 1;
+      for (const length of ["full", "brief"] as const) {
+        const d = compose(h, o, e, product(e.candidate.productId)!, ev.passages, { length });
+        drafts++;
+        const n = addressees(h).length;
+        for (const c of runChecks({ draft: d.text, sources: d.sources, citedTitles: d.citedTitles, recipients: n, recordedRegime: classify(n) })) {
+          if (!c.pass) failures[c.id] = (failures[c.id] ?? 0) + 1;
+        }
       }
     }
   }
+  // Two gates hold by construction here (an eligible candidate has no failures; the regime is
+  // recorded from the counter), so they are labelled as such rather than shown as live tests.
   return [
-    { label: "Zero constraint breaches in eligible proposals", fails: breaches },
+    { label: "Zero constraint breaches in eligible proposals (by construction)", fails: breaches },
     { label: "Zero performance projections in client text", fails: failures["no-projection"] ?? 0 },
     { label: "Zero unsourced figures", fails: failures["figures-sourced"] ?? 0 },
     { label: "Zero drafts without a citation", fails: failures["citation"] ?? 0 },
-    { label: "Zero regime mismatches", fails: failures["regime"] ?? 0 },
+    { label: "Zero regime mismatches (by construction; the counter records the regime)", fails: failures["regime"] ?? 0 },
     { label: "Zero drafts without disclosure", fails: failures["disclosure"] ?? 0 },
   ].map((g) => ({ ...g, drafts, refusals }));
 }
@@ -76,7 +82,7 @@ export default function Measurement() {
             Synthetic numbers for layout only. The real funnel is the first thing to ask for in week one (PRD Appendix B, question 1).
           </p>
         </Section>
-        <Section title={`Zero-tolerance release gates, computed now over ${g[0].drafts} composed drafts`}>
+        <Section title={`Zero-tolerance release gates, computed now over ${g[0].drafts} composed drafts (full and brief)`}>
           <table className="w-full border-collapse">
             <tbody>
               {g.map((x) => (

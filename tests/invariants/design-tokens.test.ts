@@ -11,9 +11,12 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const PALETTE = /(?<![\w-])(?:[a-z]+:)*(?:text|bg|border|ring|decoration|outline|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/;
 const HEX = /#[0-9a-fA-F]{3,8}\b/;
+// Colour functions and Tailwind arbitrary colour values bypass the tokens as surely as a hex does.
+const FUNC = /\b(?:rgba?|hsla?|oklch|oklab|lab|lch|color-mix)\(/;
+const ARBITRARY = /(?:text|bg|border|ring|decoration|outline|fill|stroke)-\[(?:#|rgb|hsl|oklch|oklab|lab|lch|color-mix)[^\]]*\]/;
 
 export function offending(src: string): string | undefined {
-  return PALETTE.exec(src)?.[0] ?? HEX.exec(src)?.[0];
+  return PALETTE.exec(src)?.[0] ?? HEX.exec(src)?.[0] ?? FUNC.exec(src)?.[0] ?? ARBITRARY.exec(src)?.[0];
 }
 
 const files = (dir: string) =>
@@ -31,6 +34,10 @@ describe("design system", () => {
   it("the scan catches a planted palette class and a planted hex colour", () => {
     expect(offending(`<p className="hover:text-red-700">`)).toBe("hover:text-red-700");
     expect(offending(`style={{ color: "#e60000" }}`)).toBe("#e60000");
+    expect(offending(`style={{ color: "rgb(230,0,0)" }}`)).toBe("rgb(");
+    expect(offending(`<p className="text-[#e60000]">`)).toBeDefined();
+    expect(offending(`<p className="bg-[rgb(230,0,0)]">`)).toBeDefined();
+    expect(offending(`<p className="text-[13px] bg-[var(--subtle)]">`)).toBeUndefined();
   });
 
   it("the walkthrough mockup declares every prototype token with the same value", () => {

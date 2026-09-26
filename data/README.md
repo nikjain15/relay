@@ -16,7 +16,7 @@ inside situations UBS and public sources describe. No real client or advisor dat
 |---|---|
 | `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks (`{text, owner, dueDay}`, negative days are overdue), `preferences` (client-layer settings, see `profiles/schema.json`), paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
 | `advisors.json` | Advisor A and Advisor B, with sources and their day: `meetings` are `{time, title, kind, clientId?, prospectId?, purpose}`, where kind is call, review, prospect, internal or queue. A client meeting gets a review pack |
-| `policy.json` | Firm policy the engines read: triage cap, class weights and dismiss reasons; the cash product, sleeve limits and lock-up for Liquidity; the core model; the disclosure document; paperwork escalation days; prospect warmth and size bands; servicing routing rules. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
+| `policy.json` | Firm policy the engines read: dismiss reasons; the cash product, sleeve limits and lock-up for Liquidity (a holding counts toward Liquidity when its product meets the sleeve limits); the core model; the disclosure document; prospect warmth and size bands (largest first); servicing routing rules (money movement first, callback required). The list size, class weights and escalation days are in `profiles/firm.json`. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
 | `app.json` | App settings: the day label, the default advisor, the featured client, opportunity and product for the menu and demo, the client whose review pack the walkthrough shows, and default talking points |
 | `profiles/schema.json` | Every personalizable setting: kind (preference or rule), type, bounds, which layers may set it |
 | `profiles/firm.json` | Firm defaults for every setting; the floor for rules |
@@ -27,7 +27,7 @@ inside situations UBS and public sources describe. No real client or advisor dat
 | `shelf.json` | The approved products, with plain-English names used in client notes |
 | `documents.json` | The illustrative research notes, one-pagers and procedures that evidence cites. Relative dates only |
 | `book.json` | Other households in Advisor A's book, for the batch-send demo |
-| `communications.json` | The prototype's fixed "today" and earlier sends of the demo note by a second advisor |
+| `communications.json` | The prototype's fixed "today", the note template for each kind of proposal (`"Liquidity:fund"`; the counter counts per template), and earlier sends of the demo note by a second advisor |
 | `prospects.json` | Prospects per advisor: signal, path in, estimated assets, fit, sources |
 | `service-requests.json` | Incoming client requests: text, channel, hours since received |
 | `funnel.json` | Synthetic conversion funnel for the measurement page |
@@ -53,9 +53,16 @@ npm run check        # validates every file, then typecheck, lint, invariants, d
 ```
 
 `npm run check` fails if a file is malformed or inconsistent: holdings that do not sum to the total, a
-duplicate id, an opportunity citing a document that does not exist (unless marked
-`evidenceExpectedMissing` to exercise a refusal), a client with no sources, an unknown advisor or
-product, or a stale `generated/walkthrough.json`.
+negative value, zero monthly spending, a Liquidity goal whose months disagree with the holdings, a
+duplicate or malformed id, an unknown tier, role, trigger class, constraint kind, product type or prospect
+path, materiality outside 0 to 100, an opportunity citing a document that does not exist (unless marked
+`evidenceExpectedMissing` to exercise a refusal), an `outflowUsd` without an `outflowLabel`, a client with no
+people or no sources, an unknown advisor or product, a walkthrough whose audience or left-over figure
+disagrees with the engine, an event with an unknown type, section or channel, a money-movement rule that is
+not first or has its callback off, or a stale `generated/walkthrough.json`.
+
+A funding opportunity may carry `inflowUsd` (new cash the event brings) and `outflowUsd` with
+`outflowLabel` (a known payment the goal must also cover, such as `"capital call"`).
 
 ## Adding a client
 

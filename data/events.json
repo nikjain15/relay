@@ -557,6 +557,13 @@
       "responded": true
     },
     {
+      "day": -27,
+      "advisorId": "adv-a",
+      "clientId": "hh-thornbury",
+      "type": "draft_edited",
+      "change": "shortened"
+    },
+    {
       "day": -29,
       "advisorId": "adv-a",
       "clientId": "hh-alcott",

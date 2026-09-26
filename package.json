@@ -12,7 +12,9 @@
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm run invariant:imports && npm run data:check && npm run test",
     "data:build": "vite-node --config vitest.config.ts scripts/build-walkthrough.ts",
-    "data:check": "vite-node --config vitest.config.ts scripts/build-walkthrough.ts -- --check"
+    "data:check": "vite-node --config vitest.config.ts scripts/build-walkthrough.ts -- --check",
+    "e2e": "node scripts/e2e.mjs",
+    "stress": "vite-node --config vitest.config.ts scripts/stress.tsx"
   },
   "dependencies": {
     "next": "15.5.25",
@@ -28,6 +30,7 @@
     "dependency-cruiser": "16.10.4",
     "eslint": "9.39.4",
     "eslint-config-next": "15.5.18",
+    "playwright-core": "1.56.1",
     "postcss": "8.5.25",
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3",

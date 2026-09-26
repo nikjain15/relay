@@ -5,6 +5,8 @@ import { CLIENTS, ADVISORS_DATA } from "@/lib/data";
 import { ADVISOR_PROFILES, FIRM, KEYS, SCHEMA, SEGMENTS, checkValue, type Layer, type SettingKey, type Values } from "@/lib/profile";
 import { EVENTS } from "@/lib/learning/learn";
 
+const EVENT_TYPES = ["triage_decision", "day_end", "option_chosen", "draft_edited", "pack_opened", "client_response", "suggestion_rejected"];
+
 export function validateProfiles(): string[] {
   const errors: string[] = [];
   const check = (at: string, layer: Layer, values: Values) => {
@@ -23,6 +25,8 @@ export function validateProfiles(): string[] {
     }
   };
   for (const key of KEYS) if (SCHEMA[key].type !== "text" && FIRM.values[key] === undefined) errors.push(`firm.json: missing default for ${key}`);
+  const fw = (FIRM.values["triage.classWeights"] ?? {}) as Record<string, number>;
+  for (const c of SCHEMA["triage.classWeights"].values ?? []) if (fw[c] === undefined) errors.push(`firm.json: triage.classWeights needs a weight for ${c}`);
   check("firm.json", "firm", FIRM.values);
   for (const s of SEGMENTS) check(`segment ${s.id}`, "segment", s.values);
   const advisorIds = new Set(ADVISORS_DATA.map((a) => a.id));
@@ -41,6 +45,11 @@ export function validateProfiles(): string[] {
     if (!advisorIds.has(e.advisorId)) errors.push(`event day ${e.day}: unknown advisor ${e.advisorId}`);
     if (e.clientId && !clientIds.has(e.clientId)) errors.push(`event day ${e.day}: unknown client ${e.clientId}`);
     if (e.day > 0) errors.push(`event day ${e.day}: events cannot be in the future`);
+    if (!EVENT_TYPES.includes(e.type)) errors.push(`event day ${e.day}: unknown type ${e.type}`);
+    if (e.triggerClass !== undefined && !SCHEMA["triage.classWeights"].values!.includes(e.triggerClass)) errors.push(`event day ${e.day}: unknown trigger class ${e.triggerClass}`);
+    if (e.type === "pack_opened" && !SCHEMA["review.sectionOrder"].values!.includes(e.firstSection!)) errors.push(`event day ${e.day}: unknown review-pack section ${e.firstSection}`);
+    if (e.type === "client_response" && !SCHEMA["contact.channel"].values!.includes(e.channel!)) errors.push(`event day ${e.day}: unknown channel ${e.channel}`);
+    if (e.type === "day_end" && !(typeof e.worked === "number" && e.worked >= 0)) errors.push(`event day ${e.day}: day_end needs worked of zero or more`);
   }
   return errors;
 }

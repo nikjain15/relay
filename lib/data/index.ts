@@ -30,6 +30,8 @@ export const ADVISORS_DATA = advisors as unknown as Advisor[];
 export const COMMUNICATIONS = communications as unknown as {
   prototypeToday: string;
   demoCommunication: string;
+  /** Note template per "strategy:action"; a proposal kind not listed gets its own template id. */
+  templates: Record<string, string>;
   priorDistributions: Distribution[];
 };
 export const PROSPECTS = prospects as unknown as Prospect[];

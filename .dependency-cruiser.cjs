@@ -26,9 +26,9 @@ module.exports = {
     {
       name: "deterministic-no-model",
       comment:
-        "lib/constraints, lib/ranking, lib/recipients, lib/policy, lib/learning and lib/profile are deterministic. They may not import a model client.",
+        "lib/constraints, lib/ranking, lib/recipients, lib/policy, lib/learning, lib/profile, lib/evidence (the refusal), lib/servicing (the money-movement callback), lib/onboarding (escalation) and lib/household-math are deterministic. They may not import a model client.",
       severity: "error",
-      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile)/" },
+      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding)/|^lib/household-math" },
       to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)" },
     },
     {
@@ -38,6 +38,22 @@ module.exports = {
       severity: "error",
       from: { path: "^lib/(constraints|recipients|policy|evidence)/" },
       to: { path: ["^lib/(profile|learning)/", "^data/(profiles/|events\\.json)"] },
+    },
+    {
+      name: "deterministic-no-model-transitive",
+      comment:
+        "Closes the one-hop gap found in the R-21 audit: a helper outside these folders (lib/household-math, lib/format, lib/data) could import a model client and be reached from a deterministic module. No deterministic module may reach one by any path.",
+      severity: "error",
+      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding)/|^lib/household-math" },
+      to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)", reachable: true },
+    },
+    {
+      name: "personalization-cannot-widen-transitive",
+      comment:
+        "The same rule by any path: eligibility, compliance checks, the counter and retrieval may not reach the profile resolver or the learning loop through a shared helper (R-21).",
+      severity: "error",
+      from: { path: "^lib/(constraints|recipients|policy|evidence)/" },
+      to: { path: ["^lib/(profile|learning)/", "^data/(profiles/|events\\.json)"], reachable: true },
     },
   ],
   options: {

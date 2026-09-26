@@ -5,8 +5,8 @@
 // imported here (.dependency-cruiser.cjs).
 import type { Candidate, Evaluation, Failure, Household, Opportunity, Product } from "@/lib/types";
 import { SHELF } from "@/lib/fixtures/shelf";
-import { liquidityMonths, investableUsd, shortTermLotsUsd, singleNameUsd } from "@/lib/household-math";
-import { pct } from "@/lib/format";
+import { coreUsd, fundingNeed, liquidityMonths, investableUsd, shortTermLotsUsd, singleNameUsd } from "@/lib/household-math";
+import { pct, usd } from "@/lib/format";
 import { POLICY } from "@/lib/data/policy";
 
 const LOCKUP_DAYS = POLICY.liquidity.lockupDays;
@@ -56,7 +56,17 @@ export function evaluate(candidate: Candidate, product: Product, household: Hous
           }
         }
         break;
+      default: {
+        // Fail closed: a rule the engine does not understand blocks every candidate
+        // instead of being skipped, so a typo in a client's IPS cannot widen what passes.
+        const kind = (c as { kind?: unknown }).kind;
+        failures.push({ rule: "Unknown rule", detail: `IPS rule "${String(kind)}" is not understood, so nothing passes until it is fixed` });
+      }
     }
+  }
+
+  if (candidate.source === "rebalance_from_core" && candidate.amountUsd > coreUsd(household)) {
+    failures.push({ rule: "Funding source", detail: `Needs ${usd(candidate.amountUsd)} from the core portfolio, which holds ${usd(coreUsd(household))}` });
   }
 
   if (candidate.action === "fund" && strategy === "Liquidity") {
@@ -81,9 +91,9 @@ export function candidatesFor(opp: Opportunity, household: Household): Candidate
   if (opp.action !== "fund" && opp.action !== "trim") return [];
   const out: Candidate[] = [];
   if (opp.action === "fund") {
-    const gap = Math.max(0, (household.goals.find((g) => g.strategy === opp.strategy)?.target ?? 0) * household.monthlySpendUsd - liquidityMonths(household) * household.monthlySpendUsd);
+    const amount = fundingNeed(household, opp).amountUsd;
+    if (amount <= 0) return [];
     const source = opp.inflowUsd ? "new_cash" : "rebalance_from_core";
-    const amount = opp.inflowUsd ? Math.min(opp.inflowUsd, gap) : gap;
     for (const p of SHELF) out.push({ id: `${opp.id}:${p.id}:${source}`, productId: p.id, action: "fund", source, amountUsd: amount });
     return out;
   }

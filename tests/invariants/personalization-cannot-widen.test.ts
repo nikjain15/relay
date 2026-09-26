@@ -21,7 +21,7 @@ const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 describe("personalization cannot widen what is allowed", () => {
   it("eligibility, compliance checks, the counter and evidence never read a profile or the learning loop", () => {
     for (const dir of ["lib/constraints", "lib/policy", "lib/recipients", "lib/evidence"]) {
-      for (const f of readdirSync(join(ROOT, dir))) {
+      for (const f of readdirSync(join(ROOT, dir), { recursive: true, encoding: "utf8" }).filter((x) => /\.tsx?$/.test(x))) {
         const src = readFileSync(join(ROOT, dir, f), "utf8");
         expect(/@\/lib\/(profile|learning)|data\/(profiles|events)/.test(src), `${dir}/${f}`).toBe(false);
       }

@@ -1,13 +1,5 @@
 import type { ReactNode } from "react";
-import type { TriggerClass } from "@/lib/types";
-
-export const CLASS_LABEL: Record<TriggerClass, string> = {
-  life_event: "Life event",
-  external_event: "External event",
-  household_threshold: "Household threshold",
-  plan_service_event: "Plan or service event",
-  market_view: "Market or house view",
-};
+export { CLASS_LABEL, NODE_LABEL } from "@/lib/labels";
 
 /** Status label. Text always states the status; colour only reinforces it. */
 export function Pill({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "pass" | "fail" | "accent" }) {
