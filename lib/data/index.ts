@@ -5,6 +5,7 @@ import type { BookRecord, ClientFile, Doc, Household, Opportunity, Product, Pros
 import type { Advisor } from "@/lib/data/advisor";
 import type { Distribution } from "@/lib/recipients/count";
 import type { ChannelAttestation, ConnectionState } from "@/lib/connectors/types";
+import type { RuleDefinition } from "@/lib/compliance/types";
 import renner from "@/data/clients/renner.json";
 import alcott from "@/data/clients/alcott.json";
 import brandvold from "@/data/clients/brandvold.json";
@@ -21,6 +22,9 @@ import funnel from "@/data/funnel.json";
 import prospects from "@/data/prospects.json";
 import serviceRequests from "@/data/service-requests.json";
 import connectors from "@/data/connectors.json";
+import complianceRules from "@/data/compliance/rules.json";
+import complianceAgents from "@/data/compliance/agents.json";
+import complianceEdits from "@/data/compliance/edits.json";
 
 // JSON imports are widened by TypeScript; validate() in lib/data/validate.ts
 // checks the shapes and cross-references at test time.
@@ -43,6 +47,9 @@ export const CONNECTORS_DATA = connectors as unknown as {
   connections: ConnectionState[];
   attestations: ChannelAttestation[];
 };
+export const RULES_DATA = complianceRules as unknown as { version: number; rules: RuleDefinition[] };
+export const AGENTS_DATA = complianceAgents as unknown as { version: number; agents: unknown[] };
+export const EDITS_DATA = complianceEdits as unknown as { version: number; edits: unknown[] };
 
 export function toHousehold(c: ClientFile): Household {
   const { id, name, archetype, tier, totalUsd, persons, goals, holdings, constraints, monthlySpendUsd, hardPart, groundedIn } = c;

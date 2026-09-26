@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "edits": [
+    {
+      "id": "e-001",
+      "at": "2026-09-14T15:20:00Z",
+      "actor": "R. Okonkwo, Compliance Principal",
+      "target": "rule",
+      "layer": "firm",
+      "layerId": "firm",
+      "ruleId": "sec-marketing-206-4-1",
+      "field": "severity",
+      "from": "flag",
+      "to": "block",
+      "reason": "Dual registrant. Until the FINRA projections proposal is adopted we block projections in client-facing text rather than flagging them."
+    },
+    {
+      "id": "e-002",
+      "at": "2026-09-18T09:05:00Z",
+      "actor": "R. Okonkwo, Compliance Principal",
+      "target": "agent",
+      "layer": "firm",
+      "layerId": "firm",
+      "agentId": "conduct",
+      "field": "enabled",
+      "from": "false",
+      "to": "true",
+      "reason": "Annual outside-business attestation cycle opened."
+    },
+    {
+      "id": "e-003",
+      "at": "2026-09-22T11:40:00Z",
+      "actor": "M. Duarte, Team Supervisor",
+      "target": "rule",
+      "layer": "segment",
+      "layerId": "wealth-advice-center",
+      "ruleId": "finra-2210-regime",
+      "field": "threshold",
+      "from": "25",
+      "to": "15",
+      "reason": "Pooled queue sends the same language to many households. Reviewing at 15 keeps us clear of the 25 line rather than at it."
+    },
+    {
+      "id": "e-004",
+      "at": "2026-09-24T16:12:00Z",
+      "actor": "Advisor A",
+      "target": "rule",
+      "layer": "advisor",
+      "layerId": "adv-a",
+      "ruleId": "finra-2111-suitability",
+      "field": "maxConcentration",
+      "from": "25",
+      "to": "35",
+      "reason": "Book is concentrated by design: pre-liquidity founders hold their own equity."
+    }
+  ]
+}
