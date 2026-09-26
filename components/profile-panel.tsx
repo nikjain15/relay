@@ -14,7 +14,7 @@ export function ClientPreferences({ clientId }: { clientId: string }) {
   const v = p.values;
   const row = (label: string, value: string, key: keyof typeof p.provenance) => (
     <li>
-      {label}: <strong>{value}</strong> <span className="text-[11px] text-neutral-500">({sourceLabel(p.provenance[key])})</span>
+      {label}: <strong>{value}</strong> <span className="text-xs text-ink-2">({sourceLabel(p.provenance[key])})</span>
     </li>
   );
   return (
@@ -26,7 +26,7 @@ export function ClientPreferences({ clientId }: { clientId: string }) {
         {row("Escalate unsigned forms after", `${v["paperwork.escalateAfterDays"]} days`, "paperwork.escalateAfterDays")}
         {v["contact.callBeforeNote"] && (
           <li>
-            <Pill tone="fail">Call first</Pill> Speak to the client before any written note <span className="text-[11px] text-neutral-500">({sourceLabel(p.provenance["contact.callBeforeNote"])})</span>
+            <Pill tone="fail">Call first</Pill> Speak to the client before any written note <span className="text-xs text-ink-2">({sourceLabel(p.provenance["contact.callBeforeNote"])})</span>
           </li>
         )}
       </ul>
@@ -42,7 +42,7 @@ export function OrderedSections({ clientId, sections }: { clientId: string; sect
   const order = p.values["review.sectionOrder"];
   return (
     <>
-      <p className="mb-2 text-xs text-neutral-600">Section order: {sourceLabel(p.provenance["review.sectionOrder"])}.</p>
+      <p className="mb-2 text-xs text-ink-2">Section order: {sourceLabel(p.provenance["review.sectionOrder"])}.</p>
       <div className="grid max-w-6xl gap-6 md:grid-cols-2">
         {order.filter((k) => sections[k]).map((k) => (
           <div key={k}>{sections[k]}</div>

@@ -37,7 +37,7 @@ export default function Servicing() {
                     <Link className="underline" href={`/household/${c.id}`}>
                       {c.name}
                     </Link>
-                    <div className="text-[11px] text-neutral-500">{r.channel}</div>
+                    <div className="text-xs text-ink-2">{r.channel}</div>
                   </td>
                   <td className={`${td} max-w-sm`}>&ldquo;{r.text}&rdquo;</td>
                   <td className={td}>

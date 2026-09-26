@@ -1,0 +1,23 @@
+/* Relay design tokens: the single source for colour, type and shape.
+   Used by the prototype (Tailwind maps these names) and copied verbatim into
+   docs/mockups/relay-wireframes.html; tests/invariants/design-tokens.test.ts
+   fails if the two drift. See docs/DESIGN-SYSTEM.md. */
+:root {
+  --ink: #1a1a1a;
+  --ink-2: #5c5c5c;
+  --ink-3: #8a8a8a;
+  --line: #e4e2dd;
+  --line-strong: #bcb9b2;
+  --surface: #ffffff;
+  --subtle: #f6f5f2;
+  --selected: #ecebe6;
+  --accent: #1a1a1a;
+  --critical: #b3121f;
+  --critical-soft: #fbecec;
+  --positive: #2d6a4f;
+  --positive-soft: #e9f2ed;
+  --caution: #7a5200;
+  --caution-soft: #faf3e1;
+  --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --radius: 2px;
+}

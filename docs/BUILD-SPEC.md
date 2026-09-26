@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.3, 2026-09-26 (v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.4, 2026-09-26 (v2.4 applies one design system to the prototype and the mockup, R-20; v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (job-search D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -43,10 +43,7 @@ resets on reload, which is what a demo wants.
 `/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
 marked. Every page carries the banner "Illustrative prototype. Synthetic data. No model calls."
 
-**Layout, all Build surfaces:** dense tables, 13px base, tabular numerals for money and percentages,
-one accent colour from `--accent`, no cards-with-shadows. Evidence is one click from any row (PRD §6.1
-principle 2). WCAG 2.2 AA: every interactive control is a real `button` or link with a visible focus
-ring, and state is never conveyed by colour alone (pass and fail carry text).
+**Layout, all Build surfaces (v2.4):** the design system in `docs/DESIGN-SYSTEM.md`. Tokens in `app/tokens.css` only (enforced by `tests/invariants/design-tokens.test.ts`); black actions, warm greys, colour only for status and always with words; light 28px titles, 14px body, tabular numerals; 2px corners, no shadows; a top bar, a navigation rail, content capped at 1200px. WCAG 2.2 AA: every interactive control is a real `button` or link with a visible focus outline, and state is never conveyed by colour alone.
 
 ### 2.1 Depth added in v2.1
 

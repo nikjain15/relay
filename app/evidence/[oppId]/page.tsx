@@ -27,7 +27,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
         <ol className="space-y-1">
           {o.reasonPath.map((n, i) => (
             <li key={i} className="flex gap-2">
-              <span className="w-24 shrink-0 text-[11px] uppercase tracking-wide text-neutral-500">{n.kind}</span>
+              <span className="w-24 shrink-0 text-xs text-ink-3">{n.kind}</span>
               <span>{n.label}</span>
             </li>
           ))}
@@ -35,9 +35,9 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
       </Section>
       <Section title="Cited evidence">
         {ev.refused ? (
-          <div role="alert" className="rounded border border-red-700 bg-red-50 p-3">
-            <p className="font-semibold text-red-900">Refused: no supporting evidence.</p>
-            <p className="mt-1 text-red-900">
+          <div role="alert" className="rounded border border-critical bg-critical-soft p-3">
+            <p className="font-semibold text-critical">Refused: no supporting evidence.</p>
+            <p className="mt-1 text-critical">
               No passage in the corpus links this publication to a holding in this household. Missing:{" "}
               <code>{ev.missing.join(", ")}</code>. Relay will not narrate an explanation it cannot cite.
             </p>
@@ -47,7 +47,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
             {ev.passages.map((p, i) => (
               <li key={i} className="border-l-2 border-accent pl-3">
                 <p>{p.text}</p>
-                <p className="mt-0.5 text-[11px] text-neutral-500">
+                <p className="mt-0.5 text-xs text-ink-2">
                   {p.title}, prototype corpus, day {p.day}
                 </p>
               </li>
@@ -65,7 +65,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
                 <li key={i}><strong>{e.channel}</strong>, {ago(e.day)}: {e.summary}</li>
               ))}
               {c.notes.map((n, i) => (
-                <li key={`n${i}`} className="rounded bg-amber-50 px-2 py-1 text-amber-900"><strong>{n.from}</strong>, {ago(n.day)}: {n.text}</li>
+                <li key={`n${i}`} className="rounded bg-caution-soft px-2 py-1 text-caution"><strong>{n.from}</strong>, {ago(n.day)}: {n.text}</li>
               ))}
             </ul>
           );

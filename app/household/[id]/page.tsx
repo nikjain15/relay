@@ -52,13 +52,13 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   <td className={td}>{g.target ? fmt(g, g.target) : "No goal"}</td>
                   <td className={td}>
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-28 rounded bg-neutral-200" aria-hidden="true">
-                        <div className={`h-2 rounded ${under ? "bg-red-700" : "bg-emerald-700"}`} style={{ width: `${ratio * 100}%` }} />
+                      <div className="h-2 w-28 rounded bg-selected" aria-hidden="true">
+                        <div className={`h-2 rounded ${under ? "bg-critical" : "bg-positive"}`} style={{ width: `${ratio * 100}%` }} />
                       </div>
                       {g.target > 0 && <Pill tone={under ? "fail" : "pass"}>{under ? `Gap ${fmt(g, g.target - g.funded)}` : "Funded"}</Pill>}
                     </div>
                   </td>
-                  <td className={`${td} text-neutral-600`}>{g.assumption}</td>
+                  <td className={`${td} text-ink-2`}>{g.assumption}</td>
                 </tr>
               );
             })}
@@ -80,8 +80,8 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                 <tr key={x.name}>
                   <td className={td}>
                     {x.name}
-                    {x.earmarked && <div className="text-[11px] text-neutral-500">Earmarked: {x.earmarked}</div>}
-                    {x.shortTermLotsUsd ? <div className="text-[11px] text-neutral-500">Short-term lots: {usd(x.shortTermLotsUsd)}</div> : null}
+                    {x.earmarked && <div className="text-xs text-ink-2">Earmarked: {x.earmarked}</div>}
+                    {x.shortTermLotsUsd ? <div className="text-xs text-ink-2">Short-term lots: {usd(x.shortTermLotsUsd)}</div> : null}
                   </td>
                   <td className={`${td} text-right`}>{usd(x.valueUsd)}</td>
                   <td className={`${td} text-right`}>{pct((x.valueUsd / total) * 100)}</td>
@@ -89,7 +89,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               ))}
             </tbody>
           </table>
-          <p className="mt-1 text-[11px] text-neutral-500">Single-name exposure {pct(singleNamePct(h))} of investable assets.</p>
+          <p className="mt-1 text-xs text-ink-2">Single-name exposure {pct(singleNamePct(h))} of investable assets.</p>
         </Section>
         <Section title="IPS constraints and persons">
           <ul className="list-inside list-disc space-y-0.5">
@@ -97,7 +97,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               <li key={c.kind}>{constraintText(c)}</li>
             ))}
           </ul>
-          <p className="mt-2 text-neutral-600">
+          <p className="mt-2 text-ink-2">
             Persons ({h.persons.length}): {h.persons.map((p) => `${p.name}, ${p.role}`).join("; ")}. Each person counts separately
             toward the retail-investor threshold.
           </p>
@@ -113,7 +113,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                 {h.persons.map((p) => (
                   <li key={p.id}>
                     {p.name}
-                    {p.age ? `, ${p.age}` : ""} <span className="text-neutral-500">({p.role})</span>
+                    {p.age ? `, ${p.age}` : ""} <span className="text-ink-2">({p.role})</span>
                   </li>
                 ))}
               </ul>
@@ -129,7 +129,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   </li>
                 ))}
                 {f.client.notes.map((n, i) => (
-                  <li key={`n${i}`} className="rounded bg-amber-50 px-2 py-1 text-amber-900">
+                  <li key={`n${i}`} className="rounded bg-caution-soft px-2 py-1 text-caution">
                     <strong>{n.from}</strong>, {ago(n.day)}: {n.text}
                   </li>
                 ))}
@@ -139,7 +139,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               <ul className="list-inside list-disc space-y-0.5">
                 {f.client.tasks.map((x) => (
                   <li key={x.text}>
-                    {x.text} <span className="text-neutral-500">({x.owner}, {x.dueDay < 0 ? <span className="text-red-800">{-x.dueDay} days overdue</span> : x.dueDay === 0 ? "due today" : `due in ${x.dueDay} days`})</span>
+                    {x.text} <span className="text-ink-2">({x.owner}, {x.dueDay < 0 ? <span className="text-critical">{-x.dueDay} days overdue</span> : x.dueDay === 0 ? "due today" : `due in ${x.dueDay} days`})</span>
                   </li>
                 ))}
               </ul>
@@ -151,7 +151,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   return (
                     <li key={w.form}>
                       <Pill tone={s.status === "escalated" ? "fail" : s.status === "signed" ? "pass" : "neutral"}>{s.status}</Pill> {w.form}
-                      {s.status !== "signed" && <span className="text-neutral-500"> ({s.daysOpen} days open)</span>}
+                      {s.status !== "signed" && <span className="text-ink-2"> ({s.daysOpen} days open)</span>}
                     </li>
                   );
                 })}
@@ -168,7 +168,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   ))}
                 </ul>
               ) : (
-                <p className="text-neutral-500">None open.</p>
+                <p className="text-ink-2">None open.</p>
               )}
               <Link className="text-xs text-accent underline" href="/servicing">All service requests</Link>
             </Section>
@@ -176,7 +176,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               <ul className="list-inside list-disc space-y-0.5 text-xs">
                 {f.documents.map((d) => (
                   <li key={d.id}>
-                    {d.title} <span className="text-neutral-500">({d.kind}, prototype corpus day {d.day})</span>
+                    {d.title} <span className="text-ink-2">({d.kind}, prototype corpus day {d.day})</span>
                   </li>
                 ))}
               </ul>
@@ -194,7 +194,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
             </li>
           ))}
         </ul>
-        <p className="mt-1 text-[11px] text-neutral-500">
+        <p className="mt-1 text-xs text-ink-2">
           Invented name and figures inside published ranges. <Link className="underline" href="/personas">Who&apos;s who</Link>
         </p>
       </Section>

@@ -9,37 +9,47 @@ export const CLASS_LABEL: Record<TriggerClass, string> = {
   market_view: "Market or house view",
 };
 
+/** Status label. Text always states the status; colour only reinforces it. */
 export function Pill({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "pass" | "fail" | "accent" }) {
   const cls = {
-    neutral: "border-neutral-300 text-neutral-700",
-    pass: "border-emerald-700 text-emerald-800",
-    fail: "border-red-700 text-red-800",
-    accent: "border-accent text-accent",
+    neutral: "bg-subtle text-ink-2",
+    pass: "bg-positive-soft text-positive",
+    fail: "bg-critical-soft text-critical",
+    accent: "bg-selected text-ink",
   }[tone];
-  return <span className={`inline-block rounded border px-1.5 py-px text-[11px] font-medium ${cls}`}>{children}</span>;
+  return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-px align-middle text-xs font-medium ${cls}`}>{children}</span>;
 }
 
 export function PageTitle({ title, sub }: { title: string; sub?: string }) {
   return (
-    <header className="mb-4">
-      <h1 className="text-lg font-semibold">{title}</h1>
-      {sub && <p className="mt-0.5 text-neutral-600">{sub}</p>}
+    <header className="mb-8">
+      <h1 className="text-[28px] font-light leading-tight tracking-tight text-ink">{title}</h1>
+      {sub && <p className="mt-2 max-w-3xl text-ink-2">{sub}</p>}
     </header>
   );
 }
 
 export function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="mb-6">
-      <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">{title}</h2>
+    <section className="mb-10">
+      <h2 className="mb-3 text-[15px] font-semibold text-ink">{title}</h2>
       {children}
     </section>
   );
 }
 
-export const th = "border-b border-neutral-300 px-2 py-1 text-left text-[11px] font-semibold uppercase tracking-wide text-neutral-500";
-export const td = "border-b border-neutral-200 px-2 py-1.5 align-top";
-export const btn =
-  "rounded border border-neutral-400 px-2 py-0.5 text-xs hover:bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-40";
-export const btnPrimary =
-  "rounded border border-accent bg-accent px-2 py-0.5 text-xs text-white hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 disabled:opacity-40";
+/** A number with its label, for the few figures a screen leads with. */
+export function Stat({ value, label }: { value: ReactNode; label: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-1.5">
+      <strong className="text-2xl font-light text-ink">{value}</strong>
+      <span className="text-ink-2">{label}</span>
+    </span>
+  );
+}
+
+export const th = "border-b border-line-strong px-3 py-2 text-left text-xs font-normal text-ink-2";
+export const td = "border-b border-line px-3 py-3 align-top";
+const base = "inline-flex h-8 items-center rounded px-3 text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+export const btn = `${base} border border-ink bg-surface text-ink hover:bg-subtle`;
+export const btnPrimary = `${base} border border-ink bg-ink text-surface hover:opacity-85`;

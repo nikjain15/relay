@@ -22,9 +22,9 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
   const learnedA = overlay.advisor?.[advisorId] ?? {};
   const learnedC = (cid && overlay.client?.[cid]) || {};
   const cell = (key: (typeof KEYS)[number], values: Values, learned: Values, layer: string) => {
-    if (!SCHEMA[key].layers.includes(layer as never)) return <span className="text-neutral-300">n/a</span>;
+    if (!SCHEMA[key].layers.includes(layer as never)) return <span className="text-ink-3">n/a</span>;
     const v = learned[key] ?? values[key];
-    return v === undefined ? <span className="text-neutral-400">inherits</span> : <>{fmtValue(key, v)}{learned[key] !== undefined && <> <Pill tone="accent">learned</Pill></>}</>;
+    return v === undefined ? <span className="text-ink-3">inherits</span> : <>{fmtValue(key, v)}{learned[key] !== undefined && <> <Pill tone="accent">learned</Pill></>}</>;
   };
   return (
     <>
@@ -37,7 +37,7 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
         ))}
         <label className="ml-2 text-xs">
           Client{" "}
-          <select className="rounded border border-neutral-300" value={cid} onChange={(e) => setClientId(e.target.value)}>
+          <select className="rounded border border-line" value={cid} onChange={(e) => setClientId(e.target.value)}>
             {mine.map((x) => (
               <option key={x.id} value={x.id}>{clientName(x.id)}</option>
             ))}
@@ -68,16 +68,16 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
                 <td className={td}>{cell(k, (c?.preferences?.values ?? {}) as Values, learnedC, "client")}</td>
                 <td className={td}>
                   <strong>{fmtValue(k, r.values[k as keyof typeof r.values]) || "Not set"}</strong>
-                  <div className="text-[11px] text-neutral-500">{sourceLabel(r.provenance[k])}</div>
+                  <div className="text-xs text-ink-2">{sourceLabel(r.provenance[k])}</div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {r.ignored.length > 0 && (
-          <p className="mt-2 text-xs text-red-800">Ignored: {r.ignored.join("; ")}.</p>
+          <p className="mt-2 text-xs text-critical">Ignored: {r.ignored.join("; ")}.</p>
         )}
-        <p className="mt-2 text-[11px] text-neutral-500">Version recorded on every rationale record: <span className="font-mono">{r.version}</span></p>
+        <p className="mt-2 text-xs text-ink-2">Version recorded on every rationale record: <span className="font-mono">{r.version}</span></p>
       </Section>
       <Section title="Where each layer lives">
         <ul className="list-inside list-disc text-xs">

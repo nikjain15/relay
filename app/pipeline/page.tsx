@@ -31,23 +31,23 @@ export default function Pipeline() {
                   <tr key={p.id}>
                     <td className={td}>
                       {i + 1}
-                      <div className="text-[11px] text-neutral-500">score {prospectScore(p)}</div>
+                      <div className="text-xs text-ink-2">score {prospectScore(p)}</div>
                     </td>
                     <td className={td}>
                       <div className="font-medium">{p.label}</div>
-                      <div className="text-[11px] text-neutral-500">
+                      <div className="text-xs text-ink-2">
                         {p.lastTouchDays === null ? "No contact yet" : `Last touch ${p.lastTouchDays} days ago`}
                       </div>
                     </td>
                     <td className={td}>{p.signal}</td>
                     <td className={td}>
                       <Pill tone={p.path === "signal" ? "neutral" : "accent"}>{PATH_LABEL[p.path]}</Pill>
-                      <div className="mt-0.5 text-[11px] text-neutral-600">{p.pathDetail}</div>
+                      <div className="mt-0.5 text-xs text-ink-2">{p.pathDetail}</div>
                     </td>
                     <td className={`${td} text-right`}>{usd(p.estimatedUsd)}</td>
                     <td className={`${td} max-w-sm text-xs`}>
                       {introDraft(p)}
-                      <div className="mt-1 text-[11px] text-neutral-500">
+                      <div className="mt-1 text-xs text-ink-2">
                         Built from:{" "}
                         {p.groundedIn.map((s, k) => (
                           <span key={s.url}>
@@ -66,7 +66,7 @@ export default function Pipeline() {
           </Section>
         );
       })}
-      <p className="text-xs text-neutral-600">Score: path in (existing or referral 3, event 2, signal only 1) + fit to the practice (0 to 2) + size (0 to 2).</p>
+      <p className="text-xs text-ink-2">Score: path in (existing or referral 3, event 2, signal only 1) + fit to the practice (0 to 2) + size (0 to 2).</p>
     </>
   );
 }
