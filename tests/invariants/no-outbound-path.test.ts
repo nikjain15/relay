@@ -17,9 +17,9 @@ function sourceFiles(dir: string): string[] {
     .map((f) => join(dir, f));
 }
 
-describe("human-gated-outward: no transport in app/ or lib/", () => {
+describe("human-gated-outward: no transport in app/, components/ or lib/", () => {
   it("no source file calls fetch, XHR, WebSocket, sendBeacon or SMTP", () => {
-    const files = [...sourceFiles("app"), ...sourceFiles("lib")];
+    const files = [...sourceFiles("app"), ...sourceFiles("components"), ...sourceFiles("lib")];
     expect(files.length).toBeGreaterThan(0);
     for (const f of files) {
       expect(OUTBOUND.test(readFileSync(join(ROOT, f), "utf8")), `${f} performs transport`).toBe(false);
