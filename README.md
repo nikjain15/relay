@@ -3,6 +3,8 @@
 Advisor advice-to-action layer. An interview artifact, private, with synthetic data only. Never host it
 at a public, indexed URL (job-search D-57).
 
+**Live demo:** https://nikjain15.github.io/relay/ (walkthrough: `/relay/walkthrough/`). Published on GitHub Pages by `.github/workflows/pages.yml` on every push to `main` (R-22). Public but noindex.
+
 **Status:** PRD v0.4, build spec v2.5, prototype **built** to the spec: all nine surfaces across the
 advisor journey plus My clients, meetings with review packs, follow-ups, per-advisor and per-client personalization with a learning loop (`/profiles`, `/learning`), a journey home page and a measurement page, on the data in `data/` (clients, advisors, firm policy and app settings), with no
 model calls. The v1.0
