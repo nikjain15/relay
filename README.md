@@ -3,9 +3,13 @@
 Advisor advice-to-action layer. An interview artifact, private, with synthetic data only. Never host it
 at a public, indexed URL (job-search D-57).
 
-**Status:** PRD v0.4. Prototype **not built**: the app is a scaffold whose job today is to compile and to
-carry the architecture invariant. The v1.0 documents from an earlier session were lost; see
-`docs/DECISIONS.md` R-09.
+**Status:** PRD v0.4, build spec v2.0, prototype **built** to the spec: six working surfaces, a
+measurement page and three designed-not-built pages, on synthetic fixtures with no model calls. The v1.0
+documents from an earlier session were lost and are not reconstructed; see `docs/DECISIONS.md` R-09.
+
+**Demo path:** `/triage` then the Renner property sale's evidence, household and proposals; the Pell
+refusal; `/communications` for the recipient counter; `/supervision`; `/measurement`. Details in
+`docs/BUILD-SPEC.md` §7.
 
 ## Run it
 
@@ -24,9 +28,10 @@ npm run dev
 | `docs/AUDIT-2026-09-26-pass3.md` | Third audit: findings, verification table, recomputed arithmetic |
 | `docs/AUDIT-FINDINGS-2026-09-26.md` | First and second audit passes, as recorded then. Treat as history |
 | `docs/AUDIT-PROMPT.md` | The audit prompt used for the earlier passes |
+| `docs/BUILD-SPEC.md` | Build spec v2.0: surfaces, data model, fixtures, engines, demo path, build order |
 | `docs/DECISIONS.md` | R-09 onward |
 
-Not present, and deliberately not reconstructed: `ARCHITECTURE.md`, `BUILD-SPEC.md`, diagrams.
+Not present, and deliberately not reconstructed: the lost `ARCHITECTURE.md` and its diagrams.
 
 ## The invariant
 

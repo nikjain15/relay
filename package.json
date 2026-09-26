@@ -8,7 +8,7 @@
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "invariant:imports": "depcruise app lib --config .dependency-cruiser.cjs",
+    "invariant:imports": "depcruise app components lib --config .dependency-cruiser.cjs",
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm run invariant:imports && npm run test"
   },

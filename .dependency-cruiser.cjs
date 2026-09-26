@@ -15,7 +15,7 @@ module.exports = {
       comment:
         "Relay has no path to a client. Nothing may import an email, SMS, HTTP-send or socket transport.",
       severity: "error",
-      from: { path: "^(app|lib)/" },
+      from: { path: "^(app|components|lib)/" },
       to: {
         path: [
           "^(node:)?(net|tls|dgram|http|https|http2)$",
@@ -26,9 +26,9 @@ module.exports = {
     {
       name: "deterministic-no-model",
       comment:
-        "lib/constraints, lib/ranking and lib/recipients are deterministic. They may not import a model client.",
+        "lib/constraints, lib/ranking, lib/recipients and lib/policy are deterministic. They may not import a model client.",
       severity: "error",
-      from: { path: "^lib/(constraints|ranking|recipients)/" },
+      from: { path: "^lib/(constraints|ranking|recipients|policy)/" },
       to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)" },
     },
   ],
