@@ -120,7 +120,7 @@ export function Communications() {
                 Include another advisor&apos;s sends of this note ({priorIn} persons in the last 30 days, {priorOut} older)
               </label>}
             </div>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-0.5 md:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2 md:grid-cols-3">
               {BOOK.map((b) => (
                 <li key={b.id}>
                   <label className="flex items-center gap-1">

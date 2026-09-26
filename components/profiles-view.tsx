@@ -7,7 +7,7 @@ import { ADVISOR_PROFILES, FIRM, KEYS, SCHEMA, SEGMENTS, resolveProfile, sourceL
 import { fmtValue } from "@/lib/profile/format";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
-import { PageTitle, Pill, Section, btn, btnPrimary, td, th } from "@/components/ui";
+import { PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 
 export function ProfilesView({ advisor, client }: { advisor?: string; client?: string }) {
   const { overlay } = useRelay();
@@ -45,35 +45,37 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
         </label>
       </div>
       <Section title={`Effective settings for ${c ? clientName(c.id) : "this advisor"}`}>
-        <table className="w-full max-w-6xl border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Setting</th>
-              <th className={th}>Kind</th>
-              <th className={th}>Firm</th>
-              <th className={th}>Segment: {seg.label}</th>
-              <th className={th}>Advisor</th>
-              <th className={th}>Client</th>
-              <th className={th}>Effective, and from</th>
-            </tr>
-          </thead>
-          <tbody>
-            {KEYS.map((k) => (
-              <tr key={k}>
-                <td className={td}>{SCHEMA[k].label}</td>
-                <td className={td}><Pill tone={SCHEMA[k].kind === "rule" ? "fail" : "neutral"}>{SCHEMA[k].kind}</Pill></td>
-                <td className={td}>{cell(k, FIRM.values, {}, "firm")}</td>
-                <td className={td}>{cell(k, seg.values, {}, "segment")}</td>
-                <td className={td}>{cell(k, ap.values, learnedA, "advisor")}</td>
-                <td className={td}>{cell(k, (c?.preferences?.values ?? {}) as Values, learnedC, "client")}</td>
-                <td className={td}>
-                  <strong>{fmtValue(k, r.values[k as keyof typeof r.values]) || "Not set"}</strong>
-                  <div className="text-xs text-ink-2">{sourceLabel(r.provenance[k])}</div>
-                </td>
+        <TableScroll>
+          <table className="w-full min-w-[34rem] max-w-6xl border-collapse">
+            <thead>
+              <tr>
+                <th className={th}>Setting</th>
+                <th className={th}>Kind</th>
+                <th className={th}>Firm</th>
+                <th className={th}>Segment: {seg.label}</th>
+                <th className={th}>Advisor</th>
+                <th className={th}>Client</th>
+                <th className={th}>Effective, and from</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {KEYS.map((k) => (
+                <tr key={k}>
+                  <td className={td}>{SCHEMA[k].label}</td>
+                  <td className={td}><Pill tone={SCHEMA[k].kind === "rule" ? "fail" : "neutral"}>{SCHEMA[k].kind}</Pill></td>
+                  <td className={td}>{cell(k, FIRM.values, {}, "firm")}</td>
+                  <td className={td}>{cell(k, seg.values, {}, "segment")}</td>
+                  <td className={td}>{cell(k, ap.values, learnedA, "advisor")}</td>
+                  <td className={td}>{cell(k, (c?.preferences?.values ?? {}) as Values, learnedC, "client")}</td>
+                  <td className={td}>
+                    <strong>{fmtValue(k, r.values[k as keyof typeof r.values]) || "Not set"}</strong>
+                    <div className="text-xs text-ink-2">{sourceLabel(r.provenance[k])}</div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
         {r.ignored.length > 0 && (
           <p className="mt-2 text-xs text-critical">Ignored: {r.ignored.join("; ")}.</p>
         )}
