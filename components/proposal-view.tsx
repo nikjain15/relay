@@ -9,6 +9,7 @@ import { evaluateAll } from "@/lib/constraints/evaluate";
 import { rationale } from "@/lib/rationale";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { usd } from "@/lib/format";
+import { needText } from "@/lib/need-text";
 import { useRelay } from "@/components/state";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { PageTitle, Pill, Section, btn, btnPrimary, td, th } from "@/components/ui";
@@ -37,8 +38,9 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
     .sort((a, b) => Number(b.e.pass) - Number(a.e.pass) || key(a.e) - key(b.e) || a.i - b.i)
     .map((x) => x.e);
   const [selected, setSelected] = useState<string | null>(accepted[o.id] ?? evs.find((e) => e.pass)?.candidate.id ?? null);
-  const sel = evs.find((e) => e.candidate.id === selected);
-  const record = sel ? rationale(o, h, sel, evs) : null;
+  // A selection from another opportunity never counts: fall back to this one's first eligible option.
+  const sel = evs.find((e) => e.candidate.id === selected && e.pass) ?? evs.find((e) => e.candidate.id === accepted[o.id]) ?? evs.find((e) => e.pass);
+  const record = sel ? rationale(o, h, sel, evs, prof.version) : null;
   const passing = evs.filter((e) => e.pass).length;
   const refused = retrieve(o).refused;
 
@@ -69,13 +71,12 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
         </p>
       )}
       {o.action === "fund" && evs[0] && (() => {
-        const g = h.goals.find((x) => x.strategy === o.strategy);
-        return g && g.unit === "months" ? (
+        const t = needText(h, o);
+        return (
           <p className="mb-3 max-w-3xl rounded bg-subtle px-3 py-2">
-            Need: ({g.target} &minus; {g.funded}) months &times; {usd(h.monthlySpendUsd)} = <strong>{usd(evs[0].candidate.amountUsd)}</strong>
-            {o.inflowUsd ? `, from ${usd(o.inflowUsd)} of new cash` : ", moved from the core portfolio"}.
+            Need: {t.need}. <strong>{t.source}.</strong>
           </p>
-        ) : null;
+        );
       })()}
       <Section title={`${evs.length} candidates: ${passing} eligible, ${evs.length - passing} rejected with the failing constraint named`}>
         <p className="mb-2 text-xs text-ink-2">
@@ -103,7 +104,7 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
                       name="candidate"
                       aria-label={`Select ${p.name}, ${SOURCE[e.candidate.source]}`}
                       disabled={!e.pass}
-                      checked={selected === e.candidate.id}
+                      checked={sel?.candidate.id === e.candidate.id}
                       onChange={() => setSelected(e.candidate.id)}
                     />
                   </td>
@@ -134,7 +135,7 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
         </table>
       </Section>
       {record && sel && (
-        <Section title="Rationale record, structured (Reg BI care evidence)">
+        <Section title="Rationale record, structured (care-obligation evidence: Reg BI for brokerage, fiduciary duty for advisory)">
           <dl className="grid max-w-4xl grid-cols-[10rem_1fr] gap-x-3 gap-y-1">
             <dt className="text-ink-2">Basis</dt>
             <dd>{record.basis.join(" → ")}</dd>
@@ -157,7 +158,7 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
             <dt className="text-ink-2">Why suitable</dt>
             <dd>{record.whySuitable.join("; ")}</dd>
             <dt className="text-ink-2">Settings used</dt>
-            <dd className="font-mono text-xs">{prof.version}</dd>
+            <dd className="font-mono text-xs">{record.settingsVersion}</dd>
           </dl>
           <div className="mt-3 flex items-center gap-3">
             <button className={btnPrimary} onClick={() => accept(o.id, sel.candidate.id)}>

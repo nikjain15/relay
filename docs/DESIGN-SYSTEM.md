@@ -34,7 +34,7 @@ The single source is `app/tokens.css`. Tailwind maps each token to a class (`tex
 |---|---|---|
 | `--ink` | #1a1a1a | Text, primary buttons, focus outline, active navigation bar |
 | `--ink-2` | #5c5c5c | Secondary text, table headers |
-| `--ink-3` | #8a8a8a | Tertiary text: captions, navigation group labels, provenance |
+| `--ink-3` | #686868 | Tertiary text: captions, navigation group labels, provenance |
 | `--line` | #e4e2dd | Hairlines between rows and around cards |
 | `--line-strong` | #bcb9b2 | Table header rule |
 | `--surface` | #ffffff | Page |
@@ -74,6 +74,15 @@ on a warm grey with the active item marked by a 2px ink bar, and content capped 
   or `components/`. A planted `hover:text-red-700` and a planted `#e60000` both fail it;
 - the walkthrough mockup declares every token in `app/tokens.css` with the same value, so the prototype and
   the mockup cannot drift. It failed while the mockup still carried its old palette.
+
+**Contrast (R-21).** `--ink-3` was #8a8a8a, which failed AA for text on every background (3.45:1 on white,
+2.89:1 on `--selected`). It is now #686868: 5.57:1 on white, 5.11:1 on `--subtle`, 4.67:1 on `--selected`.
+Every other text pair was already above 4.5:1. `npm run e2e` checks the computed colour of every text
+element against its real background at 1440, 1280 and 1024 px, and in the mockup.
+
+**Keyboard.** A "Skip to content" link is the first Tab stop on every page and moves focus into `main`.
+
+The token scan also fails on `rgb()`, `hsl()` and Tailwind arbitrary colours such as `text-[#e60000]`.
 
 ## 5. Changing the look
 

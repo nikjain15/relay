@@ -4,7 +4,7 @@ import { opportunity, OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { household } from "@/lib/fixtures/households";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { clientFile } from "@/lib/data";
-import { CLASS_LABEL, PageTitle, Pill, Section } from "@/components/ui";
+import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, Section } from "@/components/ui";
 
 export function generateStaticParams() {
   return OPPORTUNITIES.map((o) => ({ oppId: o.id }));
@@ -20,14 +20,14 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
   return (
     <>
       <PageTitle title="Evidence and explain" sub={`${h.name}: ${o.title}`} />
-      <Section title="Reason path, the object the ranking used">
+      <Section title="Why it was flagged: the reasons the ranking used">
         <p className="mb-2">
           <Pill tone="accent">{CLASS_LABEL[o.triggerClass]}</Pill>
         </p>
         <ol className="space-y-1">
           {o.reasonPath.map((n, i) => (
             <li key={i} className="flex gap-2">
-              <span className="w-24 shrink-0 text-xs text-ink-3">{n.kind}</span>
+              <span className="w-24 shrink-0 text-xs text-ink-2">{NODE_LABEL[n.kind] ?? n.kind}</span>
               <span>{n.label}</span>
             </li>
           ))}
@@ -43,6 +43,12 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
             </p>
           </div>
         ) : (
+          <>
+          {ev.missing.length > 0 && (
+            <p role="status" className="mb-3 rounded border border-caution bg-caution-soft p-2 text-caution">
+              Also cited but not found, so not relied on: <code>{ev.missing.join(", ")}</code>.
+            </p>
+          )}
           <ul className="space-y-3">
             {ev.passages.map((p, i) => (
               <li key={i} className="border-l-2 border-accent pl-3">
@@ -53,6 +59,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
               </li>
             ))}
           </ul>
+          </>
         )}
       </Section>
       <Section title="What the team already knows">

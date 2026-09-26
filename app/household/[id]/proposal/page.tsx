@@ -17,5 +17,5 @@ export default async function Proposal({
   const candidates = OPPORTUNITIES.filter((o) => o.householdId === h.id && (o.action === "fund" || o.action === "trim"));
   const chosen = candidates.find((o) => o.id === opp) ?? candidates[0];
   if (!chosen) notFound();
-  return <ProposalView householdId={h.id} oppId={chosen.id} others={candidates.map((o) => ({ id: o.id, title: o.title }))} />;
+  return <ProposalView key={chosen.id} householdId={h.id} oppId={chosen.id} others={candidates.map((o) => ({ id: o.id, title: o.title }))} />;
 }

@@ -10,18 +10,20 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
-import { CLASS_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/components/ui";
+import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/components/ui";
 
 const REASONS = POLICY.triage.dismissReasons;
 
 export default function Triage() {
   const { dismissed, dismiss, restore, accepted, overlay } = useRelay();
   const [choosing, setChoosing] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
   const [advisorId, setAdvisorId] = useState(APP.defaultAdvisorId);
-  const advisor = ADVISORS_DATA.find((a) => a.id === advisorId)!;
-  const day = advisor.walkthrough!;
-  const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisorId);
-  const prof = resolveProfile({ advisorId }, overlay);
+  // Falls back to the first advisor if app.json names one that is not in the data.
+  const advisor = ADVISORS_DATA.find((a) => a.id === advisorId) ?? ADVISORS_DATA[0];
+  const day = advisor.walkthrough ?? { meetings: [], alertsOvernight: 0 };
+  const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisor.id);
+  const prof = resolveProfile({ advisorId: advisor.id }, overlay);
   const cap = prof.values["triage.dailyCap"];
   const weights = prof.values["triage.classWeights"];
   const rows = rank(mine, new Set(Object.keys(dismissed)), cap, weights);
@@ -37,7 +39,7 @@ export default function Triage() {
       <PageTitle title="Today's list" sub={`Ranked by materiality and trigger class, capped at ${cap} a day. One decision per row.`} />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
-          <button key={a.id} className={a.id === advisorId ? btnPrimary : btn} aria-pressed={a.id === advisorId} onClick={() => setAdvisorId(a.id)}>
+          <button key={a.id} className={a.id === advisor.id ? btnPrimary : btn} aria-pressed={a.id === advisor.id} onClick={() => setAdvisorId(a.id)}>
             {a.walkthrough?.label ?? a.name}
           </button>
         ))}
@@ -58,7 +60,7 @@ export default function Triage() {
         <p className="text-xs text-ink-2 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
         <p className="text-xs text-ink-2 md:col-span-2">
           Personalized: list of {cap} ({sourceLabel(prof.provenance["triage.dailyCap"])}); signal weights ({sourceLabel(prof.provenance["triage.classWeights"])}).{" "}
-          <Link className="underline" href={`/profiles?advisor=${advisorId}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
+          <Link className="underline" href={`/profiles?advisor=${advisor.id}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
         </p>
       </div>
       <table className="w-full border-collapse">
@@ -83,7 +85,7 @@ export default function Triage() {
                 <td className={td}>{score(o, weights)}</td>
                 <td className={td}>
                   <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
-                  <div className="mt-0.5 text-xs text-ink-2">day {o.observedDay}</div>
+                  <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
                 </td>
                 <td className={td}>
                   <Link className="underline decoration-line-strong hover:decoration-accent" href={`/household/${h.id}`}>
@@ -98,7 +100,7 @@ export default function Triage() {
                     {o.reasonPath.map((n, k) => (
                       <li key={k}>
                         {k > 0 && <span aria-hidden="true">{"→ "}</span>}
-                        <span className="text-ink-3">{n.kind}</span> {n.label}
+                        <span className="text-ink-3">{NODE_LABEL[n.kind] ?? n.kind}:</span> {n.label}
                       </li>
                     ))}
                   </ol>
@@ -120,29 +122,37 @@ export default function Triage() {
                       <span className="text-xs text-ink-2">Review task, no product action</span>
                     )}
                     {choosing === o.id ? (
-                      <label className="text-xs">
-                        <span className="sr-only">Dismiss reason</span>
-                        <select
-                          autoFocus
-                          className="rounded border border-line text-xs"
-                          defaultValue=""
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              dismiss(o.id, e.target.value);
+                      <div className="flex flex-col items-start gap-1">
+                        <label className="text-xs">
+                          <span className="sr-only">Dismiss reason</span>
+                          <select autoFocus className="rounded border border-line text-xs" value={reason} onChange={(e) => setReason(e.target.value)}>
+                            <option value="" disabled>
+                              Reason, required
+                            </option>
+                            {REASONS.map((r) => (
+                              <option key={r}>{r}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <div className="flex gap-1">
+                          <button
+                            className={btn}
+                            disabled={!reason}
+                            onClick={() => {
+                              dismiss(o.id, reason);
                               setChoosing(null);
-                            }
-                          }}
-                        >
-                          <option value="" disabled>
-                            Reason, required
-                          </option>
-                          {REASONS.map((r) => (
-                            <option key={r}>{r}</option>
-                          ))}
-                        </select>
-                      </label>
+                              setReason("");
+                            }}
+                          >
+                            Dismiss with this reason
+                          </button>
+                          <button className={btn} onClick={() => { setChoosing(null); setReason(""); }}>
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     ) : (
-                      <button className={btn} onClick={() => setChoosing(o.id)}>
+                      <button className={btn} onClick={() => { setChoosing(o.id); setReason(""); }}>
                         Dismiss
                       </button>
                     )}

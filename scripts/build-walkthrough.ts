@@ -4,12 +4,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { CLIENTS, ADVISORS_DATA, SHELF_DATA, PROSPECTS, SERVICE_REQUESTS, getClientFile, toHousehold } from "@/lib/data";
 import { rankProspects, prospectScore, introDraft, PATH_LABEL } from "@/lib/prospecting/rank";
-import { paperStatus, reminderDraft } from "@/lib/onboarding/status";
+import { paperStatus, reminderDraft, escalateAfter } from "@/lib/onboarding/status";
 import { triage } from "@/lib/servicing/classify";
 import { evaluateAll } from "@/lib/constraints/evaluate";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { compose } from "@/lib/drafting/compose";
 import { liquidityMonths } from "@/lib/household-math";
+import { needText } from "@/lib/need-text";
+import { rank } from "@/lib/ranking/rank";
+import { CLASS_LABEL, STEP_LABEL } from "@/lib/labels";
 import { constraintText } from "@/lib/constraint-text";
 import { usd } from "@/lib/format";
 import type { Evaluation, Failure } from "@/lib/types";
@@ -42,6 +45,11 @@ function reason(failures: Failure[], who: string): string {
   return failures.map((f) => f.detail).join("; ");
 }
 
+const nameOf = (id: string) => {
+  const c = CLIENTS.find((x) => x.id === id)!;
+  return c.persons.length > 1 ? `${c.name} family` : c.persons[0].name;
+};
+
 const stories = CLIENTS.filter((c) => c.walkthrough)
   .sort((a, b) => a.walkthrough!.order - b.walkthrough!.order)
   .map((c) => {
@@ -68,17 +76,18 @@ const stories = CLIENTS.filter((c) => c.walkthrough)
       shows: w.shows,
       advisor: { ...advisor.walkthrough, groundedIn: advisor.groundedIn },
       client: { name: `${c.persons.length > 1 ? `The ${c.name} family` : c.persons[0].name}, ${usd(c.totalUsd)}`, summary: w.summary, groundedIn: c.groundedIn },
-      list: [
-        { who: c.persons.length > 1 ? `${c.name} family` : c.persons[0].name, what: opp.plainTitle ?? opp.title, kind: opp.triggerClass, top: true },
-        ...CLIENTS.flatMap((o) => o.opportunities)
-          .filter((o) => o.id !== opp.id && CLIENTS.find((x) => x.id === o.householdId)!.advisorId === c.advisorId)
-          .sort((a, b) => b.materiality - a.materiality)
-          .slice(0, 3)
-          .map((o) => {
-            const oc = CLIENTS.find((x) => x.id === o.householdId)!;
-            return { who: oc.persons.length > 1 ? `${oc.name} family` : oc.persons[0].name, what: o.plainTitle ?? o.title, kind: o.triggerClass, top: false };
-          }),
-      ],
+      // The same ranked, capped list the advisor sees on /triage, with this story's row first.
+      cap: resolveProfile({ advisorId: c.advisorId }).values["triage.dailyCap"],
+      list: (() => {
+        const prof = resolveProfile({ advisorId: c.advisorId }).values;
+        const mine = CLIENTS.filter((x) => x.advisorId === c.advisorId).flatMap((x) => x.opportunities);
+        const ranked = rank(mine, new Set(), prof["triage.dailyCap"], prof["triage.classWeights"]);
+        return [opp, ...ranked.filter((o) => o.id !== opp.id)].slice(0, 4).map((o) => ({ who: nameOf(o.householdId), what: o.plainTitle ?? o.title, kind: o.triggerClass, top: o.id === opp.id }));
+      })(),
+      listTotal: (() => {
+        const prof = resolveProfile({ advisorId: c.advisorId }).values;
+        return rank(CLIENTS.filter((x) => x.advisorId === c.advisorId).flatMap((x) => x.opportunities), new Set(), prof["triage.dailyCap"], prof["triage.classWeights"]).length;
+      })(),
       chain: w.chain,
       quotes: ev.passages.map((p) => ({ text: p.text, source: `${p.title} (illustrative, prototype corpus day ${p.day})` })),
       history: c.contactHistory,
@@ -97,13 +106,7 @@ const stories = CLIENTS.filter((c) => c.walkthrough)
         })),
       rules: c.constraints.map(constraintText),
       tasks: c.tasks,
-      math: {
-        months: [goal.target, have],
-        monthly: usd(c.monthlySpendUsd),
-        amount: usd(chosen.candidate.amountUsd),
-        source: chosen.candidate.source === "new_cash" ? "from the new cash" : "moved from the core portfolio",
-        leftover: w.leftover,
-      },
+      math: { ...needText(h, opp), months: [goal.target, have], leftover: w.leftover },
       allowed: evs.filter((e) => e.pass).map((e) => ({ id: e.candidate.productId, name: plain(e.candidate.productId).plainName, desc: plain(e.candidate.productId).plainDescription, cost: usd(e.annualCostUsd) })),
       blocked: evs.filter((e) => !e.pass).map((e) => ({ name: plain(e.candidate.productId).plainName, reason: reason(e.failures, who) })),
       choose: w.chooseProductId,
@@ -117,19 +120,15 @@ const stories = CLIENTS.filter((c) => c.walkthrough)
     };
   });
 
-const nameOf = (id: string) => {
-  const c = CLIENTS.find((x) => x.id === id)!;
-  return c.persons.length > 1 ? `${c.name} family` : c.persons[0].name;
-};
 const journey = {
   prospects: rankProspects(PROSPECTS, APP.defaultAdvisorId).map((p) => ({
     label: p.label, signal: p.signal, path: PATH_LABEL[p.path], pathDetail: p.pathDetail,
     estimated: usd(p.estimatedUsd), score: prospectScore(p), draft: introDraft(p), groundedIn: p.groundedIn,
   })),
-  paperwork: CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, ...paperStatus(w) })))
+  paperwork: CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, ...paperStatus(w, 0, escalateAfter(c.id)) })))
     .filter((r) => r.status !== "signed")
     .sort((a, b) => Number(b.status === "escalated") - Number(a.status === "escalated") || b.daysOpen - a.daysOpen)
-    .map(({ c, w, status, daysOpen }) => ({ client: nameOf(c.id), form: w.form, status, daysOpen, note: w.note ?? "", draft: reminderDraft(c, w) })),
+    .map(({ c, w, status, daysOpen }) => ({ client: nameOf(c.id), form: w.form, status, daysOpen, after: escalateAfter(c.id), note: w.note ?? "", draft: reminderDraft(c, w) })),
   service: triage(SERVICE_REQUESTS).map((r) => ({
     client: nameOf(r.clientId), channel: r.channel, text: r.text, kind: r.kind, route: r.route,
     targetHours: r.targetHours, hoursLeft: r.hoursLeft, overdue: r.overdue, callbackRequired: r.callbackRequired,
@@ -142,6 +141,7 @@ const fmtGoal = (unit: string, v: number) => (unit === "months" ? `${v} months` 
 const labelOf = (id: string) => { const a = ADVISORS_DATA.find((x) => x.id === id)!; return a.walkthrough?.label ?? a.name; };
 const journeyMore = {
   today: APP.todayLabel,
+  labels: { classes: CLASS_LABEL, steps: STEP_LABEL },
   policy: { dailyCap: FIRM.values["triage.dailyCap"], escalateAfterDays: FIRM.values["paperwork.escalateAfterDays"] },
   prospectsAdvisor: labelOf(APP.defaultAdvisorId),
   reviewAdvisor: labelOf(rp.client.advisorId),

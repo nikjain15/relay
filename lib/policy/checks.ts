@@ -23,11 +23,25 @@ export function runChecks(input: {
   citedTitles: string[];
   recipients: number;
   recordedRegime: Regime;
+  /**
+   * A client rule that the advisor speaks to the client before any written note
+   * (resolved by the caller from the client's profile; rules can only tighten).
+   * When required, the draft fails until the advisor confirms the call.
+   */
+  callFirst?: { required: boolean; confirmed: boolean };
 }): CheckResult[] {
   const allowed = new Set(input.sources.flatMap(figures));
   const unsourced = figures(input.draft).filter((f) => !allowed.has(f));
   const cited = input.citedTitles.filter((t) => input.draft.includes(`[Source: ${t}`));
   const expected = classify(input.recipients);
+  const callFirst: CheckResult[] = input.callFirst?.required
+    ? [{
+        id: "call-first",
+        label: "Client rule: spoken to before any written note",
+        pass: input.callFirst.confirmed,
+        detail: input.callFirst.confirmed ? "Advisor confirmed the call before submitting" : "This client requires a call first; no call confirmed",
+      }]
+    : [];
   return [
     {
       id: "no-projection",
@@ -59,5 +73,6 @@ export function runChecks(input: {
       pass: input.draft.includes("not a projection of future performance"),
       detail: input.draft.includes("not a projection of future performance") ? "Standard disclosure included" : "Missing standard disclosure",
     },
+    ...callFirst,
   ];
 }

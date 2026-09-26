@@ -97,6 +97,9 @@ export interface Opportunity {
   strategy: Strategy;
   /** New cash arriving with the event, if any. */
   inflowUsd?: number;
+  /** A known cash outflow the goal must also cover, if any, and what it is ("capital call"). */
+  outflowUsd?: number;
+  outflowLabel?: string;
   /** Plain-English title for the advisor's list. */
   plainTitle?: string;
   /** Opening line for a client note about this opportunity. */
@@ -181,6 +184,8 @@ export interface RationaleRecord {
   alternatives: { productId: string; source: FundingSource; outcome: string }[];
   costsCompared: { productId: string; costBps: number; annualCostUsd: number }[];
   whySuitable: string[];
+  /** The resolved settings version in force (resolveProfile().version), so the decision can be reproduced. */
+  settingsVersion?: string;
 }
 
 export interface Task {

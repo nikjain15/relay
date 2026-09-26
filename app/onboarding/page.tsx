@@ -49,7 +49,7 @@ export default function Onboarding() {
                 <td className={`${td} text-right`}>{daysOpen}</td>
                 <td className={`${td} max-w-md text-xs`}>
                   {status === "signed"
-                    ? "Signed. Supervisory record written."
+                    ? "Signed."
                     : status === "escalated"
                       ? `Escalated to the branch supervisor. ${reminderDraft(c, w)}`
                       : reminderDraft(c, w)}
