@@ -192,7 +192,9 @@ dl.gl dd { margin: 0; color: var(--soft); }
     <span class="jarrow" aria-hidden="true">&rarr;</span>
     <a href="#daily" class="phase now"><span class="ph">Daily work</span><span>Today's list &middot; Why &middot; Picture &middot; Options &middot; Note &middot; Compliance</span></a>
     <span class="jarrow" aria-hidden="true">&rarr;</span>
-    <a href="#before" class="phase" data-chapter-link="2"><span class="ph">After</span><span>Service requests</span></a>
+    <a href="#before" class="phase" data-chapter-link="2"><span class="ph">Meetings</span><span>Today's diary &middot; Review pack</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#before" class="phase" data-chapter-link="4"><span class="ph">After</span><span>Service requests &middot; Follow-ups</span></a>
   </nav>
 
   <div class="picker" id="daily">
@@ -207,7 +209,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
   <section class="step" id="step" aria-live="polite"><p class="muted">Loading client data&hellip;</p></section>
 
   <section class="after" id="before">
-    <h2>Before and after the daily work</h2>
+    <h2>Before, around and after the daily work</h2>
     <p class="muted">The same client data drives these screens. Pick a stage.</p>
     <div class="stories chapters" id="chapters" role="group" aria-label="Journey stages"></div>
     <section class="step" id="chapter" aria-live="polite"><p class="muted">Loading&hellip;</p></section>
@@ -248,8 +250,8 @@ dl.gl dd { margin: 0; color: var(--soft); }
         title: "The advisor opens today's list",
         goal: `${A.households} client households. Which need attention today, and why?`,
         screen: `
-          <div class="stat"><span><strong>${A.meetings.length}</strong>meetings today</span><span><strong>${A.alertsOvernight}</strong>alerts overnight</span><span><strong>12</strong>on your list</span></div>
-          <div class="cal">${A.meetings.map(([t, m]) => `<span><b>${esc(t)}</b> ${esc(m)}</span>`).join("")}</div>
+          <div class="stat"><span><strong>${A.meetings.length}</strong>meetings today</span><span><strong>${A.alertsOvernight}</strong>alerts overnight</span><span><strong>${J ? J.policy.dailyCap : 12}</strong>on your list</span></div>
+          <div class="cal">${A.meetings.map((m) => `<span><b>${esc(m.time)}</b> ${esc(m.title)}</span>`).join("")}</div>
           <div class="sect">Your list, most important first</div>
           ${s.list.map((r, i) => `
             <div class="item ${r.top ? "go" : "faint"}" ${r.top ? 'data-next tabindex="0" role="button"' : ""}>
@@ -288,7 +290,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
             <div class="panel"><strong>Accounts</strong><div class="kv">${s.accounts.map((x) => `<span>${esc(x.name)}${x.note ? `<br><span class="muted">${esc(x.note)}</span>` : ""}</span><span>${esc(x.value)}</span>`).join("")}</div></div>
             <div class="panel"><strong>${s.people.length > 1 ? "The family's" : "The client's"} rules</strong><ul>${s.rules.map((r) => `<li>${esc(r)}</li>`).join("")}</ul></div>
           </div>
-          <div class="panel"><strong>Open tasks</strong><ul>${s.tasks.map((r) => `<li>${esc(r)}</li>`).join("")}</ul></div>
+          <div class="panel"><strong>Open tasks</strong><ul>${s.tasks.map((r) => `<li>${esc(r.text)} <span class="muted">(${esc(r.owner)}, ${r.dueDay < 0 ? `${-r.dueDay} days overdue` : r.dueDay === 0 ? "due today" : `due in ${r.dueDay} days`})</span></li>`).join("")}</ul></div>
           <div><span class="btn go" data-next tabindex="0" role="button">See the options &rarr;</span></div>`,
         take: "The advisor sees the gap, the accounts and the client's own rules on one screen.",
       },
@@ -393,8 +395,11 @@ dl.gl dd { margin: 0; color: var(--soft); }
   let J = null, chapter = 0;
   const CHAPTERS = [
     { key: "prospects", id: "before", tab: "Finding new clients", sub: "Before", shows: "Warm paths first; Relay drafts the ask" },
-    { key: "paperwork", id: "before", tab: "Paperwork", sub: "Before and ongoing", shows: "Unsigned after 14 days escalates" },
+    { key: "paperwork", id: "before", tab: "Paperwork", sub: "Before and ongoing", shows: "Unsigned too long escalates" },
+    { key: "meetings", id: "meetings", tab: "Today's meetings", sub: "Meetings", shows: "Every client meeting has a pack" },
+    { key: "review", id: "meetings", tab: "Review pack", sub: "Meetings", shows: "Built only from the client file" },
     { key: "service", id: "after", tab: "Service requests", sub: "After", shows: "Routed by rule; wires need a callback" },
+    { key: "followups", id: "after", tab: "Follow-ups", sub: "After", shows: "Tasks by owner, overdue first" },
   ];
   function renderChapter() {
     $("chapters").innerHTML = CHAPTERS.map((c, k) => `<button type="button" data-chapter="${k}" aria-pressed="${k === chapter}"><span class="nm">${c.tab}</span><span class="sub">${c.sub}</span><span class="shows">${c.shows}</span></button>`).join("");
@@ -402,7 +407,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
     let head = "", body = "", take = "";
     if (c.key === "prospects") {
       head = `<h2>Finding new clients</h2><p class="goal">Who is worth an introduction this week, and how warm is the path in?</p>`;
-      body = `<div class="screen-title">Advisor A: prospects, warmest first</div>` + J.prospects.map((p, i) => `
+      body = `<div class="screen-title">${esc(J.prospectsAdvisor)}: prospects, warmest first</div>` + J.prospects.map((p, i) => `
         <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1.6fr) 90px auto">
           <span><span class="t">${esc(p.label)}</span><br><span class="muted">${esc(p.signal)}</span></span>
           <span class="muted">${esc(p.path)}: ${esc(p.pathDetail)}</span>
@@ -420,8 +425,42 @@ dl.gl dd { margin: 0; color: var(--soft); }
           <span>${esc(w.form)}${w.note ? `<br><span class="muted">${esc(w.note)}</span>` : ""}</span>
           <span class="cost muted">${w.daysOpen} days</span>
           <span class="tag ${w.status === "escalated" ? "no" : "plain"}">${w.status}</span>
-        </div>${i === 0 ? `<div class="note">Unsigned for more than 14 days, so it went to the branch supervisor. ${esc(w.draft)}</div>` : ""}`).join("");
+        </div>${i === 0 ? `<div class="note">Unsigned for more than ${J.policy.escalateAfterDays} days, so it went to the branch supervisor. ${esc(w.draft)}</div>` : ""}`).join("");
       take = "Nothing sits unsigned quietly: the rule escalates it, and the reminder is already drafted.";
+    } else if (c.key === "meetings") {
+      head = `<h2>Today's meetings</h2><p class="goal">What is in the diary, and is there a pack ready for each client?</p>`;
+      body = J.meetings.map((a) => `<div class="screen-title">${esc(a.advisor)}</div>` + a.items.map((m) => `
+        <div class="opt ${m.client === J.reviewPack.client ? "go" : ""}" style="grid-template-columns:60px minmax(0,1.4fr) minmax(0,1.6fr) auto">
+          <span class="t">${esc(m.time)}</span>
+          <span>${esc(m.title)}${m.prospect ? `<br><span class="muted">${esc(m.prospect)}</span>` : ""}</span>
+          <span class="muted">${esc(m.purpose)}</span>
+          <span class="tag ${m.client ? "ok" : "plain"}">${m.client ? "review pack" : esc(m.kind)}</span>
+        </div>`).join("")).join("");
+      take = "Every client meeting opens with a pack Relay assembled from the client file; prospects link to their notes.";
+    } else if (c.key === "review") {
+      const r = J.reviewPack;
+      const list = (xs) => `<ul>${xs.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+      head = `<h2>Review pack: ${esc(r.client)}</h2><p class="goal">${esc(r.meeting || "Next meeting")}. ${esc(r.purpose || "")}</p>`;
+      body = `<div class="muted">${esc(r.people)} &middot; ${esc(r.total)}${r.lastContact ? ` &middot; last contact: ${esc(r.lastContact)}` : ""}</div>
+        <div class="grid2">
+          <div class="panel"><strong>1. What has changed</strong>${list(r.changed)}</div>
+          <div class="panel"><strong>2. Goals with a gap</strong>${list(r.gaps)}</div>
+          <div class="panel"><strong>3. Decisions to make</strong>${r.decisions.length ? list(r.decisions) : '<p class="muted">None pending</p>'}</div>
+          <div class="panel"><strong>4. Open items</strong>${list(r.openItems)}<ul>${r.tasks.map((x) => `<li>${esc(x.text)} <span class="muted">(${esc(x.owner)}, ${esc(x.due)})</span></li>`).join("")}</ul></div>
+          <div class="panel"><strong>5. Talking points</strong><ol>${r.talkingPoints.map((x) => `<li>${esc(x)}</li>`).join("")}</ol></div>
+          <div class="panel"><strong>Documents to hand</strong>${list(r.documents)}</div>
+        </div>`;
+      take = "The advisor walks in knowing what changed, what is short, and what needs a decision, and nothing in the pack is invented.";
+    } else if (c.key === "followups") {
+      head = `<h2>Follow-ups</h2><p class="goal">What does the team still owe clients, and what is overdue?</p>`;
+      body = `<div class="stat"><span><strong>${J.followUps.length}</strong>open tasks</span><span><strong>${J.followUps.filter((x) => x.overdue).length}</strong>overdue</span></div>` + J.followUps.map((x) => `
+        <div class="opt ${x.overdue ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.8fr) minmax(0,1fr) auto">
+          <span class="t">${esc(x.client)}</span>
+          <span>${esc(x.text)}</span>
+          <span class="muted">${esc(x.owner)}</span>
+          <span class="tag ${x.overdue ? "no" : "plain"}">${esc(x.due)}</span>
+        </div>`).join("") + `<div class="note">Approved notes also land here until the advisor sends them from their own email and logs it. Relay never sends.</div>`;
+      take = "After the advice, nothing is left to memory: every promise has an owner and a date.";
     } else {
       head = `<h2>Service requests</h2><p class="goal">What came in, who handles it, and what must never happen on an email alone?</p>`;
       body = `<div class="stat"><span><strong>${J.service.length}</strong>open</span><span><strong>${J.service.filter((r) => r.overdue).length}</strong>overdue</span><span><strong>${J.service.filter((r) => r.callbackRequired).length}</strong>need a callback</span></div>` + J.service.map((r, i) => `
@@ -430,11 +469,11 @@ dl.gl dd { margin: 0; color: var(--soft); }
           <span>"${esc(r.text)}"</span>
           <span class="muted">${esc(r.kind)} &rarr; ${esc(r.route)}</span>
           <span class="tag ${r.callbackRequired || r.overdue ? "no" : "plain"}">${r.callbackRequired ? "callback first" : r.overdue ? `overdue ${-r.hoursLeft}h` : `${r.hoursLeft}h left`}</span>
-        </div>${i === 0 && r.callbackRequired ? '<div class="note">A $1.2M wire requested by email. The team calls the client back on a number already on file before any money moves.</div>' : ""}`).join("");
+        </div>${i === 0 && r.callbackRequired ? `<div class="note">Money movement requested by ${esc(r.channel.toLowerCase())}. The team calls the client back on a number already on file before any money moves.</div>` : ""}`).join("");
       take = "Requests are routed by rule and measured on time to resolution, never on volume handled.";
     }
     $("chapter").innerHTML = `<div class="step-head"><span class="of">${c.sub}</span>${head}</div>
-      <div class="screen"><div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${c.key === "prospects" ? "Advisor A" : "Branch team, both advisors"} &middot; Tuesday</span></div><div class="screen-body">${body}</div></div>
+      <div class="screen"><div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${c.key === "prospects" ? esc(J.prospectsAdvisor) : c.key === "review" ? esc(J.reviewAdvisor) : "Branch team, both advisors"} &middot; ${esc(J.today)}</span></div><div class="screen-body">${body}</div></div>
       <div class="takeaway"><span class="k">In short</span><p>${take}</p></div>`;
   }
 

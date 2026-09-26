@@ -13,6 +13,9 @@ import { liquidityMonths } from "@/lib/household-math";
 import { constraintText } from "@/lib/constraint-text";
 import { usd } from "@/lib/format";
 import type { Evaluation, Failure } from "@/lib/types";
+import { APP, POLICY } from "@/lib/data/policy";
+import { reviewPack, prospectFor } from "@/lib/meetings/prep";
+import { allTasks, dueLabel } from "@/lib/followups";
 
 const OUT = "data/generated/walkthrough.json";
 const plain = (id: string) => SHELF_DATA.find((p) => p.id === id)!;
@@ -116,7 +119,7 @@ const nameOf = (id: string) => {
   return c.persons.length > 1 ? `${c.name} family` : c.persons[0].name;
 };
 const journey = {
-  prospects: rankProspects(PROSPECTS, "adv-a").map((p) => ({
+  prospects: rankProspects(PROSPECTS, APP.defaultAdvisorId).map((p) => ({
     label: p.label, signal: p.signal, path: PATH_LABEL[p.path], pathDetail: p.pathDetail,
     estimated: usd(p.estimatedUsd), score: prospectScore(p), draft: introDraft(p), groundedIn: p.groundedIn,
   })),
@@ -130,7 +133,44 @@ const journey = {
   })),
 };
 
-const out = JSON.stringify({ generatedFrom: "data/ via scripts/build-walkthrough.ts; do not hand-edit", stories, journey }, null, 2) + "\n";
+const rp = reviewPack(APP.featured.reviewClientId);
+if (!rp) throw new Error(`app.json reviewClientId ${APP.featured.reviewClientId} not found`);
+const fmtGoal = (unit: string, v: number) => (unit === "months" ? `${v} months` : usd(v));
+const labelOf = (id: string) => { const a = ADVISORS_DATA.find((x) => x.id === id)!; return a.walkthrough?.label ?? a.name; };
+const journeyMore = {
+  today: APP.todayLabel,
+  policy: { dailyCap: POLICY.triage.dailyCap, escalateAfterDays: POLICY.paperwork.escalateAfterDays },
+  prospectsAdvisor: labelOf(APP.defaultAdvisorId),
+  reviewAdvisor: labelOf(rp.client.advisorId),
+  meetings: ADVISORS_DATA.map((a) => ({
+    advisor: a.walkthrough?.label ?? a.name,
+    items: (a.walkthrough?.meetings ?? []).map((m) => ({
+      time: m.time, title: m.title, kind: m.kind, purpose: m.purpose,
+      client: m.clientId ? nameOf(m.clientId) : null, prospect: prospectFor(m)?.label ?? null,
+    })),
+  })),
+  reviewPack: {
+    client: nameOf(rp.client.id),
+    people: rp.client.persons.map((p) => `${p.name}${p.age ? ` (${p.age})` : ""}`).join(", "),
+    total: usd(rp.client.totalUsd),
+    meeting: rp.meeting ? `${rp.meeting.time}, ${rp.meeting.title}` : null,
+    purpose: rp.meeting?.purpose ?? null,
+    lastContact: rp.lastContact ? `${rp.lastContact.channel}, ${-rp.lastContact.day} days ago: ${rp.lastContact.summary}` : null,
+    changed: rp.changed.map((o) => o.plainTitle ?? o.title),
+    gaps: rp.gaps.map((g) => `${g.strategy}: ${fmtGoal(g.unit, g.funded)} of ${fmtGoal(g.unit, g.target)}`),
+    decisions: rp.decisions.map((d) => `${d.opportunity.plainTitle ?? d.opportunity.title}: ${d.eligible} options allowed, ${d.blocked} blocked${d.amount ? `, about ${d.amount}` : ""}`),
+    openItems: [
+      ...rp.openPaperwork.map((w) => `${w.form}: ${w.status}, ${w.daysOpen} days`),
+      ...rp.serviceRequests.map((s) => `${s.kind}: "${s.text}"`),
+    ],
+    tasks: rp.tasks.map((t) => ({ text: t.text, owner: t.owner, due: dueLabel(t.dueDay), overdue: t.dueDay < 0 })),
+    talkingPoints: rp.talkingPoints,
+    documents: rp.documents.map((d) => d.title),
+  },
+  followUps: allTasks().map((t) => ({ client: t.clientName, text: t.text, owner: t.owner, due: dueLabel(t.dueDay), overdue: t.dueDay < 0 })),
+};
+
+const out = JSON.stringify({ generatedFrom: "data/ via scripts/build-walkthrough.ts; do not hand-edit", stories, journey: { ...journey, ...journeyMore } }, null, 2) + "\n";
 if (process.argv.includes("--check")) {
   let cur = "";
   try { cur = readFileSync(OUT, "utf8"); } catch {}

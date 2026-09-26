@@ -99,8 +99,16 @@
     }
   ],
   "tasks": [
-    "Confirm this year's withdrawal amount",
-    "Update beneficiary forms"
+    {
+      "text": "Confirm this year's withdrawal amount",
+      "owner": "Advisor",
+      "dueDay": 0
+    },
+    {
+      "text": "Update beneficiary forms",
+      "owner": "Client service associate",
+      "dueDay": -3
+    }
   ],
   "paperwork": [
     {

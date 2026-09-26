@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.1, 2026-09-26 (v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.2, 2026-09-26 (v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (job-search D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -33,6 +33,10 @@ resets on reload, which is what a demo wants.
 | 2 | Onboarding and re-papering | `/onboarding` | **Build** | Every open form per client with status computed by rule: signed, due, or **escalated after 14 days unsigned**; a drafted reminder; the supervisory record written as items close |
 | 8 | Servicing and operations triage | `/servicing` | **Build** | Incoming requests classified by rule, routed to the right person with a response-time target, overdue shown; **money movement requires a callback to a number on file before release**; a drafted reply the team sends |
 | - | Advisor journey | `/` | **Build** | The whole journey on one page, before, during and after the daily work, each stage with a live count and a link |
+| - | My clients | `/clients` | **Build** (v2.2) | The book per advisor: tier, assets, cash cushion against target, flagged items, open forms (escalated shown), requests, last contact, today's meeting |
+| - | Today's meetings | `/meetings` | **Build** (v2.2) | Each advisor's day from `advisors.json`; client meetings link to a review pack, prospect meetings to the pipeline |
+| - | Review pack | `/meetings/[id]` | **Build** (v2.2) | Built only from the client file: what changed, goals with a gap, decisions (allowed and blocked counts; refused opportunities excluded), open items and tasks, talking points, documents |
+| - | Follow-ups | `/follow-ups` | **Build** (v2.2) | Tasks by owner, overdue first; approved notes the advisor marks as sent from their own email; a call log. Relay never sends |
 
 `/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
 marked. Every page carries the banner "Illustrative prototype. Synthetic data. No model calls."
@@ -103,6 +107,22 @@ All in `data/` as JSON (one file per client; see `data/README.md`), loaded and v
 - The batch demo cohort reaches exactly 26 persons from 13 two-person households with the second
   advisor's prior sends excluded, and exceeds 25 earlier when they are included.
 
+### 5.2 Data separation (v2.2)
+
+Nothing a person might change lives in code.
+
+| File | Read by |
+|---|---|
+| `data/policy.json` | Ranking (cap, class weights), triage (dismiss reasons), constraints (cash product, sleeve limits, lock-up, core model), compose (disclosure document), onboarding (escalation days), prospecting (warmth, size bands), servicing (routing rules) |
+| `data/app.json` | Navigation, journey page, communications and the walkthrough (day label, default advisor, featured client, opportunity and product, review-pack client, default talking points) |
+| `advisors.json` `meetings` | `{time, title, kind, clientId?, prospectId?, purpose}` |
+| client `tasks` | `{text, owner, dueDay}`; negative is overdue |
+
+The FINRA 25-in-30-days threshold stays in `lib/recipients/count.ts`: it is regulation, not firm policy.
+`validate()` checks meetings, tasks, app settings and policy ids. `tests/invariants/no-client-data-in-code.test.ts`
+fails on any client or prospect name, or any data id, in `app/`, `components/` or `lib/` (except the
+loader `lib/data/index.ts`).
+
 ### 5.1 Data added in v2.1
 
 - `data/prospects.json`: prospects for each advisor with the signal, path in, estimated assets and a source.
@@ -121,6 +141,8 @@ All in `data/` as JSON (one file per client; see `data/README.md`), loaded and v
 | `lib/prospecting/rank.ts` | Score = warmth of path (existing relationship 3, referral 3, event 2, event only 1) + fit to the practice (0 to 2) + size band (0 to 2); drafted introduction request | n/a |
 | `lib/onboarding/status.ts` | Signed, due, or escalated when unsigned for more than 14 days (the illustrative procedure); counts open items per client | n/a |
 | `lib/servicing/classify.ts` | Keyword rules to a class; route and response-time target per class; overdue flag; money movement flagged for callback verification | n/a |
+| `lib/meetings/prep.ts` | Today's meetings per advisor; `reviewPack(id)` from the client file only | n/a |
+| `lib/followups.ts` | All tasks with client and advisor, overdue first | n/a |
 | `lib/drafting/compose.ts` | Composes the client note **only** from the approved proposal, the household's figures and the cited passage, using fixed fragments | n/a in prototype |
 
 ## 7. Demo click path

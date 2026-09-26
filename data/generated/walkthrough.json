@@ -13,22 +13,33 @@
         "alertsOvernight": 47,
         "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
         "meetings": [
-          [
-            "9:30",
-            "Renner quarterly call"
-          ],
-          [
-            "11:00",
-            "Referral intro"
-          ],
-          [
-            "2:00",
-            "Alcott annual review"
-          ],
-          [
-            "4:30",
-            "Team huddle"
-          ]
+          {
+            "time": "9:30",
+            "title": "Renner quarterly call",
+            "kind": "call",
+            "clientId": "hh-renner",
+            "purpose": "Quarterly check-in; the property sale is new since last time"
+          },
+          {
+            "time": "11:00",
+            "title": "Referral intro",
+            "kind": "prospect",
+            "prospectId": "pr-series-d-founder",
+            "purpose": "First conversation, introduced by the Renners"
+          },
+          {
+            "time": "2:00",
+            "title": "Alcott annual review",
+            "kind": "review",
+            "clientId": "hh-alcott",
+            "purpose": "Annual review; required withdrawals start next year"
+          },
+          {
+            "time": "4:30",
+            "title": "Team huddle",
+            "kind": "internal",
+            "purpose": "Escalated paperwork and today's service queue"
+          }
         ],
         "groundedIn": [
           {
@@ -185,8 +196,16 @@
         "No private credit"
       ],
       "tasks": [
-        "Introduce estate attorney for the grandchildren's trust",
-        "Review the stock trading plan before next quarter"
+        {
+          "text": "Introduce estate attorney for the grandchildren's trust",
+          "owner": "Advisor",
+          "dueDay": 5
+        },
+        {
+          "text": "Review the stock trading plan before next quarter",
+          "owner": "Wealth strategist",
+          "dueDay": 20
+        }
       ],
       "math": {
         "months": [
@@ -286,22 +305,33 @@
         "alertsOvernight": 47,
         "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
         "meetings": [
-          [
-            "9:30",
-            "Renner quarterly call"
-          ],
-          [
-            "11:00",
-            "Referral intro"
-          ],
-          [
-            "2:00",
-            "Alcott annual review"
-          ],
-          [
-            "4:30",
-            "Team huddle"
-          ]
+          {
+            "time": "9:30",
+            "title": "Renner quarterly call",
+            "kind": "call",
+            "clientId": "hh-renner",
+            "purpose": "Quarterly check-in; the property sale is new since last time"
+          },
+          {
+            "time": "11:00",
+            "title": "Referral intro",
+            "kind": "prospect",
+            "prospectId": "pr-series-d-founder",
+            "purpose": "First conversation, introduced by the Renners"
+          },
+          {
+            "time": "2:00",
+            "title": "Alcott annual review",
+            "kind": "review",
+            "clientId": "hh-alcott",
+            "purpose": "Annual review; required withdrawals start next year"
+          },
+          {
+            "time": "4:30",
+            "title": "Team huddle",
+            "kind": "internal",
+            "purpose": "Escalated paperwork and today's service queue"
+          }
         ],
         "groundedIn": [
           {
@@ -448,8 +478,16 @@
         "No private credit or structured notes"
       ],
       "tasks": [
-        "Confirm this year's withdrawal amount",
-        "Update beneficiary forms"
+        {
+          "text": "Confirm this year's withdrawal amount",
+          "owner": "Advisor",
+          "dueDay": 0
+        },
+        {
+          "text": "Update beneficiary forms",
+          "owner": "Client service associate",
+          "dueDay": -3
+        }
       ],
       "math": {
         "months": [
@@ -548,22 +586,33 @@
         "alertsOvernight": 47,
         "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
         "meetings": [
-          [
-            "9:30",
-            "Renner quarterly call"
-          ],
-          [
-            "11:00",
-            "Referral intro"
-          ],
-          [
-            "2:00",
-            "Alcott annual review"
-          ],
-          [
-            "4:30",
-            "Team huddle"
-          ]
+          {
+            "time": "9:30",
+            "title": "Renner quarterly call",
+            "kind": "call",
+            "clientId": "hh-renner",
+            "purpose": "Quarterly check-in; the property sale is new since last time"
+          },
+          {
+            "time": "11:00",
+            "title": "Referral intro",
+            "kind": "prospect",
+            "prospectId": "pr-series-d-founder",
+            "purpose": "First conversation, introduced by the Renners"
+          },
+          {
+            "time": "2:00",
+            "title": "Alcott annual review",
+            "kind": "review",
+            "clientId": "hh-alcott",
+            "purpose": "Annual review; required withdrawals start next year"
+          },
+          {
+            "time": "4:30",
+            "title": "Team huddle",
+            "kind": "internal",
+            "purpose": "Escalated paperwork and today's service queue"
+          }
         ],
         "groundedIn": [
           {
@@ -705,8 +754,16 @@
         "Risk level at most 4 of 5"
       ],
       "tasks": [
-        "Succession planning with the estate attorney",
-        "Model the sale scenario for retirement"
+        {
+          "text": "Succession planning with the estate attorney",
+          "owner": "Advisor",
+          "dueDay": 21
+        },
+        {
+          "text": "Model the sale scenario for retirement",
+          "owner": "Wealth strategist",
+          "dueDay": 14
+        }
       ],
       "math": {
         "months": [
@@ -804,22 +861,32 @@
         "alertsOvernight": 61,
         "summary": "Licensed advisor at the Charlotte hub, working by phone and video. About 1,000 client households, each under $250K invested. No dedicated relationships: the constraint is contacts per day.",
         "meetings": [
-          [
-            "9:00",
-            "Callback queue: 14"
-          ],
-          [
-            "10:30",
-            "Video: new client"
-          ],
-          [
-            "1:00",
-            "Callback queue: 11"
-          ],
-          [
-            "3:30",
-            "Video: retirement check-in"
-          ]
+          {
+            "time": "9:00",
+            "title": "Callback queue: 14",
+            "kind": "queue",
+            "purpose": "Returning client calls"
+          },
+          {
+            "time": "10:30",
+            "title": "Video: new client",
+            "kind": "prospect",
+            "prospectId": "pr-pell-adult-child",
+            "purpose": "C. Pell's daughter, first account"
+          },
+          {
+            "time": "1:00",
+            "title": "Callback queue: 11",
+            "kind": "queue",
+            "purpose": "Returning client calls"
+          },
+          {
+            "time": "3:30",
+            "title": "Video: retirement check-in",
+            "kind": "review",
+            "clientId": "hh-pell",
+            "purpose": "Annual check-in; cash covers 4 of 6 months"
+          }
         ],
         "groundedIn": [
           {
@@ -932,8 +999,16 @@
         "Risk level at most 3 of 5"
       ],
       "tasks": [
-        "Confirm the monthly spending figure",
-        "Schedule the annual check-in"
+        {
+          "text": "Confirm the monthly spending figure",
+          "owner": "Advisor",
+          "dueDay": 0
+        },
+        {
+          "text": "Schedule the annual check-in",
+          "owner": "Callback queue",
+          "dueDay": 2
+        }
       ],
       "math": {
         "months": [
@@ -1260,6 +1335,239 @@
         "hoursLeft": 20,
         "overdue": false,
         "callbackRequired": false
+      }
+    ],
+    "today": "Tuesday",
+    "policy": {
+      "dailyCap": 12,
+      "escalateAfterDays": 14
+    },
+    "prospectsAdvisor": "Advisor A, New York",
+    "reviewAdvisor": "Advisor A, New York",
+    "meetings": [
+      {
+        "advisor": "Advisor A, New York",
+        "items": [
+          {
+            "time": "9:30",
+            "title": "Renner quarterly call",
+            "kind": "call",
+            "purpose": "Quarterly check-in; the property sale is new since last time",
+            "client": "Renner family",
+            "prospect": null
+          },
+          {
+            "time": "11:00",
+            "title": "Referral intro",
+            "kind": "prospect",
+            "purpose": "First conversation, introduced by the Renners",
+            "client": null,
+            "prospect": "Co-founder of a Series D software company"
+          },
+          {
+            "time": "2:00",
+            "title": "Alcott annual review",
+            "kind": "review",
+            "purpose": "Annual review; required withdrawals start next year",
+            "client": "Alcott family",
+            "prospect": null
+          },
+          {
+            "time": "4:30",
+            "title": "Team huddle",
+            "kind": "internal",
+            "purpose": "Escalated paperwork and today's service queue",
+            "client": null,
+            "prospect": null
+          }
+        ]
+      },
+      {
+        "advisor": "Advisor B, Wealth Advice Center",
+        "items": [
+          {
+            "time": "9:00",
+            "title": "Callback queue: 14",
+            "kind": "queue",
+            "purpose": "Returning client calls",
+            "client": null,
+            "prospect": null
+          },
+          {
+            "time": "10:30",
+            "title": "Video: new client",
+            "kind": "prospect",
+            "purpose": "C. Pell's daughter, first account",
+            "client": null,
+            "prospect": "Adult child of an existing client"
+          },
+          {
+            "time": "1:00",
+            "title": "Callback queue: 11",
+            "kind": "queue",
+            "purpose": "Returning client calls",
+            "client": null,
+            "prospect": null
+          },
+          {
+            "time": "3:30",
+            "title": "Video: retirement check-in",
+            "kind": "review",
+            "purpose": "Annual check-in; cash covers 4 of 6 months",
+            "client": "C. Pell",
+            "prospect": null
+          }
+        ]
+      }
+    ],
+    "reviewPack": {
+      "client": "Alcott family",
+      "people": "R. Alcott (72), S. Alcott (70)",
+      "total": "$8.4M",
+      "meeting": "2:00, Alcott annual review",
+      "purpose": "Annual review; required withdrawals start next year",
+      "lastContact": "Meeting, 120 days ago: Annual review; agreed to revisit cash once withdrawals start",
+      "changed": [
+        "Cash covers 11 of 36 months as required withdrawals start",
+        "$200K municipal bond matures in 30 days"
+      ],
+      "gaps": [
+        "Liquidity: 11 months of 36 months",
+        "Legacy: $900K of $1M"
+      ],
+      "decisions": [
+        "Cash covers 11 of 36 months as required withdrawals start: 3 options allowed, 5 blocked, about $550K",
+        "$200K municipal bond matures in 30 days: 3 options allowed, 5 blocked, about $200K"
+      ],
+      "openItems": [
+        "Beneficiary designation update: escalated, 30 days",
+        "Required withdrawal election: due, 2 days",
+        "Distribution set-up: \"Set up this year's required withdrawal, paid monthly.\""
+      ],
+      "tasks": [
+        {
+          "text": "Confirm this year's withdrawal amount",
+          "owner": "Advisor",
+          "due": "due today",
+          "overdue": false
+        },
+        {
+          "text": "Update beneficiary forms",
+          "owner": "Client service associate",
+          "due": "3 days overdue",
+          "overdue": true
+        }
+      ],
+      "talkingPoints": [
+        "Start from their 2:00 review agenda",
+        "Show the 11 of 36 months gap on screen",
+        "Use the maturing $200K bond first",
+        "Confirm this year's withdrawal amount"
+      ],
+      "documents": [
+        "Sizing a Liquidity strategy",
+        "Treasury ladder, 0 to 3 years",
+        "Municipal ladder, 1 to 7 years"
+      ]
+    },
+    "followUps": [
+      {
+        "client": "Alcott family",
+        "text": "Update beneficiary forms",
+        "owner": "Client service associate",
+        "due": "3 days overdue",
+        "overdue": true
+      },
+      {
+        "client": "D. Vasquez-Hale",
+        "text": "Follow up on the rollover signature",
+        "owner": "Advisor",
+        "due": "2 days overdue",
+        "overdue": true
+      },
+      {
+        "client": "Okafor-Lind family",
+        "text": "Refresh client information for two beneficiaries",
+        "owner": "Client service associate",
+        "due": "1 days overdue",
+        "overdue": true
+      },
+      {
+        "client": "Alcott family",
+        "text": "Confirm this year's withdrawal amount",
+        "owner": "Advisor",
+        "due": "due today",
+        "overdue": false
+      },
+      {
+        "client": "C. Pell",
+        "text": "Confirm the monthly spending figure",
+        "owner": "Advisor",
+        "due": "due today",
+        "overdue": false
+      },
+      {
+        "client": "C. Pell",
+        "text": "Schedule the annual check-in",
+        "owner": "Callback queue",
+        "due": "due in 2 days",
+        "overdue": false
+      },
+      {
+        "client": "Renner family",
+        "text": "Introduce estate attorney for the grandchildren's trust",
+        "owner": "Advisor",
+        "due": "due in 5 days",
+        "overdue": false
+      },
+      {
+        "client": "E. Brandvold",
+        "text": "Map deferred compensation vesting dates",
+        "owner": "Junior advisor",
+        "due": "due in 7 days",
+        "overdue": false
+      },
+      {
+        "client": "E. Brandvold",
+        "text": "Cross-border tax review of legacy UK funds",
+        "owner": "Wealth strategist",
+        "due": "due in 10 days",
+        "overdue": false
+      },
+      {
+        "client": "Okafor-Lind family",
+        "text": "Invite both beneficiaries to a next-generation session",
+        "owner": "Advisor",
+        "due": "due in 14 days",
+        "overdue": false
+      },
+      {
+        "client": "Thornbury family",
+        "text": "Model the sale scenario for retirement",
+        "owner": "Wealth strategist",
+        "due": "due in 14 days",
+        "overdue": false
+      },
+      {
+        "client": "Renner family",
+        "text": "Review the stock trading plan before next quarter",
+        "owner": "Wealth strategist",
+        "due": "due in 20 days",
+        "overdue": false
+      },
+      {
+        "client": "Thornbury family",
+        "text": "Succession planning with the estate attorney",
+        "owner": "Advisor",
+        "due": "due in 21 days",
+        "overdue": false
+      },
+      {
+        "client": "D. Vasquez-Hale",
+        "text": "First annual plan review",
+        "owner": "Advisor",
+        "due": "due in 30 days",
+        "overdue": false
       }
     ]
   }

@@ -93,8 +93,16 @@
     }
   ],
   "tasks": [
-    "Invite both beneficiaries to a next-generation session",
-    "Refresh client information for two beneficiaries"
+    {
+      "text": "Invite both beneficiaries to a next-generation session",
+      "owner": "Advisor",
+      "dueDay": 14
+    },
+    {
+      "text": "Refresh client information for two beneficiaries",
+      "owner": "Client service associate",
+      "dueDay": -1
+    }
   ],
   "paperwork": [
     {

@@ -1,4 +1,4 @@
-import type { Source } from "@/lib/types";
+import type { Meeting, Source } from "@/lib/types";
 
 // Cited composites (docs/PERSONAS.md). No real advisor is the persona; the
 // public team pages are evidence that practices of this kind exist.
@@ -15,6 +15,6 @@ export interface Advisor {
     households: number | string;
     alertsOvernight: number;
     summary: string;
-    meetings: [string, string][];
+    meetings: Meeting[];
   };
 }

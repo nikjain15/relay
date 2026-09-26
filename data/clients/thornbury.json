@@ -92,8 +92,16 @@
     }
   ],
   "tasks": [
-    "Succession planning with the estate attorney",
-    "Model the sale scenario for retirement"
+    {
+      "text": "Succession planning with the estate attorney",
+      "owner": "Advisor",
+      "dueDay": 21
+    },
+    {
+      "text": "Model the sale scenario for retirement",
+      "owner": "Wealth strategist",
+      "dueDay": 14
+    }
   ],
   "paperwork": [
     {

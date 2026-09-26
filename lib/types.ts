@@ -183,6 +183,22 @@ export interface RationaleRecord {
   whySuitable: string[];
 }
 
+export interface Task {
+  text: string;
+  owner: string;
+  /** Relative to day 0: negative is overdue, 0 is due today. */
+  dueDay: number;
+}
+
+export interface Meeting {
+  time: string;
+  title: string;
+  kind: "call" | "review" | "prospect" | "internal" | "queue";
+  clientId?: string;
+  prospectId?: string;
+  purpose: string;
+}
+
 export interface ContactEvent {
   /** Relative to the prototype's day 0; negative is in the past. */
   day: number;
@@ -247,7 +263,7 @@ export interface ClientFile extends Household {
   advisorId: string;
   contactHistory: ContactEvent[];
   notes: TeamNote[];
-  tasks: string[];
+  tasks: Task[];
   paperwork: PaperworkItem[];
   opportunities: Opportunity[];
   walkthrough?: Walkthrough;

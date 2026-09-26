@@ -81,8 +81,16 @@
     }
   ],
   "tasks": [
-    "Follow up on the rollover signature",
-    "First annual plan review"
+    {
+      "text": "Follow up on the rollover signature",
+      "owner": "Advisor",
+      "dueDay": -2
+    },
+    {
+      "text": "First annual plan review",
+      "owner": "Advisor",
+      "dueDay": 30
+    }
   ],
   "paperwork": [
     {

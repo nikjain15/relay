@@ -2,6 +2,7 @@
 // Money movement is flagged for callback verification to a number on file,
 // a standard control against email-based wire fraud.
 import type { ServiceRequest } from "@/lib/types";
+import { POLICY } from "@/lib/data/policy";
 
 export interface Classification {
   kind: string;
@@ -10,15 +11,10 @@ export interface Classification {
   callbackRequired: boolean;
 }
 
-const RULES: { match: RegExp; c: Classification }[] = [
-  { match: /\bwire\b|\$[\d.,]+[mk]?\b.*\b(to|transfer)\b/i, c: { kind: "Money movement", route: "Advisor, then operations", targetHours: 4, callbackRequired: true } },
-  { match: /beneficiar/i, c: { kind: "Beneficiary change", route: "Client service associate", targetHours: 48, callbackRequired: false } },
-  { match: /withdrawal|distribution/i, c: { kind: "Distribution set-up", route: "Client service associate", targetHours: 48, callbackRequired: false } },
-  { match: /pension|transfer value|move .* here/i, c: { kind: "Transfer in", route: "Advisor and wealth strategist", targetHours: 72, callbackRequired: false } },
-  { match: /tax document|statement/i, c: { kind: "Documents", route: "Client service associate", targetHours: 24, callbackRequired: false } },
-  { match: /address|phone number|email address/i, c: { kind: "Account details", route: "Service team", targetHours: 24, callbackRequired: false } },
-];
-const QUESTION: Classification = { kind: "Question", route: "Advisor", targetHours: 24, callbackRequired: false };
+// Rules live in data/policy.json so routing and response times can change
+// without code. Patterns are case-insensitive.
+const RULES = POLICY.servicing.rules.map((r) => ({ match: new RegExp(r.pattern, "i"), c: { kind: r.kind, route: r.route, targetHours: r.targetHours, callbackRequired: r.callbackRequired } }));
+const QUESTION: Classification = POLICY.servicing.default;
 
 export function classify(r: ServiceRequest): Classification {
   return RULES.find((x) => x.match.test(r.text))?.c ?? QUESTION;

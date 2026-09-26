@@ -108,8 +108,16 @@
     }
   ],
   "tasks": [
-    "Introduce estate attorney for the grandchildren's trust",
-    "Review the stock trading plan before next quarter"
+    {
+      "text": "Introduce estate attorney for the grandchildren's trust",
+      "owner": "Advisor",
+      "dueDay": 5
+    },
+    {
+      "text": "Review the stock trading plan before next quarter",
+      "owner": "Wealth strategist",
+      "dueDay": 20
+    }
   ],
   "paperwork": [
     {

@@ -2,8 +2,9 @@
 // introduction; this module only orders the list and drafts the ask.
 import type { Prospect } from "@/lib/types";
 import { usd } from "@/lib/format";
+import { POLICY } from "@/lib/data/policy";
 
-const WARMTH: Record<Prospect["path"], number> = { existing: 3, referral: 3, event: 2, signal: 1 };
+const WARMTH: Record<Prospect["path"], number> = POLICY.prospecting.warmth;
 export const PATH_LABEL: Record<Prospect["path"], string> = {
   existing: "Existing relationship",
   referral: "Referral",
@@ -12,7 +13,7 @@ export const PATH_LABEL: Record<Prospect["path"], string> = {
 };
 
 export function sizeBand(usdValue: number): number {
-  return usdValue >= 10_000_000 ? 2 : usdValue >= 1_000_000 ? 1 : 0;
+  return POLICY.prospecting.sizeBands.find((b) => usdValue >= b.minUsd)?.points ?? 0;
 }
 
 export function prospectScore(p: Prospect): number {

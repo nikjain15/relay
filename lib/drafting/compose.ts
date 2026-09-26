@@ -5,6 +5,7 @@
 import type { Evaluation, Household, Opportunity, Passage, Product } from "@/lib/types";
 import { CORPUS } from "@/lib/fixtures/corpus";
 import { usd } from "@/lib/format";
+import { POLICY } from "@/lib/data/policy";
 
 const VERB: Record<string, [string, string]> = {
   new_cash: ["placing", "in"],
@@ -31,7 +32,7 @@ export function compose(h: Household, opp: Opportunity, ev: Evaluation, product:
           ? `your ${goal.strategy.toLowerCase()} goal is funded at ${usd(goal.funded)} of ${usd(goal.target)}`
           : `this affects your ${opp.strategy.toLowerCase()} goal`;
   const passage = evidence[0];
-  const disclosure = CORPUS.find((d) => d.id === "doc-disclosure")!.passages[0];
+  const disclosure = CORPUS.find((d) => d.id === POLICY.communications.disclosureDocId)!.passages[0];
   const firstNames = h.persons.filter((p) => p.role !== "beneficiary").map((p) => p.name).join(" and ");
   const amount = usd(ev.candidate.amountUsd);
   const opener = opp.clientNote ?? `We noted a change on your account: ${opp.title.charAt(0).toLowerCase()}${opp.title.slice(1)}.`;

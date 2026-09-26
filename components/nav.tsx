@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { APP } from "@/lib/data/policy";
+
+const F = APP.featured;
 
 // Grouped by where each surface sits in the advisor's journey.
 const PHASES: { phase: string; links: { href: string; label: string }[] }[] = [
-  { phase: "Journey", links: [{ href: "/", label: "Advisor journey" }] },
+  { phase: "Journey", links: [{ href: "/", label: "Advisor journey" }, { href: "/clients", label: "My clients" }] },
   {
     phase: "Before",
     links: [
@@ -17,16 +20,18 @@ const PHASES: { phase: string; links: { href: string; label: string }[] }[] = [
     phase: "Daily work",
     links: [
       { href: "/triage", label: "Today's list" },
-      { href: "/evidence/opp-renner-property", label: "Why this client" },
-      { href: "/household/hh-renner", label: "Client picture" },
-      { href: "/household/hh-renner/proposal?opp=opp-renner-property", label: "Options" },
+      { href: `/evidence/${F.opportunityId}`, label: "Why this client" },
+      { href: `/household/${F.clientId}`, label: "Client picture" },
+      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options" },
       { href: "/communications", label: "Note and audience" },
       { href: "/supervision", label: "Compliance check" },
     ],
   },
+  { phase: "Meetings", links: [{ href: "/meetings", label: "Today's meetings" }] },
   {
     phase: "After",
     links: [
+      { href: "/follow-ups", label: "Follow-ups" },
       { href: "/servicing", label: "Service requests" },
       { href: "/measurement", label: "Measurement" },
     ],
@@ -41,6 +46,7 @@ export function Nav() {
     if (base === "/") return path === "/";
     if (base.startsWith("/household/")) return path.startsWith("/household/") && (base.endsWith("/proposal") ? path.endsWith("/proposal") : !path.endsWith("/proposal"));
     if (base.startsWith("/evidence/")) return path.startsWith("/evidence/");
+    if (base === "/meetings") return path.startsWith("/meetings");
     return path === base;
   };
   return (
