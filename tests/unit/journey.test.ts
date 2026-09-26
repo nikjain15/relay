@@ -54,3 +54,28 @@ describe("servicing", () => {
     expect(f.paperwork.length).toBeGreaterThan(0);
   });
 });
+
+describe("meetings and follow-ups", async () => {
+  const { todaysMeetings, reviewPack } = await import("@/lib/meetings/prep");
+  const { allTasks } = await import("@/lib/followups");
+
+  it("every advisor has a day of meetings from data", () => {
+    expect(todaysMeetings("adv-a").length).toBeGreaterThan(0);
+    expect(todaysMeetings("adv-b").length).toBeGreaterThan(0);
+  });
+
+  it("the Alcott review pack carries the cash gap, the escalated form and the booked meeting", () => {
+    const r = reviewPack("hh-alcott")!;
+    expect(r.meeting?.kind).toBe("review");
+    expect(r.gaps.map((g) => g.strategy)).toEqual(["Liquidity", "Legacy"]);
+    expect(r.openPaperwork.some((w) => w.status === "escalated")).toBe(true);
+    expect(r.documents.length).toBeGreaterThan(0);
+    expect(reviewPack("hh-nobody")).toBeUndefined();
+  });
+
+  it("follow-ups list overdue tasks first", () => {
+    const t = allTasks();
+    expect(t[0].dueDay).toBeLessThan(0);
+    expect(t.map((x) => x.dueDay)).toEqual([...t.map((x) => x.dueDay)].sort((a, b) => a - b));
+  });
+});

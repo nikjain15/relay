@@ -1,8 +1,9 @@
 // Paperwork status by rule (BUILD-SPEC §6): unsigned documents older than 14
 // days escalate to the branch supervisor, per the illustrative procedure.
 import type { ClientFile, PaperworkItem } from "@/lib/types";
+import { POLICY } from "@/lib/data/policy";
 
-export const ESCALATE_AFTER_DAYS = 14;
+export const ESCALATE_AFTER_DAYS = POLICY.paperwork.escalateAfterDays;
 export type PaperStatus = "signed" | "due" | "escalated";
 
 export function paperStatus(w: PaperworkItem, today = 0): { status: PaperStatus; daysOpen: number } {

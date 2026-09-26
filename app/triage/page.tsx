@@ -7,15 +7,16 @@ import { household } from "@/lib/fixtures/households";
 import { rank, score, DEFAULT_CAP } from "@/lib/ranking/rank";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, clientFile } from "@/lib/data";
+import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
 import { CLASS_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/components/ui";
 
-const REASONS = ["Already discussed with client", "Not material for this household", "Wrong household attribute", "Timing not right"];
+const REASONS = POLICY.triage.dismissReasons;
 
 export default function Triage() {
   const { dismissed, dismiss, restore, accepted } = useRelay();
   const [choosing, setChoosing] = useState<string | null>(null);
-  const [advisorId, setAdvisorId] = useState("adv-a");
+  const [advisorId, setAdvisorId] = useState(APP.defaultAdvisorId);
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId)!;
   const day = advisor.walkthrough!;
   const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisorId);
@@ -44,8 +45,10 @@ export default function Triage() {
           <span><strong className="text-lg text-neutral-900">{rows.length}</strong> on your list</span>
         </div>
         <div className="flex flex-wrap gap-2 md:justify-end">
-          {day.meetings.map(([time, what]) => (
-            <span key={time} className="rounded border border-neutral-300 px-2 py-0.5 text-xs"><strong>{time}</strong> {what}</span>
+          {day.meetings.map((m) => (
+            <Link key={m.time} href={m.clientId ? `/meetings/${m.clientId}` : m.prospectId ? "/pipeline" : "/meetings"} className="rounded border border-neutral-300 px-2 py-0.5 text-xs hover:border-accent">
+              <strong>{m.time}</strong> {m.title}
+            </Link>
           ))}
         </div>
         <p className="text-xs text-neutral-600 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>

@@ -14,10 +14,10 @@ import { compose } from "@/lib/drafting/compose";
 import { regimeAfter, RETAIL_THRESHOLD, type Distribution } from "@/lib/recipients/count";
 import { useRelay } from "@/components/state";
 import { clientFile } from "@/lib/data";
+import { APP } from "@/lib/data/policy";
 import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
 
-const DEMO_OPP = "opp-renner-property";
-const DEMO_CANDIDATE = "opp-renner-property:prod-tsy-ladder:new_cash";
+const F = APP.featured;
 
 export function Communications() {
   const params = useSearchParams();
@@ -37,7 +37,7 @@ export function Communications() {
   const dists = useMemo(() => {
     const d: Distribution[] = [];
     if (!h) return d;
-    const add = (personId: string) => d.push({ communicationId: DEMO_COMMUNICATION, personId, advisorId: "adv-a", institutional: false, date: PROTOTYPE_TODAY });
+    const add = (personId: string) => d.push({ communicationId: DEMO_COMMUNICATION, personId, advisorId: clientFile(h.id)?.advisorId ?? APP.defaultAdvisorId, institutional: false, date: PROTOTYPE_TODAY });
     h.persons.forEach((p) => add(p.id));
     for (const b of BOOK) if (batch.has(b.id)) for (let i = 0; i < b.persons; i++) add(`${b.id}-p${i}`);
     return d;
@@ -51,9 +51,16 @@ export function Communications() {
       <>
         <PageTitle title="Client communications" sub="Drafts are composed only from an accepted proposal and its cited evidence." />
         <p className="mb-3">No accepted proposal yet. Accept one from a proposal screen, or load the demo proposal.</p>
-        <button className={btnPrimary} onClick={() => accept(DEMO_OPP, DEMO_CANDIDATE)}>
-          Load demo proposal: Renner, Treasury ladder
-        </button>
+        {(() => {
+          const o = opportunity(F.opportunityId);
+          const h = o ? household(o.householdId) : undefined;
+          const e = o && h ? evaluateAll(o, h).find((x) => x.pass && x.candidate.productId === F.productId) : undefined;
+          return e && h ? (
+            <button className={btnPrimary} onClick={() => accept(F.opportunityId, e.candidate.id)}>
+              Load the featured proposal: {h.name}, {product(F.productId)?.plainName ?? product(F.productId)?.name}
+            </button>
+          ) : null;
+        })()}
       </>
     );
   }

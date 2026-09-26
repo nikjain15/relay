@@ -1,4 +1,5 @@
 import type { Household } from "@/lib/types";
+import { POLICY } from "@/lib/data/policy";
 
 export function investableUsd(h: Household): number {
   return h.holdings.reduce((s, x) => s + x.valueUsd, 0);
@@ -14,7 +15,7 @@ export function singleNamePct(h: Household): number {
 
 /** Months of spending covered by unearmarked cash. */
 export function liquidityMonths(h: Household): number {
-  const cash = h.holdings.filter((x) => x.productId === "prod-mmf" && !x.earmarked).reduce((s, x) => s + x.valueUsd, 0);
+  const cash = h.holdings.filter((x) => x.productId === POLICY.liquidity.cashProductId && !x.earmarked).reduce((s, x) => s + x.valueUsd, 0);
   return Math.floor(cash / h.monthlySpendUsd);
 }
 

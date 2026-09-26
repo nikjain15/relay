@@ -2,7 +2,10 @@
 
 The single source of every client, advisor, product and document in Relay. The prototype's screens,
 the constraint and ranking engines, evidence retrieval, the draft composer and the walkthrough mockup
-all read from here. **Edit these files; never edit numbers in code.**
+all read from here. **Edit these files; never edit numbers in code.** Firm policy (caps, weights, thresholds,
+routing rules) and app settings (what is featured) are data too, so nothing a person might want to change
+lives in code. `tests/invariants/no-client-data-in-code.test.ts` fails if a client name or data id
+appears in `app/`, `components/` or `lib/`.
 
 All clients and advisors are **cited composites** (see `docs/PERSONAS.md`): invented names and figures
 inside situations UBS and public sources describe. No real client or advisor data belongs here.
@@ -11,8 +14,10 @@ inside situations UBS and public sources describe. No real client or advisor dat
 
 | File | What it holds |
 |---|---|
-| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, open tasks, paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
-| `advisors.json` | Advisor A and Advisor B, with sources and their day for the walkthrough |
+| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks (`{text, owner, dueDay}`, negative days are overdue), paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
+| `advisors.json` | Advisor A and Advisor B, with sources and their day: `meetings` are `{time, title, kind, clientId?, prospectId?, purpose}`, where kind is call, review, prospect, internal or queue. A client meeting gets a review pack |
+| `policy.json` | Firm policy the engines read: triage cap, class weights and dismiss reasons; the cash product, sleeve limits and lock-up for Liquidity; the core model; the disclosure document; paperwork escalation days; prospect warmth and size bands; servicing routing rules. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
+| `app.json` | App settings: the day label, the default advisor, the featured client, opportunity and product for the menu and demo, the client whose review pack the walkthrough shows, and default talking points |
 | `shelf.json` | The approved products, with plain-English names used in client notes |
 | `documents.json` | The illustrative research notes, one-pagers and procedures that evidence cites. Relative dates only |
 | `book.json` | Other households in Advisor A's book, for the batch-send demo |
@@ -31,7 +36,7 @@ Retrieval and any chat about a client should be grounded in that bundle and noth
 
 ```ts
 import { getClientFile } from "@/lib/data";
-const f = getClientFile("renner"); // client, advisor, opportunities, documents
+const f = getClientFile("hh-renner"); // client, advisor, opportunities, documents
 ```
 
 ## After editing

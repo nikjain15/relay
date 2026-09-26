@@ -134,7 +134,9 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
             <Section title="Open tasks">
               <ul className="list-inside list-disc space-y-0.5">
                 {f.client.tasks.map((x) => (
-                  <li key={x}>{x}</li>
+                  <li key={x.text}>
+                    {x.text} <span className="text-neutral-500">({x.owner}, {x.dueDay < 0 ? <span className="text-red-800">{-x.dueDay} days overdue</span> : x.dueDay === 0 ? "due today" : `due in ${x.dueDay} days`})</span>
+                  </li>
                 ))}
               </ul>
             </Section>

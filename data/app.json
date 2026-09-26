@@ -1,0 +1,16 @@
+{
+  "_note": "What the app features by default. Change these to point the menu and the demo at a different client.",
+  "todayLabel": "Tuesday",
+  "defaultAdvisorId": "adv-a",
+  "featured": {
+    "clientId": "hh-renner",
+    "opportunityId": "opp-renner-property",
+    "productId": "prod-tsy-ladder",
+    "reviewClientId": "hh-alcott"
+  },
+  "defaultTalkingPoints": [
+    "Open with what has changed since the last conversation",
+    "Walk through the goals that have a gap",
+    "Agree who does what on the open items"
+  ]
+}

@@ -7,10 +7,12 @@ import type { Candidate, Evaluation, Failure, Household, Opportunity, Product } 
 import { SHELF } from "@/lib/fixtures/shelf";
 import { liquidityMonths, investableUsd, shortTermLotsUsd, singleNameUsd } from "@/lib/household-math";
 import { pct } from "@/lib/format";
+import { POLICY } from "@/lib/data/policy";
 
-const LOCKUP_DAYS = 90;
-const SLEEVE_MAX_DAYS = 30;
-const SLEEVE_MAX_RISK = 2;
+const LOCKUP_DAYS = POLICY.liquidity.lockupDays;
+const SLEEVE_MAX_DAYS = POLICY.liquidity.sleeveMaxAccessDays;
+const SLEEVE_MAX_RISK = POLICY.liquidity.sleeveMaxRisk;
+const CORE = POLICY.proposals.coreProductId;
 
 export function evaluate(candidate: Candidate, product: Product, household: Household, strategy?: string): Evaluation {
   const failures: Failure[] = [];
@@ -95,7 +97,7 @@ export function candidatesFor(opp: Opportunity, household: Household): Candidate
     const amount = source === "sell_long_term_lots" ? Math.min(needed, longTerm) : needed;
     out.push({ id: `${opp.id}:${p.id}:${source}`, productId: p.id, action: "trim", source, amountUsd: Math.round(amount) });
   }
-  out.push({ id: `${opp.id}:prod-core-model:sell_all_lots`, productId: "prod-core-model", action: "trim", source: "sell_all_lots", amountUsd: Math.round(needed) });
+  out.push({ id: `${opp.id}:${CORE}:sell_all_lots`, productId: CORE, action: "trim", source: "sell_all_lots", amountUsd: Math.round(needed) });
   return out;
 }
 

@@ -1,0 +1,104 @@
+{
+  "_note": "Firm policy the engines read. Edit freely. The FINRA Rule 2210 threshold (25 retail investors) and window (30 days) are regulation and stay in lib/recipients/count.ts.",
+  "triage": {
+    "dailyCap": 12,
+    "classWeights": {
+      "external_event": 1,
+      "life_event": 1,
+      "household_threshold": 0.95,
+      "plan_service_event": 0.85,
+      "market_view": 0.7
+    },
+    "dismissReasons": [
+      "Already discussed with client",
+      "Not material for this household",
+      "Wrong household attribute",
+      "Timing not right"
+    ]
+  },
+  "liquidity": {
+    "cashProductId": "prod-mmf",
+    "sleeveMaxRisk": 2,
+    "sleeveMaxAccessDays": 30,
+    "lockupDays": 90
+  },
+  "proposals": {
+    "coreProductId": "prod-core-model"
+  },
+  "communications": {
+    "disclosureDocId": "doc-disclosure"
+  },
+  "paperwork": {
+    "escalateAfterDays": 14
+  },
+  "prospecting": {
+    "warmth": {
+      "existing": 3,
+      "referral": 3,
+      "event": 2,
+      "signal": 1
+    },
+    "sizeBands": [
+      {
+        "minUsd": 10000000,
+        "points": 2
+      },
+      {
+        "minUsd": 1000000,
+        "points": 1
+      }
+    ]
+  },
+  "servicing": {
+    "rules": [
+      {
+        "pattern": "\\bwire\\b|\\$[\\d.,]+[mk]?\\b.*\\b(to|transfer)\\b",
+        "kind": "Money movement",
+        "route": "Advisor, then operations",
+        "targetHours": 4,
+        "callbackRequired": true
+      },
+      {
+        "pattern": "beneficiar",
+        "kind": "Beneficiary change",
+        "route": "Client service associate",
+        "targetHours": 48,
+        "callbackRequired": false
+      },
+      {
+        "pattern": "withdrawal|distribution",
+        "kind": "Distribution set-up",
+        "route": "Client service associate",
+        "targetHours": 48,
+        "callbackRequired": false
+      },
+      {
+        "pattern": "pension|transfer value|move .* here",
+        "kind": "Transfer in",
+        "route": "Advisor and wealth strategist",
+        "targetHours": 72,
+        "callbackRequired": false
+      },
+      {
+        "pattern": "tax document|statement",
+        "kind": "Documents",
+        "route": "Client service associate",
+        "targetHours": 24,
+        "callbackRequired": false
+      },
+      {
+        "pattern": "address|phone number|email address",
+        "kind": "Account details",
+        "route": "Service team",
+        "targetHours": 24,
+        "callbackRequired": false
+      }
+    ],
+    "default": {
+      "kind": "Question",
+      "route": "Advisor",
+      "targetHours": 24,
+      "callbackRequired": false
+    }
+  }
+}

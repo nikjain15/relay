@@ -81,8 +81,16 @@
     }
   ],
   "tasks": [
-    "Confirm the monthly spending figure",
-    "Schedule the annual check-in"
+    {
+      "text": "Confirm the monthly spending figure",
+      "owner": "Advisor",
+      "dueDay": 0
+    },
+    {
+      "text": "Schedule the annual check-in",
+      "owner": "Callback queue",
+      "dueDay": 2
+    }
   ],
   "paperwork": [
     {

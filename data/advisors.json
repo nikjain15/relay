@@ -47,22 +47,33 @@
       "alertsOvernight": 47,
       "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
       "meetings": [
-        [
-          "9:30",
-          "Renner quarterly call"
-        ],
-        [
-          "11:00",
-          "Referral intro"
-        ],
-        [
-          "2:00",
-          "Alcott annual review"
-        ],
-        [
-          "4:30",
-          "Team huddle"
-        ]
+        {
+          "time": "9:30",
+          "title": "Renner quarterly call",
+          "kind": "call",
+          "clientId": "hh-renner",
+          "purpose": "Quarterly check-in; the property sale is new since last time"
+        },
+        {
+          "time": "11:00",
+          "title": "Referral intro",
+          "kind": "prospect",
+          "prospectId": "pr-series-d-founder",
+          "purpose": "First conversation, introduced by the Renners"
+        },
+        {
+          "time": "2:00",
+          "title": "Alcott annual review",
+          "kind": "review",
+          "clientId": "hh-alcott",
+          "purpose": "Annual review; required withdrawals start next year"
+        },
+        {
+          "time": "4:30",
+          "title": "Team huddle",
+          "kind": "internal",
+          "purpose": "Escalated paperwork and today's service queue"
+        }
       ]
     }
   },
@@ -102,22 +113,32 @@
       "alertsOvernight": 61,
       "summary": "Licensed advisor at the Charlotte hub, working by phone and video. About 1,000 client households, each under $250K invested. No dedicated relationships: the constraint is contacts per day.",
       "meetings": [
-        [
-          "9:00",
-          "Callback queue: 14"
-        ],
-        [
-          "10:30",
-          "Video: new client"
-        ],
-        [
-          "1:00",
-          "Callback queue: 11"
-        ],
-        [
-          "3:30",
-          "Video: retirement check-in"
-        ]
+        {
+          "time": "9:00",
+          "title": "Callback queue: 14",
+          "kind": "queue",
+          "purpose": "Returning client calls"
+        },
+        {
+          "time": "10:30",
+          "title": "Video: new client",
+          "kind": "prospect",
+          "prospectId": "pr-pell-adult-child",
+          "purpose": "C. Pell's daughter, first account"
+        },
+        {
+          "time": "1:00",
+          "title": "Callback queue: 11",
+          "kind": "queue",
+          "purpose": "Returning client calls"
+        },
+        {
+          "time": "3:30",
+          "title": "Video: retirement check-in",
+          "kind": "review",
+          "clientId": "hh-pell",
+          "purpose": "Annual check-in; cash covers 4 of 6 months"
+        }
       ]
     }
   }

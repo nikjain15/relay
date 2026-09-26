@@ -1,15 +1,9 @@
 // Deterministic ranking (BUILD-SPEC §6). The model never reorders this.
 import type { Opportunity, TriggerClass } from "@/lib/types";
+import { POLICY } from "@/lib/data/policy";
 
-export const DEFAULT_CAP = 12;
-
-const CLASS_WEIGHT: Record<TriggerClass, number> = {
-  external_event: 1,
-  life_event: 1,
-  household_threshold: 0.95,
-  plan_service_event: 0.85,
-  market_view: 0.7,
-};
+export const DEFAULT_CAP = POLICY.triage.dailyCap;
+const CLASS_WEIGHT: Record<TriggerClass, number> = POLICY.triage.classWeights;
 
 export function score(o: Opportunity): number {
   return Math.round(o.materiality * CLASS_WEIGHT[o.triggerClass] * 10) / 10;

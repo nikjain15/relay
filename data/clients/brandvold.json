@@ -92,8 +92,16 @@
     }
   ],
   "tasks": [
-    "Cross-border tax review of legacy UK funds",
-    "Map deferred compensation vesting dates"
+    {
+      "text": "Cross-border tax review of legacy UK funds",
+      "owner": "Wealth strategist",
+      "dueDay": 10
+    },
+    {
+      "text": "Map deferred compensation vesting dates",
+      "owner": "Junior advisor",
+      "dueDay": 7
+    }
   ],
   "paperwork": [
     {
