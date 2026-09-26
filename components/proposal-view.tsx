@@ -12,7 +12,7 @@ import { usd } from "@/lib/format";
 import { needText } from "@/lib/need-text";
 import { useRelay } from "@/components/state";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
-import { PageTitle, Pill, Section, btn, btnPrimary, td, th } from "@/components/ui";
+import { PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 
 const SOURCE: Record<string, string> = {
   new_cash: "New cash from the event",
@@ -82,57 +82,59 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
         <p className="mb-2 text-xs text-ink-2">
           Eligible first, then by {sortBy === "cost" ? "lowest annual cost" : sortBy === "access" ? "fastest access" : "lowest risk"} ({sourceLabel(prof.provenance["proposals.sortBy"])}). Ordering never changes which options pass.
         </p>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Select</th>
-              <th className={th}>Product</th>
-              <th className={th}>Funding</th>
-              <th className={`${th} text-right`}>Amount</th>
-              <th className={`${th} text-right`}>Annual cost</th>
-              <th className={th}>Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {evs.map((e) => {
-              const p = product(e.candidate.productId)!;
-              return (
-                <tr key={e.candidate.id} className={e.pass ? "" : "text-ink-2"}>
-                  <td className={td}>
-                    <input
-                      type="radio"
-                      name="candidate"
-                      aria-label={`Select ${p.name}, ${SOURCE[e.candidate.source]}`}
-                      disabled={!e.pass}
-                      checked={sel?.candidate.id === e.candidate.id}
-                      onChange={() => setSelected(e.candidate.id)}
-                    />
-                  </td>
-                  <td className={td}>
-                    {p.name}
-                    <div className="text-xs">risk {p.riskLevel}, access {p.liquidityDays} days, {p.costBps} bps</div>
-                  </td>
-                  <td className={td}>{SOURCE[e.candidate.source]}</td>
-                  <td className={`${td} text-right`}>{usd(e.candidate.amountUsd)}</td>
-                  <td className={`${td} text-right`}>{usd(e.annualCostUsd)}</td>
-                  <td className={td}>
-                    {e.pass ? (
-                      <Pill tone="pass">Eligible</Pill>
-                    ) : (
-                      <ul className="space-y-0.5">
-                        {e.failures.map((f) => (
-                          <li key={f.rule}>
-                            <Pill tone="fail">{f.rule}</Pill> <span className="text-xs text-ink-2">{f.detail}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <TableScroll>
+          <table className="w-full min-w-[34rem] border-collapse">
+            <thead>
+              <tr>
+                <th className={th}>Select</th>
+                <th className={th}>Product</th>
+                <th className={th}>Funding</th>
+                <th className={`${th} text-right`}>Amount</th>
+                <th className={`${th} text-right`}>Annual cost</th>
+                <th className={th}>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {evs.map((e) => {
+                const p = product(e.candidate.productId)!;
+                return (
+                  <tr key={e.candidate.id} className={e.pass ? "" : "text-ink-2"}>
+                    <td className={td}>
+                      <input
+                        type="radio"
+                        name="candidate"
+                        aria-label={`Select ${p.name}, ${SOURCE[e.candidate.source]}`}
+                        disabled={!e.pass}
+                        checked={sel?.candidate.id === e.candidate.id}
+                        onChange={() => setSelected(e.candidate.id)}
+                      />
+                    </td>
+                    <td className={td}>
+                      {p.name}
+                      <div className="text-xs">risk {p.riskLevel}, access {p.liquidityDays} days, {p.costBps} bps</div>
+                    </td>
+                    <td className={td}>{SOURCE[e.candidate.source]}</td>
+                    <td className={`${td} text-right`}>{usd(e.candidate.amountUsd)}</td>
+                    <td className={`${td} text-right`}>{usd(e.annualCostUsd)}</td>
+                    <td className={td}>
+                      {e.pass ? (
+                        <Pill tone="pass">Eligible</Pill>
+                      ) : (
+                        <ul className="space-y-0.5">
+                          {e.failures.map((f) => (
+                            <li key={f.rule}>
+                              <Pill tone="fail">{f.rule}</Pill> <span className="text-xs text-ink-2">{f.detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </TableScroll>
       </Section>
       {record && sel && (
         <Section title="Rationale record, structured (care-obligation evidence: Reg BI for brokerage, fiduciary duty for advisory)">

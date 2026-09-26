@@ -7,7 +7,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { addressees, compose } from "@/lib/drafting/compose";
 import { classify } from "@/lib/recipients/count";
 import { runChecks } from "@/lib/policy/checks";
-import { PageTitle, Pill, Section, td, th } from "@/components/ui";
+import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 
 // Gates computed live over every eligible proposal in the fixtures, with the
 // same functions the test suite asserts on.
@@ -56,45 +56,49 @@ export default function Measurement() {
       <PageTitle title="Measurement" sub="Conversion, not volume. The north star is approved client actions per surfaced opportunity." />
       <div className="grid gap-6 xl:grid-cols-2">
         <Section title="Conversion funnel, pilot cohort, one week (synthetic)">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className={th}>Stage</th>
-                <th className={`${th} text-right`}>Count</th>
-                <th className={`${th} text-right`}>From previous</th>
-                <th className={th}>Share of generated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {FUNNEL.map((s, i) => (
-                <tr key={s.stage}>
-                  <td className={td}>{s.stage}</td>
-                  <td className={`${td} text-right`}>{s.count.toLocaleString("en-US")}</td>
-                  <td className={`${td} text-right`}>{i === 0 ? "" : `${Math.round((s.count / FUNNEL[i - 1].count) * 100)}%`}</td>
-                  <td className={td}>
-                    <div className="h-2 rounded bg-accent" style={{ width: `${Math.max(1, (s.count / top) * 100)}%` }} aria-hidden="true" />
-                  </td>
+          <TableScroll>
+            <table className="w-full min-w-[34rem] border-collapse">
+              <thead>
+                <tr>
+                  <th className={th}>Stage</th>
+                  <th className={`${th} text-right`}>Count</th>
+                  <th className={`${th} text-right`}>From previous</th>
+                  <th className={th}>Share of generated</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {FUNNEL.map((s, i) => (
+                  <tr key={s.stage}>
+                    <td className={td}>{s.stage}</td>
+                    <td className={`${td} text-right`}>{s.count.toLocaleString("en-US")}</td>
+                    <td className={`${td} text-right`}>{i === 0 ? "" : `${Math.round((s.count / FUNNEL[i - 1].count) * 100)}%`}</td>
+                    <td className={td}>
+                      <div className="h-2 rounded bg-accent" style={{ width: `${Math.max(1, (s.count / top) * 100)}%` }} aria-hidden="true" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
           <p className="mt-2 text-xs text-ink-2">
             Synthetic numbers for layout only. The real funnel is the first thing to ask for in week one (PRD Appendix B, question 1).
           </p>
         </Section>
         <Section title={`Zero-tolerance release gates, computed now over ${g[0].drafts} composed drafts (full and brief)`}>
-          <table className="w-full border-collapse">
-            <tbody>
-              {g.map((x) => (
-                <tr key={x.label}>
-                  <td className={td}>{x.label}</td>
-                  <td className={td}>
-                    <Pill tone={x.fails ? "fail" : "pass"}>{x.fails ? `${x.fails} failing` : "Pass"}</Pill>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TableScroll>
+            <table className="w-full min-w-[34rem] border-collapse">
+              <tbody>
+                {g.map((x) => (
+                  <tr key={x.label}>
+                    <td className={td}>{x.label}</td>
+                    <td className={td}>
+                      <Pill tone={x.fails ? "fail" : "pass"}>{x.fails ? `${x.fails} failing` : "Pass"}</Pill>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
           <p className="mt-2 text-xs">
             {g[0].refusals} opportunity refused for insufficient evidence. The same checks run in <code>npm run check</code>, alongside the
             invariant that no code path can reach a client.

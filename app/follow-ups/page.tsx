@@ -6,7 +6,7 @@ import { ADVISORS_DATA } from "@/lib/data";
 import { allTasks, dueLabel } from "@/lib/followups";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
-import { PageTitle, Pill, Section, btn, td, th } from "@/components/ui";
+import { PageTitle, Pill, Section, TableScroll, btn, td, th } from "@/components/ui";
 
 export default function FollowUps() {
   const { queue, markSent, log, addLog } = useRelay();
@@ -42,36 +42,38 @@ export default function FollowUps() {
         )}
       </Section>
       <Section title="Tasks, overdue first">
-        <table className="w-full max-w-5xl border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Done</th>
-              <th className={th}>Task</th>
-              <th className={th}>Client</th>
-              <th className={th}>Owner</th>
-              <th className={th}>Due</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map((t) => {
-              const key = t.clientId + t.text;
-              return (
-                <tr key={key} className={done[key] ? "text-ink-3 line-through" : ""}>
-                  <td className={td}>
-                    <input type="checkbox" aria-label={`Mark done: ${t.text}`} checked={!!done[key]} onChange={(e) => setDone((s) => ({ ...s, [key]: e.target.checked }))} />
-                  </td>
-                  <td className={td}>{t.text}</td>
-                  <td className={td}>
-                    <Link className="underline" href={`/household/${t.clientId}`}>{t.clientName}</Link>
-                    <div className="text-xs text-ink-2">{ADVISORS_DATA.find((a) => a.id === t.advisorId)?.walkthrough?.label}</div>
-                  </td>
-                  <td className={td}>{t.owner}</td>
-                  <td className={td}>{t.dueDay < 0 ? <Pill tone="fail">{dueLabel(t.dueDay)}</Pill> : dueLabel(t.dueDay)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <TableScroll>
+          <table className="w-full min-w-[34rem] max-w-5xl border-collapse">
+            <thead>
+              <tr>
+                <th className={th}>Done</th>
+                <th className={th}>Task</th>
+                <th className={th}>Client</th>
+                <th className={th}>Owner</th>
+                <th className={th}>Due</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasks.map((t) => {
+                const key = t.clientId + t.text;
+                return (
+                  <tr key={key} className={done[key] ? "text-ink-3 line-through" : ""}>
+                    <td className={td}>
+                      <input type="checkbox" aria-label={`Mark done: ${t.text}`} checked={!!done[key]} onChange={(e) => setDone((s) => ({ ...s, [key]: e.target.checked }))} />
+                    </td>
+                    <td className={td}>{t.text}</td>
+                    <td className={td}>
+                      <Link className="underline" href={`/household/${t.clientId}`}>{t.clientName}</Link>
+                      <div className="text-xs text-ink-2">{ADVISORS_DATA.find((a) => a.id === t.advisorId)?.walkthrough?.label}</div>
+                    </td>
+                    <td className={td}>{t.owner}</td>
+                    <td className={td}>{t.dueDay < 0 ? <Pill tone="fail">{dueLabel(t.dueDay)}</Pill> : dueLabel(t.dueDay)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </TableScroll>
       </Section>
       <Section title="Activity logged this session">
         {log.length === 0 ? (

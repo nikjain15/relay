@@ -10,7 +10,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
-import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/components/ui";
+import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 
 const REASONS = POLICY.triage.dismissReasons;
 
@@ -63,106 +63,108 @@ export default function Triage() {
           <Link className="underline" href={`/profiles?advisor=${advisor.id}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
         </p>
       </div>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            <th className={th}>#</th>
-            <th className={th}>Score</th>
-            <th className={th}>Trigger</th>
-            <th className={th}>Household</th>
-            <th className={th}>Why this household, why today</th>
-            <th className={th}>Decide</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((o, i) => {
-            const h = household(o.householdId)!;
-            const refused = retrieve(o).refused;
-            const proposable = !refused && (o.action === "fund" || o.action === "trim");
-            return (
-              <tr key={o.id}>
-                <td className={td}>{i + 1}</td>
-                <td className={td}>{score(o, weights)}</td>
-                <td className={td}>
-                  <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
-                  <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
-                </td>
-                <td className={td}>
-                  <Link className="underline decoration-line-strong hover:decoration-accent" href={`/household/${h.id}`}>
-                    {h.name}
-                  </Link>
-                  <div className="text-xs text-ink-2">{h.tier}</div>
-                  <div className="text-xs text-ink-2">{lastContact(h.id)}</div>
-                </td>
-                <td className={td}>
-                  <div className="font-medium">{o.plainTitle ?? o.title}</div>
-                  <ol className="mt-0.5 flex flex-wrap gap-x-1 text-xs text-ink-2">
-                    {o.reasonPath.map((n, k) => (
-                      <li key={k}>
-                        {k > 0 && <span aria-hidden="true">{"→ "}</span>}
-                        <span className="text-ink-3">{NODE_LABEL[n.kind] ?? n.kind}:</span> {n.label}
-                      </li>
-                    ))}
-                  </ol>
-                  <Link className="text-xs text-accent underline" href={`/evidence/${o.id}`}>
-                    Evidence
-                  </Link>
-                </td>
-                <td className={`${td} whitespace-nowrap`}>
-                  <div className="flex flex-col items-start gap-1">
-                    {proposable ? (
-                      <Link className={btn} href={`/household/${h.id}/proposal?opp=${o.id}`}>
-                        {accepted[o.id] ? "Proposal accepted" : "Propose action"}
-                      </Link>
-                    ) : refused ? (
-                      <Link className="text-xs text-critical underline" href={`/evidence/${o.id}`}>
-                        Refused: no supporting evidence
-                      </Link>
-                    ) : (
-                      <span className="text-xs text-ink-2">Review task, no product action</span>
-                    )}
-                    {choosing === o.id ? (
-                      <div className="flex flex-col items-start gap-1">
-                        <label className="text-xs">
-                          <span className="sr-only">Dismiss reason</span>
-                          <select autoFocus className="rounded border border-line text-xs" value={reason} onChange={(e) => setReason(e.target.value)}>
-                            <option value="" disabled>
-                              Reason, required
-                            </option>
-                            {REASONS.map((r) => (
-                              <option key={r}>{r}</option>
-                            ))}
-                          </select>
-                        </label>
-                        <div className="flex gap-1">
-                          <button
-                            className={btn}
-                            disabled={!reason}
-                            onClick={() => {
-                              dismiss(o.id, reason);
-                              setChoosing(null);
-                              setReason("");
-                            }}
-                          >
-                            Dismiss with this reason
-                          </button>
-                          <button className={btn} onClick={() => { setChoosing(null); setReason(""); }}>
-                            Cancel
-                          </button>
+      <TableScroll>
+        <table className="w-full min-w-[34rem] border-collapse">
+          <thead>
+            <tr>
+              <th className={th}>#</th>
+              <th className={th}>Score</th>
+              <th className={th}>Trigger</th>
+              <th className={th}>Household</th>
+              <th className={th}>Why this household, why today</th>
+              <th className={th}>Decide</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((o, i) => {
+              const h = household(o.householdId)!;
+              const refused = retrieve(o).refused;
+              const proposable = !refused && (o.action === "fund" || o.action === "trim");
+              return (
+                <tr key={o.id}>
+                  <td className={td}>{i + 1}</td>
+                  <td className={td}>{score(o, weights)}</td>
+                  <td className={td}>
+                    <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
+                    <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
+                  </td>
+                  <td className={td}>
+                    <Link className="underline decoration-line-strong hover:decoration-accent" href={`/household/${h.id}`}>
+                      {h.name}
+                    </Link>
+                    <div className="text-xs text-ink-2">{h.tier}</div>
+                    <div className="text-xs text-ink-2">{lastContact(h.id)}</div>
+                  </td>
+                  <td className={td}>
+                    <div className="font-medium">{o.plainTitle ?? o.title}</div>
+                    <ol className="mt-0.5 flex flex-wrap gap-x-1 text-xs text-ink-2">
+                      {o.reasonPath.map((n, k) => (
+                        <li key={k}>
+                          {k > 0 && <span aria-hidden="true">{"→ "}</span>}
+                          <span className="text-ink-3">{NODE_LABEL[n.kind] ?? n.kind}:</span> {n.label}
+                        </li>
+                      ))}
+                    </ol>
+                    <Link className="text-xs text-accent underline" href={`/evidence/${o.id}`}>
+                      Evidence
+                    </Link>
+                  </td>
+                  <td className={`${td} whitespace-nowrap`}>
+                    <div className="flex flex-col items-start gap-1">
+                      {proposable ? (
+                        <Link className={btn} href={`/household/${h.id}/proposal?opp=${o.id}`}>
+                          {accepted[o.id] ? "Proposal accepted" : "Propose action"}
+                        </Link>
+                      ) : refused ? (
+                        <Link className="text-xs text-critical underline" href={`/evidence/${o.id}`}>
+                          Refused: no supporting evidence
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-ink-2">Review task, no product action</span>
+                      )}
+                      {choosing === o.id ? (
+                        <div className="flex flex-col items-start gap-1">
+                          <label className="text-xs">
+                            <span className="sr-only">Dismiss reason</span>
+                            <select autoFocus className="rounded border border-line text-xs" value={reason} onChange={(e) => setReason(e.target.value)}>
+                              <option value="" disabled>
+                                Reason, required
+                              </option>
+                              {REASONS.map((r) => (
+                                <option key={r}>{r}</option>
+                              ))}
+                            </select>
+                          </label>
+                          <div className="flex gap-1">
+                            <button
+                              className={btn}
+                              disabled={!reason}
+                              onClick={() => {
+                                dismiss(o.id, reason);
+                                setChoosing(null);
+                                setReason("");
+                              }}
+                            >
+                              Dismiss with this reason
+                            </button>
+                            <button className={btn} onClick={() => { setChoosing(null); setReason(""); }}>
+                              Cancel
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <button className={btn} onClick={() => { setChoosing(o.id); setReason(""); }}>
-                        Dismiss
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                      ) : (
+                        <button className={btn} onClick={() => { setChoosing(o.id); setReason(""); }}>
+                          Dismiss
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </TableScroll>
       {dismissedRows.length > 0 && (
         <div className="mt-4 text-xs text-ink-2">
           <p className="font-medium">Dismissed, with reasons returned upstream as labelled feedback:</p>

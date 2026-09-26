@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ADVISORS } from "@/lib/fixtures/advisors";
 import { HOUSEHOLDS } from "@/lib/fixtures/households";
 import { usd } from "@/lib/format";
-import { PageTitle, Pill, Section, td, th } from "@/components/ui";
+import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 
 export default function Personas() {
   return (
@@ -40,41 +40,43 @@ export default function Personas() {
         </div>
       </Section>
       <Section title="Households">
-        <table className="w-full max-w-5xl border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Household</th>
-              <th className={th}>Tier</th>
-              <th className={`${th} text-right`}>Assets</th>
-              <th className={th}>Situation</th>
-              <th className={th}>Built from</th>
-            </tr>
-          </thead>
-          <tbody>
-            {HOUSEHOLDS.map((h) => (
-              <tr key={h.id}>
-                <td className={td}>
-                  <Link className="underline" href={`/household/${h.id}`}>
-                    {h.name}
-                  </Link>
-                  <div className="text-xs text-ink-2">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
-                </td>
-                <td className={td}>{h.tier}</td>
-                <td className={`${td} text-right`}>{usd(h.totalUsd)}</td>
-                <td className={td}>{h.hardPart}</td>
-                <td className={`${td} text-xs`}>
-                  {h.groundedIn.map((s) => (
-                    <div key={s.url}>
-                      <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
-                        {s.label}
-                      </a>
-                    </div>
-                  ))}
-                </td>
+        <TableScroll>
+          <table className="w-full min-w-[34rem] max-w-5xl border-collapse">
+            <thead>
+              <tr>
+                <th className={th}>Household</th>
+                <th className={th}>Tier</th>
+                <th className={`${th} text-right`}>Assets</th>
+                <th className={th}>Situation</th>
+                <th className={th}>Built from</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {HOUSEHOLDS.map((h) => (
+                <tr key={h.id}>
+                  <td className={td}>
+                    <Link className="underline" href={`/household/${h.id}`}>
+                      {h.name}
+                    </Link>
+                    <div className="text-xs text-ink-2">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
+                  </td>
+                  <td className={td}>{h.tier}</td>
+                  <td className={`${td} text-right`}>{usd(h.totalUsd)}</td>
+                  <td className={td}>{h.hardPart}</td>
+                  <td className={`${td} text-xs`}>
+                    {h.groundedIn.map((s) => (
+                      <div key={s.url}>
+                        <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
+                          {s.label}
+                        </a>
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       </Section>
     </>
   );
