@@ -12,16 +12,38 @@ lives only in a chat is not state. Everything here is auditable and was settled 
 
 ---
 
-## 1. The team and its product
+## 1. The team and its product, which is what preparation actually needs
 
-**Redacted from this repository's history on 2026-09-27.** This section held a role-by-role career table
-for one real person, read off a LinkedIn profile. The name was withheld, which was not enough: a named
-employer plus a distinctive role title identifies one individual. It was removed from the working tree and
-then purged from every commit, because a private individual's career history is not ours to publish.
+**What is deliberately not in this repo.** An earlier version of this section held a role-by-role
+career table for the interviewer, read off a LinkedIn profile: titles, dates and verbatim profile text.
+The name was withheld, which was not enough. A named employer plus a distinctive role title identifies
+one real person to anyone who reads it, this repository is public because it publishes the prototype,
+and a private individual's career history is not ours to publish. It has been removed rather than
+trimmed. Nik keeps that research where it belongs, in his own private notes.
 
-What preparation needs is the team and its product, which are public record: what STAAT expands to, the
-2026 Celent Model Wealth Manager Award for Data, Analytics and AI, the published adoption and opportunity
-figures, and the vocabulary the team works in. See the current revision of this file.
+What preparation needs is the **team and its product**, and those are matters of public record:
+
+1. **STAAT expands to Smart Technologies and Advanced Analytics Team.** Confirmed by Celent's 2026
+   award citation, not inferred. The JD's team, STAAT Field Solutions, sits in that organisation.
+2. **The automated insight engine is theirs, it is externally validated, and it works.** STAAT Insights
+   won the **2026 Celent Model Wealth Manager Award for Data, Analytics and AI**. UBS publishes that
+   nearly 90% of advisor teams use it and that it generated over 20 million client opportunities in
+   2025, against 13 million in 2024. Pitching an insight engine back to this team would be demoing
+   their own award-winning roadmap. Suggesting its precision is poor would be worse.
+3. **The vocabulary that lands is signals and evidence**, not wealth-management strategy in the
+   abstract: provenance, materiality, precision and recall, the cost of a false positive, and what a
+   reason code is derived from. Relay's reason codes come from traversal of an entity graph for exactly
+   this reason.
+4. **The gap Relay addresses is downstream of the engine.** 20 million opportunities a year is a
+   generation success and a conversion question, and conversion is where a product can be additive
+   without competing with what the team already shipped. §2 carries the arithmetic.
+
+**Corrected from the first draft of this brief.** The earlier version asserted that "precision at the
+recipient's inbox" is *the* failure mode of automated advisor insights and treated it as domain
+expertise. The audit was right to challenge it. It is unsourced, it is not a claim about STAAT
+Insights, and the published 90% adoption figure is evidence against its strong form. It is now carried
+in PRD §1.5 explicitly as a hypothesis for week one and **must never be stated as a finding about
+their system.** The thesis no longer depends on it.
 
 ---
 
@@ -205,7 +227,7 @@ link on request is fine. An indexed one is not.
 ## 7. Demo structure, twelve minutes
 
 Re-ordered after the audit. The first draft opened on UBS's attrition numbers. Opening on a division's
-worst public quarter is a weaker move than opening on the thing his team just won.
+worst public quarter is a weaker move than opening on the thing the team just won.
 
 1. **Two minutes, their own numbers and the thesis.** Open on the Celent award and STAAT Insights: 20
    million opportunities in 2025 against 13 million in 2024, 90% of teams. Then the two published measures side by side, volume
@@ -231,19 +253,19 @@ worst public quarter is a weaker move than opening on the thing his team just wo
 What I want your reaction to is the sequencing and the control map, because that is what I would be
 bringing to your team in week one."
 
-**Opening adjusted for this manager:** open on the graph path and the citation trail, not on a
-polished card. Reason codes in the prototype come from traversal of an entity graph, which is a
-deliberate nod to his knowledge-representation work.
+**Opening adjusted for this team:** open on the graph path and the citation trail, not on a polished
+card. Reason codes in the prototype come from traversal of an entity graph, which is the shape of
+evidence this team works in.
 
-**One question to ask him, now that we know the Evidence Lab detail:** what transferred from designing
-alerting for research analysts to designing it for advisors, and what did not. That is a peer question
-and it is the kind he is unlikely to have been asked.
+**A question worth asking them:** what transfers from designing alerting for institutional research
+consumers to designing it for advisors, and what does not. UBS runs both, the failure costs are not the
+same, and it is a peer question rather than a candidate's question.
 
 ---
 
 ## 8. What we are deliberately not building, and will say so
 
-Opportunity and signal generation (his award-winning engine exists). Document search and retrieval (Red
+Opportunity and signal generation (the team's award-winning engine exists). Document search and retrieval (Red
 exists). General-purpose advisor chat (Red exists). Advisor workstation shell (Broadridge programme in
 flight). Unbounded securities recommendation (cannot pass Reg BI review). Portfolio construction.
 Client-facing surfaces.
@@ -335,7 +357,7 @@ alone can take it.
 4. Rehearse the twelve-minute demo once the interview date is known, including the recipient-counter
    beat, which is new.
 5. Do the four GenAI number drills in `claims/drills/2026-08-08-genai-four-numbers.md` before the
-   interview. They matter more for this manager than for any other, since his team builds the same
+   interview. They matter more for this team than for most, since it builds the same
    systems and will ask how the numbers were measured.
 
 ---
