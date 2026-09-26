@@ -338,3 +338,63 @@ alone can take it.
 5. Do the four GenAI number drills in `claims/drills/2026-08-08-genai-four-numbers.md` before the
    interview. They matter more for this manager than for any other, since his team builds the same
    systems and will ask how the numbers were measured.
+
+
+---
+
+## 12. Talk track: team, operating model, hiring and coaching
+
+**Not in the PRD, by Nik's decision.** The JD asks for hiring, coaching and performance-managing PMs and
+POs, and `fit.md` records people leadership as the one partial gap. It was drafted as a PRD section and
+then pulled, because Nik will cover it in conversation rather than on paper. A PRD that carries a team
+chapter also reads slightly oddly to a product audience, so the choice is defensible on its own terms.
+
+Kept here as talking points so the material is not lost.
+
+
+The JD asks for someone who hires, coaches and performance-manages PMs and POs, and who runs
+cross-functional squads. A PRD that says nothing about the team is an incomplete answer to the role, so
+this is stated rather than left to the conversation.
+
+###  Shape of the team
+
+Relay is three problems with different rhythms, so it wants three pods behind one roadmap rather than
+one undifferentiated squad:
+
+| Pod | Owns | Staffing |
+|---|---|---|
+| **Advice path** | Triage, advice state, evidence, proposals | Senior PM, design, 4 to 6 engineers, data science partner |
+| **Control plane** | Rationale records, supervisory queue, recipient counter, audit and retention | PM or senior PO with LRC fluency, 3 to 4 engineers |
+| **Measurement and evals** | Funnel instrumentation, eval harness, release gates, experiment design | PM or TPM, 2 engineers, data science |
+
+The control plane gets its own PM deliberately. In regulated field products it is the surface that
+decides whether anything ships, and it loses every prioritisation argument when it is somebody's
+side responsibility.
+
+###  How I would run it
+
+- **Ownership at the outcome, not the feature.** Each pod owns a funnel stage and reports its own
+  conversion number. Nobody's OKR is a count of things built.
+- **Written decisions.** Decisions recorded with the evidence that justified them and the falsifier
+  that would reverse them, in the repository next to the code, so a new joiner can reconstruct why.
+- **Evidence over seniority in reviews.** The eval suite and the funnel are the arbiter.
+- **Design and LRC in the room from discovery**, not consulted at the end. The control plane PM's
+  first relationship is with Legal, Risk and Compliance, and that is by design.
+
+###  Hiring, coaching and performance
+
+- **Hiring bar for PMs on this team:** can they state what would falsify their own plan, and can they
+  read a metric they did not choose? I screen for both directly, with a written exercise on a real
+  decision rather than a hypothetical.
+- **Coaching cadence:** weekly one-to-ones focused on one skill at a time, not status; a quarterly
+  written growth plan owned by the PM and reviewed by me; a rotating "run the review" slot so PMs
+  practise defending decisions to stakeholders before they have to do it for real.
+- **Performance management:** expectations written down at the start of a cycle, feedback in the week
+  it happens rather than at review time, and underperformance addressed with a specific, dated,
+  written plan. The failure mode I have seen most is a manager who lets a gap run for two quarters
+  because the conversation is uncomfortable.
+- **What I would want from my own manager in the first 90 days:** the conversion number if it exists,
+  air cover with LRC, and one named advisor council slot.
+
+---
+

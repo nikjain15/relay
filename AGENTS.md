@@ -18,7 +18,8 @@ Relay is the layer between the opportunity and the client. Its interface is a **
 not a conversation, because a decision queue has a bounded output space and is reviewable where a
 conversation is neither. The rate-limiting step is the supervisory record, not the model.
 
-Full argument in `docs/PRD-relay.md`. What to build, and in what order, is in `docs/BUILD-SPEC.md`.
+Full argument in `docs/PRD-relay.md`. System design in `docs/ARCHITECTURE.md`. What to build, and in
+what order, is in `docs/BUILD-SPEC.md`.
 
 ## The invariant that shapes the architecture
 
@@ -79,7 +80,8 @@ lib/
 fixtures/             Synthetic households, holdings, IPS constraints, documents, pre-computed text
 evals/                Golden set and the release gate
 tests/invariants/     The architectural invariants, enforced
-docs/                 PRD, build spec, brief, audit record, decisions
+docs/                 PRD, architecture, build spec, brief, audit record, decisions
+docs/diagrams/        rendered SVGs, generated from the Mermaid sources in ARCHITECTURE.md
 ```
 
 ## Conventions

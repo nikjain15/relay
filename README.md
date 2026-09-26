@@ -10,19 +10,22 @@ information of any kind is used. Not deployed, and never to be: see `docs/DECISI
 
 | | |
 |---|---|
-| PRD | `docs/PRD-relay.md` v0.3, twice fact-audited |
+| PRD | `docs/PRD-relay.md` **v1.0**. Nine sections, five appendices, twice fact-audited |
+| Architecture | `docs/ARCHITECTURE.md` v1.0, five diagrams, rendered SVGs in `docs/diagrams/` |
 | Build spec | `docs/BUILD-SPEC.md` v1.0, ready to build against |
 | Prototype | **Not started.** Build order in BUILD-SPEC §10 |
 | Surfaces | 9 specified. 6 to be built deep, 3 designed and labelled |
 
 ## Start here
 
-1. `docs/BUILD-SPEC.md` if you are writing code. It has the screens, the data model, the fixtures, the
+1. `docs/ARCHITECTURE.md` if you want the system design. Five diagrams: system context, the
+   determinism boundary, the critical path, regime resolution as a state machine, and the data model.
+2. `docs/BUILD-SPEC.md` if you are writing code. It has the screens, the data model, the fixtures, the
    design tokens, the demo click path and the build order.
-2. `docs/PRD-relay.md` if you want the argument and the evidence. Every figure is in its Appendix D
+3. `docs/PRD-relay.md` if you want the argument and the evidence. Every figure is in its Appendix D
    with source, date and confidence.
-3. `docs/00-BRIEF.md` for the reasoning behind each decision and the demo running order.
-4. `docs/AUDIT-FINDINGS-2026-09-26.md` for what two audit passes found and fixed.
+4. `docs/00-BRIEF.md` for the reasoning behind each decision and the demo running order.
+5. `docs/AUDIT-FINDINGS-2026-09-26.md` for what two audit passes found and fixed.
 
 ## The thesis, in three lines
 

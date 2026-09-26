@@ -2,7 +2,7 @@
 
 **Product:** Relay, advisor advice-to-action layer
 **Author:** Nik Jain
-**Date:** 2026-09-26 (v0.3, second full fact re-audit 2026-09-26)
+**Date:** 2026-09-26 (v1.0)
 **Status:** Draft, written as an interview artifact
 **Audience:** Head of STAAT AI Product, UBS Wealth Management USA
 
@@ -13,6 +13,103 @@
 > investment view is attributed to the UBS Chief Investment Office.
 > **Every figure attributed to UBS is public reporting, listed with its source and date in
 > Appendix D, and should be corrected by anyone with internal numbers.**
+
+
+---
+
+## Document control
+
+| | |
+|---|---|
+| **Document** | Relay Product Requirements Document |
+| **Version** | 1.0 |
+| **Status** | Approved for build. Illustrative artifact, written from public sources |
+| **Author** | Nik Jain |
+| **Audience** | Head of STAAT AI Product, UBS Wealth Management USA |
+| **Companion documents** | `ARCHITECTURE.md` (system design), `BUILD-SPEC.md` (implementation), `00-BRIEF.md` (reasoning and talk track) |
+| **Figure provenance** | Appendix D. Every UBS figure with source, date and confidence |
+
+### Version history
+
+| Version | Date | Change | Driver |
+|---|---|---|---|
+| 0.1 | 2026-09-26 | First draft, nine sections | Initial |
+| 0.2 | 2026-09-26 | Facts re-grounded after independent adversarial audit. Signal taxonomy rebuilt on five trigger classes; FINRA 2210 correspondence threshold corrected and made a product control; Appendix D provenance table added | Audit pass 1 |
+| 0.3 | 2026-09-26 | Second full re-audit. Headline arithmetic corrected and restated in assumption-free units; conflicting published hours figures surfaced as a range; FINRA Regulatory Notice 26-14 added; capacity argument rebuilt on reported assets and headcount | Audit pass 2 |
+| **1.0** | 2026-09-26 | Document control, executive summary, glossary, traceability matrix and non-functional requirements table added. Architecture split into its own document | Release |
+
+### Reading order
+
+| If you are | Read |
+|---|---|
+| Deciding whether the thesis holds | Executive summary, then §1.3 and §2 |
+| Assessing regulatory design | §7, especially §7.2 |
+| Assessing system design | `ARCHITECTURE.md` |
+| Building it | `BUILD-SPEC.md` |
+| Checking a number | Appendix D |
+
+---
+
+## Executive summary
+
+**The problem.** A wealth platform can generate client opportunities faster than advisors can act on
+them. UBS publishes both halves of the gap: STAAT Insights generated **more than 20 million
+AI-identified client opportunities in 2025, up about 50% year over year**, used by **nearly 90% of
+advisor teams**; and it publishes the meeting-preparation time saved. Dividing the two gives roughly
+**11 to 22 seconds of returned preparation time per opportunity generated**. The published growth metric
+is volume. The published outcome metric is preparation time, which is an input measure. **Conversion is
+not published at all.**
+
+**Why it matters now.** Americas client assets rose about 11% year over year to roughly $2.4 trillion
+while advisor headcount fell about 2.2% to 5,644. Assets per advisor are rising about 13% a year, so
+growth has to come from capacity per advisor rather than from headcount.
+
+**The thesis.** Codifying investment advice is a **conversion and control problem, not a generation
+problem**. Generation is solved, externally recognised, and growing. The rate-limiting step is the
+supervisory record, not the model. Therefore the highest-return investment is **narrowing what the
+system may propose** and **making the approval step disappear into the workflow**.
+
+**The product.** Relay is the layer between a generated opportunity and an executed, supervised client
+action. Its interface is a **queue of decisions, not a conversation**, because a decision queue has a
+bounded output space and is reviewable where a conversation is neither. It consumes the existing
+opportunity engine and retrieval layer and rebuilds neither.
+
+**The control that shapes the design.** Under FINRA Rule 2210(a) a communication to 25 or fewer retail
+investors in a rolling 30-day period is **correspondence**, reviewed under Rule 3110(b), with no
+principal pre-approval required. At the 26th recipient the same text becomes a **retail communication**
+and needs principal approval before use. Batch handling is exactly the feature that crosses that line,
+so the rolling recipient count is a **deterministic, advisor-visible product surface**, not a compliance
+footnote.
+
+**What success looks like.** North star is **approved client actions per surfaced opportunity, per
+advisor, per week**. Volume of opportunity is not a success metric anywhere in this product.
+
+**What would kill it.** If opportunity-to-action conversion is already measured and already healthy, the
+constraint is elsewhere and this document is wrong. That is the first thing to ask for, and it is cheap
+to test.
+
+---
+
+## Glossary
+
+| Term | Meaning as used here |
+|---|---|
+| **Opportunity** | A candidate action on a household, emitted by the upstream signal engine. Not yet a recommendation |
+| **Signal** | An opportunity plus its trigger, materiality score and reason path |
+| **Trigger class** | One of five origins of a signal: life event, external event, threshold, service event, market view |
+| **Reason path** | A named traversal through the entity graph that explains why a signal fired. A typed object, not a sentence |
+| **Proposal** | A candidate action selected from the approved shelf and evaluated against the household's constraints |
+| **Rationale record** | Structured care-obligation evidence: basis, reasonably available alternatives, costs compared, why this client |
+| **Correspondence** | FINRA 2210(a): a written communication to 25 or fewer retail investors in a rolling 30 calendar-day period |
+| **Retail communication** | FINRA 2210(a): more than 25 retail investors in a rolling 30 calendar-day period |
+| **Regime** | Which supervisory path a communication falls under, determined by recipient count |
+| **Disposition** | A supervisory principal's decision on a communication: approve, return with comment, or block |
+| **Advice state** | A household's position against Liquidity, Longevity and Legacy, with each gap quantified |
+| **Shelf** | The approved product and model set Relay may select from. It never free-generates |
+| **Human gate** | The architectural invariant that no path exists from the system to a client |
+| **Conversion** | Approved client actions divided by surfaced opportunities. The north star |
+
+---
 
 **In one line:** divide the two numbers UBS publishes about STAAT Insights, over 20 million client
 opportunities generated in 2025 and the meeting-preparation time it saves, and you get roughly
@@ -450,13 +547,22 @@ internal publication, never an invented view attributed to the UBS CIO:
   a vendor relationship and FINRA has been explicit that its rules apply whether a firm builds the
   tool or consumes a third party's.
 
-### 5.5 Non-functional
+### 5.5 Non-functional requirements
 
-Availability 99.5% during market hours. Graceful degradation: if the proposal engine is unavailable,
-opportunities and evidence still render. Accessibility to WCAG 2.2 AA, which is not optional in a
-workforce product of this size.
-
----
+| ID | Category | Requirement | How verified |
+|---|---|---|---|
+| NFR-01 | Latency | Triage list render under 1.5s p95 | Instrumented, per render |
+| NFR-02 | Latency | Explanation under 4s p95; proposal generation under 8s p95 | Instrumented. Anything slower than a phone call is a feature nobody uses |
+| NFR-03 | Availability | 99.5% during market hours | Uptime monitoring against market calendar |
+| NFR-04 | Degradation | If the proposal engine is unavailable, opportunities and evidence still render | Chaos test with the engine disabled |
+| NFR-05 | Accessibility | WCAG 2.2 AA. Full keyboard path through the queue; no state conveyed by colour alone | Automated axe scan plus a manual keyboard pass |
+| NFR-06 | Auditability | Any past decision reconstructable without replaying a model | Quarterly reconstruction test against archived records |
+| NFR-07 | Retention | Records retained per books-and-records requirements, satisfying 17a-4(f) by WORM or the audit-trail alternative | Retention configuration review before pilot |
+| NFR-08 | Data residency | Client data stays inside the existing perimeter | Architecture review; no egress path in the dependency graph |
+| NFR-09 | Determinism | Constraint evaluation, ranking, recipient counting and policy checks produce identical output for identical input | Property tests; no model client importable by those modules |
+| NFR-10 | Cost | Cost per surfaced opportunity within budget, with drafting identified as the dominant component | Per-stage cost telemetry |
+| NFR-11 | Scale | No degradation in supervisory disposition time as volume scales | Load test at projected pilot and full-region volume |
+| NFR-12 | Security | No path from the system to a client exists in the dependency graph | `invariant:imports` and `tests/invariants` in CI |
 
 ## 6. UX principles and measurable UX outcomes
 
@@ -748,51 +854,52 @@ because it exists.
 
 ---
 
-## 10. Team, operating model and how I would run this
+## Appendix 0: Traceability
 
-The JD asks for someone who hires, coaches and performance-manages PMs and POs, and who runs
-cross-functional squads. A PRD that says nothing about the team is an incomplete answer to the role, so
-this is stated rather than left to the conversation.
+### A. Job description clause to section
 
-### 10.1 Shape of the team
+| JD clause | Answered in |
+|---|---|
+| "help our Wealth Management advisors serve clients better" | §1 Context, user and problem |
+| "codifying investment advice" | §2 Strategy and thesis |
+| "own an AI product portfolio end to end" | §3 Scope, in and out with reasons |
+| "productivity tools, advisor workflows, insights and analytics, chat and assistive tools" | §4.1 surface map, §4.2 explicit mapping |
+| "technical requirements, user stories, design documents" | §4.3 user stories, §5 requirements, `ARCHITECTURE.md` |
+| "partner with UX, insist on research and measurable UX outcomes" | §6 principles, §6.2 outcomes with methods, §6.3 research plan |
+| "ship with quality and compliance, Risk, Legal, Compliance, regulatory and supervisory expectations" | §7 control map, §7.2 the recipient-count control |
+| "instrument, test, learn, run experiments" | §8 metrics, §8.3 evals, §8.5 experiment design |
+| "own backlogs, OKRs, metrics, release readiness" | §8.1 metric tree, §9.2 release readiness checklist |
+| "business change: training, comms, enablement" | §9.3 |
+| "influence with data (adoption, CSAT)" | §8.1, adoption and satisfaction |
 
-Relay is three problems with different rhythms, so it wants three pods behind one roadmap rather than
-one undifferentiated squad:
+### B. Requirement to story to acceptance to eval gate
 
-| Pod | Owns | Staffing |
+Every Must requirement traces to a story and to an assertion that can fail a release.
+
+| FR | Story | Acceptance | Eval gate |
+|---|---|---|---|
+| FR-01, FR-02 | S6.1 Ranked book triage | Cap respected; trigger named on every row | Cap and suppression tests |
+| FR-03 | S6.1 | Reason path rendered from traversal | Path well-formed; every node resolves |
+| FR-04 | S3.1 Advice state | Gap traceable to holdings and plan inputs in one click | Trace completeness test |
+| FR-05, FR-06 | S4.1 Explain this | Citations carry title, date, passage; refusal when unsupported | Unsourced-claim rate zero; refusal precision above target |
+| FR-07, FR-08, FR-09 | S5.1 Bounded proposal | Rejected candidates shown with the failing constraint named | **Zero constraint breaches across all households by all shelf items** |
+| FR-10 | S5.2 Rationale record | Basis, alternatives, costs, suitability captured as structured fields | Mandatory-completion assertion |
+| FR-11 | S7.1 Communication draft | Derived from approved proposal and evidence only | No performance projection in client-facing text |
+| FR-12, FR-13 | S9.1 Supervisory queue | Per-check pass or fail displayed; nothing leaves without disposition | **Zero undispositioned releases** |
+| FR-14 | S9.1 | Immutable audit record with retention metadata | Reconstruction test |
+| FR-15 | S6.1, S7.1 | Dismissal reasons and draft edits captured | Labelling provenance present |
+| **FR-16** | **S7.1, S9.1** | **Rolling 30-day recipient count drives the regime, visibly** | **Count and regime always agree, including at 24, 25, 26 and across the 30-day edge** |
+
+### C. Risk to control to evidence
+
+| Risk | Control | Evidence it produces |
 |---|---|---|
-| **Advice path** | Triage, advice state, evidence, proposals | Senior PM, design, 4 to 6 engineers, data science partner |
-| **Control plane** | Rationale records, supervisory queue, recipient counter, audit and retention | PM or senior PO with LRC fluency, 3 to 4 engineers |
-| **Measurement and evals** | Funnel instrumentation, eval harness, release gates, experiment design | PM or TPM, 2 engineers, data science |
-
-The control plane gets its own PM deliberately. In regulated field products it is the surface that
-decides whether anything ships, and it loses every prioritisation argument when it is somebody's
-side responsibility.
-
-### 10.2 How I would run it
-
-- **Ownership at the outcome, not the feature.** Each pod owns a funnel stage and reports its own
-  conversion number. Nobody's OKR is a count of things built.
-- **Written decisions.** Decisions recorded with the evidence that justified them and the falsifier
-  that would reverse them, in the repository next to the code, so a new joiner can reconstruct why.
-- **Evidence over seniority in reviews.** The eval suite and the funnel are the arbiter.
-- **Design and LRC in the room from discovery**, not consulted at the end. The control plane PM's
-  first relationship is with Legal, Risk and Compliance, and that is by design.
-
-### 10.3 Hiring, coaching and performance
-
-- **Hiring bar for PMs on this team:** can they state what would falsify their own plan, and can they
-  read a metric they did not choose? I screen for both directly, with a written exercise on a real
-  decision rather than a hypothetical.
-- **Coaching cadence:** weekly one-to-ones focused on one skill at a time, not status; a quarterly
-  written growth plan owned by the PM and reviewed by me; a rotating "run the review" slot so PMs
-  practise defending decisions to stakeholders before they have to do it for real.
-- **Performance management:** expectations written down at the start of a cycle, feedback in the week
-  it happens rather than at review time, and underperformance addressed with a specific, dated,
-  written plan. The failure mode I have seen most is a manager who lets a gap run for two quarters
-  because the conversation is uncomfortable.
-- **What I would want from my own manager in the first 90 days:** the conversion number if it exists,
-  air cover with LRC, and one named advisor council slot.
+| Hallucinated or unsourced claim | Hard grounding gate; unattributable output blocked | Blocked-output log, eval scores |
+| Unsuitable recommendation | Deterministic constraint evaluation over a bounded shelf | Zero-breach report |
+| Wrong supervisory regime applied | Deterministic rolling recipient counter | Per-artifact regime record |
+| Unapproved communication released | No outbound path; human send only | Approval audit trail, CI invariant |
+| Non-reconstructable decision | Versioned snapshots of model, prompt, graph, constraints | Quarterly reconstruction test |
+| Alert fatigue | Hard cap, suppression, precision as the release gate | Repeat-dismissal trend |
 
 ---
 
