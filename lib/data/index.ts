@@ -4,6 +4,7 @@
 import type { BookRecord, ClientFile, Doc, Household, Opportunity, Product, Prospect, ServiceRequest } from "@/lib/types";
 import type { Advisor } from "@/lib/data/advisor";
 import type { Distribution } from "@/lib/recipients/count";
+import type { ChannelAttestation, ConnectionState } from "@/lib/connectors/types";
 import renner from "@/data/clients/renner.json";
 import alcott from "@/data/clients/alcott.json";
 import brandvold from "@/data/clients/brandvold.json";
@@ -19,6 +20,7 @@ import communications from "@/data/communications.json";
 import funnel from "@/data/funnel.json";
 import prospects from "@/data/prospects.json";
 import serviceRequests from "@/data/service-requests.json";
+import connectors from "@/data/connectors.json";
 
 // JSON imports are widened by TypeScript; validate() in lib/data/validate.ts
 // checks the shapes and cross-references at test time.
@@ -37,6 +39,10 @@ export const COMMUNICATIONS = communications as unknown as {
 export const PROSPECTS = prospects as unknown as Prospect[];
 export const SERVICE_REQUESTS = serviceRequests as unknown as ServiceRequest[];
 export const FUNNEL_DATA = funnel as unknown as { stage: string; count: number }[];
+export const CONNECTORS_DATA = connectors as unknown as {
+  connections: ConnectionState[];
+  attestations: ChannelAttestation[];
+};
 
 export function toHousehold(c: ClientFile): Household {
   const { id, name, archetype, tier, totalUsd, persons, goals, holdings, constraints, monthlySpendUsd, hardPart, groundedIn } = c;
