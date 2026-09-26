@@ -14,6 +14,7 @@ import { CATALOG } from "@/lib/connectors/catalog";
 import { coverageFor, type ChannelCoverage } from "@/lib/connectors/coverage";
 import type { ChannelKind, ConnectorDefinition } from "@/lib/connectors/types";
 import { CONNECTORS_DATA } from "@/lib/data";
+import { rulesFedBy } from "@/lib/compliance/sources";
 
 const CHANNEL_LABEL: Record<ChannelKind, string> = {
   email: "Email",
@@ -161,18 +162,18 @@ export function ConnectorsView({ advisorId }: { advisorId: string }) {
           {CATALOG.map((c) => (
             <Card key={c.id} title={c.name} sub={c.supervisoryNote}>
               <p className="text-[13px] text-ink-2">
-                <span className="font-medium text-ink">Feeds:</span>{" "}
-                {c.feedsRules.length ? (
-                  c.feedsRules.map((r, i) => (
-                    <span key={r}>
+                <span className="font-medium text-ink">Rules that need it:</span>{" "}
+                {rulesFedBy(c.id).length ? (
+                  rulesFedBy(c.id).map((r, i) => (
+                    <span key={r.id}>
                       {i > 0 && ", "}
-                      <Link href={`/compliance#${r}`} className="underline">
-                        {r}
+                      <Link href={`/compliance#${r.id}`} className="underline">
+                        {r.title}
                       </Link>
                     </span>
                   ))
                 ) : (
-                  "No rule depends on it yet."
+                  "None yet. It adds records, not verdicts."
                 )}
               </p>
             </Card>

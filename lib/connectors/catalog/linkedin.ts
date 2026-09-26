@@ -10,5 +10,4 @@ export const linkedin: ConnectorDefinition = {
   produces: ["social_post", "chat_message"],
   retention: "supplemental",
   supervisoryNote: "A post to more than 25 retail investors is a retail communication. Endorsements and testimonials engage the marketing rule.",
-  feedsRules: ["finra-2210-regime", "sec-marketing-206-4-1", "off-channel-gap"],
 };

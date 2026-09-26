@@ -35,6 +35,7 @@ npm run stress                  # 1,000 clients, 50 advisors, 20,000 events, in 
 | `docs/AUDIT-FINDINGS-2026-09-26.md` | First and second audit passes, as recorded then. Treat as history |
 | `docs/AUDIT-PROMPT.md` | The audit prompt used for the earlier passes |
 | `docs/DESIGN-SYSTEM.md` | Principles, tokens, components and the branding boundary; one system for the prototype and the mockup |
+| `docs/ARCHITECTURE-compliance.md` | Connectors, the configurable rule set, the agents and the change log: what is autonomous, what is not, and where each invariant is enforced |
 | `docs/ARCHITECTURE-personalization.md` | Personalization layers, the one read path, and the learning loop, with guardrails and the production mapping |
 | `docs/BUILD-SPEC.md` | Build spec v2.5: surfaces, data model, fixtures, engines, demo path, tests, build order |
 | `docs/mockups/relay-wireframes.html` | Low-fidelity mockup: four client stories through the six daily steps, and six journey chapters (prospects, paperwork, meetings, review pack, service, follow-ups), all generated from `data/` (private artifact link, not an indexed page) |

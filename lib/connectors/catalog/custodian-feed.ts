@@ -10,5 +10,4 @@ export const custodianFeed: ConnectorDefinition = {
   produces: ["trade_confirm", "position_snapshot"],
   retention: "system_of_record",
   supervisoryNote: "Ties a recommendation to what actually happened in the account, which is how suitability drift becomes measurable.",
-  feedsRules: ["finra-2111-suitability", "reg-bi-care-evidence", "trade-surveillance"],
 };

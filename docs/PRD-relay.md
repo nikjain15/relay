@@ -209,6 +209,27 @@ The path from a candidate opportunity to an approved client action, and the meas
 it: household advice state, evidence assembly and citation, bounded action proposal, client
 communication drafting, supervisory approval and audit, and the feedback loop from advisor edits.
 
+Three capabilities added in build spec v2.2 sit under the same path rather than beside it:
+
+- **Channel connectors.** Read-only ingestion from the channels an advisor actually works on: firm
+  mail and calendar, video meetings, compliant texting, chat, social, CRM, custodian, archive and
+  e-signature. They carry records and decide nothing. The output that matters is not a connection
+  count, it is a named answer to "what is this advisor using that nothing is capturing".
+- **Compliance agents.** Standing surveillance over an advisor's book, bundled by domain, running on
+  a cadence rather than on submission. Detection, classification and evidence assembly are
+  autonomous; the disposition is a principal's, always.
+- **A configurable rule set.** The FINRA and SEC rules are data, not compiled predicates, resolved
+  firm to segment to advisor to client with tighten-only semantics. A supervisor changes a threshold
+  or a severity in the console and the next evaluation uses it, with no release. Every change is an
+  entry in an append-only log carrying who, when, which layer and why.
+
+Why these three are in scope and not a later phase: without the first, a surveillance product reports
+on the subset of business that happens to be captured, which is the exposure rather than the control.
+Without the third, the product encodes one firm's supervisory procedures in code and needs an
+engineering cycle every time a regulator moves, which is the reason incumbent surveillance tools are
+slow. The third is also the honest answer to a question the field asks first: an advisor serving
+pre-liquidity founders does not need the same surveillance as one running a pooled call queue.
+
 ### 3.2 Out of scope, with the reason
 
 | Not building | Why |
@@ -240,9 +261,9 @@ shipped, or improving a metric the team already wins on, costs a quarter.
 
 ### 4.1 Surface map
 
-Nine surfaces span the advisor journey, all built in the prototype (the last three were added in build
-spec v2.1). Roadmap priority is separate from build state: §9.1 still sequences releases by supervisory
-surface.
+Twelve surfaces span the advisor journey, all built in the prototype (surfaces 7 to 9 were added in
+build spec v2.1, and 10 to 12 in v2.2). Roadmap priority is separate from build state: §9.1 still
+sequences releases by supervisory surface.
 
 | # | Surface | JD capability type | Build state |
 |---|---|---|---|
@@ -255,6 +276,9 @@ surface.
 | 7 | Client communications and review packs | Productivity | **Build** |
 | 8 | Servicing and operations triage | Agentic | **Build** |
 | 9 | Supervision and control console | Control plane | **Build** |
+| 10 | Connected channels and record completeness | Control plane | **Build** |
+| 11 | Compliance rules and agents, editable at runtime | Control plane | **Build** |
+| 12 | Change log, replayable to any past moment | Control plane | **Build** |
 
 ### 4.2 Coverage against the JD's four named types
 
@@ -262,6 +286,10 @@ surface.
 - **Advisor workflows:** surfaces 3 and 5, advice state and the proposal-to-approval path.
 - **Insights and analytics:** surface 6, plus the measurement console.
 - **Chat and assistive:** surface 4, scoped explanation grounded in cited evidence.
+- **Agentic, in the sense the JD means it:** surfaces 10 to 12. An agent that watches an advisor's
+  book, raises a case with the citation and the evidence attached, and hands the decision to a person
+  is the shape of agentic work a regulated firm can actually deploy. Full automation of a supervisory
+  disposition is not a product decision, it is a licence problem.
 
 ### 4.3 User stories with acceptance criteria
 
@@ -400,6 +428,18 @@ internal publication, never an invented view attributed to the UBS CIO:
 | FR-19 | Write tasks and contact history back to CRM | Should |
 | FR-20 | Generate a review pack for a scheduled meeting | Should |
 | FR-21 | Advisor-configurable thresholds within policy bounds | Could |
+| FR-22 | Ingest records read-only from each connected channel, with the record class and the retention role of each source declared | Must |
+| FR-23 | Report record completeness per channel against the advisor's own attestation of what they use, naming the regulation exposed by each gap | Must |
+| FR-24 | Treat a connected but degraded source as uncaptured, never as covered | Must |
+| FR-25 | Hold the rule set as data: a JSON condition tree with named parameters, editable at runtime, in force on the next evaluation with no release | Must |
+| FR-26 | Resolve rules firm to segment to advisor to client, tighten-only: a lower layer may enable a rule, raise a severity and move a threshold in the stricter direction, and may not disable a mandatory rule, lower a severity or loosen a threshold | Must |
+| FR-27 | Record every attempted change, applied or refused, in an append-only log with actor, timestamp, layer, field, old and new value, and a required reason | Must |
+| FR-28 | Reproduce the rule set as it stood at any past moment by replaying the log to that timestamp | Must |
+| FR-29 | Return "cannot evaluate", never "clear", when a rule's source connector is absent, naming the missing source | Must |
+| FR-30 | Sweep an advisor's whole book on a cadence, independent of anything the advisor submits | Must |
+| FR-31 | Attach to every finding the citation, the remediation and exactly the facts the rule read | Must |
+| FR-32 | Route to a person anything that fires, and anything whose confidence sits below the rule's floor; clear nothing autonomously | Must |
+| FR-33 | Refuse to let an agent's configuration retire a mandatory rule: warn when a mandatory rule in force is watched by no enabled agent | Must |
 
 ### 5.3 Technical requirements
 
@@ -409,6 +449,22 @@ internal publication, never an invented view attributed to the UBS CIO:
 - **Determinism where it matters.** Constraint evaluation, ranking, recipient counting and policy
   checks are deterministic code, not model calls. The model composes language and extracts structure;
   it does not decide eligibility. This is what makes the system reviewable.
+- **Rule evaluation is total and deterministic.** The condition language has no escape into code: an
+  unknown fact is false, never an exception, so a malformed rule cannot crash a supervisory sweep. The
+  evaluator imports no model client, so the same facts always produce the same verdict and a past
+  disposition can be replayed exactly.
+- **Confidence is scoped to the facts a rule read.** A rule's confidence is the weakest confidence
+  among its own evidence keys. Taking the minimum across everything known would let an inference
+  belonging to another rule drag an unrelated verdict under its floor, and a queue of findings that
+  name no fact the rule uses is a queue a supervisor learns to ignore.
+- **Connectors carry, they do not judge.** `lib/connectors` may not import an outbound transport and
+  may not import `lib/compliance`. Both are enforced by dependency-cruiser and both were seen failing
+  on a deliberate violation. Keeping ingestion free of verdicts is what lets a channel be added
+  without re-reviewing the rule set.
+- **Inference is separable from judgement.** Where a fact is inferred rather than observed, for
+  instance whether free text reads as a grievance, it carries a confidence below one and is named as
+  inferred. A typed-value model such as Jev is a reasonable fit for that extraction step precisely
+  because the verdict does not depend on the model's prose.
 - **Bounded generation.** The proposal engine's output space is the cartesian product of the approved
   shelf and the action verbs, filtered by constraints. Deterministic code ranks within that space; the
   model explains the ranked result and never reorders it.
@@ -579,6 +635,14 @@ Under FINRA Rule 2210(a), the classification turns on recipient count in a rolli
 | Model and vendor | Ungoverned GenAI outside SR 26-2 scope | GenAI governed under existing risk practices as SR 26-2 directs, eval suite as monitoring evidence, vendor inventory | Model Risk and Product | Eval reports, model and vendor inventory |
 | Client data | Unauthorised access or leakage through the pipeline | Perimeter controls, Reg S-P aligned incident response | Security and Privacy | Access logs, tested IR runbook |
 | Feedback loop | Training on unreviewed advisor edits | Human review before any edit enters an eval set | Data Science | Labelling provenance log |
+| Channel connectors | Business conducted on a channel nothing captures | Completeness measured against the advisor's own attestation, not against the connection list; a degraded source counts as uncaptured | Supervision and Engineering | Per-channel completeness report with the regulation named per gap |
+| Channel connectors | A connector becomes a send path | `lib/connectors` cannot import an outbound transport, enforced in CI and seen failing on a deliberate violation | Engineering | Dependency-cruiser report per build |
+| Configurable rules | An advisor loosens the rule that would have caught them | Tighten-only resolution: a lower layer cannot disable a mandatory rule, lower a severity or loosen a threshold. The attempt is recorded, not dropped | LRC and Supervision | Refused-change log, itself a supervision signal |
+| Configurable rules | A change cannot be tied to a person or a reason | Append-only log with actor, layer, field, old and new value and a required reason; the log is the state, not a record written afterwards | Supervision | The log, replayable to any past moment |
+| Configurable rules | A past disposition cannot be defended because the rules have moved | Replay the log to the disposition's timestamp to reconstruct the rule set exactly as it stood | LRC | Reconstruction test |
+| Compliance agents | A rule silently stops being evaluated | A rule whose source is absent returns cannot evaluate, never clear; a mandatory rule watched by no enabled agent raises a warning that cannot be dismissed | Supervision | Unevaluated-rule report per sweep |
+| Compliance agents | Autonomous disposition of a supervisory finding | Detection and evidence assembly are autonomous; disposition is a principal's. Nothing an agent raises clears itself | LRC | Disposition record per finding, with the facts the rule read |
+| Compliance agents | Alert volume trains supervisors to ignore the queue | Confidence scoped to the facts a rule read, findings ranked blocking first, remediation drafted with each one | Product and Supervision | Findings per supervisor per week, and disposition latency |
 
 ### 7.4 Risk register, top five
 

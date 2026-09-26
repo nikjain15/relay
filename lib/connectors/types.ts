@@ -70,10 +70,16 @@ export interface ConnectorDefinition {
   capabilities: ReadCapability[];
   produces: RecordClass[];
   retention: RetentionRole;
-  /** Why a compliance officer cares that this is connected. */
+  /**
+   * Why a compliance officer cares that this is connected.
+   *
+   * Which rules depend on this connector is deliberately NOT stored here. A rule
+   * already names the connectors it requires, and holding the same relationship
+   * in two files means the two drift: a test caught the archive omitting a rule
+   * that requires it. The mapping is derived in lib/compliance/sources.ts, which
+   * this module may not import (connectors decide nothing).
+   */
   supervisoryNote: string;
-  /** Rule ids in lib/compliance that depend on this connector's records. */
-  feedsRules: string[];
 }
 
 /** Per-advisor connection state. Lives in data/, not in the definition. */
