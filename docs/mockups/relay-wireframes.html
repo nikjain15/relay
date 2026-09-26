@@ -39,12 +39,12 @@ a { color: var(--accent); }
 .intro p { color: var(--soft); max-width: 66ch; }
 
 /* journey map */
-.journey { display: grid; grid-template-columns: 1fr auto 2fr auto 1fr; gap: 8px; align-items: stretch; }
+.journey { display: grid; grid-template-columns: 1fr auto 2fr auto 1fr auto 1fr auto 1fr; gap: 8px; align-items: stretch; }
 .journey .phase { display: grid; gap: 2px; text-decoration: none; color: var(--ink); background: var(--panel); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
 .journey .phase.now { border-color: var(--accent); background: var(--accent-bg); }
 .journey .ph { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
 .journey .jarrow { align-self: center; color: var(--soft); font-size: 20px; }
-.chapters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.chapters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 820px) { .journey { grid-template-columns: minmax(0, 1fr); } .journey .jarrow { display: none; } .chapters { grid-template-columns: minmax(0, 1fr); } }
 
 /* story picker */
@@ -195,6 +195,8 @@ dl.gl dd { margin: 0; color: var(--soft); }
     <a href="#before" class="phase" data-chapter-link="2"><span class="ph">Meetings</span><span>Today's diary &middot; Review pack</span></a>
     <span class="jarrow" aria-hidden="true">&rarr;</span>
     <a href="#before" class="phase" data-chapter-link="4"><span class="ph">After</span><span>Service requests &middot; Follow-ups</span></a>
+    <span class="jarrow" aria-hidden="true">&rarr;</span>
+    <a href="#before" class="phase" data-chapter-link="6"><span class="ph">Always on</span><span>Personalized &middot; Learns</span></a>
   </nav>
 
   <div class="picker" id="daily">
@@ -209,7 +211,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
   <section class="step" id="step" aria-live="polite"><p class="muted">Loading client data&hellip;</p></section>
 
   <section class="after" id="before">
-    <h2>Before, around and after the daily work</h2>
+    <h2>Before, around and after the daily work, and always on</h2>
     <p class="muted">The same client data drives these screens. Pick a stage.</p>
     <div class="stories chapters" id="chapters" role="group" aria-label="Journey stages"></div>
     <section class="step" id="chapter" aria-live="polite"><p class="muted">Loading&hellip;</p></section>
@@ -400,6 +402,8 @@ dl.gl dd { margin: 0; color: var(--soft); }
     { key: "review", id: "meetings", tab: "Review pack", sub: "Meetings", shows: "Built only from the client file" },
     { key: "service", id: "after", tab: "Service requests", sub: "After", shows: "Routed by rule; wires need a callback" },
     { key: "followups", id: "after", tab: "Follow-ups", sub: "After", shows: "Tasks by owner, overdue first" },
+    { key: "personal", id: "always", tab: "Personalized", sub: "Always on", shows: "Firm, segment, advisor, client" },
+    { key: "learning", id: "always", tab: "Relay learns", sub: "Always on", shows: "Proposes with evidence; you decide" },
   ];
   function renderChapter() {
     $("chapters").innerHTML = CHAPTERS.map((c, k) => `<button type="button" data-chapter="${k}" aria-pressed="${k === chapter}"><span class="nm">${c.tab}</span><span class="sub">${c.sub}</span><span class="shows">${c.shows}</span></button>`).join("");
@@ -451,6 +455,23 @@ dl.gl dd { margin: 0; color: var(--soft); }
           <div class="panel"><strong>Documents to hand</strong>${list(r.documents)}</div>
         </div>`;
       take = "The advisor walks in knowing what changed, what is short, and what needs a decision, and nothing in the pack is invented.";
+    } else if (c.key === "personal") {
+      head = `<h2>Personalized for each advisor and client</h2><p class="goal">Same engine, different settings: who set each one, and what can never be personalized?</p>`;
+      body = `<div class="grid2">` + J.personalization.map((p) => `<div class="panel"><strong>${esc(p.client)}</strong><span class="muted">${esc(p.advisor)}</span>
+        <ul>${p.settings.map((s) => `<li>${esc(s.label)}: <b>${esc(s.value)}</b> <span class="muted">(${esc(s.from)})</span>${s.kind === "rule" ? ' <span class="tag no">rule</span>' : ""}</li>`).join("")}</ul></div>`).join("") + `</div>
+        <div class="note">Preferences: the most specific layer wins. Rules: the strictest layer wins, and nobody can loosen the firm's. Constraints, the approved shelf, compliance checks and the recipient counter are never personalized.</div>`;
+      take = "One resolver answers what applies to this advisor and this client, and records which layer said so on every decision.";
+    } else if (c.key === "learning") {
+      const open = J.suggestions.filter((s) => !s.heldBack);
+      head = `<h2>Relay learns, the advisor decides</h2><p class="goal">What patterns has Relay seen, and what would it change?</p>`;
+      body = `<div class="stat"><span><strong>${open.length}</strong>suggestions</span><span><strong>${J.suggestions.length - open.length}</strong>held back</span></div>` + J.suggestions.map((s, i) => `
+        <div class="opt ${i === 0 ? "go" : ""}" style="grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1.8fr) auto">
+          <span class="t">${esc(s.who)}</span>
+          <span>${esc(s.setting)}: ${esc(s.from)} &rarr; <b>${esc(s.to)}</b></span>
+          <span class="muted">${esc(s.because)}</span>
+          <span class="tag ${s.heldBack ? "plain" : "ok"}">${s.heldBack ? "held back" : "accept?"}</span>
+        </div>`).join("") + `<div class="note">Capture &rarr; learn &rarr; propose &rarr; the advisor accepts &rarr; apply as a new version &rarr; measure &rarr; keep or undo. A declined suggestion waits before it is asked again. Rules are never learned.</div>`;
+      take = "The experience gets smoother every week, and every change was proposed with its evidence and accepted by a person.";
     } else if (c.key === "followups") {
       head = `<h2>Follow-ups</h2><p class="goal">What does the team still owe clients, and what is overdue?</p>`;
       body = `<div class="stat"><span><strong>${J.followUps.length}</strong>open tasks</span><span><strong>${J.followUps.filter((x) => x.overdue).length}</strong>overdue</span></div>` + J.followUps.map((x) => `
@@ -473,7 +494,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
       take = "Requests are routed by rule and measured on time to resolution, never on volume handled.";
     }
     $("chapter").innerHTML = `<div class="step-head"><span class="of">${c.sub}</span>${head}</div>
-      <div class="screen"><div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${c.key === "prospects" ? esc(J.prospectsAdvisor) : c.key === "review" ? esc(J.reviewAdvisor) : "Branch team, both advisors"} &middot; ${esc(J.today)}</span></div><div class="screen-body">${body}</div></div>
+      <div class="screen"><div class="bar-top"><i></i><i></i><i></i><span>Relay &middot; illustrative mockup</span><span class="who-am-i">${c.key === "prospects" ? esc(J.prospectsAdvisor) : c.key === "review" ? esc(J.reviewAdvisor) : c.key === "personal" || c.key === "learning" ? "Both advisors" : "Branch team, both advisors"} &middot; ${esc(J.today)}</span></div><div class="screen-body">${body}</div></div>
       <div class="takeaway"><span class="k">In short</span><p>${take}</p></div>`;
   }
 

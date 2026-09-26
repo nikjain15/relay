@@ -1,0 +1,10 @@
+{
+  "_note": "How the learning loop decides. It proposes; the advisor accepts. It never touches a rule.",
+  "windowDays": 30,
+  "minEvents": 5,
+  "shareThreshold": 0.7,
+  "weightStep": 0.1,
+  "cooldownDays": 14,
+  "capHeadroom": 1,
+  "checkAfterDays": 14
+}

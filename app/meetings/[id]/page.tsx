@@ -5,6 +5,7 @@ import { reviewPack, clientName } from "@/lib/meetings/prep";
 import { dueLabel } from "@/lib/followups";
 import { usd } from "@/lib/format";
 import { PageTitle, Pill, Section } from "@/components/ui";
+import { OrderedSections, ClientPreferences } from "@/components/profile-panel";
 
 export function generateStaticParams() {
   return CLIENTS.map((c) => ({ id: c.id }));
@@ -24,12 +25,18 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
         title={`Review pack: ${clientName(c.id)}`}
         sub={r.meeting ? `${r.meeting.time}, ${r.meeting.title}. ${r.meeting.purpose}.` : "No meeting booked today; this pack is ready for the next one."}
       />
+      <div className="mb-4 max-w-3xl rounded border border-neutral-300 p-3 text-xs">
+        <ClientPreferences clientId={c.id} />
+      </div>
       <p className="mb-4 text-neutral-600">
         {c.persons.map((p) => `${p.name}${p.age ? ` (${p.age})` : ""}`).join(", ")} &middot; {c.tier} &middot; {usd(c.totalUsd)}
         {r.lastContact && <> &middot; last contact: {r.lastContact.channel}, {-r.lastContact.day} days ago, {r.lastContact.summary.toLowerCase()}</>}
       </p>
-      <div className="grid max-w-6xl gap-6 md:grid-cols-2">
-        <Section title="1. What has changed">
+      <OrderedSections
+        clientId={c.id}
+        sections={{
+          changed: (
+        <Section title="What has changed">
           <ul className="list-inside list-disc space-y-0.5">
             {r.changed.map((o) => (
               <li key={o.id}>
@@ -38,7 +45,9 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             ))}
           </ul>
         </Section>
-        <Section title="2. Goals with a gap">
+          ),
+          gaps: (
+        <Section title="Goals with a gap">
           {r.gaps.length ? (
             <ul className="space-y-0.5">
               {r.gaps.map((g) => (
@@ -51,7 +60,9 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             <p className="text-neutral-500">Every goal is funded.</p>
           )}
         </Section>
-        <Section title="3. Decisions to make">
+          ),
+          decisions: (
+        <Section title="Decisions to make">
           {r.decisions.length ? (
             <ul className="space-y-1">
               {r.decisions.map((d) => (
@@ -65,7 +76,9 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             <p className="text-neutral-500">No product decisions pending.</p>
           )}
         </Section>
-        <Section title="4. Open items">
+          ),
+          open: (
+        <Section title="Open items">
           <ul className="space-y-0.5">
             {r.openPaperwork.map((w) => (
               <li key={w.form}>
@@ -84,13 +97,17 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             ))}
           </ul>
         </Section>
-        <Section title="5. Talking points">
+          ),
+          talking: (
+        <Section title="Talking points">
           <ol className="list-inside list-decimal space-y-0.5">
             {r.talkingPoints.map((t) => (
               <li key={t}>{t}</li>
             ))}
           </ol>
         </Section>
+          ),
+          documents: (
         <Section title="Documents to have to hand">
           <ul className="list-inside list-disc space-y-0.5 text-xs">
             {r.documents.map((d) => (
@@ -99,7 +116,9 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
           </ul>
           <p className="mt-2 text-[11px] text-neutral-500">Everything in this pack comes from the client file. Nothing is generated.</p>
         </Section>
-      </div>
+          ),
+        }}
+      />
     </>
   );
 }

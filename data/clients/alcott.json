@@ -230,5 +230,11 @@
       "Log the meeting and the note in the CRM",
       "Relay records the approval, the reasons and the options considered"
     ]
+  },
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Afternoons; both spouses on the call"
+    }
   }
 }

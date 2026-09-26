@@ -1,0 +1,131 @@
+{
+  "_note": "Every personalizable setting, its bounds and which layers may set it. A preference resolves most-specific-wins (client over advisor over segment over firm). A rule resolves most-restrictive-wins: a lower layer can tighten it, never loosen it. Learned suggestions may only touch preferences. Edit bounds here; validate() enforces them.",
+  "layers": [
+    "firm",
+    "segment",
+    "advisor",
+    "client"
+  ],
+  "settings": {
+    "triage.dailyCap": {
+      "label": "Items on today's list",
+      "kind": "preference",
+      "type": "number",
+      "min": 5,
+      "max": 20,
+      "layers": [
+        "firm",
+        "segment",
+        "advisor"
+      ]
+    },
+    "triage.classWeights": {
+      "label": "How much each kind of signal counts",
+      "kind": "preference",
+      "type": "weights",
+      "min": 0.3,
+      "max": 1,
+      "layers": [
+        "firm",
+        "segment",
+        "advisor"
+      ]
+    },
+    "proposals.sortBy": {
+      "label": "Order of options",
+      "kind": "preference",
+      "type": "enum",
+      "values": [
+        "risk",
+        "cost",
+        "access"
+      ],
+      "layers": [
+        "firm",
+        "segment",
+        "advisor"
+      ]
+    },
+    "review.sectionOrder": {
+      "label": "Review pack section order",
+      "kind": "preference",
+      "type": "order",
+      "values": [
+        "changed",
+        "gaps",
+        "decisions",
+        "open",
+        "talking",
+        "documents"
+      ],
+      "layers": [
+        "firm",
+        "segment",
+        "advisor"
+      ]
+    },
+    "note.length": {
+      "label": "Client note length",
+      "kind": "preference",
+      "type": "enum",
+      "values": [
+        "full",
+        "brief"
+      ],
+      "layers": [
+        "firm",
+        "segment",
+        "advisor",
+        "client"
+      ]
+    },
+    "contact.channel": {
+      "label": "Preferred channel",
+      "kind": "preference",
+      "type": "enum",
+      "values": [
+        "email",
+        "call",
+        "video",
+        "portal"
+      ],
+      "layers": [
+        "firm",
+        "segment",
+        "client"
+      ]
+    },
+    "contact.window": {
+      "label": "Best time to reach",
+      "kind": "preference",
+      "type": "text",
+      "layers": [
+        "client"
+      ]
+    },
+    "paperwork.escalateAfterDays": {
+      "label": "Escalate unsigned forms after (days)",
+      "kind": "rule",
+      "type": "number",
+      "min": 1,
+      "max": 30,
+      "stricter": "lower",
+      "layers": [
+        "firm",
+        "segment",
+        "client"
+      ]
+    },
+    "contact.callBeforeNote": {
+      "label": "Speak to the client before any written note",
+      "kind": "rule",
+      "type": "boolean",
+      "stricter": "true",
+      "layers": [
+        "firm",
+        "segment",
+        "client"
+      ]
+    }
+  }
+}

@@ -7,7 +7,8 @@ import { usd, pct } from "@/lib/format";
 import type { Goal } from "@/lib/types";
 import { constraintText } from "@/lib/constraint-text";
 import { getClientFile } from "@/lib/data";
-import { paperStatus } from "@/lib/onboarding/status";
+import { paperStatus, escalateAfter } from "@/lib/onboarding/status";
+import { ClientPreferences } from "@/components/profile-panel";
 import { classify } from "@/lib/servicing/classify";
 import { PageTitle, Pill, Section, td, th } from "@/components/ui";
 
@@ -117,6 +118,9 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                 ))}
               </ul>
             </Section>
+            <Section title="How to work with this client">
+              <ClientPreferences clientId={h.id} />
+            </Section>
             <Section title="Contact history and team notes">
               <ul className="space-y-1">
                 {f.client.contactHistory.map((e, i) => (
@@ -143,7 +147,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
             <Section title="Paperwork">
               <ul className="space-y-0.5">
                 {f.paperwork.map((w) => {
-                  const s = paperStatus(w);
+                  const s = paperStatus(w, 0, escalateAfter(f.client.id));
                   return (
                     <li key={w.form}>
                       <Pill tone={s.status === "escalated" ? "fail" : s.status === "signed" ? "pass" : "neutral"}>{s.status}</Pill> {w.form}

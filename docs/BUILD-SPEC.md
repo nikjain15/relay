@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.2, 2026-09-26 (v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.3, 2026-09-26 (v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (job-search D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -36,6 +36,8 @@ resets on reload, which is what a demo wants.
 | - | My clients | `/clients` | **Build** (v2.2) | The book per advisor: tier, assets, cash cushion against target, flagged items, open forms (escalated shown), requests, last contact, today's meeting |
 | - | Today's meetings | `/meetings` | **Build** (v2.2) | Each advisor's day from `advisors.json`; client meetings link to a review pack, prospect meetings to the pipeline |
 | - | Review pack | `/meetings/[id]` | **Build** (v2.2) | Built only from the client file: what changed, goals with a gap, decisions (allowed and blocked counts; refused opportunities excluded), open items and tasks, talking points, documents |
+| - | Settings | `/profiles` | **Build** (v2.3) | Every setting through firm, segment, advisor and client, with the value at each layer, the effective value, its source, and the version recorded on rationale records |
+| - | Suggestions | `/learning` | **Build** (v2.3) | What the learning loop proposes, with evidence and a success measure; Accept, Not now, Undo; held-back items; what is never learned |
 | - | Follow-ups | `/follow-ups` | **Build** (v2.2) | Tasks by owner, overdue first; approved notes the advisor marks as sent from their own email; a call log. Relay never sends |
 
 `/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
@@ -123,6 +125,22 @@ The FINRA 25-in-30-days threshold stays in `lib/recipients/count.ts`: it is regu
 fails on any client or prospect name, or any data id, in `app/`, `components/` or `lib/` (except the
 loader `lib/data/index.ts`).
 
+### 5.3 Personalization (v2.3)
+
+`data/profiles/schema.json` (settings, kind, bounds, allowed layers), `firm.json`, `segments.json`,
+`advisors/<id>.json`, and a `preferences` block in each client file. `resolveProfile({ advisorId, clientId },
+overlay)` in `lib/profile` returns values, provenance, ignored values and a version. Preferences resolve
+most-specific-wins; rules most-restrictive-wins. Triage size and weights, option order, review-pack order,
+note length, channel and escalation days are wired. The triage cap, class weights and escalation days moved
+from `policy.json` to `profiles/firm.json`. The rationale record shows the settings version.
+
+### 5.4 Learning loop (v2.3)
+
+`data/events.json` (synthetic behavior), `data/profiles/learning.json` (window, minimum events, agreement
+threshold, step, cooling-off, check period). `suggest()` in `lib/learning/learn.ts` runs six deterministic
+learners; `guard()` rejects rules, out-of-bounds values and disallowed layers. Accepted suggestions are a
+session overlay passed to `resolveProfile()`. Full design: `docs/ARCHITECTURE-personalization.md`.
+
 ### 5.1 Data added in v2.1
 
 - `data/prospects.json`: prospects for each advisor with the signal, path in, estimated assets and a source.
@@ -141,6 +159,8 @@ loader `lib/data/index.ts`).
 | `lib/prospecting/rank.ts` | Score = warmth of path (existing relationship 3, referral 3, event 2, event only 1) + fit to the practice (0 to 2) + size band (0 to 2); drafted introduction request | n/a |
 | `lib/onboarding/status.ts` | Signed, due, or escalated when unsigned for more than 14 days (the illustrative procedure); counts open items per client | n/a |
 | `lib/servicing/classify.ts` | Keyword rules to a class; route and response-time target per class; overdue flag; money movement flagged for callback verification | n/a |
+| `lib/profile/index.ts` | `resolveProfile()`, `checkValue()`, provenance labels | No (enforced) |
+| `lib/learning/learn.ts` | `suggest()`, `guard()`: six learners, preferences only | No (enforced) |
 | `lib/meetings/prep.ts` | Today's meetings per advisor; `reviewPack(id)` from the client file only | n/a |
 | `lib/followups.ts` | All tasks with client and advisor, overdue first | n/a |
 | `lib/drafting/compose.ts` | Composes the client note **only** from the approved proposal, the household's figures and the cited passage, using fixed fragments | n/a in prototype |

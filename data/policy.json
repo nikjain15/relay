@@ -1,14 +1,6 @@
 {
-  "_note": "Firm policy the engines read. Edit freely. The FINRA Rule 2210 threshold (25 retail investors) and window (30 days) are regulation and stay in lib/recipients/count.ts.",
+  "_note": "Firm policy the engines read. Edit freely. The FINRA Rule 2210 threshold (25 retail investors) and window (30 days) are regulation and stay in lib/recipients/count.ts. Personalizable defaults (list size, signal weights, escalation days) live in data/profiles/firm.json.",
   "triage": {
-    "dailyCap": 12,
-    "classWeights": {
-      "external_event": 1,
-      "life_event": 1,
-      "household_threshold": 0.95,
-      "plan_service_event": 0.85,
-      "market_view": 0.7
-    },
     "dismissReasons": [
       "Already discussed with client",
       "Not material for this household",
@@ -27,9 +19,6 @@
   },
   "communications": {
     "disclosureDocId": "doc-disclosure"
-  },
-  "paperwork": {
-    "escalateAfterDays": 14
   },
   "prospecting": {
     "warmth": {

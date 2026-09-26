@@ -36,6 +36,7 @@ const PHASES: { phase: string; links: { href: string; label: string }[] }[] = [
       { href: "/measurement", label: "Measurement" },
     ],
   },
+  { phase: "Personalization", links: [{ href: "/profiles", label: "Settings" }, { href: "/learning", label: "Suggestions" }] },
   { phase: "Reference", links: [{ href: "/personas", label: "Who's who" }] },
 ];
 

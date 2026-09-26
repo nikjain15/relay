@@ -7,6 +7,7 @@ import { triage } from "@/lib/servicing/classify";
 import { PageTitle } from "@/components/ui";
 import { todaysMeetings } from "@/lib/meetings/prep";
 import { allTasks } from "@/lib/followups";
+import { suggest } from "@/lib/learning/learn";
 import { APP } from "@/lib/data/policy";
 
 const F = APP.featured;
@@ -47,6 +48,13 @@ export default function Journey() {
         { href: "/follow-ups", title: "Follow-ups", count: `${allTasks().filter((x) => x.dueDay < 0).length} overdue tasks`, what: "Approved notes the advisor still has to send, calls to log, and tasks by owner and due date." },
         { href: "/servicing", title: "Service requests", count: `${service.length} open, ${service.filter((r) => r.overdue).length} overdue`, what: "Classified and routed. Money movement needs a callback to a number on file." },
         { href: "/measurement", title: "Measurement", count: "conversion, not volume", what: "How many flagged opportunities become approved client actions." },
+      ],
+    },
+    {
+      phase: "Personalized, and learning",
+      stages: [
+        { href: "/profiles", title: "Settings", count: "4 layers: firm, segment, advisor, client", what: "Every setting with where it came from. Preferences: most specific wins. Rules: strictest wins." },
+        { href: "/learning", title: "Suggestions", count: `${suggest().filter((s) => !s.heldBack).length} waiting`, what: "Patterns learned from advisor and client behavior, proposed with evidence. The advisor accepts; rules are never learned." },
       ],
     },
   ];

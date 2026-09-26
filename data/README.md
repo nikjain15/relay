@@ -14,10 +14,16 @@ inside situations UBS and public sources describe. No real client or advisor dat
 
 | File | What it holds |
 |---|---|
-| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks (`{text, owner, dueDay}`, negative days are overdue), paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
+| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks (`{text, owner, dueDay}`, negative days are overdue), `preferences` (client-layer settings, see `profiles/schema.json`), paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
 | `advisors.json` | Advisor A and Advisor B, with sources and their day: `meetings` are `{time, title, kind, clientId?, prospectId?, purpose}`, where kind is call, review, prospect, internal or queue. A client meeting gets a review pack |
 | `policy.json` | Firm policy the engines read: triage cap, class weights and dismiss reasons; the cash product, sleeve limits and lock-up for Liquidity; the core model; the disclosure document; paperwork escalation days; prospect warmth and size bands; servicing routing rules. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
 | `app.json` | App settings: the day label, the default advisor, the featured client, opportunity and product for the menu and demo, the client whose review pack the walkthrough shows, and default talking points |
+| `profiles/schema.json` | Every personalizable setting: kind (preference or rule), type, bounds, which layers may set it |
+| `profiles/firm.json` | Firm defaults for every setting; the floor for rules |
+| `profiles/segments.json` | Segment layer: private wealth; Wealth Advice Center (larger list, brief notes, video, 7-day escalation) |
+| `profiles/advisors/<id>.json` | One file per advisor: segment, learning on or off, advisor-level settings |
+| `profiles/learning.json` | Learning-loop thresholds: window, minimum events, agreement, step, cooling-off, check period |
+| `events.json` | Synthetic behavior the learning loop reads: triage decisions, list completion, options chosen, draft edits, review-pack use, client responses by channel, declined suggestions |
 | `shelf.json` | The approved products, with plain-English names used in client notes |
 | `documents.json` | The illustrative research notes, one-pagers and procedures that evidence cites. Relative dates only |
 | `book.json` | Other households in Advisor A's book, for the batch-send demo |

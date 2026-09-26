@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { household } from "@/lib/fixtures/households";
-import { rank, score, DEFAULT_CAP } from "@/lib/ranking/rank";
+import { rank, score } from "@/lib/ranking/rank";
+import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
@@ -14,13 +15,16 @@ import { CLASS_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/compone
 const REASONS = POLICY.triage.dismissReasons;
 
 export default function Triage() {
-  const { dismissed, dismiss, restore, accepted } = useRelay();
+  const { dismissed, dismiss, restore, accepted, overlay } = useRelay();
   const [choosing, setChoosing] = useState<string | null>(null);
   const [advisorId, setAdvisorId] = useState(APP.defaultAdvisorId);
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId)!;
   const day = advisor.walkthrough!;
   const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisorId);
-  const rows = rank(mine, new Set(Object.keys(dismissed)));
+  const prof = resolveProfile({ advisorId }, overlay);
+  const cap = prof.values["triage.dailyCap"];
+  const weights = prof.values["triage.classWeights"];
+  const rows = rank(mine, new Set(Object.keys(dismissed)), cap, weights);
   const lastContact = (hid: string) => {
     const h = clientFile(hid)?.contactHistory ?? [];
     const last = h.reduce<(typeof h)[number] | undefined>((m, e) => (!m || e.day > m.day ? e : m), undefined);
@@ -30,7 +34,7 @@ export default function Triage() {
 
   return (
     <>
-      <PageTitle title="Today's list" sub={`Ranked by materiality and trigger class, capped at ${DEFAULT_CAP} a day. One decision per row.`} />
+      <PageTitle title="Today's list" sub={`Ranked by materiality and trigger class, capped at ${cap} a day. One decision per row.`} />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
           <button key={a.id} className={a.id === advisorId ? btnPrimary : btn} aria-pressed={a.id === advisorId} onClick={() => setAdvisorId(a.id)}>
@@ -52,6 +56,10 @@ export default function Triage() {
           ))}
         </div>
         <p className="text-xs text-neutral-600 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
+        <p className="text-xs text-neutral-600 md:col-span-2">
+          Personalized: list of {cap} ({sourceLabel(prof.provenance["triage.dailyCap"])}); signal weights ({sourceLabel(prof.provenance["triage.classWeights"])}).{" "}
+          <Link className="underline" href={`/profiles?advisor=${advisorId}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
+        </p>
       </div>
       <table className="w-full border-collapse">
         <thead>
@@ -72,7 +80,7 @@ export default function Triage() {
             return (
               <tr key={o.id}>
                 <td className={td}>{i + 1}</td>
-                <td className={td}>{score(o)}</td>
+                <td className={td}>{score(o, weights)}</td>
                 <td className={td}>
                   <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
                   <div className="mt-0.5 text-[11px] text-neutral-500">day {o.observedDay}</div>

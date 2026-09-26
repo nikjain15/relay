@@ -21,7 +21,9 @@ export interface Draft {
   citedTitles: string[];
 }
 
-export function compose(h: Household, opp: Opportunity, ev: Evaluation, product: Product, evidence: Passage[]): Draft {
+/** `length` comes from the client's resolved profile. Brief drops the quoted passage but keeps the figures, the citation and the disclosure. */
+export function compose(h: Household, opp: Opportunity, ev: Evaluation, product: Product, evidence: Passage[], opts: { length?: "full" | "brief" } = {}): Draft {
+  const brief = opts.length === "brief";
   const goal = h.goals.find((g) => g.strategy === opp.strategy);
   const goalLine =
     goal && goal.unit === "months" && goal.strategy === "Liquidity"
@@ -42,7 +44,7 @@ export function compose(h: Household, opp: Opportunity, ev: Evaluation, product:
     `Dear ${firstNames},`,
     "",
     `${opener} At present, ${goalLine}.`,
-    `One option to discuss is ${verb} ${amount} ${prep} ${productName}. ${passage ? passage.text : ""}`,
+    `One option to discuss is ${verb} ${amount} ${prep} ${productName}.${passage && !brief ? ` ${passage.text}` : ""}`,
     passage ? `[Source: ${passage.title}, prototype corpus, day ${passage.day}]` : "",
     "",
     disclosure,

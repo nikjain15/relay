@@ -10,6 +10,7 @@ import { rationale } from "@/lib/rationale";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { usd } from "@/lib/format";
 import { useRelay } from "@/components/state";
+import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { PageTitle, Pill, Section, btn, btnPrimary, td, th } from "@/components/ui";
 
 const SOURCE: Record<string, string> = {
@@ -23,8 +24,18 @@ const SOURCE: Record<string, string> = {
 export function ProposalView({ householdId, oppId, others }: { householdId: string; oppId: string; others: { id: string; title: string }[] }) {
   const h = household(householdId)!;
   const o = opportunity(oppId)!;
-  const evs = evaluateAll(o, h);
-  const { accepted, accept } = useRelay();
+  const { accepted, accept, overlay } = useRelay();
+  const prof = resolveProfile({ clientId: householdId }, overlay);
+  const sortBy = prof.values["proposals.sortBy"];
+  // Personalization orders the list; it never changes which candidates pass.
+  const key = (e: ReturnType<typeof evaluateAll>[number]) => {
+    const p = product(e.candidate.productId)!;
+    return sortBy === "cost" ? e.annualCostUsd : sortBy === "access" ? p.liquidityDays : p.riskLevel;
+  };
+  const evs = evaluateAll(o, h)
+    .map((e, i) => ({ e, i }))
+    .sort((a, b) => Number(b.e.pass) - Number(a.e.pass) || key(a.e) - key(b.e) || a.i - b.i)
+    .map((x) => x.e);
   const [selected, setSelected] = useState<string | null>(accepted[o.id] ?? evs.find((e) => e.pass)?.candidate.id ?? null);
   const sel = evs.find((e) => e.candidate.id === selected);
   const record = sel ? rationale(o, h, sel, evs) : null;
@@ -67,6 +78,9 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
         ) : null;
       })()}
       <Section title={`${evs.length} candidates: ${passing} eligible, ${evs.length - passing} rejected with the failing constraint named`}>
+        <p className="mb-2 text-xs text-neutral-600">
+          Eligible first, then by {sortBy === "cost" ? "lowest annual cost" : sortBy === "access" ? "fastest access" : "lowest risk"} ({sourceLabel(prof.provenance["proposals.sortBy"])}). Ordering never changes which options pass.
+        </p>
         <table className="w-full border-collapse">
           <thead>
             <tr>
@@ -142,6 +156,8 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
             <dd>{record.costsCompared.map((c) => `${product(c.productId)!.name} ${c.costBps} bps (${usd(c.annualCostUsd)} a year)`).join("; ")}</dd>
             <dt className="text-neutral-500">Why suitable</dt>
             <dd>{record.whySuitable.join("; ")}</dd>
+            <dt className="text-neutral-500">Settings used</dt>
+            <dd className="font-mono text-[11px]">{prof.version}</dd>
           </dl>
           <div className="mt-3 flex items-center gap-3">
             <button className={btnPrimary} onClick={() => accept(o.id, sel.candidate.id)}>

@@ -1063,7 +1063,7 @@
         }
       ],
       "choose": "prod-mmf",
-      "draft": "Dear C. Pell,\n\nWe reviewed the cash you keep for planned spending. At present, your cash set aside for planned spending covers 4 of 6 months.\nOne option to discuss is moving $10K into a government money market fund. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear C. Pell,\n\nWe reviewed the cash you keep for planned spending. At present, your cash set aside for planned spending covers 4 of 6 months.\nOne option to discuss is moving $10K into a government money market fund.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Keep it to one topic: the cash cushion",
         "Confirm the $5K monthly figure",
@@ -1470,6 +1470,204 @@
         "Municipal ladder, 1 to 7 years"
       ]
     },
+    "personalization": [
+      {
+        "client": "Renner family",
+        "advisor": "Advisor A, New York",
+        "version": "firm@1 segment:private-wealth@1 advisor:adv-a@1 client:hh-renner@1",
+        "settings": [
+          {
+            "label": "Items on today's list",
+            "kind": "preference",
+            "value": "12",
+            "from": "Firm default"
+          },
+          {
+            "label": "How much each kind of signal counts",
+            "kind": "preference",
+            "value": "external event 1, life event 1, household threshold 0.95, plan service event 0.85, market view 0.7",
+            "from": "Firm default"
+          },
+          {
+            "label": "Order of options",
+            "kind": "preference",
+            "value": "lowest risk first",
+            "from": "Firm default"
+          },
+          {
+            "label": "Review pack section order",
+            "kind": "preference",
+            "value": "What changed → Gaps → Decisions → Open items → Talking points → Documents",
+            "from": "Firm default"
+          },
+          {
+            "label": "Client note length",
+            "kind": "preference",
+            "value": "full",
+            "from": "Firm default"
+          },
+          {
+            "label": "Preferred channel",
+            "kind": "preference",
+            "value": "email",
+            "from": "Firm default"
+          },
+          {
+            "label": "Best time to reach",
+            "kind": "preference",
+            "value": "Weekday mornings, before market open",
+            "from": "Client setting"
+          },
+          {
+            "label": "Escalate unsigned forms after (days)",
+            "kind": "rule",
+            "value": "14",
+            "from": "Firm default"
+          },
+          {
+            "label": "Speak to the client before any written note",
+            "kind": "rule",
+            "value": "no",
+            "from": "Firm default"
+          }
+        ]
+      },
+      {
+        "client": "C. Pell",
+        "advisor": "Advisor B, Wealth Advice Center",
+        "version": "firm@1 segment:wealth-advice-center@1 advisor:adv-b@1 client:hh-pell@1",
+        "settings": [
+          {
+            "label": "Items on today's list",
+            "kind": "preference",
+            "value": "20",
+            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+          },
+          {
+            "label": "How much each kind of signal counts",
+            "kind": "preference",
+            "value": "external event 1, life event 1, household threshold 0.95, plan service event 0.85, market view 0.7",
+            "from": "Firm default"
+          },
+          {
+            "label": "Order of options",
+            "kind": "preference",
+            "value": "lowest risk first",
+            "from": "Firm default"
+          },
+          {
+            "label": "Review pack section order",
+            "kind": "preference",
+            "value": "Open items → Gaps → What changed → Decisions → Talking points → Documents",
+            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+          },
+          {
+            "label": "Client note length",
+            "kind": "preference",
+            "value": "brief",
+            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+          },
+          {
+            "label": "Preferred channel",
+            "kind": "preference",
+            "value": "video",
+            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+          },
+          {
+            "label": "Best time to reach",
+            "kind": "preference",
+            "value": "After 6pm on weekdays",
+            "from": "Client setting"
+          },
+          {
+            "label": "Escalate unsigned forms after (days)",
+            "kind": "rule",
+            "value": "7",
+            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+          },
+          {
+            "label": "Speak to the client before any written note",
+            "kind": "rule",
+            "value": "no",
+            "from": "Firm default"
+          }
+        ]
+      }
+    ],
+    "suggestions": [
+      {
+        "who": "Advisor A, New York",
+        "setting": "How much each kind of signal counts",
+        "from": "market view: 0.7",
+        "to": "0.6",
+        "because": "You dismissed 7 of 9 market view items in 30 days (Not material for this household).",
+        "measure": "Share of this kind of item dismissed falls; nothing you acted on drops off the list.",
+        "heldBack": null
+      },
+      {
+        "who": "Advisor A, New York",
+        "setting": "Order of options",
+        "from": "lowest risk first",
+        "to": "lowest cost first",
+        "because": "You chose the lowest-cost eligible option 6 of 7 times.",
+        "measure": "Time from opening options to accepting one falls. Which options are eligible never changes.",
+        "heldBack": null
+      },
+      {
+        "who": "Advisor A, New York",
+        "setting": "Review pack section order",
+        "from": "What changed → Gaps → Decisions → Open items → Talking points → Documents",
+        "to": "Decisions → What changed → Gaps → Open items → Talking points → Documents",
+        "because": "You opened \"Decisions\" first in 6 of 8 review packs.",
+        "measure": "Fewer jumps within the pack before the meeting starts.",
+        "heldBack": null
+      },
+      {
+        "who": "Advisor B, Wealth Advice Center",
+        "setting": "How much each kind of signal counts",
+        "from": "plan service event: 0.85",
+        "to": "0.75",
+        "because": "You dismissed 6 of 7 plan service event items in 30 days (Already discussed with client).",
+        "measure": "Share of this kind of item dismissed falls; nothing you acted on drops off the list.",
+        "heldBack": "You declined this 5 days ago; Relay will ask again in 9 days."
+      },
+      {
+        "who": "Advisor B, Wealth Advice Center",
+        "setting": "Items on today's list",
+        "from": "20",
+        "to": "12",
+        "because": "Over 7 days you worked through 10 items on average and never more than 11, against a list of 20.",
+        "measure": "Share of the list worked each day rises; nothing material waits more than a day.",
+        "heldBack": null
+      },
+      {
+        "who": "Alcott family",
+        "setting": "Preferred channel",
+        "from": "email",
+        "to": "call",
+        "because": "5 of the client's 5 responses came by call; 3 contacts by other channels went unanswered.",
+        "measure": "Client response rate and time to response improve.",
+        "heldBack": null
+      },
+      {
+        "who": "C. Pell",
+        "setting": "Preferred channel",
+        "from": "video",
+        "to": "portal",
+        "because": "5 of the client's 6 responses came by portal; 2 contacts by other channels went unanswered.",
+        "measure": "Client response rate and time to response improve.",
+        "heldBack": null
+      },
+      {
+        "who": "Thornbury family",
+        "setting": "Client note length",
+        "from": "full",
+        "to": "brief",
+        "because": "You shortened 4 of 4 drafts for this client before sending.",
+        "measure": "Share of drafts sent without edits rises. Citations and disclosure stay in every note.",
+        "heldBack": null
+      }
+    ],
     "followUps": [
       {
         "client": "Alcott family",

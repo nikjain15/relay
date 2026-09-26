@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { CLIENTS } from "@/lib/data";
-import { paperStatus, reminderDraft, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
+import { paperStatus, reminderDraft, escalateAfter, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
+import { SEGMENTS } from "@/lib/profile";
 import { PageTitle, Pill, Section, td, th } from "@/components/ui";
 
 export default function Onboarding() {
-  const rows = CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, ...paperStatus(w) })));
+  const rows = CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, after: escalateAfter(c.id), ...paperStatus(w, 0, escalateAfter(c.id)) })));
   const order = { escalated: 0, due: 1, signed: 2 } as const;
   rows.sort((a, b) => order[a.status] - order[b.status] || b.daysOpen - a.daysOpen);
   const open = rows.filter((r) => r.status !== "signed");
@@ -12,7 +13,7 @@ export default function Onboarding() {
     <>
       <PageTitle
         title="Paperwork"
-        sub={`Every form per client. Unsigned for more than ${ESCALATE_AFTER_DAYS} days escalates to the branch supervisor (illustrative procedure). Reminders are drafted; people send them.`}
+        sub={`Every form per client. Unsigned for more than ${ESCALATE_AFTER_DAYS} days escalates to the branch supervisor (illustrative procedure)${SEGMENTS.filter((s) => s.values["paperwork.escalateAfterDays"] !== undefined).map((s) => `; ${s.label}: ${String(s.values["paperwork.escalateAfterDays"])} days`).join("")}. A segment or client can only shorten this. Reminders are drafted; people send them.`}
       />
       <p className="mb-3">
         <Pill tone="fail">{open.filter((r) => r.status === "escalated").length} escalated</Pill>{" "}
