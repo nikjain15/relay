@@ -743,8 +743,10 @@ because it exists.
 
 ## Appendix A: Personas
 
-All personas and households are **synthetic**. Instruments, tax mechanics and regulatory constraints
-are real, so the constraint logic is genuinely exercised.
+All personas and households are **cited composites**: invented names and exact figures, set inside
+ranges and situations UBS and public sources describe. No real client, no real advisor and no
+UBS-internal data. Every detail and its source is in `docs/PERSONAS.md`. Instruments, tax mechanics and
+regulatory constraints are real, so the constraint logic is genuinely exercised.
 
 ### Advisor A, primary
 
@@ -753,10 +755,15 @@ roughly $820M**, skewed above $5M, with four relationships above $50M. Team: FA,
 associate, shared wealth strategist. Sits in the **above $5M regional-center tier**. Measures their own
 week in client meetings held.
 
+*Grounded in:* several UBS New York teams publicly describe this practice (founders, liquidity events,
+concentrated stock) and this team shape (advisor, wealth strategist, client service associate). The
+$820M book is about twice UBS's reported average per advisor, consistent with a senior advisor.
+
 ### Advisor B, segment coverage
 
-Licensed advisor in the **Wealth Advice Center**, which serves mass-affluent clients through the
-Weehawken, Charlotte and Dallas hubs. Pooled, remote coverage across roughly 900 households, no
+Licensed advisor in the **Wealth Advice Center**, which serves emerging-affluent clients with under
+$250K investable through the Weehawken, Charlotte and Dallas hubs. Pooled, remote coverage across
+**about 1,000 households** (UBS describes 200+ professionals serving 200,000 to 300,000 clients), no
 dedicated relationships. Different economics entirely: the constraint is contacts per day, not depth
 per relationship. Included because this is the unit UBS has said it will grow by up to 500 advisors,
 and because it is where calibrated supervision lands first.
@@ -767,15 +774,15 @@ B is a WAC advisor and is not a stand-in for the core-affluent tier.
 
 ### Households, seven archetypes
 
-| # | Household | Assets | Coverage | The thing that makes it hard |
-|---|---|---|---|---|
-| 1 | Pre-liquidity founder | $62.4M | $50M+ tier | Single position at 71% of investable assets, 10b5-1 running, Legacy strategy unfunded |
-| 2 | Retired couple in drawdown | $8.4M | $5M+ tier | Liquidity funded 11 of 36 target months, sequence-of-returns exposure, RMDs beginning |
-| 3 | Cross-border executive | $14.2M | $5M+ tier | US and UK tax, unvested deferred comp, PFIC exposure in legacy holdings |
-| 4 | Multigenerational family trust | $31.6M | $5M+ tier | Grantor is 79, next generation unengaged. The asset-retention archetype |
-| 5 | Core affluent accumulator | $1.2M | **$500K to $5M regional tier** | Pending 401k rollover, first advisory relationship |
-| 6 | Business owner | $23.1M | $5M+ tier | Illiquid operating stake, near-term liquidity need against marketable assets |
-| 7 | Mass-affluent, WAC | $180K | **Wealth Advice Center** | Pooled coverage, contact-rate constrained, the calibrated-supervision test case |
+| # | Household | Assets | Coverage | The thing that makes it hard | Grounded in |
+|---|---|---|---|---|---|
+| 1 | Renner, pre-liquidity founder | $62.4M | $50M+ tier | Single position at 71% of investable assets, 10b5-1 running, Legacy strategy unfunded | UBS founder and concentrated-stock team practices; property sale is a published STAAT signal type |
+| 2 | Alcott, retired couple in drawdown | $8.4M | $5M+ tier | Liquidity funded 11 of 36 target months, sequence-of-returns exposure, RMDs beginning | RMD age under SECURE 2.0; Wealth Way Liquidity of 2 to 5 years |
+| 3 | Brandvold, cross-border executive | $14.2M | $5M+ tier | US and UK tax, unvested deferred comp, PFIC exposure in legacy holdings | UBS New York cross-border team practice; IRS PFIC rules |
+| 4 | Okafor-Lind, multigenerational family trust | $31.6M | $5M+ tier | Grantor is 79, next generation unengaged. The asset-retention archetype | UBS families and foundations team practice; UBS writing on multigenerational families |
+| 5 | Vasquez-Hale, core affluent accumulator | $1.2M | **$500K to $5M regional tier** | Pending 401k rollover, first advisory relationship | SEC staff bulletin on account and rollover recommendations |
+| 6 | Thornbury, business owner | $23.1M | $5M+ tier | Illiquid operating stake, near-term liquidity need against marketable assets | UBS entrepreneurs team practice; late-stage funding is a published STAAT signal type |
+| 7 | Pell, mass-affluent, WAC | $180K | **Wealth Advice Center** | Pooled coverage, contact-rate constrained, the calibrated-supervision test case | WAC serves clients under $250K (UBS disclosure) |
 
 Each carries a full record: balance sheet mapped to Liquidity, Longevity and Legacy; holdings with
 cost basis and tax lots; an IPS with stated constraints; KYC and suitability profile; dated life

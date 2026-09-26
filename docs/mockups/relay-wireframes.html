@@ -49,6 +49,16 @@ button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--accent
 .intro h1 { font-size: 28px; line-height: 1.2; }
 .intro p { color: var(--soft); max-width: 62ch; }
 
+/* who's who */
+.who { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.person { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.person .role { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); }
+.person h3 { font-size: 18px; }
+.person .src { font-size: 13px; color: var(--soft); border-top: 1px dashed var(--line); padding-top: 6px; }
+.person a { color: var(--accent); }
+.who-note { grid-column: 1 / -1; font-size: 13px; color: var(--soft); }
+@media (max-width: 760px) { .who { grid-template-columns: minmax(0, 1fr); } }
+
 /* stepper */
 .steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; list-style: none; padding: 0; margin: 0; }
 .steps button { width: 100%; text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; }
@@ -150,8 +160,24 @@ dl.gl dd { margin: 0; color: var(--soft); }
   <header class="intro">
     <span class="eyebrow">Relay &middot; low-fidelity mockup</span>
     <h1>One advisor, one client, six steps</h1>
-    <p>UBS's AI flags more than 20 million client opportunities a year. Relay is what happens next: it helps an advisor turn one of them into an approved action for a client, with the reasons and the compliance sign-off on record. Follow one example, the Renner family, from start to finish. All names and numbers are made up.</p>
+    <p>UBS's AI flags more than 20 million client opportunities a year. Relay is what happens next: it helps an advisor turn one of them into an approved action for a client, with the reasons and the compliance sign-off on record. Follow one example, the Renner family, from start to finish.</p>
   </header>
+
+  <section class="who" aria-label="Who's who">
+    <div class="person">
+      <span class="role">The advisor</span>
+      <h3>Advisor A, New York</h3>
+      <p>Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders and executives around a sale or IPO.</p>
+      <p class="src"><strong>Built from:</strong> UBS New York teams that publicly describe this practice (<a href="https://advisors.ubs.com/founders/" target="_blank" rel="noreferrer">Founders Group</a>, <a href="https://advisors.ubs.com/flatiron/" target="_blank" rel="noreferrer">Flatiron Partners</a>) and this team shape (<a href="https://advisors.ubs.com/mpp/Meet-the-team.htm" target="_blank" rel="noreferrer">Madison Park Partners</a>). The book is about twice UBS's reported average per advisor.</p>
+    </div>
+    <div class="person">
+      <span class="role">The client</span>
+      <h3>The Renner family, $62.4M</h3>
+      <p>A founder and spouse. 71% of their wealth is in the founder's company stock, sold slowly under a trading plan. They have just sold a property for $4.1M and have almost no cash set aside for spending.</p>
+      <p class="src"><strong>Built from:</strong> UBS's $50M+ client tier (<a href="https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554" target="_blank" rel="noreferrer">InvestmentNews</a>), property sales as a signal UBS's AI flags (<a href="https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html" target="_blank" rel="noreferrer">UBS</a>), and UBS's cash, retirement and legacy goals framework (<a href="https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html" target="_blank" rel="noreferrer">Wealth Way</a>).</p>
+    </div>
+    <p class="who-note">Both are composites: invented names and exact figures, set inside situations UBS describes publicly. No real client or advisor is shown.</p>
+  </section>
 
   <ol class="steps" id="steps" aria-label="Steps"></ol>
 
@@ -172,7 +198,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
         <dt>Family's rules</dt><dd>Limits agreed with the client, for example "keep at least two years of cash" or "no private credit". Formally, the investment policy statement.</dd>
         <dt>Compliance check</dt><dd>A manager at the firm reviews what goes to clients before it is sent.</dd>
         <dt>The 25-person rule</dt><dd>Under FINRA Rule 2210, a note that reaches more than 25 individual clients in 30 days needs a manager's approval before it is sent. Relay counts people, not families, across every advisor using the same note.</dd>
-        <dt>Synthetic</dt><dd>Made up for the mockup. No real client or UBS data is used.</dd>
+        <dt>Composite</dt><dd>An invented person or family, built from situations UBS and public sources describe. Every source is listed in the Relay repo's PERSONAS.md.</dd>
       </dl>
     </details>
   </section>

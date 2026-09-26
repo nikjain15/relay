@@ -36,6 +36,11 @@ export type Constraint =
   | { kind: "noShortTermGains" }
   | { kind: "excludedProductTypes"; types: ProductType[] };
 
+export interface Source {
+  label: string;
+  url: string;
+}
+
 export interface Household {
   id: string;
   name: string;
@@ -48,6 +53,8 @@ export interface Household {
   constraints: Constraint[];
   monthlySpendUsd: number;
   hardPart: string;
+  /** Composite persona: where each part of the situation comes from (docs/PERSONAS.md). */
+  groundedIn: Source[];
 }
 
 export type TriggerClass =

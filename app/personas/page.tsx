@@ -1,0 +1,81 @@
+import Link from "next/link";
+import { ADVISORS } from "@/lib/fixtures/advisors";
+import { HOUSEHOLDS } from "@/lib/fixtures/households";
+import { usd } from "@/lib/format";
+import { PageTitle, Pill, Section, td, th } from "@/components/ui";
+
+export default function Personas() {
+  return (
+    <>
+      <PageTitle
+        title="Who's who"
+        sub="Cited composites: invented names and exact figures, set inside ranges and situations UBS and public sources describe. No real client or advisor. Full detail in docs/PERSONAS.md."
+      />
+      <Section title="Advisors">
+        <div className="grid max-w-5xl gap-4 md:grid-cols-2">
+          {ADVISORS.map((a) => (
+            <div key={a.id} className="rounded border border-neutral-300 p-3">
+              <p className="font-semibold">{a.name}</p>
+              <p className="text-neutral-600">{a.role}</p>
+              <p className="mt-1">{a.book}</p>
+              <ul className="mt-2 space-y-0.5">
+                {a.facts.map((f) => (
+                  <li key={f.detail}>
+                    <Pill tone={f.kind === "Chosen" ? "neutral" : "accent"}>{f.kind}</Pill> {f.detail}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Built from</p>
+              <ul className="text-xs">
+                {a.groundedIn.map((s) => (
+                  <li key={s.url}>
+                    <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </Section>
+      <Section title="Households">
+        <table className="w-full max-w-5xl border-collapse">
+          <thead>
+            <tr>
+              <th className={th}>Household</th>
+              <th className={th}>Tier</th>
+              <th className={`${th} text-right`}>Assets</th>
+              <th className={th}>Situation</th>
+              <th className={th}>Built from</th>
+            </tr>
+          </thead>
+          <tbody>
+            {HOUSEHOLDS.map((h) => (
+              <tr key={h.id}>
+                <td className={td}>
+                  <Link className="underline" href={`/household/${h.id}`}>
+                    {h.name}
+                  </Link>
+                  <div className="text-[11px] text-neutral-500">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
+                </td>
+                <td className={td}>{h.tier}</td>
+                <td className={`${td} text-right`}>{usd(h.totalUsd)}</td>
+                <td className={td}>{h.hardPart}</td>
+                <td className={`${td} text-xs`}>
+                  {h.groundedIn.map((s) => (
+                    <div key={s.url}>
+                      <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
+                        {s.label}
+                      </a>
+                    </div>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Section>
+    </>
+  );
+}

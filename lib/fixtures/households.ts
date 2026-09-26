@@ -1,5 +1,8 @@
 import type { Household } from "@/lib/types";
 
+// Cited composites: invented names and figures inside published ranges.
+// Every source is listed in docs/PERSONAS.md.
+
 // The seven archetypes of PRD Appendix A. Synthetic; surnames invented.
 export const HOUSEHOLDS: Household[] = [
   {
@@ -31,6 +34,11 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "excludedProductTypes", types: ["private_credit"] },
     ],
     hardPart: "Single position at 71% of investable assets, 10b5-1 plan running, Legacy unfunded",
+    groundedIn: [
+      { label: "UBS New York founder and liquidity-event practices (Founders Group, Flatiron Partners)", url: "https://advisors.ubs.com/founders/" },
+      { label: "Property transactions as a STAAT signal type", url: "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html" },
+      { label: "$50M+ coverage tier, Dec 2024 restructuring", url: "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554" },
+    ],
   },
   {
     id: "hh-alcott",
@@ -60,6 +68,10 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "excludedProductTypes", types: ["private_credit", "structured_note"] },
     ],
     hardPart: "Liquidity funded 11 of 36 target months, sequence-of-returns exposure, RMDs beginning",
+    groundedIn: [
+      { label: "$5M+ coverage tier, Dec 2024 restructuring", url: "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554" },
+      { label: "Liquidity covers 2 to 5 years of spending (UBS Wealth Way)", url: "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html" },
+    ],
   },
   {
     id: "hh-brandvold",
@@ -86,6 +98,10 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "excludedProductTypes", types: ["exchange_fund"] },
     ],
     hardPart: "US and UK tax, unvested deferred compensation, PFIC exposure in legacy holdings",
+    groundedIn: [
+      { label: "UBS New York cross-border practice (The New York International Group)", url: "https://advisors.ubs.com/newyorkinternationalgroup/meet-the-team.htm" },
+      { label: "$5M+ coverage tier, Dec 2024 restructuring", url: "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554" },
+    ],
   },
   {
     id: "hh-okafor-lind",
@@ -114,6 +130,10 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "maxRiskLevel", level: 3 },
     ],
     hardPart: "Grantor is 79, next generation unengaged. The asset-retention archetype",
+    groundedIn: [
+      { label: "UBS families and foundations practice (Families & Foundations Investment Group)", url: "https://advisors.ubs.com/ffig/" },
+      { label: "UBS on multigenerational families", url: "https://www.ubs.com/us/en/wealth-management/our-solutions/private-wealth-management/family-office-solutions/quarterlies/fostering-successful-multigenerational-families.html" },
+    ],
   },
   {
     id: "hh-vasquez-hale",
@@ -138,6 +158,10 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "maxRiskLevel", level: 4 },
     ],
     hardPart: "Pending 401(k) rollover, first advisory relationship",
+    groundedIn: [
+      { label: "$500K to $5M coverage tier, Dec 2024 restructuring", url: "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554" },
+      { label: "SEC staff bulletin on account and rollover recommendations", url: "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail" },
+    ],
   },
   {
     id: "hh-thornbury",
@@ -166,6 +190,10 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "maxRiskLevel", level: 4 },
     ],
     hardPart: "Illiquid operating stake, near-term liquidity need against marketable assets",
+    groundedIn: [
+      { label: "UBS entrepreneurs and business-owner practice (Entrepreneurs Group)", url: "https://advisors.ubs.com/entrepreneursgroup/" },
+      { label: "Late-stage business funding as a STAAT signal type", url: "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html" },
+    ],
   },
   {
     id: "hh-pell",
@@ -190,6 +218,9 @@ export const HOUSEHOLDS: Household[] = [
       { kind: "maxRiskLevel", level: 3 },
     ],
     hardPart: "Pooled coverage, contact-rate constrained, the calibrated-supervision test case",
+    groundedIn: [
+      { label: "Wealth Advice Center serves clients under $250K (UBS disclosure)", url: "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf" },
+    ],
   },
 ];
 

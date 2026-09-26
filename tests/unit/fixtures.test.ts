@@ -47,3 +47,13 @@ describe("fixture numbers the PRD and demo depend on", () => {
     expect(SHELF.length).toBe(8);
   });
 });
+
+describe("personas are cited composites", () => {
+  it("every household and advisor lists at least one https source", async () => {
+    const { ADVISORS } = await import("@/lib/fixtures/advisors");
+    for (const p of [...HOUSEHOLDS, ...ADVISORS]) {
+      expect(p.groundedIn.length, p.id).toBeGreaterThan(0);
+      for (const s of p.groundedIn) expect(s.url, p.id).toMatch(/^https:\/\//);
+    }
+  });
+});
