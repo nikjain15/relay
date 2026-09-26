@@ -51,18 +51,17 @@ export function Nav() {
     return path === base;
   };
   return (
-    <nav aria-label="Surfaces" className="w-56 shrink-0 border-r border-neutral-200 p-3 text-[13px]">
-      <p className="mb-3 px-2 text-sm font-semibold">Relay</p>
+    <nav aria-label="Surfaces" className="w-60 shrink-0 border-r border-line bg-subtle px-4 py-8 text-[13px]">
       {PHASES.map((g) => (
-        <div key={g.phase} className="mb-3">
-          <p className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">{g.phase}</p>
-          <ul className="space-y-0.5">
+        <div key={g.phase} className="mb-6">
+          <p className="mb-2 px-3 text-xs text-ink-3">{g.phase}</p>
+          <ul>
             {g.links.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
-                  className={`block rounded px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isActive(l.href) ? "bg-neutral-200 font-medium" : "hover:bg-neutral-100"}`}
+                  className={`block border-l-2 px-3 py-1.5 ${isActive(l.href) ? "border-ink font-semibold text-ink" : "border-transparent text-ink-2 hover:text-ink"}`}
                 >
                   {l.label}
                 </Link>

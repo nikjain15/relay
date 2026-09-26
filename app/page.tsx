@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { CLIENTS, PROSPECTS, SERVICE_REQUESTS } from "@/lib/data";
-import { rank } from "@/lib/ranking/rank";
+import { rank, DEFAULT_CAP } from "@/lib/ranking/rank";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
-import { openItems } from "@/lib/onboarding/status";
+import { openItems, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
 import { triage } from "@/lib/servicing/classify";
 import { PageTitle } from "@/components/ui";
 import { todaysMeetings } from "@/lib/meetings/prep";
@@ -22,13 +22,13 @@ export default function Journey() {
       stages: [
         { href: "/clients", title: "My clients", count: `${CLIENTS.length} clients`, what: "The whole book: cash cushion, flagged items, forms, requests, last contact and today's meetings." },
         { href: "/pipeline", title: "Finding new clients", count: `${PROSPECTS.length} prospects`, what: "Ranked by how warm the path in is. Relay drafts the introduction ask; the advisor sends it." },
-        { href: "/onboarding", title: "Paperwork", count: `${open.length} open, ${escalated} escalated`, what: "Every open form per client. Unsigned after 14 days escalates. Reminders drafted." },
+        { href: "/onboarding", title: "Paperwork", count: `${open.length} open, ${escalated} escalated`, what: `Every open form per client. Unsigned after ${ESCALATE_AFTER_DAYS} days escalates (shorter for some segments and clients). Reminders drafted.` },
       ],
     },
     {
       phase: "The daily work",
       stages: [
-        { href: "/triage", title: "Today's list", count: `${rank(OPPORTUNITIES).length} flagged`, what: "Overnight alerts ranked and capped at 12 a day." },
+        { href: "/triage", title: "Today's list", count: `${rank(OPPORTUNITIES).length} flagged`, what: `Overnight alerts ranked and capped at ${DEFAULT_CAP} a day by default; each advisor can set their own.` },
         { href: `/evidence/${F.opportunityId}`, title: "Why this client", count: "sources cited", what: "The reason, its sources and the client's recent history. Refuses when there is no source." },
         { href: `/household/${F.clientId}`, title: "Client picture", count: `${CLIENTS.length} clients`, what: "Goals, accounts, the family's rules, history, notes, tasks, paperwork and requests." },
         { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, title: "Options", count: "approved products only", what: "What fits the family's rules, and why each other option is blocked." },
@@ -61,19 +61,17 @@ export default function Journey() {
   return (
     <>
       <PageTitle title="Advisor journey" sub="Every Relay surface in the order an advisor meets it. All clients and advisors are cited composites; see Who's who." />
-      <div className="grid max-w-6xl gap-5">
+      <div className="grid gap-10">
         {phases.map((p) => (
           <section key={p.phase}>
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">{p.phase}</h2>
-            <ol className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+            <h2 className="mb-3 text-[15px] font-semibold">{p.phase}</h2>
+            <ol className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {p.stages.map((s) => (
                 <li key={s.href}>
-                  <Link href={s.href} className="block h-full rounded border border-neutral-300 p-3 hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-                    <span className="flex items-baseline justify-between gap-2">
-                      <span className="font-semibold">{s.title}</span>
-                      <span className="text-[11px] text-neutral-500">{s.count}</span>
-                    </span>
-                    <span className="mt-1 block text-neutral-600">{s.what}</span>
+                  <Link href={s.href} className="block h-full rounded border border-line bg-surface p-5 transition-colors hover:border-ink">
+                    <span className="block text-base font-semibold">{s.title}</span>
+                    <span className="mt-1 block text-xs text-ink-3">{s.count}</span>
+                    <span className="mt-3 block text-ink-2">{s.what}</span>
                   </Link>
                 </li>
               ))}

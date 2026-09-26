@@ -25,10 +25,10 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
         title={`Review pack: ${clientName(c.id)}`}
         sub={r.meeting ? `${r.meeting.time}, ${r.meeting.title}. ${r.meeting.purpose}.` : "No meeting booked today; this pack is ready for the next one."}
       />
-      <div className="mb-4 max-w-3xl rounded border border-neutral-300 p-3 text-xs">
+      <div className="mb-4 max-w-3xl rounded border border-line p-3 text-xs">
         <ClientPreferences clientId={c.id} />
       </div>
-      <p className="mb-4 text-neutral-600">
+      <p className="mb-4 text-ink-2">
         {c.persons.map((p) => `${p.name}${p.age ? ` (${p.age})` : ""}`).join(", ")} &middot; {c.tier} &middot; {usd(c.totalUsd)}
         {r.lastContact && <> &middot; last contact: {r.lastContact.channel}, {-r.lastContact.day} days ago, {r.lastContact.summary.toLowerCase()}</>}
       </p>
@@ -52,12 +52,12 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             <ul className="space-y-0.5">
               {r.gaps.map((g) => (
                 <li key={g.strategy}>
-                  <Pill tone="fail">{GOAL[g.strategy]}</Pill> {fmt(g.unit, g.funded)} of {fmt(g.unit, g.target)}. <span className="text-neutral-500">{g.assumption}</span>
+                  <Pill tone="fail">{GOAL[g.strategy]}</Pill> {fmt(g.unit, g.funded)} of {fmt(g.unit, g.target)}. <span className="text-ink-2">{g.assumption}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-neutral-500">Every goal is funded.</p>
+            <p className="text-ink-2">Every goal is funded.</p>
           )}
         </Section>
           ),
@@ -73,7 +73,7 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
               ))}
             </ul>
           ) : (
-            <p className="text-neutral-500">No product decisions pending.</p>
+            <p className="text-ink-2">No product decisions pending.</p>
           )}
         </Section>
           ),
@@ -92,7 +92,7 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
             ))}
             {r.tasks.map((t) => (
               <li key={t.text}>
-                <Pill>{t.owner}</Pill> {t.text} <span className="text-neutral-500">({dueLabel(t.dueDay)})</span>
+                <Pill>{t.owner}</Pill> {t.text} <span className="text-ink-2">({dueLabel(t.dueDay)})</span>
               </li>
             ))}
           </ul>
@@ -111,10 +111,10 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
         <Section title="Documents to have to hand">
           <ul className="list-inside list-disc space-y-0.5 text-xs">
             {r.documents.map((d) => (
-              <li key={d.id}>{d.title} <span className="text-neutral-500">({d.kind})</span></li>
+              <li key={d.id}>{d.title} <span className="text-ink-2">({d.kind})</span></li>
             ))}
           </ul>
-          <p className="mt-2 text-[11px] text-neutral-500">Everything in this pack comes from the client file. Nothing is generated.</p>
+          <p className="mt-2 text-xs text-ink-2">Everything in this pack comes from the client file. Nothing is generated.</p>
         </Section>
           ),
         }}

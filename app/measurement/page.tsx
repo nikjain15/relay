@@ -72,7 +72,7 @@ export default function Measurement() {
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-[11px] text-neutral-500">
+          <p className="mt-2 text-xs text-ink-2">
             Synthetic numbers for layout only. The real funnel is the first thing to ask for in week one (PRD Appendix B, question 1).
           </p>
         </Section>

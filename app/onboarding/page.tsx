@@ -41,7 +41,7 @@ export default function Onboarding() {
                 </td>
                 <td className={td}>
                   {w.form}
-                  {w.note && <div className="text-[11px] text-neutral-500">{w.note}</div>}
+                  {w.note && <div className="text-xs text-ink-2">{w.note}</div>}
                 </td>
                 <td className={td}>
                   <Pill tone={status === "escalated" ? "fail" : status === "signed" ? "pass" : "neutral"}>{status}</Pill>

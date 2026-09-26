@@ -14,9 +14,9 @@ export default function Personas() {
       <Section title="Advisors">
         <div className="grid max-w-5xl gap-4 md:grid-cols-2">
           {ADVISORS.map((a) => (
-            <div key={a.id} className="rounded border border-neutral-300 p-3">
+            <div key={a.id} className="rounded border border-line p-3">
               <p className="font-semibold">{a.name}</p>
-              <p className="text-neutral-600">{a.role}</p>
+              <p className="text-ink-2">{a.role}</p>
               <p className="mt-1">{a.book}</p>
               <ul className="mt-2 space-y-0.5">
                 {a.facts.map((f) => (
@@ -25,7 +25,7 @@ export default function Personas() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Built from</p>
+              <p className="mt-2 text-xs font-semibold text-ink-2">Built from</p>
               <ul className="text-xs">
                 {a.groundedIn.map((s) => (
                   <li key={s.url}>
@@ -57,7 +57,7 @@ export default function Personas() {
                   <Link className="underline" href={`/household/${h.id}`}>
                     {h.name}
                   </Link>
-                  <div className="text-[11px] text-neutral-500">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
+                  <div className="text-xs text-ink-2">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
                 </td>
                 <td className={td}>{h.tier}</td>
                 <td className={`${td} text-right`}>{usd(h.totalUsd)}</td>

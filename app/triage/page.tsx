@@ -42,21 +42,21 @@ export default function Triage() {
           </button>
         ))}
       </div>
-      <div className="mb-4 grid max-w-5xl gap-2 rounded border border-neutral-300 p-3 md:grid-cols-[auto_1fr]">
-        <div className="flex gap-5 text-neutral-600">
-          <span><strong className="text-lg text-neutral-900">{day.meetings.length}</strong> meetings</span>
-          <span><strong className="text-lg text-neutral-900">{day.alertsOvernight}</strong> alerts overnight</span>
-          <span><strong className="text-lg text-neutral-900">{rows.length}</strong> on your list</span>
+      <div className="mb-4 grid max-w-5xl gap-2 rounded border border-line p-3 md:grid-cols-[auto_1fr]">
+        <div className="flex gap-5 text-ink-2">
+          <span><strong className="text-lg text-ink">{day.meetings.length}</strong> meetings</span>
+          <span><strong className="text-lg text-ink">{day.alertsOvernight}</strong> alerts overnight</span>
+          <span><strong className="text-lg text-ink">{rows.length}</strong> on your list</span>
         </div>
         <div className="flex flex-wrap gap-2 md:justify-end">
           {day.meetings.map((m) => (
-            <Link key={m.time} href={m.clientId ? `/meetings/${m.clientId}` : m.prospectId ? "/pipeline" : "/meetings"} className="rounded border border-neutral-300 px-2 py-0.5 text-xs hover:border-accent">
+            <Link key={m.time} href={m.clientId ? `/meetings/${m.clientId}` : m.prospectId ? "/pipeline" : "/meetings"} className="rounded border border-line px-2 py-0.5 text-xs hover:border-accent">
               <strong>{m.time}</strong> {m.title}
             </Link>
           ))}
         </div>
-        <p className="text-xs text-neutral-600 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
-        <p className="text-xs text-neutral-600 md:col-span-2">
+        <p className="text-xs text-ink-2 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
+        <p className="text-xs text-ink-2 md:col-span-2">
           Personalized: list of {cap} ({sourceLabel(prof.provenance["triage.dailyCap"])}); signal weights ({sourceLabel(prof.provenance["triage.classWeights"])}).{" "}
           <Link className="underline" href={`/profiles?advisor=${advisorId}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
         </p>
@@ -83,26 +83,26 @@ export default function Triage() {
                 <td className={td}>{score(o, weights)}</td>
                 <td className={td}>
                   <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
-                  <div className="mt-0.5 text-[11px] text-neutral-500">day {o.observedDay}</div>
+                  <div className="mt-0.5 text-xs text-ink-2">day {o.observedDay}</div>
                 </td>
                 <td className={td}>
-                  <Link className="underline decoration-neutral-400 hover:decoration-accent" href={`/household/${h.id}`}>
+                  <Link className="underline decoration-line-strong hover:decoration-accent" href={`/household/${h.id}`}>
                     {h.name}
                   </Link>
-                  <div className="text-[11px] text-neutral-500">{h.tier}</div>
-                  <div className="text-[11px] text-neutral-500">{lastContact(h.id)}</div>
+                  <div className="text-xs text-ink-2">{h.tier}</div>
+                  <div className="text-xs text-ink-2">{lastContact(h.id)}</div>
                 </td>
                 <td className={td}>
                   <div className="font-medium">{o.plainTitle ?? o.title}</div>
-                  <ol className="mt-0.5 flex flex-wrap gap-x-1 text-[11px] text-neutral-600">
+                  <ol className="mt-0.5 flex flex-wrap gap-x-1 text-xs text-ink-2">
                     {o.reasonPath.map((n, k) => (
                       <li key={k}>
                         {k > 0 && <span aria-hidden="true">{"→ "}</span>}
-                        <span className="text-neutral-400">{n.kind}</span> {n.label}
+                        <span className="text-ink-3">{n.kind}</span> {n.label}
                       </li>
                     ))}
                   </ol>
-                  <Link className="text-[11px] text-accent underline" href={`/evidence/${o.id}`}>
+                  <Link className="text-xs text-accent underline" href={`/evidence/${o.id}`}>
                     Evidence
                   </Link>
                 </td>
@@ -113,18 +113,18 @@ export default function Triage() {
                         {accepted[o.id] ? "Proposal accepted" : "Propose action"}
                       </Link>
                     ) : refused ? (
-                      <Link className="text-[11px] text-red-800 underline" href={`/evidence/${o.id}`}>
+                      <Link className="text-xs text-critical underline" href={`/evidence/${o.id}`}>
                         Refused: no supporting evidence
                       </Link>
                     ) : (
-                      <span className="text-[11px] text-neutral-500">Review task, no product action</span>
+                      <span className="text-xs text-ink-2">Review task, no product action</span>
                     )}
                     {choosing === o.id ? (
-                      <label className="text-[11px]">
+                      <label className="text-xs">
                         <span className="sr-only">Dismiss reason</span>
                         <select
                           autoFocus
-                          className="rounded border border-neutral-300 text-[11px]"
+                          className="rounded border border-line text-xs"
                           defaultValue=""
                           onChange={(e) => {
                             if (e.target.value) {
@@ -154,7 +154,7 @@ export default function Triage() {
         </tbody>
       </table>
       {dismissedRows.length > 0 && (
-        <div className="mt-4 text-xs text-neutral-600">
+        <div className="mt-4 text-xs text-ink-2">
           <p className="font-medium">Dismissed, with reasons returned upstream as labelled feedback:</p>
           <ul className="mt-1 space-y-0.5">
             {dismissedRows.map((o) => (

@@ -35,7 +35,7 @@ export default function Supervision() {
         return (
           <Section key={q.id} title={`${q.id}: ${h.name}, ${o.title}`}>
             <div className="grid gap-4 xl:grid-cols-2">
-              <pre className="whitespace-pre-wrap rounded border border-neutral-300 bg-neutral-50 p-3 font-sans">{q.draft}</pre>
+              <pre className="whitespace-pre-wrap rounded border border-line bg-subtle p-3 font-sans">{q.draft}</pre>
               <div>
                 <p className="mb-2">
                   <Pill tone={q.recipients > 25 ? "fail" : "pass"}>{q.regime}</Pill>{" "}
@@ -55,7 +55,7 @@ export default function Supervision() {
                       <tr key={c.id}>
                         <td className={td}>{c.label}</td>
                         <td className={td}>
-                          <Pill tone={c.pass ? "pass" : "fail"}>{c.pass ? "Pass" : "Fail"}</Pill> <span className="text-[11px]">{c.detail}</span>
+                          <Pill tone={c.pass ? "pass" : "fail"}>{c.pass ? "Pass" : "Fail"}</Pill> <span className="text-xs">{c.detail}</span>
                         </td>
                       </tr>
                     ))}
@@ -76,7 +76,7 @@ export default function Supervision() {
                     <label className="block text-xs">
                       Comment
                       <input
-                        className="mt-0.5 block w-full rounded border border-neutral-300 px-2 py-1"
+                        className="mt-0.5 block w-full rounded border border-line px-2 py-1"
                         value={comment[q.id] ?? ""}
                         onChange={(e) => setComment((s) => ({ ...s, [q.id]: e.target.value }))}
                       />

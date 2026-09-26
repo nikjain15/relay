@@ -13,14 +13,19 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-white text-[13px] text-neutral-900 antialiased">
+      <body className="bg-surface text-sm leading-relaxed text-ink antialiased">
         <StateProvider>
-          <div className="border-b border-amber-300 bg-amber-50 px-4 py-1 text-xs text-amber-900" role="note">
-            Illustrative prototype. Synthetic data. No model calls: client language is composed from approved fragments.
-          </div>
-          <div className="flex min-h-screen">
+          <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-line bg-surface px-6">
+            <span className="text-[17px] font-semibold tracking-tight">Relay</span>
+            <span className="text-xs text-ink-2" role="note">
+              Illustrative prototype &middot; synthetic data &middot; no model calls
+            </span>
+          </header>
+          <div className="flex min-h-[calc(100vh-3.5rem)]">
             <Nav />
-            <main className="min-w-0 flex-1 p-5 tabular-nums">{children}</main>
+            <main className="min-w-0 flex-1 px-10 py-10 tabular-nums">
+              <div className="mx-auto max-w-[1200px]">{children}</div>
+            </main>
           </div>
         </StateProvider>
       </body>

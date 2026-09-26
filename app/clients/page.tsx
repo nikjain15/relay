@@ -39,7 +39,7 @@ export default function Clients() {
                     <tr key={c.id}>
                       <td className={td}>
                         <Link className="font-medium underline" href={`/household/${c.id}`}>{c.name}</Link>
-                        <div className="text-[11px] text-neutral-500">{c.archetype}, {c.persons.length} {c.persons.length === 1 ? "person" : "people"}</div>
+                        <div className="text-xs text-ink-2">{c.archetype}, {c.persons.length} {c.persons.length === 1 ? "person" : "people"}</div>
                       </td>
                       <td className={td}>{c.tier}</td>
                       <td className={`${td} text-right`}>{usd(c.totalUsd)}</td>

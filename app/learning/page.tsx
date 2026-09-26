@@ -27,30 +27,30 @@ export default function Learning() {
   const held = all.filter((s) => s.heldBack);
   const who = (s: Suggestion) => (s.scope === "client" ? clientName(s.scopeId) : ADVISORS_DATA.find((a) => a.id === s.scopeId)?.walkthrough?.label ?? s.scopeId);
   const card = (s: Suggestion, actions: React.ReactNode) => (
-    <li key={s.id} className="rounded border border-neutral-300 p-3">
+    <li key={s.id} className="rounded border border-line p-3">
       <p className="font-medium">
         {who(s)}: {SCHEMA[s.key].label.toLowerCase()}. {fmtChange(s.key, s.from, s.to, s.detail)[0]}
         {fmtChange(s.key, s.from, s.to, s.detail)[1]} &rarr; <strong>{fmtChange(s.key, s.from, s.to, s.detail)[2]}</strong>
       </p>
-      <p className="text-neutral-700">{s.because}</p>
-      <p className="text-[11px] text-neutral-500">
+      <p className="text-ink-2">{s.because}</p>
+      <p className="text-xs text-ink-2">
         Evidence: {s.evidence.events} events, {Math.round(s.evidence.share * 100)}% agree, last {s.evidence.windowDays} days. Checked after {LEARNING.checkAfterDays} days: {s.measure}
       </p>
-      {s.heldBack && <p className="text-[11px] text-neutral-600">{s.heldBack}</p>}
+      {s.heldBack && <p className="text-xs text-ink-2">{s.heldBack}</p>}
       <div className="mt-2 flex flex-wrap items-center gap-2">{actions}</div>
     </li>
   );
   return (
     <>
       <PageTitle title="Suggestions" sub="What Relay learned from how advisors and clients work. It proposes; you decide. It never changes a rule, and never changes which options are allowed." />
-      <ol className="mb-4 flex max-w-6xl flex-wrap gap-1 text-[11px]" aria-label="The learning loop">
+      <ol className="mb-4 flex max-w-6xl flex-wrap gap-1 text-xs" aria-label="The learning loop">
         {LOOP.map((x, i) => (
-          <li key={x} className="rounded border border-neutral-300 px-2 py-0.5">{i + 1}. {x}</li>
+          <li key={x} className="rounded border border-line px-2 py-0.5">{i + 1}. {x}</li>
         ))}
       </ol>
       <Section title={`Waiting for your decision (${open.length})`}>
         {open.length === 0 ? (
-          <p className="text-neutral-500">Nothing new. Relay suggests again when there is enough fresh evidence.</p>
+          <p className="text-ink-2">Nothing new. Relay suggests again when there is enough fresh evidence.</p>
         ) : (
           <ul className="grid max-w-4xl gap-2">
             {open.map((s) =>
@@ -85,7 +85,7 @@ export default function Learning() {
         </Section>
       )}
       <Section title="Never learned">
-        <p className="text-xs text-neutral-600">
+        <p className="text-xs text-ink-2">
           Rules are set by the firm, a segment or a client, and the loop cannot propose them:{" "}
           {KEYS.filter((k) => SCHEMA[k].kind === "rule").map((k) => SCHEMA[k].label.toLowerCase()).join("; ")}. Nor can it touch client constraints, the approved shelf, compliance checks or the recipient counter.
         </p>

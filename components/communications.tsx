@@ -81,7 +81,7 @@ export function Communications() {
       <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div>
           {prof && (
-            <p className="mb-3 rounded border border-neutral-300 px-3 py-2 text-xs">
+            <p className="mb-3 rounded border border-line px-3 py-2 text-xs">
               <strong>For this client:</strong> {prof.values["contact.channel"]} ({sourceLabel(prof.provenance["contact.channel"])})
               {prof.values["contact.window"] ? `, ${prof.values["contact.window"]}` : ""}; {prof.values["note.length"]} note ({sourceLabel(prof.provenance["note.length"])}).
               {prof.values["contact.callBeforeNote"] && (
@@ -90,7 +90,7 @@ export function Communications() {
             </p>
           )}
           <Section title="Draft, composed from the accepted proposal and cited evidence only">
-            <pre className="whitespace-pre-wrap rounded border border-neutral-300 bg-neutral-50 p-3 font-sans">{draft.text}</pre>
+            <pre className="whitespace-pre-wrap rounded border border-line bg-subtle p-3 font-sans">{draft.text}</pre>
           </Section>
           <Section title="Talking points for your call first">
             <ul className="list-inside list-disc space-y-0.5">
@@ -117,7 +117,7 @@ export function Communications() {
                 <li key={b.id}>
                   <label className="flex items-center gap-1">
                     <input type="checkbox" checked={batch.has(b.id)} onChange={() => toggle(b.id)} />
-                    {b.name} <span className="text-[11px] text-neutral-500">({b.persons} {b.persons === 1 ? "person" : "persons"})</span>
+                    {b.name} <span className="text-xs text-ink-2">({b.persons} {b.persons === 1 ? "person" : "persons"})</span>
                   </label>
                 </li>
               ))}
@@ -126,7 +126,7 @@ export function Communications() {
         </div>
         <aside aria-live="polite">
           <Section title="Recipient counter, FINRA Rule 2210(a)">
-            <div className={`rounded border p-3 ${flipped ? "border-red-700 bg-red-50" : "border-emerald-700 bg-emerald-50"}`}>
+            <div className={`rounded border p-3 ${flipped ? "border-critical bg-critical-soft" : "border-positive bg-positive-soft"}`}>
               <p className="text-3xl font-semibold">{count}</p>
               <p>
                 retail investors, firm-wide, last 30 calendar days ({households} {households === 1 ? "household" : "households"} from this advisor)
@@ -139,7 +139,7 @@ export function Communications() {
                   ? "More than 25 retail investors: principal approval before use, retention and filing where applicable."
                   : "25 or fewer retail investors: correspondence, reviewed under Rule 3110(b). Relay routes it to a principal anyway during V2."}
               </p>
-              <p className="mt-2 text-[11px] text-neutral-600">Counts persons, not households, across every advisor using this note. Institutional investors excluded.</p>
+              <p className="mt-2 text-xs text-ink-2">Counts persons, not households, across every advisor using this note. Institutional investors excluded.</p>
             </div>
             <button
               className={`${btnPrimary} mt-3`}

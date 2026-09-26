@@ -16,12 +16,12 @@ export default function Meetings() {
             {todaysMeetings(a.id).map((m) => {
               const p = prospectFor(m);
               return (
-                <li key={m.time} className="grid grid-cols-[4rem_1fr_auto] items-start gap-3 rounded border border-neutral-300 p-3">
+                <li key={m.time} className="grid grid-cols-[4rem_1fr_auto] items-start gap-3 rounded border border-line p-3">
                   <span className="font-semibold">{m.time}</span>
                   <span>
                     <span className="font-medium">{m.title}</span> <Pill>{KIND[m.kind]}</Pill>
-                    <span className="block text-neutral-600">{m.purpose}</span>
-                    {p && <span className="block text-xs text-neutral-500">Prospect: {p.label}. {p.signal}</span>}
+                    <span className="block text-ink-2">{m.purpose}</span>
+                    {p && <span className="block text-xs text-ink-2">Prospect: {p.label}. {p.signal}</span>}
                   </span>
                   <span>
                     {m.clientId ? (
