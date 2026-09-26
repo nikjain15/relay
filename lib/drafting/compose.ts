@@ -6,12 +6,12 @@ import type { Evaluation, Household, Opportunity, Passage, Product } from "@/lib
 import { CORPUS } from "@/lib/fixtures/corpus";
 import { usd } from "@/lib/format";
 
-const VERB: Record<string, string> = {
-  new_cash: "placing",
-  rebalance_from_core: "moving",
-  sell_long_term_lots: "selling long-term lots worth",
-  sell_all_lots: "selling",
-  contribute_in_kind: "contributing",
+const VERB: Record<string, [string, string]> = {
+  new_cash: ["placing", "in"],
+  rebalance_from_core: ["moving", "into"],
+  sell_long_term_lots: ["selling long-term lots worth", "and moving it into"],
+  sell_all_lots: ["selling", "and moving it into"],
+  contribute_in_kind: ["contributing", "to"],
 };
 
 export interface Draft {
@@ -23,24 +23,29 @@ export interface Draft {
 export function compose(h: Household, opp: Opportunity, ev: Evaluation, product: Product, evidence: Passage[]): Draft {
   const goal = h.goals.find((g) => g.strategy === opp.strategy);
   const goalLine =
-    goal && goal.unit === "months"
-      ? `your ${goal.strategy} strategy currently covers ${goal.funded} of ${goal.target} months of planned spending`
-      : goal
-        ? `your ${goal.strategy} strategy is funded at ${usd(goal.funded)} of ${usd(goal.target)}`
-        : `this affects your ${opp.strategy} strategy`;
+    goal && goal.unit === "months" && goal.strategy === "Liquidity"
+      ? `your cash set aside for planned spending covers ${goal.funded} of ${goal.target} months`
+      : goal && goal.unit === "months"
+        ? `your ${goal.strategy.toLowerCase()} goal covers ${goal.funded} of ${goal.target} months`
+        : goal
+          ? `your ${goal.strategy.toLowerCase()} goal is funded at ${usd(goal.funded)} of ${usd(goal.target)}`
+          : `this affects your ${opp.strategy.toLowerCase()} goal`;
   const passage = evidence[0];
   const disclosure = CORPUS.find((d) => d.id === "doc-disclosure")!.passages[0];
   const firstNames = h.persons.filter((p) => p.role !== "beneficiary").map((p) => p.name).join(" and ");
   const amount = usd(ev.candidate.amountUsd);
+  const opener = opp.clientNote ?? `We noted a change on your account: ${opp.title.charAt(0).toLowerCase()}${opp.title.slice(1)}.`;
+  const [verb, prep] = VERB[ev.candidate.source];
+  const productName = product.plainPhrase ?? `the ${product.name.toLowerCase()}`;
   const text = [
     `Dear ${firstNames},`,
     "",
-    `We noted a change on your account: ${opp.title.charAt(0).toLowerCase()}${opp.title.slice(1)}. At present ${goalLine}.`,
-    `One option to discuss is ${VERB[ev.candidate.source]} ${amount} in the ${product.name.toLowerCase()}. ${passage ? passage.text : ""}`,
+    `${opener} At present, ${goalLine}.`,
+    `One option to discuss is ${verb} ${amount} ${prep} ${productName}. ${passage ? passage.text : ""}`,
     passage ? `[Source: ${passage.title}, prototype corpus, day ${passage.day}]` : "",
     "",
     disclosure,
   ].join("\n");
-  const sources = [opp.title, goalLine, amount, ...evidence.map((p) => p.text)];
+  const sources = [opp.title, opener, goalLine, amount, ...evidence.map((p) => p.text)];
   return { text, sources, citedTitles: [...new Set(evidence.map((p) => p.title))] };
 }

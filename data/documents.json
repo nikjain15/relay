@@ -1,0 +1,77 @@
+[
+  {
+    "id": "doc-liquidity-note",
+    "title": "Sizing a Liquidity strategy",
+    "kind": "research note",
+    "day": 2,
+    "passages": [
+      "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+      "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold."
+    ]
+  },
+  {
+    "id": "doc-tsy-onepager",
+    "title": "Treasury ladder, 0 to 3 years",
+    "kind": "product one-pager",
+    "day": 1,
+    "passages": [
+      "Laddered US Treasuries mature on a schedule matched to planned withdrawals. Market value can move before maturity; held to maturity, principal is returned at par."
+    ]
+  },
+  {
+    "id": "doc-concentration-note",
+    "title": "Managing single-name concentration",
+    "kind": "research note",
+    "day": 3,
+    "passages": [
+      "Concentration above a household's policy threshold can be reduced through staged sales under an existing trading plan, an exchange fund, or hedging, each with different tax and liquidity costs.",
+      "Staged sales that realise short-term gains carry a higher tax cost than sales of lots held longer than one year."
+    ]
+  },
+  {
+    "id": "doc-exchange-fund",
+    "title": "Exchange fund, 7-year lockup",
+    "kind": "term sheet",
+    "day": 1,
+    "passages": [
+      "Contributors receive units in a diversified partnership. A seven-year holding period applies before a diversified basket may be distributed."
+    ]
+  },
+  {
+    "id": "doc-muni-onepager",
+    "title": "Municipal ladder, 1 to 7 years",
+    "kind": "product one-pager",
+    "day": 1,
+    "passages": [
+      "A municipal ladder provides tax-exempt income with scheduled maturities for high-bracket households."
+    ]
+  },
+  {
+    "id": "doc-crossborder-note",
+    "title": "Non-US pooled funds held by US taxpayers",
+    "kind": "research note",
+    "day": 4,
+    "passages": [
+      "Holdings in non-US pooled funds may be classified as PFICs for US taxpayers, with punitive default tax treatment unless an election is made."
+    ]
+  },
+  {
+    "id": "doc-review-procedure",
+    "title": "Account review and documentation procedure",
+    "kind": "procedure extract",
+    "day": 1,
+    "passages": [
+      "Unsigned account documents older than 14 days are escalated to the branch supervisor.",
+      "Client information is refreshed on a 36-month cycle or on a material life event."
+    ]
+  },
+  {
+    "id": "doc-disclosure",
+    "title": "Standard client communication disclosure",
+    "kind": "disclosure",
+    "day": 1,
+    "passages": [
+      "This note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor."
+    ]
+  }
+]

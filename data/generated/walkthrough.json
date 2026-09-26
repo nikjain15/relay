@@ -1,0 +1,1022 @@
+{
+  "generatedFrom": "data/ via scripts/build-walkthrough.ts; do not hand-edit",
+  "stories": [
+    {
+      "id": "hh-renner",
+      "tab": "Renner family",
+      "tabSub": "Founder, $62.4M",
+      "shows": "A windfall, and the 25-person line",
+      "advisor": {
+        "label": "Advisor A, New York",
+        "day": "Tuesday",
+        "households": 183,
+        "alertsOvernight": 47,
+        "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
+        "meetings": [
+          [
+            "9:30",
+            "Renner quarterly call"
+          ],
+          [
+            "11:00",
+            "Referral intro"
+          ],
+          [
+            "2:00",
+            "Alcott annual review"
+          ],
+          [
+            "4:30",
+            "Team huddle"
+          ]
+        ],
+        "groundedIn": [
+          {
+            "label": "Founders Group, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/founders/"
+          },
+          {
+            "label": "Flatiron Partners, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/flatiron/"
+          },
+          {
+            "label": "Madison Park Partners team page: titles and team shape",
+            "url": "https://advisors.ubs.com/mpp/Meet-the-team.htm"
+          },
+          {
+            "label": "UBS on assets per advisor",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html"
+          }
+        ]
+      },
+      "client": {
+        "name": "The Renner family, $62.4M",
+        "summary": "A founder (M.) and spouse (J.). 71% of their wealth is in the founder's company stock, sold slowly under a trading plan. They have just sold a property for $4.1M and have almost no cash set aside for spending.",
+        "groundedIn": [
+          {
+            "label": "UBS New York founder and liquidity-event practices (Founders Group, Flatiron Partners)",
+            "url": "https://advisors.ubs.com/founders/"
+          },
+          {
+            "label": "Property transactions as a STAAT signal type",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+          },
+          {
+            "label": "$50M+ coverage tier, Dec 2024 restructuring",
+            "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+          }
+        ]
+      },
+      "list": [
+        {
+          "who": "Renner family",
+          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "kind": "external_event",
+          "top": true
+        },
+        {
+          "who": "Renner family",
+          "what": "71% of wealth in one stock; the family's rule is 25%",
+          "kind": "household_threshold",
+          "top": false
+        },
+        {
+          "who": "Alcott family",
+          "what": "Cash covers 11 of 36 months as required withdrawals start",
+          "kind": "household_threshold",
+          "top": false
+        },
+        {
+          "who": "Thornbury family",
+          "what": "$1.2M capital call due in 60 days",
+          "kind": "household_threshold",
+          "top": false
+        }
+      ],
+      "chain": [
+        "Sold a property: $4.1M",
+        "No cash set aside: 0 of 36 months",
+        "71% of wealth in one stock",
+        "Family rule: at most 25%"
+      ],
+      "quotes": [
+        {
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Laddered US Treasuries mature on a schedule matched to planned withdrawals. Market value can move before maturity; held to maturity, principal is returned at par.",
+          "source": "Treasury ladder, 0 to 3 years (illustrative, prototype corpus day 1)"
+        }
+      ],
+      "history": [
+        {
+          "day": -23,
+          "channel": "Call",
+          "summary": "Reviewed the stock trading plan and the next sale window"
+        },
+        {
+          "day": -90,
+          "channel": "Meeting",
+          "summary": "Quarterly review; grandchildren's education trust raised for the first time"
+        }
+      ],
+      "notes": [
+        {
+          "from": "Client service associate",
+          "day": -1,
+          "text": "J. Renner mentioned they want to fund a home renovation from the sale."
+        }
+      ],
+      "refused": null,
+      "people": [
+        "M. Renner, 54, primary",
+        "J. Renner, 52, spouse"
+      ],
+      "accounts": [
+        {
+          "name": "Founder single-name position",
+          "value": "$44.3M",
+          "note": "$6M in lots held under a year"
+        },
+        {
+          "name": "Diversified core model",
+          "value": "$18M",
+          "note": ""
+        },
+        {
+          "name": "Cash",
+          "value": "$96K",
+          "note": "Set aside: Estimated tax on 10b5-1 sales"
+        }
+      ],
+      "goals": [
+        {
+          "strategy": "Liquidity",
+          "pct": 0,
+          "value": "0 of 36 months",
+          "gap": true,
+          "assumption": "36 months of spending at $85K a month"
+        },
+        {
+          "strategy": "Longevity",
+          "pct": 82,
+          "value": "$18M of $22M",
+          "gap": true,
+          "assumption": "Core portfolio sized to fund spending from age 60"
+        },
+        {
+          "strategy": "Legacy",
+          "pct": 0,
+          "value": "$0 of $10M",
+          "gap": true,
+          "assumption": "Stated intent: education trust for three grandchildren"
+        }
+      ],
+      "rules": [
+        "At most 25% in any one stock",
+        "Keep 24 months of cash before locking money up",
+        "Risk level at most 4 of 5",
+        "No short-term gains",
+        "No private credit"
+      ],
+      "tasks": [
+        "Introduce estate attorney for the grandchildren's trust",
+        "Review the stock trading plan before next quarter"
+      ],
+      "math": {
+        "months": [
+          36,
+          0
+        ],
+        "monthly": "$85K",
+        "amount": "$3.06M",
+        "source": "from the new cash",
+        "leftover": "The other $1.04M is for the renovation and the legacy conversation."
+      },
+      "allowed": [
+        {
+          "id": "prod-tsy-ladder",
+          "name": "Short-term US Treasury bonds",
+          "desc": "Low risk, available within 2 days",
+          "cost": "$3K"
+        },
+        {
+          "id": "prod-mmf",
+          "name": "Government money market fund",
+          "desc": "Available next day",
+          "cost": "$5K"
+        },
+        {
+          "id": "prod-muni-ladder",
+          "name": "Municipal bond ladder",
+          "desc": "Tax-free income, available within 3 days",
+          "cost": "$8K"
+        }
+      ],
+      "blocked": [
+        {
+          "name": "7-year locked fund",
+          "reason": "Locks money up while cash covers 0 of the 24 months required"
+        },
+        {
+          "name": "Core investment portfolio",
+          "reason": "Not cash-like enough for a cash cushion"
+        },
+        {
+          "name": "5-year structured note",
+          "reason": "Locks money up while cash covers 0 of the 24 months required"
+        },
+        {
+          "name": "Private credit fund",
+          "reason": "The family's rules exclude it"
+        },
+        {
+          "name": "Single-sector fund",
+          "reason": "Risk 5, above the family's limit of 4"
+        }
+      ],
+      "choose": "prod-tsy-ladder",
+      "draft": "Dear M. Renner and J. Renner,\n\nWe noticed the $4.1M from your property sale. At present, your cash set aside for planned spending covers 0 of 36 months.\nOne option to discuss is placing $3.06M in short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "talkingPoints": [
+        "Congratulate them on the sale",
+        "Ask about the renovation budget and timing",
+        "Propose 3 years of spending in Treasuries",
+        "Park the remaining $1.04M for the legacy conversation"
+      ],
+      "audience": {
+        "one": [
+          "Only the Renners",
+          2
+        ],
+        "many": [
+          "13 founder families",
+          26
+        ]
+      },
+      "audienceNote": "13 couples is 26 people, which crosses FINRA's 25-person line.",
+      "queue": "2nd in the queue",
+      "afterApproval": [
+        "Call the Renners first, then send the approved note from your own email",
+        "Log the call and the note in the CRM",
+        "Relay records the approval, the reasons and the options considered"
+      ],
+      "groundingBundle": {
+        "documents": [
+          "Sizing a Liquidity strategy",
+          "Treasury ladder, 0 to 3 years",
+          "Managing single-name concentration",
+          "Exchange fund, 7-year lockup"
+        ]
+      }
+    },
+    {
+      "id": "hh-alcott",
+      "tab": "Alcott family",
+      "tabSub": "Retired couple, $8.4M",
+      "shows": "Stricter rules block more options",
+      "advisor": {
+        "label": "Advisor A, New York",
+        "day": "Tuesday",
+        "households": 183,
+        "alertsOvernight": 47,
+        "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
+        "meetings": [
+          [
+            "9:30",
+            "Renner quarterly call"
+          ],
+          [
+            "11:00",
+            "Referral intro"
+          ],
+          [
+            "2:00",
+            "Alcott annual review"
+          ],
+          [
+            "4:30",
+            "Team huddle"
+          ]
+        ],
+        "groundedIn": [
+          {
+            "label": "Founders Group, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/founders/"
+          },
+          {
+            "label": "Flatiron Partners, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/flatiron/"
+          },
+          {
+            "label": "Madison Park Partners team page: titles and team shape",
+            "url": "https://advisors.ubs.com/mpp/Meet-the-team.htm"
+          },
+          {
+            "label": "UBS on assets per advisor",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html"
+          }
+        ]
+      },
+      "client": {
+        "name": "The Alcott family, $8.4M",
+        "summary": "A retired couple (R. and S.) living on their portfolio at $22K a month. Their cash covers 11 months, required withdrawals from retirement accounts start soon, and a $200K bond matures next month.",
+        "groundedIn": [
+          {
+            "label": "$5M+ coverage tier, Dec 2024 restructuring",
+            "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+          },
+          {
+            "label": "Liquidity covers 2 to 5 years of spending (UBS Wealth Way)",
+            "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+          }
+        ]
+      },
+      "list": [
+        {
+          "who": "Alcott family",
+          "what": "Cash covers 11 of 36 months as required withdrawals start",
+          "kind": "household_threshold",
+          "top": true
+        },
+        {
+          "who": "Renner family",
+          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "kind": "external_event",
+          "top": false
+        },
+        {
+          "who": "Renner family",
+          "what": "71% of wealth in one stock; the family's rule is 25%",
+          "kind": "household_threshold",
+          "top": false
+        },
+        {
+          "who": "Thornbury family",
+          "what": "$1.2M capital call due in 60 days",
+          "kind": "household_threshold",
+          "top": false
+        }
+      ],
+      "chain": [
+        "Spending $22K a month",
+        "Cash covers 11 of 36 months",
+        "Required withdrawals start next year",
+        "Family rules: low risk only"
+      ],
+      "quotes": [
+        {
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Laddered US Treasuries mature on a schedule matched to planned withdrawals. Market value can move before maturity; held to maturity, principal is returned at par.",
+          "source": "Treasury ladder, 0 to 3 years (illustrative, prototype corpus day 1)"
+        }
+      ],
+      "history": [
+        {
+          "day": -120,
+          "channel": "Meeting",
+          "summary": "Annual review; agreed to revisit cash once withdrawals start"
+        }
+      ],
+      "notes": [
+        {
+          "from": "Client service associate",
+          "day": -2,
+          "text": "R. Alcott asked whether the bond maturing next month can go straight to cash."
+        }
+      ],
+      "refused": null,
+      "people": [
+        "R. Alcott, 72, primary",
+        "S. Alcott, 70, spouse"
+      ],
+      "accounts": [
+        {
+          "name": "Diversified core model",
+          "value": "$7.96M",
+          "note": ""
+        },
+        {
+          "name": "Cash",
+          "value": "$242K",
+          "note": ""
+        },
+        {
+          "name": "Maturing municipal bond",
+          "value": "$200K",
+          "note": ""
+        }
+      ],
+      "goals": [
+        {
+          "strategy": "Liquidity",
+          "pct": 31,
+          "value": "11 of 36 months",
+          "gap": true,
+          "assumption": "36 months of spending at $22K a month"
+        },
+        {
+          "strategy": "Longevity",
+          "pct": 100,
+          "value": "$7.2M of $7M",
+          "gap": false,
+          "assumption": "Funds spending to age 95"
+        },
+        {
+          "strategy": "Legacy",
+          "pct": 90,
+          "value": "$900K of $1M",
+          "gap": true,
+          "assumption": "Bequest to two children"
+        }
+      ],
+      "rules": [
+        "At most 10% in any one stock",
+        "Keep 24 months of cash before locking money up",
+        "Risk level at most 3 of 5",
+        "No private credit or structured notes"
+      ],
+      "tasks": [
+        "Confirm this year's withdrawal amount",
+        "Update beneficiary forms"
+      ],
+      "math": {
+        "months": [
+          36,
+          11
+        ],
+        "monthly": "$22K",
+        "amount": "$550K",
+        "source": "moved from the core portfolio",
+        "leftover": "The $200K bond maturing next month can cover part of it."
+      },
+      "allowed": [
+        {
+          "id": "prod-tsy-ladder",
+          "name": "Short-term US Treasury bonds",
+          "desc": "Low risk, available within 2 days",
+          "cost": "$550"
+        },
+        {
+          "id": "prod-mmf",
+          "name": "Government money market fund",
+          "desc": "Available next day",
+          "cost": "$825"
+        },
+        {
+          "id": "prod-muni-ladder",
+          "name": "Municipal bond ladder",
+          "desc": "Tax-free income, available within 3 days",
+          "cost": "$1K"
+        }
+      ],
+      "blocked": [
+        {
+          "name": "7-year locked fund",
+          "reason": "Locks money up while cash covers 11 of the 24 months required"
+        },
+        {
+          "name": "Core investment portfolio",
+          "reason": "Not cash-like enough for a cash cushion"
+        },
+        {
+          "name": "5-year structured note",
+          "reason": "The family's rules exclude it"
+        },
+        {
+          "name": "Private credit fund",
+          "reason": "The family's rules exclude it"
+        },
+        {
+          "name": "Single-sector fund",
+          "reason": "Risk 5, above the family's limit of 3"
+        }
+      ],
+      "choose": "prod-tsy-ladder",
+      "draft": "Dear R. Alcott and S. Alcott,\n\nAs your required withdrawals begin, we reviewed your cash. At present, your cash set aside for planned spending covers 11 of 36 months.\nOne option to discuss is moving $550K into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "talkingPoints": [
+        "Start from their 2:00 review agenda",
+        "Show the 11 of 36 months gap on screen",
+        "Use the maturing $200K bond first",
+        "Confirm this year's withdrawal amount"
+      ],
+      "audience": {
+        "one": [
+          "Only the Alcotts",
+          2
+        ],
+        "many": [
+          "14 retired couples",
+          28
+        ]
+      },
+      "audienceNote": "The same withdrawal note to 14 retired couples reaches 28 people: over the line.",
+      "queue": "1st in the queue",
+      "afterApproval": [
+        "Discuss at the 2:00 review, then send the approved note",
+        "Log the meeting and the note in the CRM",
+        "Relay records the approval, the reasons and the options considered"
+      ],
+      "groundingBundle": {
+        "documents": [
+          "Sizing a Liquidity strategy",
+          "Treasury ladder, 0 to 3 years",
+          "Municipal ladder, 1 to 7 years"
+        ]
+      }
+    },
+    {
+      "id": "hh-thornbury",
+      "tab": "Thornbury family",
+      "tabSub": "Business owner, $23.1M",
+      "shows": "A batch that stays under the line",
+      "advisor": {
+        "label": "Advisor A, New York",
+        "day": "Tuesday",
+        "households": 183,
+        "alertsOvernight": 47,
+        "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
+        "meetings": [
+          [
+            "9:30",
+            "Renner quarterly call"
+          ],
+          [
+            "11:00",
+            "Referral intro"
+          ],
+          [
+            "2:00",
+            "Alcott annual review"
+          ],
+          [
+            "4:30",
+            "Team huddle"
+          ]
+        ],
+        "groundedIn": [
+          {
+            "label": "Founders Group, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/founders/"
+          },
+          {
+            "label": "Flatiron Partners, UBS New York (public team page)",
+            "url": "https://advisors.ubs.com/flatiron/"
+          },
+          {
+            "label": "Madison Park Partners team page: titles and team shape",
+            "url": "https://advisors.ubs.com/mpp/Meet-the-team.htm"
+          },
+          {
+            "label": "UBS on assets per advisor",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html"
+          }
+        ]
+      },
+      "client": {
+        "name": "The Thornbury family, $23.1M",
+        "summary": "A business owner (K.) and spouse (L.). 77% of their wealth is the family company, which cannot be sold quickly. The company just raised a late-stage funding round, and a $1.2M capital call is due in 60 days.",
+        "groundedIn": [
+          {
+            "label": "UBS entrepreneurs and business-owner practice (Entrepreneurs Group)",
+            "url": "https://advisors.ubs.com/entrepreneursgroup/"
+          },
+          {
+            "label": "Late-stage business funding as a STAAT signal type",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+          }
+        ]
+      },
+      "list": [
+        {
+          "who": "Thornbury family",
+          "what": "$1.2M capital call due in 60 days",
+          "kind": "household_threshold",
+          "top": true
+        },
+        {
+          "who": "Renner family",
+          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "kind": "external_event",
+          "top": false
+        },
+        {
+          "who": "Renner family",
+          "what": "71% of wealth in one stock; the family's rule is 25%",
+          "kind": "household_threshold",
+          "top": false
+        },
+        {
+          "who": "Alcott family",
+          "what": "Cash covers 11 of 36 months as required withdrawals start",
+          "kind": "household_threshold",
+          "top": false
+        }
+      ],
+      "chain": [
+        "$1.2M capital call in 60 days",
+        "Cash covers 6 of 24 months",
+        "77% of wealth is the business",
+        "It cannot be sold quickly"
+      ],
+      "quotes": [
+        {
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        }
+      ],
+      "history": [
+        {
+          "day": -14,
+          "channel": "Call",
+          "summary": "Discussed the company's late-stage funding round"
+        }
+      ],
+      "notes": [
+        {
+          "from": "Client service associate",
+          "day": 0,
+          "text": "K. Thornbury's CFO emailed the capital call notice this morning."
+        }
+      ],
+      "refused": null,
+      "people": [
+        "K. Thornbury, 58, primary",
+        "L. Thornbury, 56, spouse"
+      ],
+      "accounts": [
+        {
+          "name": "Operating business stake (illiquid)",
+          "value": "$17.8M",
+          "note": ""
+        },
+        {
+          "name": "Diversified core model",
+          "value": "$5M",
+          "note": ""
+        },
+        {
+          "name": "Cash",
+          "value": "$300K",
+          "note": ""
+        }
+      ],
+      "goals": [
+        {
+          "strategy": "Liquidity",
+          "pct": 25,
+          "value": "6 of 24 months",
+          "gap": true,
+          "assumption": "Near-term capital call on the operating business"
+        },
+        {
+          "strategy": "Longevity",
+          "pct": 56,
+          "value": "$5M of $9M",
+          "gap": true,
+          "assumption": "Sale of the business in 5 to 7 years"
+        },
+        {
+          "strategy": "Legacy",
+          "pct": 0,
+          "value": "$0 of $4M",
+          "gap": true,
+          "assumption": "Succession to two children"
+        }
+      ],
+      "rules": [
+        "At most 80% in any one stock",
+        "Keep 12 months of cash before locking money up",
+        "Risk level at most 4 of 5"
+      ],
+      "tasks": [
+        "Succession planning with the estate attorney",
+        "Model the sale scenario for retirement"
+      ],
+      "math": {
+        "months": [
+          24,
+          6
+        ],
+        "monthly": "$50K",
+        "amount": "$900K",
+        "source": "moved from the core portfolio",
+        "leftover": "Moved ahead of the $1.2M capital call."
+      },
+      "allowed": [
+        {
+          "id": "prod-tsy-ladder",
+          "name": "Short-term US Treasury bonds",
+          "desc": "Low risk, available within 2 days",
+          "cost": "$900"
+        },
+        {
+          "id": "prod-mmf",
+          "name": "Government money market fund",
+          "desc": "Available next day",
+          "cost": "$1K"
+        },
+        {
+          "id": "prod-muni-ladder",
+          "name": "Municipal bond ladder",
+          "desc": "Tax-free income, available within 3 days",
+          "cost": "$2K"
+        }
+      ],
+      "blocked": [
+        {
+          "name": "7-year locked fund",
+          "reason": "Locks money up while cash covers 6 of the 12 months required"
+        },
+        {
+          "name": "Core investment portfolio",
+          "reason": "Not cash-like enough for a cash cushion"
+        },
+        {
+          "name": "5-year structured note",
+          "reason": "Locks money up while cash covers 6 of the 12 months required"
+        },
+        {
+          "name": "Private credit fund",
+          "reason": "Locks money up while cash covers 6 of the 12 months required"
+        },
+        {
+          "name": "Single-sector fund",
+          "reason": "Risk 5, above the family's limit of 4"
+        }
+      ],
+      "choose": "prod-tsy-ladder",
+      "draft": "Dear K. Thornbury and L. Thornbury,\n\nAhead of the $1.2M capital call, we reviewed your cash. At present, your cash set aside for planned spending covers 6 of 24 months.\nOne option to discuss is moving $900K into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "talkingPoints": [
+        "Confirm the capital call date with the CFO",
+        "Show the 6 of 24 months gap",
+        "Move the money before the call date",
+        "Book the succession conversation"
+      ],
+      "audience": {
+        "one": [
+          "Only the Thornburys",
+          2
+        ],
+        "many": [
+          "9 business-owner families",
+          16
+        ]
+      },
+      "audienceNote": "9 families is 16 people: still 25 or fewer, so standard review applies. Relay does not over-escalate either.",
+      "queue": "1st in the queue",
+      "afterApproval": [
+        "Call K. Thornbury first, then send the approved note",
+        "Log the call and the note in the CRM",
+        "Relay records the approval, the reasons and the options considered"
+      ],
+      "groundingBundle": {
+        "documents": [
+          "Sizing a Liquidity strategy",
+          "Managing single-name concentration"
+        ]
+      }
+    },
+    {
+      "id": "hh-pell",
+      "tab": "C. Pell",
+      "tabSub": "Wealth Advice Center, $180K",
+      "shows": "Scale, and a flag Relay refuses",
+      "advisor": {
+        "label": "Advisor B, Wealth Advice Center",
+        "day": "Tuesday",
+        "households": "about 1,000",
+        "alertsOvernight": 61,
+        "summary": "Licensed advisor at the Charlotte hub, working by phone and video. About 1,000 client households, each under $250K invested. No dedicated relationships: the constraint is contacts per day.",
+        "meetings": [
+          [
+            "9:00",
+            "Callback queue: 14"
+          ],
+          [
+            "10:30",
+            "Video: new client"
+          ],
+          [
+            "1:00",
+            "Callback queue: 11"
+          ],
+          [
+            "3:30",
+            "Video: retirement check-in"
+          ]
+        ],
+        "groundedIn": [
+          {
+            "label": "UBS Wealth Advice Center",
+            "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/wealth-advice-center.html"
+          },
+          {
+            "label": "Working with the UBS Wealth Advice Center (disclosure)",
+            "url": "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf"
+          }
+        ]
+      },
+      "client": {
+        "name": "C. Pell, $180K",
+        "summary": "A single client saving for retirement at 67, covered remotely by the Wealth Advice Center. Cash covers 4 of the 6 months planned. Overnight, a research note on sector funds was also linked to this client.",
+        "groundedIn": [
+          {
+            "label": "Wealth Advice Center serves clients under $250K (UBS disclosure)",
+            "url": "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf"
+          }
+        ]
+      },
+      "list": [
+        {
+          "who": "C. Pell",
+          "what": "Cash covers 4 of 6 months",
+          "kind": "household_threshold",
+          "top": true
+        },
+        {
+          "who": "C. Pell",
+          "what": "Research note: reduce single-sector funds",
+          "kind": "market_view",
+          "top": false
+        }
+      ],
+      "chain": [
+        "Spending $5K a month",
+        "Cash covers 4 of 6 months",
+        "Retirement: $150K of $900K"
+      ],
+      "quotes": [
+        {
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
+        },
+        {
+          "text": "Laddered US Treasuries mature on a schedule matched to planned withdrawals. Market value can move before maturity; held to maturity, principal is returned at par.",
+          "source": "Treasury ladder, 0 to 3 years (illustrative, prototype corpus day 1)"
+        }
+      ],
+      "history": [
+        {
+          "day": -150,
+          "channel": "Video",
+          "summary": "Onboarding call; set the 6-month cash target"
+        }
+      ],
+      "notes": [
+        {
+          "from": "Callback queue",
+          "day": -6,
+          "text": "C. Pell asked last week how much cash to keep on hand."
+        }
+      ],
+      "refused": {
+        "title": "Research note: reduce single-sector funds",
+        "missing": [
+          "doc-sector-note-not-in-corpus"
+        ]
+      },
+      "people": [
+        "C. Pell, 44, primary"
+      ],
+      "accounts": [
+        {
+          "name": "Diversified core model",
+          "value": "$160K",
+          "note": ""
+        },
+        {
+          "name": "Cash",
+          "value": "$20K",
+          "note": ""
+        }
+      ],
+      "goals": [
+        {
+          "strategy": "Liquidity",
+          "pct": 67,
+          "value": "4 of 6 months",
+          "gap": true,
+          "assumption": "6 months of spending"
+        },
+        {
+          "strategy": "Longevity",
+          "pct": 17,
+          "value": "$150K of $900K",
+          "gap": true,
+          "assumption": "Retirement at 67"
+        }
+      ],
+      "rules": [
+        "At most 10% in any one stock",
+        "Keep 3 months of cash before locking money up",
+        "Risk level at most 3 of 5"
+      ],
+      "tasks": [
+        "Confirm the monthly spending figure",
+        "Schedule the annual check-in"
+      ],
+      "math": {
+        "months": [
+          6,
+          4
+        ],
+        "monthly": "$5K",
+        "amount": "$10K",
+        "source": "moved from the core portfolio",
+        "leftover": ""
+      },
+      "allowed": [
+        {
+          "id": "prod-tsy-ladder",
+          "name": "Short-term US Treasury bonds",
+          "desc": "Low risk, available within 2 days",
+          "cost": "$10"
+        },
+        {
+          "id": "prod-mmf",
+          "name": "Government money market fund",
+          "desc": "Available next day",
+          "cost": "$15"
+        },
+        {
+          "id": "prod-muni-ladder",
+          "name": "Municipal bond ladder",
+          "desc": "Tax-free income, available within 3 days",
+          "cost": "$25"
+        }
+      ],
+      "blocked": [
+        {
+          "name": "7-year locked fund",
+          "reason": "Not cash-like enough for a cash cushion"
+        },
+        {
+          "name": "Core investment portfolio",
+          "reason": "Not cash-like enough for a cash cushion"
+        },
+        {
+          "name": "5-year structured note",
+          "reason": "Risk 4, above the client's limit of 3"
+        },
+        {
+          "name": "Private credit fund",
+          "reason": "Risk 5, above the client's limit of 3"
+        },
+        {
+          "name": "Single-sector fund",
+          "reason": "Risk 5, above the client's limit of 3"
+        }
+      ],
+      "choose": "prod-mmf",
+      "draft": "Dear C. Pell,\n\nWe reviewed the cash you keep for planned spending. At present, your cash set aside for planned spending covers 4 of 6 months.\nOne option to discuss is moving $10K into a government money market fund. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "talkingPoints": [
+        "Keep it to one topic: the cash cushion",
+        "Confirm the $5K monthly figure",
+        "Offer the annual check-in slot"
+      ],
+      "audience": {
+        "one": [
+          "Only C. Pell",
+          1
+        ],
+        "many": [
+          "41 clients with this gap",
+          41
+        ]
+      },
+      "audienceNote": "At the Wealth Advice Center, batches cross 25 people quickly. This is where calibrated review pays off first.",
+      "queue": "5th in the queue",
+      "afterApproval": [
+        "Send the approved note, then offer a callback slot",
+        "Log the note in the CRM",
+        "Relay records the approval, the reasons and the options considered"
+      ],
+      "groundingBundle": {
+        "documents": [
+          "Sizing a Liquidity strategy",
+          "Treasury ladder, 0 to 3 years"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "id": "hh-vasquez-hale",
+  "name": "Vasquez-Hale",
+  "archetype": "Core affluent accumulator",
+  "tier": "$500K to $5M",
+  "advisorId": "adv-a",
+  "totalUsd": 1200000,
+  "monthlySpendUsd": 9000,
+  "hardPart": "Pending 401(k) rollover, first advisory relationship",
+  "persons": [
+    {
+      "id": "p-vh-1",
+      "name": "D. Vasquez-Hale",
+      "role": "primary",
+      "age": 41
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 1128000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 72000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 8,
+      "target": 12,
+      "unit": "months",
+      "assumption": "12 months of spending"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 1050000,
+      "target": 3000000,
+      "unit": "USD",
+      "assumption": "Retirement at 62"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 0,
+      "unit": "USD",
+      "assumption": "No stated legacy goal"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 6
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 4
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -21,
+      "channel": "Email",
+      "summary": "Sent the 401(k) rollover form for signature"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -1,
+      "text": "Rollover form still unsigned; escalates to the branch supervisor after 14 days."
+    }
+  ],
+  "tasks": [
+    "Follow up on the rollover signature",
+    "First annual plan review"
+  ],
+  "opportunities": [
+    {
+      "id": "opp-vh-rollover",
+      "householdId": "hh-vasquez-hale",
+      "triggerClass": "plan_service_event",
+      "title": "401(k) rollover paperwork unsigned for 21 days",
+      "materiality": 55,
+      "observedDay": 9,
+      "action": "review",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "ServiceEvent",
+          "label": "Unsigned document, 21 days"
+        },
+        {
+          "kind": "Household",
+          "label": "Vasquez-Hale household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Longevity funded $1.05M of $3.0M"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "401(k) rollover form unsigned for 21 days"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "$500K to $5M coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    },
+    {
+      "label": "SEC staff bulletin on account and rollover recommendations",
+      "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
+    }
+  ]
+}

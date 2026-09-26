@@ -73,13 +73,13 @@ household.
 
 ## 5. Fixtures
 
-All in `lib/fixtures/`, typed, synthetic, surnames invented and matching no real executive.
+All in `data/` as JSON (one file per client; see `data/README.md`), loaded and validated by `lib/data`. `lib/fixtures/` modules are thin views over it. Cited composites, surnames invented and matching no real executive.
 
 | File | Contents |
 |---|---|
 | `households.ts` | The seven archetypes of PRD Appendix A, with persons, goals, holdings, constraints, tier |
 | `book.ts` | 18 light book records (id, name, persons) for the batch demo, so a cohort can exceed 25 persons |
-| `opportunities.ts` | 11 opportunities covering all five trigger classes; at least one with no supporting evidence, to exercise refusal |
+| `opportunities.ts` | 12 opportunities covering all five trigger classes; at least one with no supporting evidence, to exercise refusal |
 | `shelf.ts` | 8 products, including at least one that fails each constraint type for the Renner household |
 | `corpus.ts` | 8 illustrative documents with **relative, non-calendar dates** ("prototype corpus, day 3") and passages; no view attributed to any real firm's CIO |
 | `distributions.ts` | Prior sends of the demo note by a second advisor, so the firm-wide count is visible |

@@ -1,0 +1,241 @@
+{
+  "id": "hh-renner",
+  "name": "Renner",
+  "archetype": "Pre-liquidity founder",
+  "tier": "$50M+",
+  "advisorId": "adv-a",
+  "totalUsd": 62400000,
+  "monthlySpendUsd": 85000,
+  "hardPart": "Single position at 71% of investable assets, 10b5-1 plan running, Legacy unfunded",
+  "persons": [
+    {
+      "id": "p-renner-1",
+      "name": "M. Renner",
+      "role": "primary",
+      "age": 54
+    },
+    {
+      "id": "p-renner-2",
+      "name": "J. Renner",
+      "role": "spouse",
+      "age": 52
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Founder single-name position",
+      "valueUsd": 44304000,
+      "singleName": true,
+      "shortTermLotsUsd": 6000000
+    },
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 18000000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 96000,
+      "singleName": false,
+      "earmarked": "Estimated tax on 10b5-1 sales"
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 0,
+      "target": 36,
+      "unit": "months",
+      "assumption": "36 months of spending at $85K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 18000000,
+      "target": 22000000,
+      "unit": "USD",
+      "assumption": "Core portfolio sized to fund spending from age 60"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 10000000,
+      "unit": "USD",
+      "assumption": "Stated intent: education trust for three grandchildren"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 25
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 24
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 4
+    },
+    {
+      "kind": "noShortTermGains"
+    },
+    {
+      "kind": "excludedProductTypes",
+      "types": [
+        "private_credit"
+      ]
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -23,
+      "channel": "Call",
+      "summary": "Reviewed the stock trading plan and the next sale window"
+    },
+    {
+      "day": -90,
+      "channel": "Meeting",
+      "summary": "Quarterly review; grandchildren's education trust raised for the first time"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -1,
+      "text": "J. Renner mentioned they want to fund a home renovation from the sale."
+    }
+  ],
+  "tasks": [
+    "Introduce estate attorney for the grandchildren's trust",
+    "Review the stock trading plan before next quarter"
+  ],
+  "opportunities": [
+    {
+      "id": "opp-renner-property",
+      "householdId": "hh-renner",
+      "triggerClass": "external_event",
+      "title": "Property sale recorded, $4.1M proceeds not on platform",
+      "materiality": 92,
+      "observedDay": 3,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "inflowUsd": 4100000,
+      "reasonPath": [
+        {
+          "kind": "ExternalEvent",
+          "label": "Property sale recorded, day 3, $4.1M"
+        },
+        {
+          "kind": "Household",
+          "label": "Renner household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Liquidity funded 0 of 36 target months"
+        },
+        {
+          "kind": "Holding",
+          "label": "Single-name position at 71% of investable assets"
+        },
+        {
+          "kind": "Constraint",
+          "label": "Concentration policy threshold 25%"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note",
+        "doc-tsy-onepager"
+      ],
+      "plainTitle": "Sold a property for $4.1M. Money not yet at UBS",
+      "clientNote": "We noticed the $4.1M from your property sale."
+    },
+    {
+      "id": "opp-renner-concentration",
+      "householdId": "hh-renner",
+      "triggerClass": "household_threshold",
+      "title": "Single-name concentration 71% against a 25% policy",
+      "materiality": 88,
+      "observedDay": 1,
+      "action": "trim",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Concentration breach, 71% against 25%"
+        },
+        {
+          "kind": "Household",
+          "label": "Renner household"
+        },
+        {
+          "kind": "Holding",
+          "label": "Founder single-name position, $44.3M"
+        },
+        {
+          "kind": "Constraint",
+          "label": "No short-term gains realised"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-concentration-note",
+        "doc-exchange-fund"
+      ],
+      "plainTitle": "71% of wealth in one stock; the family's rule is 25%"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS New York founder and liquidity-event practices (Founders Group, Flatiron Partners)",
+      "url": "https://advisors.ubs.com/founders/"
+    },
+    {
+      "label": "Property transactions as a STAAT signal type",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+    },
+    {
+      "label": "$50M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    }
+  ],
+  "walkthrough": {
+    "order": 1,
+    "tab": "Renner family",
+    "tabSub": "Founder, $62.4M",
+    "shows": "A windfall, and the 25-person line",
+    "opportunityId": "opp-renner-property",
+    "chooseProductId": "prod-tsy-ladder",
+    "summary": "A founder (M.) and spouse (J.). 71% of their wealth is in the founder's company stock, sold slowly under a trading plan. They have just sold a property for $4.1M and have almost no cash set aside for spending.",
+    "chain": [
+      "Sold a property: $4.1M",
+      "No cash set aside: 0 of 36 months",
+      "71% of wealth in one stock",
+      "Family rule: at most 25%"
+    ],
+    "leftover": "The other $1.04M is for the renovation and the legacy conversation.",
+    "talkingPoints": [
+      "Congratulate them on the sale",
+      "Ask about the renovation budget and timing",
+      "Propose 3 years of spending in Treasuries",
+      "Park the remaining $1.04M for the legacy conversation"
+    ],
+    "audience": {
+      "one": [
+        "Only the Renners",
+        2
+      ],
+      "many": [
+        "13 founder families",
+        26
+      ]
+    },
+    "audienceNote": "13 couples is 26 people, which crosses FINRA's 25-person line.",
+    "queue": "2nd in the queue",
+    "afterApproval": [
+      "Call the Renners first, then send the approved note from your own email",
+      "Log the call and the note in the CRM",
+      "Relay records the approval, the reasons and the options considered"
+    ]
+  }
+}
