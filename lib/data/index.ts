@@ -25,6 +25,7 @@ import connectors from "@/data/connectors.json";
 import complianceRules from "@/data/compliance/rules.json";
 import complianceAgents from "@/data/compliance/agents.json";
 import complianceEdits from "@/data/compliance/edits.json";
+import accountInputs from "@/data/compliance/account-inputs.json";
 
 // JSON imports are widened by TypeScript; validate() in lib/data/validate.ts
 // checks the shapes and cross-references at test time.
@@ -50,6 +51,17 @@ export const CONNECTORS_DATA = connectors as unknown as {
 export const RULES_DATA = complianceRules as unknown as { version: number; rules: RuleDefinition[] };
 export const AGENTS_DATA = complianceAgents as unknown as { version: number; agents: unknown[] };
 export const EDITS_DATA = complianceEdits as unknown as { version: number; edits: unknown[] };
+/** Supervisory flags a firm reads from its CRM and custodian, per client. */
+export const ACCOUNT_INPUTS = accountInputs as unknown as {
+  accounts: {
+    clientId: string;
+    trustedContactOnFile: boolean;
+    complaintLogged: boolean;
+    unusualDisbursement: boolean;
+    newThirdPartyContact: boolean;
+    note?: string;
+  }[];
+};
 
 export function toHousehold(c: ClientFile): Household {
   const { id, name, archetype, tier, totalUsd, persons, goals, holdings, constraints, monthlySpendUsd, hardPart, groundedIn } = c;

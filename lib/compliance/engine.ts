@@ -25,10 +25,18 @@ export interface EvaluateInput {
   scope?: EffectiveRule["scope"];
 }
 
-/** A rule's confidence is the weakest confidence among the facts it read. */
+/**
+ * A rule's confidence is the weakest confidence among the facts THIS rule read.
+ *
+ * Only its own evidence keys count. Taking the minimum across the whole bag let
+ * an inferred fact belonging to another rule drag an unrelated verdict under its
+ * floor, which sent clean accounts to a principal with a finding that named no
+ * fact the rule uses. A supervisor cannot act on that, and a queue full of it is
+ * how a surveillance system gets ignored.
+ */
 function confidenceFor(rule: EffectiveRule, input: EvaluateInput): number {
   const conf = input.factConfidence ?? {};
-  const used = [...rule.evidence, ...Object.keys(input.facts)].filter((k) => k in conf);
+  const used = rule.evidence.filter((k) => k in conf && input.facts[k] !== undefined);
   if (used.length === 0) return 1;
   return Math.min(...used.map((k) => conf[k] ?? 1));
 }

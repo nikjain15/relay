@@ -72,6 +72,12 @@ interface State {
    */
   connections: ConnectionState[];
   setConnectorStatus: (advisorId: string, connectorId: string, status: ConnectionStatus) => void;
+  /**
+   * Dispositions on agent findings. The agents detect; a principal clears,
+   * returns or blocks. Nothing an agent raises clears itself.
+   */
+  caseDispositions: Record<string, { disposition: Disposition; comment?: string; at: string }>;
+  disposeCase: (caseId: string, d: Disposition, comment?: string) => void;
 }
 
 const Ctx = createContext<State | null>(null);
@@ -85,6 +91,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [rejected, setRejected] = useState<Rejection[]>([]);
   const [ruleEdits, setRuleEdits] = useState<RuleEdit[]>(SEED_EDITS);
   const [connections, setConnections] = useState<ConnectionState[]>(CONNECTORS_DATA.connections);
+  const [caseDispositions, setCaseDispositions] = useState<State["caseDispositions"]>({});
   const overlay: Overlay = {};
   for (const s of learned) {
     const side = (overlay[s.scope] ??= {});
@@ -122,6 +129,9 @@ export function StateProvider({ children }: { children: ReactNode }) {
     // itself an edit, so the log stays append-only.
     revertEdit: (id) => setRuleEdits((l) => l.filter((x) => x.id !== id)),
     connections,
+    caseDispositions,
+    disposeCase: (caseId, disposition, comment) =>
+      setCaseDispositions((s) => ({ ...s, [caseId]: { disposition, comment, at: new Date().toISOString() } })),
     setConnectorStatus: (advisorId, connectorId, status) =>
       setConnections((c) => {
         const found = c.some((x) => x.advisorId === advisorId && x.connectorId === connectorId);
