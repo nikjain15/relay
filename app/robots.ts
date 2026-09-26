@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 
-// A private interview artifact: nothing here may be indexed (job-search D-57).
+export const dynamic = "force-static";
+
+// Public on GitHub Pages since R-22, but still not for search engines.
 export default function robots(): MetadataRoute.Robots {
   return { rules: { userAgent: "*", disallow: "/" } };
 }

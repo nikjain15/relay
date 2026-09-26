@@ -1,21 +1,22 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { household } from "@/lib/fixtures/households";
+import { HOUSEHOLDS, household } from "@/lib/fixtures/households";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
-import { ProposalView } from "@/components/proposal-view";
+import { ProposalRoute } from "@/components/proposal-route";
 
-export default async function Proposal({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ opp?: string }>;
-}) {
+const proposable = (id: string) => OPPORTUNITIES.some((o) => o.householdId === id && (o.action === "fund" || o.action === "trim"));
+
+export function generateStaticParams() {
+  return HOUSEHOLDS.filter((h) => proposable(h.id)).map((h) => ({ id: h.id }));
+}
+
+export default async function Proposal({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { opp } = await searchParams;
   const h = household(id);
-  if (!h) notFound();
-  const candidates = OPPORTUNITIES.filter((o) => o.householdId === h.id && (o.action === "fund" || o.action === "trim"));
-  const chosen = candidates.find((o) => o.id === opp) ?? candidates[0];
-  if (!chosen) notFound();
-  return <ProposalView key={chosen.id} householdId={h.id} oppId={chosen.id} others={candidates.map((o) => ({ id: o.id, title: o.title }))} />;
+  if (!h || !proposable(h.id)) notFound();
+  return (
+    <Suspense>
+      <ProposalRoute householdId={h.id} />
+    </Suspense>
+  );
 }

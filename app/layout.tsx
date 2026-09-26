@@ -13,6 +13,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content="connect-src 'self'; form-action 'self'; base-uri 'self'" />
+      </head>
       <body className="bg-surface text-sm leading-relaxed text-ink antialiased">
         <StateProvider>
           <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-20 focus:rounded focus:bg-surface focus:px-3 focus:py-2">
