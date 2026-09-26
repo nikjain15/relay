@@ -6,70 +6,130 @@ import { APP } from "@/lib/data/policy";
 
 const F = APP.featured;
 
-// Grouped by where each surface sits in the advisor's journey.
-const PHASES: { phase: string; links: { href: string; label: string }[] }[] = [
-  { phase: "Journey", links: [{ href: "/", label: "Advisor journey" }, { href: "/clients", label: "My clients" }] },
+export interface NavLink { href: string; label: string; note?: string }
+export interface NavArea { area: string; links: NavLink[] }
+
+/**
+ * Six areas, not fourteen groups.
+ *
+ * The first build listed every surface at one level, which read as a site map
+ * rather than a product: an advisor opening it could not tell where the day
+ * starts. These are grouped by the question being asked, the day's work first,
+ * and on a phone only the current area is expanded.
+ */
+export const AREAS: NavArea[] = [
   {
-    phase: "Before",
+    area: "Today",
     links: [
-      { href: "/pipeline", label: "Finding new clients" },
-      { href: "/onboarding", label: "Paperwork" },
-    ],
-  },
-  {
-    phase: "Daily work",
-    links: [
-      { href: "/triage", label: "Today's list" },
-      { href: `/evidence/${F.opportunityId}`, label: "Why this client" },
-      { href: `/household/${F.clientId}`, label: "Client picture" },
-      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options" },
-      { href: "/communications", label: "Note and audience" },
-      { href: "/supervision", label: "Compliance check" },
-    ],
-  },
-  { phase: "Meetings", links: [{ href: "/meetings", label: "Today's meetings" }] },
-  {
-    phase: "After",
-    links: [
+      { href: "/", label: "Overview" },
+      { href: "/triage", label: "Today's list", note: "What needs a decision" },
+      { href: "/meetings", label: "Meetings" },
       { href: "/follow-ups", label: "Follow-ups" },
       { href: "/servicing", label: "Service requests" },
+    ],
+  },
+  {
+    area: "Clients",
+    links: [
+      { href: "/clients", label: "My clients" },
+      { href: `/household/${F.clientId}`, label: "Client picture" },
+      { href: `/evidence/${F.opportunityId}`, label: "Why this client" },
+      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options" },
+    ],
+  },
+  {
+    area: "Communications",
+    links: [
+      { href: "/communications", label: "Note and audience" },
+      { href: "/supervision", label: "Supervision queue" },
+    ],
+  },
+  {
+    area: "Compliance",
+    links: [
+      { href: "/connectors", label: "Connected channels", note: "What is captured" },
+      { href: "/compliance", label: "Rules and agents" },
+      { href: "/compliance/log", label: "Change log" },
+    ],
+  },
+  {
+    area: "Growth",
+    links: [
+      { href: "/pipeline", label: "New clients" },
+      { href: "/onboarding", label: "Paperwork" },
       { href: "/measurement", label: "Measurement" },
     ],
   },
-  { phase: "Personalization", links: [{ href: "/profiles", label: "Settings" }, { href: "/learning", label: "Suggestions" }] },
-  { phase: "Reference", links: [{ href: "/personas", label: "Who's who" }] },
+  {
+    area: "Settings",
+    links: [
+      { href: "/profiles", label: "Preferences" },
+      { href: "/learning", label: "Suggestions" },
+      { href: "/personas", label: "Who's who" },
+    ],
+  },
 ];
 
-export function Nav() {
+export function isActive(href: string, path: string): boolean {
+  const base = href.split("?")[0];
+  if (base === "/") return path === "/";
+  if (base === "/compliance") return path === "/compliance";
+  if (base.startsWith("/household/")) {
+    if (!path.startsWith("/household/")) return false;
+    return base.endsWith("/proposal") ? path.endsWith("/proposal") : !path.endsWith("/proposal");
+  }
+  if (base.startsWith("/evidence/")) return path.startsWith("/evidence/");
+  if (base === "/meetings") return path.startsWith("/meetings");
+  return path === base;
+}
+
+/** The area containing the current route, so a phone opens on the right one. */
+export function currentArea(path: string): string {
+  return AREAS.find((a) => a.links.some((l) => isActive(l.href, path)))?.area ?? AREAS[0].area;
+}
+
+export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const path = usePathname();
-  const isActive = (href: string) => {
-    const base = href.split("?")[0];
-    if (base === "/") return path === "/";
-    if (base.startsWith("/household/")) return path.startsWith("/household/") && (base.endsWith("/proposal") ? path.endsWith("/proposal") : !path.endsWith("/proposal"));
-    if (base.startsWith("/evidence/")) return path.startsWith("/evidence/");
-    if (base === "/meetings") return path.startsWith("/meetings");
-    return path === base;
-  };
+  const here = currentArea(path);
   return (
-    <nav aria-label="Surfaces" className="w-60 shrink-0 border-r border-line bg-subtle px-4 py-8 text-[13px]">
-      {PHASES.map((g) => (
-        <div key={g.phase} className="mb-6">
-          <p className="mb-2 px-3 text-xs text-ink-3">{g.phase}</p>
-          <ul>
-            {g.links.map((l) => (
-              <li key={l.href}>
-                <Link
-                  href={l.href}
-                  aria-current={isActive(l.href) ? "page" : undefined}
-                  className={`block border-l-2 px-3 py-1.5 ${isActive(l.href) ? "border-ink font-semibold text-ink" : "border-transparent text-ink-2 hover:text-ink"}`}
-                >
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="text-[13px]">
+      {AREAS.map((g) => {
+        const isHere = g.area === here;
+        return (
+          <div key={g.area} className="mb-5 last:mb-0">
+            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-ink-3">{g.area}</p>
+            <ul>
+              {g.links.map((l) => {
+                const active = isActive(l.href, path);
+                // On a phone, an area that is not the current one shows only its
+                // first link, so the drawer is a short list rather than a wall.
+                const collapsed = !isHere && l !== g.links[0];
+                return (
+                  <li key={l.href} className={collapsed ? "hidden sm:block" : undefined}>
+                    <Link
+                      href={l.href}
+                      onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
+                      className={`block border-l-2 px-3 py-2 sm:py-1.5 ${active ? "border-ink bg-selected font-semibold text-ink" : "border-transparent text-ink-2 hover:bg-subtle hover:text-ink"}`}
+                    >
+                      {l.label}
+                      {l.note && active && <span className="mt-0.5 block text-[11px] font-normal text-ink-3">{l.note}</span>}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function Nav() {
+  return (
+    <nav aria-label="Sections" className="hidden w-60 shrink-0 border-r border-line bg-subtle px-4 py-8 lg:block">
+      <NavList />
     </nav>
   );
 }

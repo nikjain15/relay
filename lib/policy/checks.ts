@@ -14,7 +14,11 @@ const PROJECTION = /\b(will (return|earn|grow|outperform|yield)|expected return|
 const FIGURE = /\$\d[\d,.]*[MK]?|\d[\d,.]*%|\b\d+ of \d+\b/g;
 
 export function figures(text: string): string[] {
-  return text.match(FIGURE) ?? [];
+  // A figure ending a sentence would otherwise carry the full stop into the
+  // token ("$250,000." from the draft against "$250,000" in the source), and the
+  // sourcing check would report a sourced figure as unsourced. Trailing
+  // separators are never part of a figure, so they come off.
+  return (text.match(FIGURE) ?? []).map((f) => f.replace(/[.,]+$/, ""));
 }
 
 export function runChecks(input: {

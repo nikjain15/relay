@@ -8,7 +8,7 @@
 // means "an advisor can switch off the rule that would have caught them".
 //
 // Deterministic. No model client may be imported here.
-import type { FactValue, RuleDefinition, RuleOverride, RuleParam, Severity } from "@/lib/compliance/types";
+import type { FactValue, RuleDefinition, RuleOverride, RuleParam } from "@/lib/compliance/types";
 import { severityRank } from "@/lib/compliance/dsl";
 import { RULES_DATA } from "@/lib/data";
 
