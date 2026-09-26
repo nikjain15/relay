@@ -55,6 +55,27 @@ module.exports = {
       from: { path: "^lib/(constraints|recipients|policy|evidence)/" },
       to: { path: ["^lib/(profile|learning)/", "^data/(profiles/|events\\.json)"], reachable: true },
     },
+    {
+      name: "connectors-are-read-only",
+      comment:
+        "lib/connectors/** ingests and never transmits. It must not import any outbound transport. The ReadCapability union has no send verb, and this makes that structural rather than conventional.",
+      severity: "error",
+      from: { path: "^lib/connectors" },
+      to: {
+        path: [
+          "nodemailer", "resend", "@sendgrid", "postmark", "mailgun", "twilio",
+          "node:net", "node:http$", "node:https$", "^https$", "^http$", "undici", "axios", "got", "node-fetch",
+        ],
+      },
+    },
+    {
+      name: "connectors-decide-nothing",
+      comment:
+        "lib/connectors/** carries records, it does not judge them. Classification belongs to lib/compliance. Keeping ingestion free of verdicts is what lets a connector be added without re-reviewing the rule set.",
+      severity: "error",
+      from: { path: "^lib/connectors" },
+      to: { path: ["^lib/compliance", "@anthropic-ai", "openai"] },
+    },
   ],
   options: {
     doNotFollow: { path: "node_modules" },
