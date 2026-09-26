@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { opportunity, OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { household } from "@/lib/fixtures/households";
 import { retrieve } from "@/lib/evidence/retrieve";
+import { clientFile } from "@/lib/data";
 import { CLASS_LABEL, PageTitle, Pill, Section } from "@/components/ui";
 
 export function generateStaticParams() {
@@ -53,6 +54,22 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
             ))}
           </ul>
         )}
+      </Section>
+      <Section title="What the team already knows">
+        {(() => {
+          const c = clientFile(h.id)!;
+          const ago = (d: number) => (d === 0 ? "today" : `${-d} days ago`);
+          return (
+            <ul className="space-y-1">
+              {c.contactHistory.map((e, i) => (
+                <li key={i}><strong>{e.channel}</strong>, {ago(e.day)}: {e.summary}</li>
+              ))}
+              {c.notes.map((n, i) => (
+                <li key={`n${i}`} className="rounded bg-amber-50 px-2 py-1 text-amber-900"><strong>{n.from}</strong>, {ago(n.day)}: {n.text}</li>
+              ))}
+            </ul>
+          );
+        })()}
       </Section>
       <p className="text-xs">
         <Link className="underline" href={`/household/${h.id}`}>

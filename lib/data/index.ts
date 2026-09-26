@@ -1,7 +1,7 @@
 // The single source of client and reference data. Everything in the app, the
 // engines, retrieval and any chat reads from data/ through this module, so
 // editing a JSON file is the only step needed to change a client.
-import type { BookRecord, ClientFile, Doc, Household, Opportunity, Product } from "@/lib/types";
+import type { BookRecord, ClientFile, Doc, Household, Opportunity, Product, Prospect, ServiceRequest } from "@/lib/types";
 import type { Advisor } from "@/lib/data/advisor";
 import type { Distribution } from "@/lib/recipients/count";
 import renner from "@/data/clients/renner.json";
@@ -17,6 +17,8 @@ import book from "@/data/book.json";
 import advisors from "@/data/advisors.json";
 import communications from "@/data/communications.json";
 import funnel from "@/data/funnel.json";
+import prospects from "@/data/prospects.json";
+import serviceRequests from "@/data/service-requests.json";
 
 // JSON imports are widened by TypeScript; validate() in lib/data/validate.ts
 // checks the shapes and cross-references at test time.
@@ -30,6 +32,8 @@ export const COMMUNICATIONS = communications as unknown as {
   demoCommunication: string;
   priorDistributions: Distribution[];
 };
+export const PROSPECTS = prospects as unknown as Prospect[];
+export const SERVICE_REQUESTS = serviceRequests as unknown as ServiceRequest[];
 export const FUNNEL_DATA = funnel as unknown as { stage: string; count: number }[];
 
 export function toHousehold(c: ClientFile): Household {
@@ -55,5 +59,6 @@ export function getClientFile(id: string) {
   const advisor = ADVISORS_DATA.find((a) => a.id === client.advisorId);
   const docIds = new Set(client.opportunities.flatMap((o) => o.evidenceDocIds));
   const cited = DOCUMENTS.filter((d) => docIds.has(d.id));
-  return { client, advisor, opportunities: client.opportunities, documents: cited };
+  const requests = SERVICE_REQUESTS.filter((r) => r.clientId === client.id);
+  return { client, advisor, opportunities: client.opportunities, documents: cited, paperwork: client.paperwork, serviceRequests: requests };
 }

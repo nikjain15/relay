@@ -3,11 +3,12 @@
 Advisor advice-to-action layer. An interview artifact, private, with synthetic data only. Never host it
 at a public, indexed URL (job-search D-57).
 
-**Status:** PRD v0.4, build spec v2.0, prototype **built** to the spec: six working surfaces, a
-measurement page and three designed-not-built pages, on synthetic fixtures with no model calls. The v1.0
+**Status:** PRD v0.4, build spec v2.1, prototype **built** to the spec: all nine surfaces across the
+advisor journey, a journey home page and a measurement page, on the client data in `data/`, with no
+model calls. The v1.0
 documents from an earlier session were lost and are not reconstructed; see `docs/DECISIONS.md` R-09.
 
-**Demo path:** `/triage` then the Renner property sale's evidence, household and proposals; the Pell
+**Demo path:** start at `/` (the advisor journey), then `/triage`, then the Renner property sale's evidence, household and proposals; the Pell
 refusal; `/communications` for the recipient counter; `/supervision`; `/measurement`. Details in
 `docs/BUILD-SPEC.md` §7.
 

@@ -13,6 +13,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { compose } from "@/lib/drafting/compose";
 import { regimeAfter, RETAIL_THRESHOLD, type Distribution } from "@/lib/recipients/count";
 import { useRelay } from "@/components/state";
+import { clientFile } from "@/lib/data";
 import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
 
 const DEMO_OPP = "opp-renner-property";
@@ -72,6 +73,13 @@ export function Communications() {
         <div>
           <Section title="Draft, composed from the accepted proposal and cited evidence only">
             <pre className="whitespace-pre-wrap rounded border border-neutral-300 bg-neutral-50 p-3 font-sans">{draft.text}</pre>
+          </Section>
+          <Section title="Talking points for your call first">
+            <ul className="list-inside list-disc space-y-0.5">
+              {(clientFile(h.id)?.walkthrough?.talkingPoints ?? ["Explain the gap in plain terms", "Walk through the option and its cost", "Agree the next step"]).map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ul>
           </Section>
           <Section title="Batch: send the same note to other households in the book">
             <div className="mb-2 flex flex-wrap gap-2">

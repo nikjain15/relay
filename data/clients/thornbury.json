@@ -95,6 +95,12 @@
     "Succession planning with the estate attorney",
     "Model the sale scenario for retirement"
   ],
+  "paperwork": [
+    {
+      "form": "Standing wire instructions for capital calls",
+      "requestedDay": -1
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-thornbury-cashflow",

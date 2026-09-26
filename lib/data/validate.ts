@@ -1,7 +1,7 @@
 // Checks every data file for shape and cross-reference errors. Run by the
 // test suite, so a broken edit to data/ fails `npm run check`.
 import type { ClientFile } from "@/lib/types";
-import { ADVISORS_DATA, CLIENTS, DOCUMENTS, SHELF_DATA } from "@/lib/data";
+import { ADVISORS_DATA, CLIENTS, DOCUMENTS, PROSPECTS, SERVICE_REQUESTS, SHELF_DATA } from "@/lib/data";
 
 export function validate(): string[] {
   const errors: string[] = [];
@@ -42,6 +42,16 @@ export function validate(): string[] {
       if (!c.opportunities.some((o) => o.id === w.opportunityId)) err(`${at}: walkthrough opportunity ${w.opportunityId} not found`);
       if (!productIds.has(w.chooseProductId)) err(`${at}: walkthrough product ${w.chooseProductId} not found`);
     }
+  }
+  for (const p of PROSPECTS) {
+    if (!advisorIds.has(p.advisorId)) err(`prospect ${p.id}: unknown advisor ${p.advisorId}`);
+    if (!p.groundedIn?.length) err(`prospect ${p.id}: no sources`);
+    if (p.fit < 0 || p.fit > 2) err(`prospect ${p.id}: fit must be 0 to 2`);
+  }
+  for (const r of SERVICE_REQUESTS) if (!ids.has(r.clientId)) err(`service request ${r.id}: unknown client ${r.clientId}`);
+  for (const c of CLIENTS as ClientFile[]) {
+    if (!Array.isArray(c.paperwork)) err(`client ${c.id}: missing paperwork`);
+    for (const w of c.paperwork ?? []) if (w.signedDay !== undefined && w.signedDay < w.requestedDay) err(`client ${c.id}: ${w.form} signed before it was requested`);
   }
   return errors;
 }

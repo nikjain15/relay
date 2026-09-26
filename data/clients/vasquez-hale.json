@@ -84,6 +84,27 @@
     "Follow up on the rollover signature",
     "First annual plan review"
   ],
+  "paperwork": [
+    {
+      "form": "401(k) rollover form",
+      "requestedDay": -21
+    },
+    {
+      "form": "Advisory agreement",
+      "requestedDay": -30,
+      "signedDay": -25
+    },
+    {
+      "form": "Investment profile",
+      "requestedDay": -30,
+      "signedDay": -24
+    },
+    {
+      "form": "Rollover recommendation record",
+      "requestedDay": -3,
+      "note": "Drafted; advisor to review before it is sent"
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-vh-rollover",

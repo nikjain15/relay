@@ -57,6 +57,15 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
           ))}
         </p>
       )}
+      {o.action === "fund" && evs[0] && (() => {
+        const g = h.goals.find((x) => x.strategy === o.strategy);
+        return g && g.unit === "months" ? (
+          <p className="mb-3 max-w-3xl rounded bg-neutral-100 px-3 py-2">
+            Need: ({g.target} &minus; {g.funded}) months &times; {usd(h.monthlySpendUsd)} = <strong>{usd(evs[0].candidate.amountUsd)}</strong>
+            {o.inflowUsd ? `, from ${usd(o.inflowUsd)} of new cash` : ", moved from the core portfolio"}.
+          </p>
+        ) : null;
+      })()}
       <Section title={`${evs.length} candidates: ${passing} eligible, ${evs.length - passing} rejected with the failing constraint named`}>
         <table className="w-full border-collapse">
           <thead>

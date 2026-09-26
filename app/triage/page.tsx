@@ -6,23 +6,50 @@ import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { household } from "@/lib/fixtures/households";
 import { rank, score, DEFAULT_CAP } from "@/lib/ranking/rank";
 import { retrieve } from "@/lib/evidence/retrieve";
+import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { useRelay } from "@/components/state";
-import { CLASS_LABEL, PageTitle, Pill, btn, td, th } from "@/components/ui";
+import { CLASS_LABEL, PageTitle, Pill, btn, btnPrimary, td, th } from "@/components/ui";
 
 const REASONS = ["Already discussed with client", "Not material for this household", "Wrong household attribute", "Timing not right"];
 
 export default function Triage() {
   const { dismissed, dismiss, restore, accepted } = useRelay();
   const [choosing, setChoosing] = useState<string | null>(null);
-  const rows = rank(OPPORTUNITIES, new Set(Object.keys(dismissed)));
+  const [advisorId, setAdvisorId] = useState("adv-a");
+  const advisor = ADVISORS_DATA.find((a) => a.id === advisorId)!;
+  const day = advisor.walkthrough!;
+  const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisorId);
+  const rows = rank(mine, new Set(Object.keys(dismissed)));
+  const lastContact = (hid: string) => {
+    const h = clientFile(hid)?.contactHistory ?? [];
+    const last = h.reduce<(typeof h)[number] | undefined>((m, e) => (!m || e.day > m.day ? e : m), undefined);
+    return last ? `${last.channel}, ${-last.day} days ago` : "No contact logged";
+  };
   const dismissedRows = OPPORTUNITIES.filter((o) => dismissed[o.id]);
 
   return (
     <>
-      <PageTitle
-        title="Book triage"
-        sub={`Advisor A, 183 households. Ranked by materiality and trigger class, capped at ${DEFAULT_CAP} a day. One decision per row.`}
-      />
+      <PageTitle title="Today's list" sub={`Ranked by materiality and trigger class, capped at ${DEFAULT_CAP} a day. One decision per row.`} />
+      <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
+        {ADVISORS_DATA.map((a) => (
+          <button key={a.id} className={a.id === advisorId ? btnPrimary : btn} aria-pressed={a.id === advisorId} onClick={() => setAdvisorId(a.id)}>
+            {a.walkthrough?.label ?? a.name}
+          </button>
+        ))}
+      </div>
+      <div className="mb-4 grid max-w-5xl gap-2 rounded border border-neutral-300 p-3 md:grid-cols-[auto_1fr]">
+        <div className="flex gap-5 text-neutral-600">
+          <span><strong className="text-lg text-neutral-900">{day.meetings.length}</strong> meetings</span>
+          <span><strong className="text-lg text-neutral-900">{day.alertsOvernight}</strong> alerts overnight</span>
+          <span><strong className="text-lg text-neutral-900">{rows.length}</strong> on your list</span>
+        </div>
+        <div className="flex flex-wrap gap-2 md:justify-end">
+          {day.meetings.map(([time, what]) => (
+            <span key={time} className="rounded border border-neutral-300 px-2 py-0.5 text-xs"><strong>{time}</strong> {what}</span>
+          ))}
+        </div>
+        <p className="text-xs text-neutral-600 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
+      </div>
       <table className="w-full border-collapse">
         <thead>
           <tr>
@@ -52,6 +79,7 @@ export default function Triage() {
                     {h.name}
                   </Link>
                   <div className="text-[11px] text-neutral-500">{h.tier}</div>
+                  <div className="text-[11px] text-neutral-500">{lastContact(h.id)}</div>
                 </td>
                 <td className={td}>
                   <div className="font-medium">{o.plainTitle ?? o.title}</div>
