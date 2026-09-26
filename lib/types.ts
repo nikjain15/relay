@@ -8,6 +8,7 @@ export interface Person {
   id: string;
   name: string;
   role: "primary" | "spouse" | "trustee" | "beneficiary";
+  age?: number;
 }
 
 export interface Goal {
@@ -96,6 +97,12 @@ export interface Opportunity {
   strategy: Strategy;
   /** New cash arriving with the event, if any. */
   inflowUsd?: number;
+  /** Plain-English title for the advisor's list. */
+  plainTitle?: string;
+  /** Opening line for a client note about this opportunity. */
+  clientNote?: string;
+  /** True when the cited document is deliberately absent, to exercise refusal. */
+  evidenceExpectedMissing?: boolean;
 }
 
 export type ProductType =
@@ -116,6 +123,11 @@ export interface Product {
   liquidityDays: number;
   costBps: number;
   description: string;
+  /** Plain-English name used in client-facing text. */
+  plainName?: string;
+  plainDescription?: string;
+  /** Mid-sentence form, with its article: "a government money market fund". */
+  plainPhrase?: string;
 }
 
 export interface Passage {
@@ -169,4 +181,44 @@ export interface RationaleRecord {
   alternatives: { productId: string; source: FundingSource; outcome: string }[];
   costsCompared: { productId: string; costBps: number; annualCostUsd: number }[];
   whySuitable: string[];
+}
+
+export interface ContactEvent {
+  /** Relative to the prototype's day 0; negative is in the past. */
+  day: number;
+  channel: string;
+  summary: string;
+}
+
+export interface TeamNote {
+  from: string;
+  day: number;
+  text: string;
+}
+
+export interface Walkthrough {
+  order: number;
+  tab: string;
+  tabSub: string;
+  shows: string;
+  opportunityId: string;
+  chooseProductId: string;
+  summary: string;
+  chain: string[];
+  leftover: string;
+  talkingPoints: string[];
+  audience: { one: [string, number]; many: [string, number] };
+  audienceNote: string;
+  queue: string;
+  afterApproval: string[];
+}
+
+/** One client's complete record, as stored in data/clients/<id>.json. */
+export interface ClientFile extends Household {
+  advisorId: string;
+  contactHistory: ContactEvent[];
+  notes: TeamNote[];
+  tasks: string[];
+  opportunities: Opportunity[];
+  walkthrough?: Walkthrough;
 }

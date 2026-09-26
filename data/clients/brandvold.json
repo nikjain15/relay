@@ -1,0 +1,138 @@
+{
+  "id": "hh-brandvold",
+  "name": "Brandvold",
+  "archetype": "Cross-border executive",
+  "tier": "$5M+",
+  "advisorId": "adv-a",
+  "totalUsd": 14200000,
+  "monthlySpendUsd": 40000,
+  "hardPart": "US and UK tax, unvested deferred compensation, PFIC exposure in legacy holdings",
+  "persons": [
+    {
+      "id": "p-brandvold-1",
+      "name": "E. Brandvold",
+      "role": "primary",
+      "age": 49
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 11400000,
+      "singleName": false
+    },
+    {
+      "name": "Legacy non-US funds (PFIC exposure)",
+      "valueUsd": 2080000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 720000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 18,
+      "target": 24,
+      "unit": "months",
+      "assumption": "24 months, higher because of relocation risk"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 9000000,
+      "target": 12000000,
+      "unit": "USD",
+      "assumption": "Retirement in the UK or US, undecided"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 0,
+      "unit": "USD",
+      "assumption": "No stated legacy goal"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 12
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 4
+    },
+    {
+      "kind": "excludedProductTypes",
+      "types": [
+        "exchange_fund"
+      ]
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -40,
+      "channel": "Call",
+      "summary": "Discussed a possible move back to the UK in two years"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Wealth strategist",
+      "day": -10,
+      "text": "UK pension transfer value received; needs a cross-border tax view before any action."
+    }
+  ],
+  "tasks": [
+    "Cross-border tax review of legacy UK funds",
+    "Map deferred compensation vesting dates"
+  ],
+  "opportunities": [
+    {
+      "id": "opp-brandvold-held-away",
+      "householdId": "hh-brandvold",
+      "triggerClass": "external_event",
+      "title": "Assets identified as held away: UK pension",
+      "materiality": 58,
+      "observedDay": 8,
+      "action": "review",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "ExternalEvent",
+          "label": "Held-away assets identified"
+        },
+        {
+          "kind": "Household",
+          "label": "Brandvold household"
+        },
+        {
+          "kind": "Holding",
+          "label": "Legacy non-US funds, PFIC exposure"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-crossborder-note"
+      ],
+      "plainTitle": "UK pension found at another firm"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS New York cross-border practice (The New York International Group)",
+      "url": "https://advisors.ubs.com/newyorkinternationalgroup/meet-the-team.htm"
+    },
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    }
+  ]
+}

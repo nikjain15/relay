@@ -54,7 +54,7 @@ export default function Triage() {
                   <div className="text-[11px] text-neutral-500">{h.tier}</div>
                 </td>
                 <td className={td}>
-                  <div className="font-medium">{o.title}</div>
+                  <div className="font-medium">{o.plainTitle ?? o.title}</div>
                   <ol className="mt-0.5 flex flex-wrap gap-x-1 text-[11px] text-neutral-600">
                     {o.reasonPath.map((n, k) => (
                       <li key={k}>

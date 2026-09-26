@@ -1,0 +1,92 @@
+[
+  {
+    "id": "bk-achterberg",
+    "name": "Achterberg",
+    "persons": 2
+  },
+  {
+    "id": "bk-bellweather",
+    "name": "Bellweather",
+    "persons": 2
+  },
+  {
+    "id": "bk-castellano",
+    "name": "Castellano",
+    "persons": 2
+  },
+  {
+    "id": "bk-delacroix-ng",
+    "name": "Delacroix-Ng",
+    "persons": 2
+  },
+  {
+    "id": "bk-eskildsen",
+    "name": "Eskildsen",
+    "persons": 2
+  },
+  {
+    "id": "bk-fairbairn",
+    "name": "Fairbairn",
+    "persons": 2
+  },
+  {
+    "id": "bk-galloway-otieno",
+    "name": "Galloway-Otieno",
+    "persons": 2
+  },
+  {
+    "id": "bk-haverford",
+    "name": "Haverford",
+    "persons": 2
+  },
+  {
+    "id": "bk-ilves",
+    "name": "Ilves",
+    "persons": 2
+  },
+  {
+    "id": "bk-jardine",
+    "name": "Jardine",
+    "persons": 2
+  },
+  {
+    "id": "bk-kessler-amado",
+    "name": "Kessler-Amado",
+    "persons": 2
+  },
+  {
+    "id": "bk-lindqvist",
+    "name": "Lindqvist",
+    "persons": 2
+  },
+  {
+    "id": "bk-mbeki-hart",
+    "name": "Mbeki-Hart",
+    "persons": 2
+  },
+  {
+    "id": "bk-norcross",
+    "name": "Norcross",
+    "persons": 1
+  },
+  {
+    "id": "bk-oyelaran",
+    "name": "Oyelaran",
+    "persons": 1
+  },
+  {
+    "id": "bk-prescott-voss",
+    "name": "Prescott-Voss",
+    "persons": 1
+  },
+  {
+    "id": "bk-quiller",
+    "name": "Quiller",
+    "persons": 1
+  },
+  {
+    "id": "bk-rasmussen",
+    "name": "Rasmussen",
+    "persons": 1
+  }
+]

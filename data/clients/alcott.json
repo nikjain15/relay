@@ -1,0 +1,216 @@
+{
+  "id": "hh-alcott",
+  "name": "Alcott",
+  "archetype": "Retired couple in drawdown",
+  "tier": "$5M+",
+  "advisorId": "adv-a",
+  "totalUsd": 8400000,
+  "monthlySpendUsd": 22000,
+  "hardPart": "Liquidity funded 11 of 36 target months, sequence-of-returns exposure, RMDs beginning",
+  "persons": [
+    {
+      "id": "p-alcott-1",
+      "name": "R. Alcott",
+      "role": "primary",
+      "age": 72
+    },
+    {
+      "id": "p-alcott-2",
+      "name": "S. Alcott",
+      "role": "spouse",
+      "age": 70
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 7958000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 242000,
+      "singleName": false
+    },
+    {
+      "name": "Maturing municipal bond",
+      "valueUsd": 200000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 11,
+      "target": 36,
+      "unit": "months",
+      "assumption": "36 months of spending at $22K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 7200000,
+      "target": 7000000,
+      "unit": "USD",
+      "assumption": "Funds spending to age 95"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 900000,
+      "target": 1000000,
+      "unit": "USD",
+      "assumption": "Bequest to two children"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 24
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    },
+    {
+      "kind": "excludedProductTypes",
+      "types": [
+        "private_credit",
+        "structured_note"
+      ]
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -120,
+      "channel": "Meeting",
+      "summary": "Annual review; agreed to revisit cash once withdrawals start"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -2,
+      "text": "R. Alcott asked whether the bond maturing next month can go straight to cash."
+    }
+  ],
+  "tasks": [
+    "Confirm this year's withdrawal amount",
+    "Update beneficiary forms"
+  ],
+  "opportunities": [
+    {
+      "id": "opp-alcott-liquidity",
+      "householdId": "hh-alcott",
+      "triggerClass": "household_threshold",
+      "title": "Liquidity funded 11 of 36 months as RMDs begin",
+      "materiality": 81,
+      "observedDay": 2,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Liquidity strategy underfunded"
+        },
+        {
+          "kind": "Household",
+          "label": "Alcott household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Liquidity funded 11 of 36 target months"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note",
+        "doc-tsy-onepager"
+      ],
+      "plainTitle": "Cash covers 11 of 36 months as required withdrawals start",
+      "clientNote": "As your required withdrawals begin, we reviewed your cash."
+    },
+    {
+      "id": "opp-alcott-maturity",
+      "householdId": "hh-alcott",
+      "triggerClass": "household_threshold",
+      "title": "Municipal bond maturing, $200K",
+      "materiality": 64,
+      "observedDay": 7,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "inflowUsd": 200000,
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Upcoming maturity, $200K in 30 days"
+        },
+        {
+          "kind": "Household",
+          "label": "Alcott household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Liquidity funded 11 of 36 target months"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-muni-onepager",
+        "doc-liquidity-note"
+      ],
+      "plainTitle": "$200K municipal bond matures in 30 days"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    },
+    {
+      "label": "Liquidity covers 2 to 5 years of spending (UBS Wealth Way)",
+      "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+    }
+  ],
+  "walkthrough": {
+    "order": 2,
+    "tab": "Alcott family",
+    "tabSub": "Retired couple, $8.4M",
+    "shows": "Stricter rules block more options",
+    "opportunityId": "opp-alcott-liquidity",
+    "chooseProductId": "prod-tsy-ladder",
+    "summary": "A retired couple (R. and S.) living on their portfolio at $22K a month. Their cash covers 11 months, required withdrawals from retirement accounts start soon, and a $200K bond matures next month.",
+    "chain": [
+      "Spending $22K a month",
+      "Cash covers 11 of 36 months",
+      "Required withdrawals start next year",
+      "Family rules: low risk only"
+    ],
+    "leftover": "The $200K bond maturing next month can cover part of it.",
+    "talkingPoints": [
+      "Start from their 2:00 review agenda",
+      "Show the 11 of 36 months gap on screen",
+      "Use the maturing $200K bond first",
+      "Confirm this year's withdrawal amount"
+    ],
+    "audience": {
+      "one": [
+        "Only the Alcotts",
+        2
+      ],
+      "many": [
+        "14 retired couples",
+        28
+      ]
+    },
+    "audienceNote": "The same withdrawal note to 14 retired couples reaches 28 people: over the line.",
+    "queue": "1st in the queue",
+    "afterApproval": [
+      "Discuss at the 2:00 review, then send the approved note",
+      "Log the meeting and the note in the CRM",
+      "Relay records the approval, the reasons and the options considered"
+    ]
+  }
+}
