@@ -1,5 +1,5 @@
 {
-  "_note": "Firm policy the engines read. Edit freely. The FINRA Rule 2210 threshold (25 retail investors) and window (30 days) are regulation and stay in lib/recipients/count.ts. Personalizable defaults (list size, signal weights, escalation days) live in data/profiles/firm.json.",
+  "_note": "Firm policy the engines read. Edit freely. The FINRA Rule 2210 threshold (25 retail investors) and window (30 days) are regulation and stay in lib/recipients/count.ts. Personalizable defaults (list size, signal weights, escalation days) live in data/profiles/firm.json. Servicing rules: first match wins, and money movement is checked first and always requires a callback (validate() fails otherwise). Its pattern errs toward flagging: a request that might move money is called back.",
   "triage": {
     "dismissReasons": [
       "Already discussed with client",
@@ -41,7 +41,7 @@
   "servicing": {
     "rules": [
       {
-        "pattern": "\\bwire\\b|\\$[\\d.,]+[mk]?\\b.*\\b(to|transfer)\\b",
+        "pattern": "\\bwir(e|es|ed|ing)\\b|\\bach\\b|\\bbank (account|details)\\b|\\brouting number\\b|\\$[\\d.,]+\\s*(k|m|million|thousand)?\\b.*\\b(to|into)\\b|\\b(transfer\\w*|send|sent|move|moving|pay)\\b.*(\\bfunds\\b|\\bmoney\\b|\\bcash\\b|\\$[\\d.,]+|\\b\\d[\\d,.]*\\s*(k|m|dollars|thousand|million)\\b)",
         "kind": "Money movement",
         "route": "Advisor, then operations",
         "targetHours": 4,

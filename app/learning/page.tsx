@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ADVISORS_DATA } from "@/lib/data";
 import { KEYS, SCHEMA } from "@/lib/profile";
 import { fmtChange } from "@/lib/profile/format";
-import { LEARNING, suggest, type Suggestion } from "@/lib/learning/learn";
+import { LEARNING, suggest, type Refused, type Suggestion } from "@/lib/learning/learn";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
 import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
@@ -22,7 +22,8 @@ const LOOP = ["Capture what advisors and clients do", "Learn a pattern with enou
 
 export default function Learning() {
   const { overlay, rejected, learned, acceptSuggestion, declineSuggestion, undoSuggestion } = useRelay();
-  const all = suggest({ overlay, rejected }).filter((s) => !learned.some((l) => l.id === s.id));
+  const refused: Refused[] = [];
+  const all = suggest({ overlay, rejected, refused }).filter((s) => !learned.some((l) => l.id === s.id));
   const open = all.filter((s) => !s.heldBack);
   const held = all.filter((s) => s.heldBack);
   const who = (s: Suggestion) => (s.scope === "client" ? clientName(s.scopeId) : ADVISORS_DATA.find((a) => a.id === s.scopeId)?.walkthrough?.label ?? s.scopeId);
@@ -82,6 +83,13 @@ export default function Learning() {
       {held.length > 0 && (
         <Section title={`Held back (${held.length})`}>
           <ul className="grid max-w-4xl gap-2">{held.map((s) => card(s, null))}</ul>
+        </Section>
+      )}
+      {refused.length > 0 && (
+        <Section title={`Stopped by the guard (${refused.length})`}>
+          <ul className="list-inside list-disc text-xs text-ink-2">
+            {refused.map((r) => <li key={r.id}>{r.id}: {r.reason}</li>)}
+          </ul>
         </Section>
       )}
       <Section title="Never learned">

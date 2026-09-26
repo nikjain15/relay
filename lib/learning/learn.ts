@@ -6,6 +6,7 @@
 import events from "@/data/events.json";
 import config from "@/data/profiles/learning.json";
 import { ADVISOR_PROFILES, SCHEMA, checkValue, resolveProfile, type Overlay, type SettingKey } from "@/lib/profile";
+import { CLIENTS } from "@/lib/data";
 import type { TriggerClass } from "@/lib/types";
 import { fmtValue } from "@/lib/profile/format";
 
@@ -64,9 +65,19 @@ export function guard(s: Suggestion): Suggestion {
   return s;
 }
 
-export function suggest(opts: { events?: BehaviorEvent[]; overlay?: Overlay; rejected?: Rejection[]; today?: number } = {}): Suggestion[] {
+/** A suggestion the guard stopped, with its reason. Shown to the supervisor, never applied. */
+export interface Refused { id: string; reason: string }
+
+/**
+ * Proposes changes from the events in the window: the `windowDays` days ending
+ * today, today included. An event dated after today is ignored. A proposal the
+ * guard rejects (a rule, an out-of-bounds value, a value outside the schema,
+ * as a malformed event would produce) is dropped and reported in `refused`,
+ * so one bad event can never apply a change or take the page down.
+ */
+export function suggest(opts: { events?: BehaviorEvent[]; overlay?: Overlay; rejected?: Rejection[]; today?: number; refused?: Refused[] } = {}): Suggestion[] {
   const today = opts.today ?? 0;
-  const all = (opts.events ?? EVENTS).filter((e) => today - e.day <= LEARNING.windowDays);
+  const all = (opts.events ?? EVENTS).filter((e) => e.day <= today && today - e.day < LEARNING.windowDays);
   const overlay = opts.overlay ?? {};
   const rejected: Rejection[] = [
     ...all.filter((e) => e.type === "suggestion_rejected").map((e) => ({ scopeId: e.scopeId!, key: e.key!, detail: e.detail, day: e.day })),
@@ -108,7 +119,7 @@ export function suggest(opts: { events?: BehaviorEvent[]; overlay?: Overlay; rej
       if (next < cap - 2) {
         out.push({
           id: `${aid}:cap`, scope: "advisor", scopeId: aid, advisorId: aid, key: "triage.dailyCap", from: cap, to: next,
-          because: `Over ${days.length} days you worked through ${Math.round(avg * 10) / 10} items on average and never more than ${next - LEARNING.capHeadroom}, against a list of ${cap}.`,
+          because: `Over ${days.length} days you worked through ${Math.round(avg * 10) / 10} items on average and never more than ${Math.max(...days.map((e) => e.worked!))}, against a list of ${cap}.`,
           evidence: { events: days.length, share: share(days.filter((e) => e.worked! <= next).length, days.length), windowDays: W },
           measure: "Share of the list worked each day rises; nothing material waits more than a day.",
         });
@@ -146,13 +157,14 @@ export function suggest(opts: { events?: BehaviorEvent[]; overlay?: Overlay; rej
   const clientIds = [...new Set(all.filter((e) => e.clientId).map((e) => e.clientId!))];
   for (const cid of clientIds) {
     const evs = all.filter((e) => e.clientId === cid);
-    const aid = evs[0].advisorId;
+    // The client's own advisor decides whether the loop runs, not whoever logged the first event.
+    const aid = CLIENTS.find((c) => c.id === cid)?.advisorId ?? evs[0].advisorId;
     if (!ADVISOR_PROFILES.find((a) => a.advisorId === aid)?.learning) continue;
     const eff = resolveProfile({ clientId: cid }, overlay).values;
 
     const edits = evs.filter((e) => e.type === "draft_edited");
     const shortened = edits.filter((e) => e.change === "shortened").length;
-    if (shortened >= Math.min(LEARNING.minEvents, 4) && share(shortened, edits.length) >= LEARNING.shareThreshold && eff["note.length"] !== "brief") {
+    if (enough(edits.length) && share(shortened, edits.length) >= LEARNING.shareThreshold && eff["note.length"] !== "brief") {
       out.push({
         id: `${cid}:length`, scope: "client", scopeId: cid, advisorId: aid, key: "note.length", from: eff["note.length"], to: "brief",
         because: `You shortened ${shortened} of ${edits.length} drafts for this client before sending.`,
@@ -169,14 +181,26 @@ export function suggest(opts: { events?: BehaviorEvent[]; overlay?: Overlay; rej
       out.push({
         id: `${cid}:channel`, scope: "client", scopeId: cid, advisorId: aid, key: "contact.channel", from: eff["contact.channel"], to: ch,
         because: `${k} of the client's ${answered.length} responses came by ${ch}${resp.length > answered.length ? `; ${resp.length - answered.length} contacts by other channels went unanswered` : ""}.`,
-        evidence: { events: resp.length, share: share(k, answered.length), windowDays: W },
+        evidence: { events: answered.length, share: share(k, answered.length), windowDays: W },
         measure: "Client response rate and time to response improve.",
       });
     }
   }
 
-  return out.map(guard).map((s) => {
-    const r = rejected.find((x) => x.scopeId === s.scopeId && x.key === s.key && (x.detail ?? "") === (s.detail ?? ""));
+  const guarded = out.filter((s) => {
+    try {
+      guard(s);
+      return true;
+    } catch (e) {
+      opts.refused?.push({ id: s.id, reason: (e as Error).message });
+      return false;
+    }
+  });
+  return guarded.map((s) => {
+    // The most recent decline sets the cooling-off period, whatever order the log is in.
+    const r = rejected
+      .filter((x) => x.scopeId === s.scopeId && x.key === s.key && (x.detail ?? "") === (s.detail ?? "") && x.day <= today)
+      .sort((a, b) => b.day - a.day)[0];
     const wait = r ? LEARNING.cooldownDays - (today - r.day) : 0;
     return r && wait > 0 ? { ...s, heldBack: `You declined this ${today - r.day} days ago; Relay will ask again in ${wait} days.` } : s;
   });

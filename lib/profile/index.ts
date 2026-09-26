@@ -96,6 +96,12 @@ export function resolveProfile(scope: { advisorId?: string; clientId?: string },
         ignored.push(`${tag(s)} may not set ${key}`);
         continue;
       }
+      // Out-of-bounds or malformed values never take effect, whichever layer or overlay supplies them.
+      const bad = checkValue(key, v);
+      if (bad) {
+        ignored.push(`${tag(s)} ignored: ${bad}`);
+        continue;
+      }
       if (values[key] === undefined) {
         values[key] = spec.type === "weights" ? { ...(v as object) } : v;
       } else if (spec.kind === "rule") {
@@ -132,7 +138,7 @@ export function checkValue(key: SettingKey, v: unknown): string | undefined {
   if (!s) return `unknown setting ${key}`;
   switch (s.type) {
     case "number":
-      if (typeof v !== "number" || (s.min !== undefined && v < s.min) || (s.max !== undefined && v > s.max)) return `${key} must be a number from ${s.min} to ${s.max}`;
+      if (typeof v !== "number" || !Number.isFinite(v) || (s.min !== undefined && v < s.min) || (s.max !== undefined && v > s.max)) return `${key} must be a number from ${s.min} to ${s.max}`;
       return;
     case "enum":
       if (!s.values!.includes(v as string)) return `${key} must be one of ${s.values!.join(", ")}`;
@@ -149,7 +155,11 @@ export function checkValue(key: SettingKey, v: unknown): string | undefined {
       return;
     }
     case "weights":
-      for (const [k, w] of Object.entries(v as Record<string, number>)) if (typeof w !== "number" || w < s.min! || w > s.max!) return `${key}.${k} must be from ${s.min} to ${s.max}`;
+      if (!v || typeof v !== "object" || Array.isArray(v)) return `${key} must map each class to a weight`;
+      for (const [k, w] of Object.entries(v as Record<string, number>)) {
+        if (s.values && !s.values.includes(k)) return `${key} has unknown class ${k}`;
+        if (typeof w !== "number" || !Number.isFinite(w) || w < s.min! || w > s.max!) return `${key}.${k} must be from ${s.min} to ${s.max}`;
+      }
       return;
   }
 }

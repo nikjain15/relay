@@ -27,6 +27,11 @@ export default function Clients() {
                 </tr>
               </thead>
               <tbody>
+                {mine.length === 0 && (
+                  <tr>
+                    <td className={td} colSpan={7}>No clients yet.</td>
+                  </tr>
+                )}
                 {mine.map((c) => {
                   const liq = c.goals.find((g) => g.strategy === "Liquidity");
                   const months = liquidityMonths(c);

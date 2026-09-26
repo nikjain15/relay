@@ -3,7 +3,9 @@
 import type { Opportunity, Passage } from "@/lib/types";
 import { CORPUS } from "@/lib/fixtures/corpus";
 
-export type EvidenceResult = { refused: false; passages: Passage[] } | { refused: true; missing: string[] };
+// `missing` is reported even when other documents resolve, so a partly
+// unsupported opportunity says which citation could not be found.
+export type EvidenceResult = { refused: false; passages: Passage[]; missing: string[] } | { refused: true; missing: string[] };
 
 export function retrieve(opp: Opportunity): EvidenceResult {
   const passages: Passage[] = [];
@@ -16,5 +18,5 @@ export function retrieve(opp: Opportunity): EvidenceResult {
     }
     for (const text of d.passages) passages.push({ docId: d.id, title: d.title, day: d.day, text });
   }
-  return passages.length ? { refused: false, passages } : { refused: true, missing };
+  return passages.length ? { refused: false, passages, missing } : { refused: true, missing };
 }

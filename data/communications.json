@@ -1,6 +1,10 @@
 {
+  "_note": "The prototype's fixed today, which note template each kind of proposal uses (the recipient counter counts per template), and earlier sends by a second advisor.",
   "prototypeToday": "2026-01-30",
   "demoCommunication": "note-liquidity-review-v1",
+  "templates": {
+    "Liquidity:fund": "note-liquidity-review-v1"
+  },
   "priorDistributions": [
     {
       "communicationId": "note-liquidity-review-v1",

@@ -1,9 +1,10 @@
+<meta name="robots" content="noindex, nofollow">
 <title>Relay Wireframes</title>
 <style>
 :root {
   --ink: #1a1a1a;
   --ink-2: #5c5c5c;
-  --ink-3: #8a8a8a;
+  --ink-3: #686868;
   --line: #e4e2dd;
   --line-strong: #bcb9b2;
   --surface: #ffffff;
@@ -249,9 +250,9 @@ dl.gl dd { margin: 0; color: var(--soft); }
 
 <script>
 (function () {
-  const KIND = { life_event: "Life event", external_event: "Outside event", household_threshold: "Over a limit", plan_service_event: "Paperwork", market_view: "Market view" };
+  let KIND = { life_event: "Life event", external_event: "Outside event", household_threshold: "Over a limit", plan_service_event: "Plan or service", market_view: "Market view" };
   const GOAL = { Liquidity: "Cash for planned spending", Longevity: "Retirement", Legacy: "For the next generation" };
-  const STEP_NAMES = ["Today's list", "Why this client", "Their picture", "The options", "Note and audience", "Compliance check"];
+  let STEP_NAMES = ["Today's list", "Why this client", "Client picture", "Options", "Note and audience", "Compliance check"];
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const links = (list) => list.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noreferrer">${esc(s.label)}</a>`).join("; ");
@@ -266,15 +267,15 @@ dl.gl dd { margin: 0; color: var(--soft); }
         title: "The advisor opens today's list",
         goal: `${A.households} client households. Which need attention today, and why?`,
         screen: `
-          <div class="stat"><span><strong>${A.meetings.length}</strong>meetings today</span><span><strong>${A.alertsOvernight}</strong>alerts overnight</span><span><strong>${J ? J.policy.dailyCap : 12}</strong>on your list</span></div>
+          <div class="stat"><span><strong>${A.meetings.length}</strong>meetings today</span><span><strong>${A.alertsOvernight}</strong>alerts overnight</span><span><strong>${s.listTotal}</strong>on your list</span></div>
           <div class="cal">${A.meetings.map((m) => `<span><b>${esc(m.time)}</b> ${esc(m.title)}</span>`).join("")}</div>
           <div class="sect">Your list, most important first</div>
           ${s.list.map((r, i) => `
             <div class="item ${r.top ? "go" : "faint"}" ${r.top ? 'data-next tabindex="0" role="button"' : ""}>
               <div><div class="t">${esc(r.who)}</div><div>${esc(r.what)}</div></div>
               <span><span class="tag plain">${KIND[r.kind] || r.kind}</span> ${r.top ? '<span class="btn">Why? &rarr;</span>' : ""}</span>
-            </div>${i === 0 ? '<div class="note">Click the highlighted row. Alerts are ranked, and capped at 12 a day.</div>' : ""}`).join("")}
-          <div class="muted">+ ${12 - shown} more on the list. Each row can be dismissed with a reason, which goes back to the team that builds the alerts.</div>`,
+            </div>${i === 0 ? '<div class="note">Click the highlighted row. Alerts are ranked, and capped at ${s.cap} a day for this advisor.</div>' : ""}`).join("")}
+          <div class="muted">+ ${Math.max(0, s.listTotal - shown)} more on the list. Each row can be dismissed with a reason, which goes back to the team that builds the alerts.</div>`,
         take: `${A.alertsOvernight} overnight alerts become a short list the advisor can act on before the first meeting.`,
       },
       {
@@ -314,7 +315,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
         title: "Relay suggests options, and shows what it ruled out",
         goal: "Which approved products fit this gap, within the client's rules?",
         screen: `
-          <div class="math">Need: (${s.math.months[0]} &minus; ${s.math.months[1]}) months &times; ${esc(s.math.monthly)} = <strong>${esc(s.math.amount)}</strong>, ${esc(s.math.source)}. ${esc(s.math.leftover)}</div>
+          <div class="math">Need: ${esc(s.math.need)}. <strong>${esc(s.math.source)}.</strong> ${esc(s.math.leftover)}</div>
           <div class="sect">Allowed (${s.allowed.length})</div>
           ${s.allowed.map((o) => `<div class="opt ${o.id === s.choose ? "go" : ""}" ${o.id === s.choose ? 'data-next tabindex="0" role="button"' : ""}><span class="t">${esc(o.name)}</span><span class="why-o muted">${esc(o.desc)}</span><span class="cost muted">${esc(o.cost)} a year</span><span class="tag ok">&#10003; Allowed</span></div>`).join("")}
           <div class="sect">Blocked (${s.blocked.length}), with the reason</div>
@@ -443,7 +444,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
           <span>${esc(w.form)}${w.note ? `<br><span class="muted">${esc(w.note)}</span>` : ""}</span>
           <span class="cost muted">${w.daysOpen} days</span>
           <span class="tag ${w.status === "escalated" ? "no" : "plain"}">${w.status}</span>
-        </div>${i === 0 ? `<div class="note">Unsigned for more than ${J.policy.escalateAfterDays} days, so it went to the branch supervisor. ${esc(w.draft)}</div>` : ""}`).join("");
+        </div>${i === 0 ? `<div class="note">Unsigned for more than ${w.after ?? J.policy.escalateAfterDays} days, so it went to the branch supervisor. ${esc(w.draft)}</div>` : ""}`).join("");
       take = "Nothing sits unsigned quietly: the rule escalates it, and the reminder is already drafted.";
     } else if (c.key === "meetings") {
       head = `<h2>Today's meetings</h2><p class="goal">What is in the diary, and is there a pack ready for each client?</p>`;
@@ -550,6 +551,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
   load().then((all) => {
     DATA = all.stories;
     J = all.journey;
+    if (J.labels) { KIND = J.labels.classes; STEP_NAMES = J.labels.steps; }
     renderChapter();
     if (!fromHash()) { renderStories(); render(0); }
     window.addEventListener("hashchange", fromHash);

@@ -34,7 +34,11 @@ firm.json        segments.json <id>.json            clients/<id>.json
   days; a client may shorten it further; nobody can lengthen it. A looser value is ignored and reported.
 - **Who may set what** is data: `data/profiles/schema.json` lists, per setting, its kind, type, bounds
   and allowed layers. `validate()` enforces it inside `npm run check`, so a bad edit fails the build
-  instead of taking effect.
+  instead of taking effect, and `resolveProfile()` checks every value again as it resolves, so an
+  out-of-bounds or malformed value from any layer or overlay is ignored and reported (R-21).
+- **A rule is enforced where it bites.** "Speak to the client before any written note" adds a failing
+  `call-first` check to the draft until the advisor confirms the call, so supervision cannot approve it
+  (R-21; before that it was displayed only). The escalation deadline drives the paperwork status.
 
 ## 3. One read path
 
@@ -52,8 +56,9 @@ resolveProfile({ advisorId, clientId }, overlay?) -> {
   so engines stay pure and testable, and the store behind the resolver can change without touching them.
 - **Provenance is shown on screen** ("list of 12, Wealth Advice Center segment") so an advisor or a
   supervisor can see why the system behaves as it does.
-- **The version is written on every rationale record**, so any recommendation can be reproduced with the
-  exact settings in force, which is what a books-and-records review asks for.
+- **The version is written on every rationale record** (`RationaleRecord.settingsVersion`) and on the
+  supervision queue item, so any recommendation can be reproduced with the exact settings in force. In the
+  prototype these records last for the session; the retained record is the production mapping (§7).
 
 ## 4. Where personalization applies, and where it never does
 
@@ -68,7 +73,9 @@ resolveProfile({ advisorId, clientId }, overlay?) -> {
 
 **Enforced, and seen failing:** dependency-cruiser rule `personalization-cannot-widen` forbids
 `lib/constraints`, `lib/policy`, `lib/recipients` and `lib/evidence` from importing `lib/profile`,
-`lib/learning`, `data/profiles/` or `data/events.json`. A planted import in `lib/constraints/` failed it.
+`lib/learning`, `data/profiles/` or `data/events.json`, directly or by any path (`-transitive`, R-21: the
+direct rule alone let a planted import in `lib/household-math` through). Planted imports, direct and one or
+two hops away, fail it.
 `tests/invariants/personalization-cannot-widen.test.ts` also shows every brief draft still passes every
 policy check, and extreme weights never re-add a dismissed item or exceed the cap.
 
@@ -88,8 +95,8 @@ much of the list was worked, which option was chosen, whether a draft was shorte
 which review-pack section was opened first, and which channel the client answered on. Prototype:
 `data/events.json`, synthetic, relative days.
 
-**Learn.** Six deterministic learners, thresholds in `data/profiles/learning.json` (window 30 days, at
-least 5 events, 70% agreement):
+**Learn.** Six deterministic learners, thresholds in `data/profiles/learning.json` (the 30 days ending
+today, events dated later ignored; at least 5 events for every learner; 70% agreement):
 
 | Signal | Proposes | Scope |
 |---|---|---|
@@ -103,8 +110,8 @@ least 5 events, 70% agreement):
 **Propose.** Each suggestion carries the evidence (events, share, window), a plain sentence ("You
 chose the lowest-cost eligible option 6 of 7 times"), and the outcome that will show whether it helped.
 
-**Decide.** The advisor accepts or declines. A declined suggestion is held back for 14 days, then asked
-again only if the pattern persists. This is the same principle as the product: Relay drafts, a person
+**Decide.** The advisor accepts or declines. A declined suggestion is held back for 14 days from the
+most recent decline, then asked again only if the pattern persists. This is the same principle as the product: Relay drafts, a person
 decides.
 
 **Apply.** An accepted suggestion becomes a value at the advisor or client layer, tagged "learned",
@@ -118,7 +125,8 @@ accept-or-decline step.
 
 **Guardrails, enforced in code and tests:**
 - The loop proposes **preferences only**. `guard()` throws on a rule, an out-of-bounds value or a layer
-  not allowed to set the key. Tests plant each case.
+  not allowed to set the key; `suggest()` drops such a suggestion and reports it ("Stopped by the guard"),
+  so a malformed event can never apply a change or take a page down. Tests plant each case.
 - **No model** in `lib/learning` or `lib/profile` (dependency-cruiser `deterministic-no-model`).
 - **Minimum evidence and a window**: too few events or events older than the window propose nothing.
 - **One step at a time**: weights move by 0.1, within schema bounds, so the loop cannot run away.
