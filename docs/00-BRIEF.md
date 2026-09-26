@@ -12,42 +12,31 @@ lives only in a chat is not state. Everything here is auditable and was settled 
 
 ---
 
-## 1. The hiring manager
+## 1. The team and its product, which is what preparation actually needs
 
-Read from a LinkedIn screenshot Nik supplied on 2026-09-26. **Name withheld from this file
-deliberately; it is a real person and this repo is a working file, not a dossier.**
+**What is deliberately not in this repo.** An earlier version of this section held a role-by-role
+career table for the interviewer, read off a LinkedIn profile: titles, dates and verbatim profile text.
+The name was withheld, which was not enough. A named employer plus a distinctive role title identifies
+one real person to anyone who reads it, this repository is public because it publishes the prototype,
+and a private individual's career history is not ours to publish. It has been removed rather than
+trimmed. Nik keeps that research where it belongs, in his own private notes.
 
-| Role | Dates as the profile shows them | Description, as his profile states it |
-|---|---|---|
-| Head of STAAT AI Product, UBS | Oct 2024 to present, New York | "Leveraging AI, data and analytics to empower financial advisors to best serve their clients and save them time through our Smart Technologies and Advanced Analytics Team (STAAT)." |
-| STAAT Insights, Product Lead | Oct 2021 to Mar 2025, New York | "Building a knowledge representation graph to drive opportunities for the financial advisor via automated insights." |
-| Head of Automated Insight Design, Evidence Lab | Jan 2021 to Jul 2023, New York | "Design of an automated alerting system that generates material insights from alternative data." |
-| Client Solutions, Evidence Lab | Feb 2020 to Jan 2021 | |
+What preparation needs is the **team and its product**, and those are matters of public record:
 
-At UBS since **February 2020**. Listed skills include Artificial Intelligence and Data Analytics.
-
-Two caveats on this table, recorded rather than smoothed over. The date ranges overlap in ways a single
-screenshot cannot resolve, so treat the ordering as approximate and never state a date back to him.
-Tenure is recorded as a **start year, not a duration**, because a stored duration goes stale.
-
-**What this tells us, and it is the single most important input to the whole approach:**
-
-1. **STAAT expands to Smart Technologies and Advanced Analytics Team.** Independently confirmed by
-   Celent's 2026 award citation, not only by his profile. The JD's team, STAAT Field Solutions, is his
-   organisation.
-2. He is a **signals and evidence product leader**, not a wealth-management business leader and not a
-   generalist PM. His native vocabulary is provenance, materiality, precision and recall, false
-   positive cost.
-3. **The automated insight engine is his product, and it is externally validated.** STAAT Insights won
-   the **2026 Celent Model Wealth Manager Award for Data, Analytics and AI**. UBS publishes that nearly
-   90% of advisor teams use it and that it generated over 20 million client opportunities in 2025.
-   Pitching an insight engine back to him would be demoing his own award-winning roadmap. Suggesting
-   its precision is poor would be worse.
-4. **Evidence Lab is the alternative-data and primary-research arm of the Investment Bank**, a sell-side
-   unit that powers UBS Research and sells datasets to institutional clients. So his alerting work there
-   served **research analysts**, not advisors. He crossed from institutional research signals to
-   advisor-facing signals in 2021. That crossing is the most interesting thing about his background and
-   it is a good question to ask him.
+1. **STAAT expands to Smart Technologies and Advanced Analytics Team.** Confirmed by Celent's 2026
+   award citation, not inferred. The JD's team, STAAT Field Solutions, sits in that organisation.
+2. **The automated insight engine is theirs, it is externally validated, and it works.** STAAT Insights
+   won the **2026 Celent Model Wealth Manager Award for Data, Analytics and AI**. UBS publishes that
+   nearly 90% of advisor teams use it and that it generated over 20 million client opportunities in
+   2025, against 13 million in 2024. Pitching an insight engine back to this team would be demoing
+   their own award-winning roadmap. Suggesting its precision is poor would be worse.
+3. **The vocabulary that lands is signals and evidence**, not wealth-management strategy in the
+   abstract: provenance, materiality, precision and recall, the cost of a false positive, and what a
+   reason code is derived from. Relay's reason codes come from traversal of an entity graph for exactly
+   this reason.
+4. **The gap Relay addresses is downstream of the engine.** 20 million opportunities a year is a
+   generation success and a conversion question, and conversion is where a product can be additive
+   without competing with what the team already shipped. §2 carries the arithmetic.
 
 **Corrected from the first draft of this brief.** The earlier version asserted that "precision at the
 recipient's inbox" is *the* failure mode of automated advisor insights and treated it as domain
@@ -238,7 +227,7 @@ link on request is fine. An indexed one is not.
 ## 7. Demo structure, twelve minutes
 
 Re-ordered after the audit. The first draft opened on UBS's attrition numbers. Opening on a division's
-worst public quarter is a weaker move than opening on the thing his team just won.
+worst public quarter is a weaker move than opening on the thing the team just won.
 
 1. **Two minutes, their own numbers and the thesis.** Open on the Celent award and STAAT Insights: 20
    million opportunities in 2025 against 13 million in 2024, 90% of teams. Then the two published measures side by side, volume
@@ -264,19 +253,19 @@ worst public quarter is a weaker move than opening on the thing his team just wo
 What I want your reaction to is the sequencing and the control map, because that is what I would be
 bringing to your team in week one."
 
-**Opening adjusted for this manager:** open on the graph path and the citation trail, not on a
-polished card. Reason codes in the prototype come from traversal of an entity graph, which is a
-deliberate nod to his knowledge-representation work.
+**Opening adjusted for this team:** open on the graph path and the citation trail, not on a polished
+card. Reason codes in the prototype come from traversal of an entity graph, which is the shape of
+evidence this team works in.
 
-**One question to ask him, now that we know the Evidence Lab detail:** what transferred from designing
-alerting for research analysts to designing it for advisors, and what did not. That is a peer question
-and it is the kind he is unlikely to have been asked.
+**A question worth asking them:** what transfers from designing alerting for institutional research
+consumers to designing it for advisors, and what does not. UBS runs both, the failure costs are not the
+same, and it is a peer question rather than a candidate's question.
 
 ---
 
 ## 8. What we are deliberately not building, and will say so
 
-Opportunity and signal generation (his award-winning engine exists). Document search and retrieval (Red
+Opportunity and signal generation (the team's award-winning engine exists). Document search and retrieval (Red
 exists). General-purpose advisor chat (Red exists). Advisor workstation shell (Broadridge programme in
 flight). Unbounded securities recommendation (cannot pass Reg BI review). Portfolio construction.
 Client-facing surfaces.
@@ -368,7 +357,7 @@ alone can take it.
 4. Rehearse the twelve-minute demo once the interview date is known, including the recipient-counter
    beat, which is new.
 5. Do the four GenAI number drills in `claims/drills/2026-08-08-genai-four-numbers.md` before the
-   interview. They matter more for this manager than for any other, since his team builds the same
+   interview. They matter more for this team than for most, since it builds the same
    systems and will ask how the numbers were measured.
 
 ---
