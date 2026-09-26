@@ -29,7 +29,7 @@ npm run dev
 | `docs/AUDIT-FINDINGS-2026-09-26.md` | First and second audit passes, as recorded then. Treat as history |
 | `docs/AUDIT-PROMPT.md` | The audit prompt used for the earlier passes |
 | `docs/BUILD-SPEC.md` | Build spec v2.0: surfaces, data model, fixtures, engines, demo path, build order |
-| `docs/mockups/relay-wireframes.html` | Low-fidelity clickable wireframes of all nine surfaces (private artifact link, not an indexed page) |
+| `docs/mockups/relay-wireframes.html` | Low-fidelity mockup: a six-step guided walkthrough of one advisor and one client, plus the three planned screens (private artifact link, not an indexed page) |
 | `docs/DECISIONS.md` | R-09 onward |
 
 Not present, and deliberately not reconstructed: the lost `ARCHITECTURE.md` and its diagrams.
