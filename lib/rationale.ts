@@ -5,7 +5,7 @@ import type { Evaluation, Household, Opportunity, RationaleRecord } from "@/lib/
 import { SHELF } from "@/lib/fixtures/shelf";
 import { constraintText } from "@/lib/constraint-text";
 
-export function rationale(opp: Opportunity, h: Household, selected: Evaluation, all: Evaluation[]): RationaleRecord {
+export function rationale(opp: Opportunity, h: Household, selected: Evaluation, all: Evaluation[], settingsVersion?: string): RationaleRecord {
   const bps = (id: string) => SHELF.find((p) => p.id === id)?.costBps ?? 0;
   return {
     opportunityId: opp.id,
@@ -23,5 +23,6 @@ export function rationale(opp: Opportunity, h: Household, selected: Evaluation, 
       .filter((e) => e.pass)
       .map((e) => ({ productId: e.candidate.productId, costBps: bps(e.candidate.productId), annualCostUsd: e.annualCostUsd })),
     whySuitable: h.constraints.map((c) => `Meets: ${constraintText(c)}`),
+    settingsVersion,
   };
 }

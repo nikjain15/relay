@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.4, 2026-09-26 (v2.4 applies one design system to the prototype and the mockup, R-20; v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.5, 2026-09-26 (v2.5 applies the R-21 audit: exact funding need with known outflows, the call-first rule enforced, money movement widened, guards made transitive, AA contrast, see `AUDIT-2026-09-26-r21.md`; v2.4 applies one design system to the prototype and the mockup, R-20; v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (job-search D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -27,11 +27,11 @@ resets on reload, which is what a demo wants.
 | 3 | Household advice state | `/household/[id]` | **Build** | Liquidity, Longevity, Legacy: funded vs target, gap, driving assumption; holdings with weights; IPS constraints; persons in household |
 | 5 | Action proposals, bounded | `/household/[id]/proposal` | **Build** | Every shelf candidate for the opportunity, each evaluated; passing ones selectable; **rejected ones shown with the failing constraint named**; structured rationale record |
 | 7 | Client communications | `/communications` | **Build** | Draft composed from an approved proposal; batch selector across the book; **recipient counter in persons, firm-wide, with the regime shown before submit** |
-| 9 | Supervision console | `/supervision` | **Build** | Queue items with draft, rationale, evidence, recipient count and regime, per-check pass or fail; approve, return, block |
-| - | Measurement | `/measurement` | **Build** | Conversion funnel (synthetic), zero-tolerance gate list with live pass or fail from the test suite's same functions |
+| 9 | Supervision console | `/supervision` | **Build** | Queue items with draft, links to the rationale and evidence, recipient count and regime (counted when submitted), the settings version, per-check pass or fail including the client's call-first rule; approve (disabled on any failing check), return, block. Dispositions last for the session; the immutable supervisory record is design (PRD FR-14) |
+| - | Measurement | `/measurement` | **Build** | Conversion funnel (synthetic), zero-tolerance gate list computed live over every eligible proposal at both note lengths with the test suite's functions; two gates hold by construction and are labelled so |
 | 1 | Pipeline and prospecting | `/pipeline` | **Build** | Prospects ranked by warmth of the path in, fit to the advisor's practice and size; the signal behind each (held-away assets, expected liquidity, rollover); a drafted introduction request the advisor sends |
-| 2 | Onboarding and re-papering | `/onboarding` | **Build** | Every open form per client with status computed by rule: signed, due, or **escalated after 14 days unsigned**; a drafted reminder; the supervisory record written as items close |
-| 8 | Servicing and operations triage | `/servicing` | **Build** | Incoming requests classified by rule, routed to the right person with a response-time target, overdue shown; **money movement requires a callback to a number on file before release**; a drafted reply the team sends |
+| 2 | Onboarding and re-papering | `/onboarding` | **Build** | Every open form per client with status computed by rule: signed, due, or **escalated when unsigned for more than 14 days** (7 at the Wealth Advice Center; a client may shorten it); a drafted reminder |
+| 8 | Servicing and operations triage | `/servicing` | **Build** | Incoming requests classified by rule, routed to the right person with a response-time target, overdue shown; **money movement is flagged for a callback to a number on file**, checked first and never switchable off (`validate()`); gating the release itself is design, as the prototype has no release step; a drafted reply the team sends |
 | - | Advisor journey | `/` | **Build** | The whole journey on one page, before, during and after the daily work, each stage with a live count and a link |
 | - | My clients | `/clients` | **Build** (v2.2) | The book per advisor: tier, assets, cash cushion against target, flagged items, open forms (escalated shown), requests, last contact, today's meeting |
 | - | Today's meetings | `/meetings` | **Build** (v2.2) | Each advisor's day from `advisors.json`; client meetings link to a review pack, prospect meetings to the pipeline |
@@ -43,7 +43,7 @@ resets on reload, which is what a demo wants.
 `/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
 marked. Every page carries the banner "Illustrative prototype. Synthetic data. No model calls."
 
-**Layout, all Build surfaces (v2.4):** the design system in `docs/DESIGN-SYSTEM.md`. Tokens in `app/tokens.css` only (enforced by `tests/invariants/design-tokens.test.ts`); black actions, warm greys, colour only for status and always with words; light 28px titles, 14px body, tabular numerals; 2px corners, no shadows; a top bar, a navigation rail, content capped at 1200px. WCAG 2.2 AA: every interactive control is a real `button` or link with a visible focus outline, and state is never conveyed by colour alone.
+**Layout, all Build surfaces (v2.4):** the design system in `docs/DESIGN-SYSTEM.md`. Tokens in `app/tokens.css` only (enforced by `tests/invariants/design-tokens.test.ts`); black actions, warm greys, colour only for status and always with words; light 28px titles, 14px body, tabular numerals; 2px corners, no shadows; a top bar, a navigation rail, content capped at 1200px. WCAG 2.2 AA: every interactive control is a real `button` or link with a visible focus outline, a skip link is the first Tab stop, every text colour meets 4.5:1 on its background (checked in the browser run, `npm run e2e`), and state is never conveyed by colour alone.
 
 ### 2.1 Depth added in v2.1
 
@@ -52,7 +52,7 @@ marked. Every page carries the banner "Illustrative prototype. Synthetic data. N
 | Triage | Advisor switcher (A or B); the advisor's day (meetings, overnight alerts); last contact per row |
 | Household | People with ages; contact history; team notes; open tasks; paperwork status; service requests; the grounding bundle of documents |
 | Evidence | The client's contact history and team notes beside the reason path |
-| Proposals | The amount arithmetic: (target minus current) months times monthly spending |
+| Proposals | The amount arithmetic in one sentence (`lib/need-text.ts`, shared with the mockup): target months times monthly spending, less Liquidity holdings, plus any known outflow; new cash caps what moves and the rest is shown as still to fund |
 | Communications | Talking points for the call before the note |
 
 ## 3. Data model
@@ -65,25 +65,30 @@ Types live in `lib/types.ts`. The ones that carry decisions:
   `maxSingleName { pct }`, `minLiquidityMonths { months }`, `maxRiskLevel { level }`,
   `noShortTermGains { }`, `excludedProductTypes { types }`.
 - **Opportunity** has `triggerClass` (one of five, below), `materiality` 0 to 100, `observedDay`
-  (relative), `reasonPath: ReasonNode[]`, `evidenceDocIds: string[]`.
+  (relative), `reasonPath: ReasonNode[]`, `evidenceDocIds: string[]`, and for a funding action
+  `inflowUsd` (new cash the event brings) and `outflowUsd` with `outflowLabel` (a known payment the goal must
+  also cover, such as a capital call).
 - **ReasonNode** is `{ kind, label }` where kind is a graph node type from PRD §5.1. The reason path is
   a **typed array, not a sentence**, so what is shown is what was decided on.
-- **Product** (shelf) has `type`, `riskLevel` 1 to 5, `liquidityDays`, `costBps`, `realizesGainOn?`.
+- **Product** (shelf) has `type`, `riskLevel` 1 to 5, `liquidityDays`, `costBps`, and plain-English names.
+  A holding counts toward Liquidity when its product meets the Liquidity sleeve limits in `policy.json`.
 - **Distribution** is the recipient-counter record from `lib/recipients/count.ts`.
 - **Candidate** is `{ productId, action, source, amountUsd }`. The **funding source** (`new_cash`,
   `rebalance_from_core`, `sell_long_term_lots`, `sell_all_lots`, `contribute_in_kind`) is part of the
   output space, because the PRD's worked example rejects a candidate for its tax-lot holding period,
   which depends on which lots are sold, not on the product. Added while building; the output space is
   shelf products crossed with the sources the action allows, plus "sell all lots" into the core model.
-- **Refusal propagates.** An opportunity whose evidence is refused cannot be proposed on, from triage or
-  from the proposal surface.
+- **Refusal propagates.** An opportunity whose evidence is refused cannot be proposed on, from triage, the
+  proposal surface or the review pack. A citation that does not resolve is named even when others do.
+- **RationaleRecord** carries `settingsVersion`, the resolved settings in force.
 
 ## 4. Trigger classes
 
 Exactly five, from PRD §5.1, as the `TriggerClass` union: `life_event`, `external_event`,
 `household_threshold`, `plan_service_event`, `market_view`. Market view is one class of five and never
 the flagship. **The flagship demo row is an external event**: a recorded property sale for the Renner
-household.
+household. On screen the classes read, in plain words (`lib/labels.ts`, shared with the mockup): Life event,
+Outside event, Over a limit, Plan or service, Market view.
 
 ## 5. Fixtures
 
@@ -94,7 +99,7 @@ All in `data/` as JSON (one file per client; see `data/README.md`), loaded and v
 | `households.ts` | The seven archetypes of PRD Appendix A, with persons, goals, holdings, constraints, tier |
 | `book.ts` | 18 light book records (id, name, persons) for the batch demo, so a cohort can exceed 25 persons |
 | `opportunities.ts` | 12 opportunities covering all five trigger classes; at least one with no supporting evidence, to exercise refusal |
-| `shelf.ts` | 8 products, including at least one that fails each constraint type for the Renner household |
+| `shelf.ts` | 8 products; for Renner, at least one fails on exclusion, risk, liquidity minimum and holding period; concentration fails only on a trim too small, which the tests plant |
 | `corpus.ts` | 8 illustrative documents with **relative, non-calendar dates** ("prototype corpus, day 3") and passages; no view attributed to any real firm's CIO |
 | `distributions.ts` | Prior sends of the demo note by a second advisor, so the firm-wide count is visible |
 | `funnel.ts` | Synthetic funnel stage counts for the measurement surface, labelled synthetic on screen |
@@ -112,13 +117,14 @@ Nothing a person might change lives in code.
 
 | File | Read by |
 |---|---|
-| `data/policy.json` | Ranking (cap, class weights), triage (dismiss reasons), constraints (cash product, sleeve limits, lock-up, core model), compose (disclosure document), onboarding (escalation days), prospecting (warmth, size bands), servicing (routing rules) |
+| `data/policy.json` | Triage (dismiss reasons), constraints (cash product, sleeve limits, lock-up, core model), compose (disclosure document), prospecting (warmth, size bands, largest first), servicing (routing rules; money movement first, callback required). The cap, class weights and escalation days live in `profiles/firm.json` (v2.3) |
+| `data/communications.json` | Prototype today, the note template per strategy and action (the counter counts per template), prior sends |
 | `data/app.json` | Navigation, journey page, communications and the walkthrough (day label, default advisor, featured client, opportunity and product, review-pack client, default talking points) |
 | `advisors.json` `meetings` | `{time, title, kind, clientId?, prospectId?, purpose}` |
 | client `tasks` | `{text, owner, dueDay}`; negative is overdue |
 
 The FINRA 25-in-30-days threshold stays in `lib/recipients/count.ts`: it is regulation, not firm policy.
-`validate()` checks meetings, tasks, app settings and policy ids. `tests/invariants/no-client-data-in-code.test.ts`
+`validate()` checks shapes, ranges, enums, ids, cross-references, that a Liquidity goal agrees with holdings, that the walkthrough's audience and left-over figures match the engine, and the money-movement rule (R-21). `tests/invariants/no-client-data-in-code.test.ts`
 fails on any client or prospect name, or any data id, in `app/`, `components/` or `lib/` (except the
 loader `lib/data/index.ts`).
 
@@ -148,16 +154,17 @@ session overlay passed to `resolveProfile()`. Full design: `docs/ARCHITECTURE-pe
 
 | Module | Responsibility | May import a model client |
 |---|---|---|
-| `lib/constraints/evaluate.ts` | `evaluate(product, action, household) -> { pass, failures[] }`, one failure per breached constraint, with the rule name and a numeric detail | No (enforced) |
-| `lib/ranking/rank.ts` | `rank(opps, dismissed, cap)`: score = materiality x class weight, ties broken by id; excludes dismissed; caps at 12 | No (enforced) |
+| `lib/constraints/evaluate.ts` | `evaluate(candidate, product, household, strategy) -> { pass, failures[], annualCostUsd }`, one failure per breached constraint, with the rule name and a numeric detail; an unknown constraint kind fails every candidate; a rebalance cannot exceed the core holding | No (enforced) |
+| `lib/household-math.ts` | Investable, single-name, Liquidity holdings and months, `fundingNeed()` in exact dollars with outflows | No (enforced, R-21) |
+| `lib/ranking/rank.ts` | `rank(opps, dismissed, cap, weights)`: score = materiality x class weight (firm weight if a class is missing), ties broken by id; excludes dismissed; caps at the resolved list size (firm 12) | No (enforced) |
 | `lib/recipients/count.ts` | Persons, firm-wide, 30 calendar days, regime (R-12) | No (enforced) |
-| `lib/policy/checks.ts` | Zero-tolerance checks on a draft: no performance projection language, every figure in the draft appears in its source set, at least one citation, regime recorded matches counter | No (enforced) |
-| `lib/evidence/retrieve.ts` | Passages for an opportunity's `evidenceDocIds`; returns `{ refused: true, missing }` when none resolve | n/a |
-| `lib/prospecting/rank.ts` | Score = warmth of path (existing relationship 3, referral 3, event 2, event only 1) + fit to the practice (0 to 2) + size band (0 to 2); drafted introduction request | n/a |
-| `lib/onboarding/status.ts` | Signed, due, or escalated when unsigned for more than 14 days (the illustrative procedure); counts open items per client | n/a |
-| `lib/servicing/classify.ts` | Keyword rules to a class; route and response-time target per class; overdue flag; money movement flagged for callback verification | n/a |
-| `lib/profile/index.ts` | `resolveProfile()`, `checkValue()`, provenance labels | No (enforced) |
-| `lib/learning/learn.ts` | `suggest()`, `guard()`: six learners, preferences only | No (enforced) |
+| `lib/policy/checks.ts` | Zero-tolerance checks on a draft: no performance projection language, every figure in the draft appears in its source set, at least one citation, regime recorded matches counter, disclosure present, and the call-first rule when the client requires it | No (enforced) |
+| `lib/evidence/retrieve.ts` | Passages for an opportunity's `evidenceDocIds` with any `missing`; returns `{ refused: true, missing }` when none resolve | No (enforced, R-21) |
+| `lib/prospecting/rank.ts` | Score = warmth of path (existing relationship 3, referral 3, event 2, signal only 1) + fit to the practice (0 to 2) + size band (0 to 2); drafted introduction request | n/a |
+| `lib/onboarding/status.ts` | Signed, due, or escalated when unsigned for more than the resolved days (firm 14; day 14 is due, day 15 escalated); counts open items per client | No (enforced, R-21) |
+| `lib/servicing/classify.ts` | Keyword rules to a class, first match wins, money movement first and erring toward flagging; route and response-time target per class; overdue flag; callback verification | No (enforced, R-21) |
+| `lib/profile/index.ts` | `resolveProfile()` (every value checked against the schema before it counts), `checkValue()`, provenance labels | No (enforced) |
+| `lib/learning/learn.ts` | `suggest()`, `guard()`: six learners, preferences only, the 30 days ending today, the latest decline sets the cooling-off; a suggestion the guard stops is reported, never applied and never a crash | No (enforced) |
 | `lib/meetings/prep.ts` | Today's meetings per advisor; `reviewPack(id)` from the client file only | n/a |
 | `lib/followups.ts` | All tasks with client and advisor, overdue first | n/a |
 | `lib/drafting/compose.ts` | Composes the client note **only** from the approved proposal, the household's figures and the cited passage, using fixed fragments | n/a in prototype |
@@ -177,7 +184,11 @@ Aligned to `00-BRIEF.md` §7, twelve minutes.
 
 ## 8. Tests
 
-`npm run check` must pass. Beyond the invariants and recipient tests already present:
+`npm run check` must pass. `npm run e2e` (after `npx next build`) drives every page and the mockup in
+Chromium at 1440, 1280 and 1024: errors, horizontal scroll, links, buttons, accessible names, contrast of
+every text element, keyboard and skip link, the demo flows, the recomputed amounts, CSP and noindex.
+`npm run stress` times the engines and page renders on 1,000 clients, 50 advisors and 20,000 events, and
+exercises malformed data and empty states. `tests/unit/audit-r21.test.ts` holds one test per R-21 finding. Beyond the invariants and recipient tests already present:
 constraints (each rule fails on the Renner fixture for the right product; a compliant product passes),
 ranking (cap, dismissal, determinism), policy (each check fails on a planted draft and passes on a
 composed one), compose (output passes every policy check for every approved proposal in the fixtures),

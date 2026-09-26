@@ -119,6 +119,8 @@
       "observedDay": 4,
       "action": "fund",
       "strategy": "Liquidity",
+      "outflowUsd": 1200000,
+      "outflowLabel": "capital call",
       "reasonPath": [
         {
           "kind": "Threshold",

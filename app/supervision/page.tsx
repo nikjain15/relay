@@ -29,7 +29,7 @@ export default function Supervision() {
       {queue.map((q) => {
         const h = household(q.householdId)!;
         const o = opportunity(q.opportunityId)!;
-        const checks = runChecks({ draft: q.draft, sources: q.sources, citedTitles: q.citedTitles, recipients: q.recipients, recordedRegime: q.regime });
+        const checks = runChecks({ draft: q.draft, sources: q.sources, citedTitles: q.citedTitles, recipients: q.recipients, recordedRegime: q.regime, callFirst: q.callFirst });
         const allPass = checks.every((c) => c.pass);
         const act = (d: Disposition) => dispose(q.id, d, comment[q.id]);
         return (
@@ -40,8 +40,9 @@ export default function Supervision() {
                 <p className="mb-2">
                   <Pill tone={q.recipients > 25 ? "fail" : "pass"}>{q.regime}</Pill>{" "}
                   <span className="text-xs">
-                    {q.recipients} retail investors across {q.batchSize} {q.batchSize === 1 ? "household" : "households"}
+                    {q.recipients} retail investors across {q.batchSize} {q.batchSize === 1 ? "household" : "households"}, counted when submitted
                   </span>
+                  {q.settingsVersion && <span className="block text-xs text-ink-2">Settings in force: <span className="font-mono">{q.settingsVersion}</span></span>}
                 </p>
                 <table className="w-full border-collapse">
                   <thead>
@@ -69,7 +70,7 @@ export default function Supervision() {
                 {q.disposition ? (
                   <p className="mt-3" role="status">
                     Dispositioned: <strong>{q.disposition}</strong>
-                    {q.comment ? `, "${q.comment}"` : ""}. Written to the audit record.
+                    {q.comment ? `, "${q.comment}"` : ""}. Recorded for this session only; in production this is an immutable supervisory record (PRD FR-14).
                   </p>
                 ) : (
                   <div className="mt-3 space-y-2">

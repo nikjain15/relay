@@ -20,6 +20,10 @@ export interface QueueItem {
   recipients: number;
   regime: Regime;
   batchSize: number;
+  /** Set when the client's rules require a call before any written note. */
+  callFirst?: { required: boolean; confirmed: boolean };
+  /** Settings version in force when the draft was composed. */
+  settingsVersion?: string;
   disposition?: Disposition;
   comment?: string;
   /** Set when the advisor confirms they sent the approved note themselves. */

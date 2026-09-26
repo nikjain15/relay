@@ -21,6 +21,12 @@ export interface Draft {
   citedTitles: string[];
 }
 
+/** The people a client note is addressed to. Beneficiaries are not, so they are not recipients either. */
+export function addressees(h: Household) {
+  const named = h.persons.filter((p) => p.role !== "beneficiary");
+  return named.length ? named : h.persons.slice(0, 1);
+}
+
 /** `length` comes from the client's resolved profile. Brief drops the quoted passage but keeps the figures, the citation and the disclosure. */
 export function compose(h: Household, opp: Opportunity, ev: Evaluation, product: Product, evidence: Passage[], opts: { length?: "full" | "brief" } = {}): Draft {
   const brief = opts.length === "brief";
@@ -35,7 +41,7 @@ export function compose(h: Household, opp: Opportunity, ev: Evaluation, product:
           : `this affects your ${opp.strategy.toLowerCase()} goal`;
   const passage = evidence[0];
   const disclosure = CORPUS.find((d) => d.id === POLICY.communications.disclosureDocId)!.passages[0];
-  const firstNames = h.persons.filter((p) => p.role !== "beneficiary").map((p) => p.name).join(" and ");
+  const firstNames = addressees(h).map((p) => p.name).join(" and ");
   const amount = usd(ev.candidate.amountUsd);
   const opener = opp.clientNote ?? `We noted a change on your account: ${opp.title.charAt(0).toLowerCase()}${opp.title.slice(1)}.`;
   const [verb, prep] = VERB[ev.candidate.source];

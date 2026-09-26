@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CLIENTS, PROSPECTS, SERVICE_REQUESTS } from "@/lib/data";
-import { rank, DEFAULT_CAP } from "@/lib/ranking/rank";
+import { DEFAULT_CAP } from "@/lib/ranking/rank";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { openItems, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
 import { triage } from "@/lib/servicing/classify";
@@ -28,7 +28,7 @@ export default function Journey() {
     {
       phase: "The daily work",
       stages: [
-        { href: "/triage", title: "Today's list", count: `${rank(OPPORTUNITIES).length} flagged`, what: `Overnight alerts ranked and capped at ${DEFAULT_CAP} a day by default; each advisor can set their own.` },
+        { href: "/triage", title: "Today's list", count: `${OPPORTUNITIES.length} flagged`, what: `Overnight alerts ranked and capped at ${DEFAULT_CAP} a day by default; each advisor can set their own.` },
         { href: `/evidence/${F.opportunityId}`, title: "Why this client", count: "sources cited", what: "The reason, its sources and the client's recent history. Refuses when there is no source." },
         { href: `/household/${F.clientId}`, title: "Client picture", count: `${CLIENTS.length} clients`, what: "Goals, accounts, the family's rules, history, notes, tasks, paperwork and requests." },
         { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, title: "Options", count: "approved products only", what: "What fits the family's rules, and why each other option is blocked." },

@@ -78,10 +78,11 @@
           }
         ]
       },
+      "cap": 12,
       "list": [
         {
           "who": "Renner family",
-          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "what": "Sold a property for $4.1M. Money not yet on the platform",
           "kind": "external_event",
           "top": true
         },
@@ -99,11 +100,12 @@
         },
         {
           "who": "Thornbury family",
-          "what": "$1.2M capital call due in 60 days",
-          "kind": "household_threshold",
+          "what": "The family company raised a late-stage funding round",
+          "kind": "external_event",
           "top": false
         }
       ],
+      "listTotal": 10,
       "chain": [
         "Sold a property: $4.1M",
         "No cash set aside: 0 of 36 months",
@@ -208,13 +210,12 @@
         }
       ],
       "math": {
+        "need": "36 months × $85K = $3.06M: $3.06M needed",
+        "source": "$3.06M from the $4.1M of new cash",
         "months": [
           36,
           0
         ],
-        "monthly": "$85K",
-        "amount": "$3.06M",
-        "source": "from the new cash",
         "leftover": "The other $1.04M is for the renovation and the legacy conversation."
       },
       "allowed": [
@@ -366,6 +367,7 @@
           }
         ]
       },
+      "cap": 12,
       "list": [
         {
           "who": "Alcott family",
@@ -375,7 +377,7 @@
         },
         {
           "who": "Renner family",
-          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "what": "Sold a property for $4.1M. Money not yet on the platform",
           "kind": "external_event",
           "top": false
         },
@@ -387,11 +389,12 @@
         },
         {
           "who": "Thornbury family",
-          "what": "$1.2M capital call due in 60 days",
-          "kind": "household_threshold",
+          "what": "The family company raised a late-stage funding round",
+          "kind": "external_event",
           "top": false
         }
       ],
+      "listTotal": 10,
       "chain": [
         "Spending $22K a month",
         "Cash covers 11 of 36 months",
@@ -490,13 +493,12 @@
         }
       ],
       "math": {
+        "need": "36 months × $22K = $792K, less $242K already set aside: $550K needed",
+        "source": "$550K moved from the core portfolio",
         "months": [
           36,
           11
         ],
-        "monthly": "$22K",
-        "amount": "$550K",
-        "source": "moved from the core portfolio",
         "leftover": "The $200K bond maturing next month can cover part of it."
       },
       "allowed": [
@@ -647,6 +649,7 @@
           }
         ]
       },
+      "cap": 12,
       "list": [
         {
           "who": "Thornbury family",
@@ -656,7 +659,7 @@
         },
         {
           "who": "Renner family",
-          "what": "Sold a property for $4.1M. Money not yet at UBS",
+          "what": "Sold a property for $4.1M. Money not yet on the platform",
           "kind": "external_event",
           "top": false
         },
@@ -673,6 +676,7 @@
           "top": false
         }
       ],
+      "listTotal": 10,
       "chain": [
         "$1.2M capital call in 60 days",
         "Cash covers 6 of 24 months",
@@ -766,13 +770,12 @@
         }
       ],
       "math": {
+        "need": "24 months × $50K = $1.2M, less $300K already set aside, plus the $1.2M capital call: $2.1M needed",
+        "source": "$2.1M moved from the core portfolio",
         "months": [
           24,
           6
         ],
-        "monthly": "$50K",
-        "amount": "$900K",
-        "source": "moved from the core portfolio",
         "leftover": "Moved ahead of the $1.2M capital call."
       },
       "allowed": [
@@ -780,19 +783,19 @@
           "id": "prod-tsy-ladder",
           "name": "Short-term US Treasury bonds",
           "desc": "Low risk, available within 2 days",
-          "cost": "$900"
+          "cost": "$2K"
         },
         {
           "id": "prod-mmf",
           "name": "Government money market fund",
           "desc": "Available next day",
-          "cost": "$1K"
+          "cost": "$3K"
         },
         {
           "id": "prod-muni-ladder",
           "name": "Municipal bond ladder",
           "desc": "Tax-free income, available within 3 days",
-          "cost": "$2K"
+          "cost": "$5K"
         }
       ],
       "blocked": [
@@ -818,7 +821,7 @@
         }
       ],
       "choose": "prod-tsy-ladder",
-      "draft": "Dear K. Thornbury and L. Thornbury,\n\nAhead of the $1.2M capital call, we reviewed your cash. At present, your cash set aside for planned spending covers 6 of 24 months.\nOne option to discuss is moving $900K into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear K. Thornbury and L. Thornbury,\n\nAhead of the $1.2M capital call, we reviewed your cash. At present, your cash set aside for planned spending covers 6 of 24 months.\nOne option to discuss is moving $2.1M into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Confirm the capital call date with the CFO",
         "Show the 6 of 24 months gap",
@@ -909,6 +912,7 @@
           }
         ]
       },
+      "cap": 20,
       "list": [
         {
           "who": "C. Pell",
@@ -923,6 +927,7 @@
           "top": false
         }
       ],
+      "listTotal": 2,
       "chain": [
         "Spending $5K a month",
         "Cash covers 4 of 6 months",
@@ -1011,13 +1016,12 @@
         }
       ],
       "math": {
+        "need": "6 months × $5K = $30K, less $20K already set aside: $10K needed",
+        "source": "$10K moved from the core portfolio",
         "months": [
           6,
           4
         ],
-        "monthly": "$5K",
-        "amount": "$10K",
-        "source": "moved from the core portfolio",
         "leftover": ""
       },
       "allowed": [
@@ -1182,6 +1186,7 @@
         "form": "Beneficiary designation update",
         "status": "escalated",
         "daysOpen": 30,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi R. Alcott, a quick reminder that the beneficiary designation update is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1190,6 +1195,7 @@
         "form": "401(k) rollover form",
         "status": "escalated",
         "daysOpen": 21,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi D. Vasquez-Hale, a quick reminder that the 401(k) rollover form is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1198,6 +1204,7 @@
         "form": "Foreign pension disclosure",
         "status": "escalated",
         "daysOpen": 16,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi E. Brandvold, a quick reminder that the foreign pension disclosure is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1206,6 +1213,7 @@
         "form": "US tax status confirmation",
         "status": "due",
         "daysOpen": 9,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi E. Brandvold, a quick reminder that the us tax status confirmation is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1214,6 +1222,7 @@
         "form": "Client information refresh: T. Okafor-Lind",
         "status": "due",
         "daysOpen": 5,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi A. Okafor-Lind, a quick reminder that the client information refresh: t. okafor-lind is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1222,6 +1231,7 @@
         "form": "Client information refresh: N. Okafor-Lind",
         "status": "due",
         "daysOpen": 5,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi A. Okafor-Lind, a quick reminder that the client information refresh: n. okafor-lind is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1230,6 +1240,7 @@
         "form": "Grandchildren's trust account opening",
         "status": "due",
         "daysOpen": 4,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi M. Renner, a quick reminder that the grandchildren's trust account opening is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1238,6 +1249,7 @@
         "form": "Rollover recommendation record",
         "status": "due",
         "daysOpen": 3,
+        "after": 14,
         "note": "Drafted; advisor to review before it is sent",
         "draft": "Draft for you to send: \"Hi D. Vasquez-Hale, a quick reminder that the rollover recommendation record is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1246,6 +1258,7 @@
         "form": "Required withdrawal election",
         "status": "due",
         "daysOpen": 2,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi R. Alcott, a quick reminder that the required withdrawal election is still waiting for your signature. I can walk you through it on a short call.\""
       },
@@ -1254,6 +1267,7 @@
         "form": "Standing wire instructions for capital calls",
         "status": "due",
         "daysOpen": 1,
+        "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi K. Thornbury, a quick reminder that the standing wire instructions for capital calls is still waiting for your signature. I can walk you through it on a short call.\""
       }
@@ -1338,6 +1352,23 @@
       }
     ],
     "today": "Tuesday",
+    "labels": {
+      "classes": {
+        "life_event": "Life event",
+        "external_event": "Outside event",
+        "household_threshold": "Over a limit",
+        "plan_service_event": "Plan or service",
+        "market_view": "Market view"
+      },
+      "steps": [
+        "Today's list",
+        "Why this client",
+        "Client picture",
+        "Options",
+        "Note and audience",
+        "Compliance check"
+      ]
+    },
     "policy": {
       "dailyCap": 12,
       "escalateAfterDays": 14
@@ -1663,7 +1694,7 @@
         "setting": "Client note length",
         "from": "full",
         "to": "brief",
-        "because": "You shortened 4 of 4 drafts for this client before sending.",
+        "because": "You shortened 5 of 5 drafts for this client before sending.",
         "measure": "Share of drafts sent without edits rises. Citations and disclosure stay in every note.",
         "heldBack": null
       }

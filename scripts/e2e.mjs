@@ -1,0 +1,307 @@
+// Browser run over the built prototype and the walkthrough mockup (audit R-21).
+// Usage: npm run build && npm run e2e. Starts `next start` on E2E_PORT (3100),
+// serves the mockup on E2E_PORT + 1, and drives Chromium with playwright-core.
+// Every page at 1440, 1280 and 1024: no console or page error, no horizontal
+// scroll, every internal link resolves, every button clicks without an error,
+// every control has an accessible name, every text/background pair meets WCAG
+// 2.2 AA contrast, and the first Tab reaches a skip link. Then the demo flows.
+import { chromium } from "playwright-core";
+import { spawn } from "node:child_process";
+import { createServer } from "node:http";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+const ROOT = new URL("../", import.meta.url).pathname;
+const PORT = Number(process.env.E2E_PORT ?? 3100);
+const BASE = `http://localhost:${PORT}`;
+const MOCK = `http://localhost:${PORT + 1}`;
+const EXE = process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
+const WIDTHS = [1440, 1280, 1024];
+const json = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
+
+const clients = readdirSync(join(ROOT, "data/clients")).map((f) => json(`data/clients/${f}`));
+const opps = clients.flatMap((c) => c.opportunities);
+const app = json("data/app.json");
+const PAGES = [
+  "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
+  "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
+  ...clients.map((c) => `/household/${c.id}`),
+  ...clients.map((c) => `/meetings/${c.id}`),
+  ...opps.map((o) => `/evidence/${o.id}`),
+  ...clients.filter((c) => c.opportunities.some((o) => o.action === "fund" || o.action === "trim")).map((c) => `/household/${c.id}/proposal`),
+];
+
+const results = [];
+const check = (name, ok, detail = "") => {
+  results.push({ name, ok, detail });
+  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  ::  ${detail}` : ""}`);
+};
+
+async function waitFor(url, ms = 60_000) {
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    try { if ((await fetch(url)).ok) return; } catch {}
+    await new Promise((r) => setTimeout(r, 300));
+  }
+  throw new Error(`server did not start: ${url}`);
+}
+
+// In-page audits, run in the browser.
+function audit() {
+  const parse = (c) => { const m = c.match(/[\d.]+/g); return m ? m.map(Number) : [0, 0, 0, 0]; };
+  const lum = ([r, g, b]) => [r, g, b].map((v) => v / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+  const bgOf = (el) => {
+    for (let e = el; e; e = e.parentElement) {
+      const c = parse(getComputedStyle(e).backgroundColor);
+      if (c.length < 4 || c[3] > 0) return c.slice(0, 3);
+    }
+    return [255, 255, 255];
+  };
+  const faded = (el) => { for (let e = el; e; e = e.parentElement) if (Number(getComputedStyle(e).opacity) < 1) return true; return false; };
+  const contrast = [];
+  for (const el of document.querySelectorAll("body *")) {
+    const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+    if (!own || !el.getClientRects().length || el.closest("[disabled],[aria-hidden=true]") || faded(el)) continue;
+    const s = getComputedStyle(el);
+    if (s.visibility === "hidden") continue;
+    const size = parseFloat(s.fontSize), bold = Number(s.fontWeight) >= 700;
+    const need = size >= 24 || (size >= 18.66 && bold) ? 3 : 4.5;
+    const r = ratio(parse(s.color), bgOf(el));
+    if (r < need) contrast.push(`${r.toFixed(2)} ${s.color} on ${getComputedStyle(el).backgroundColor} "${el.textContent.trim().slice(0, 30)}"`);
+  }
+  const unnamed = [];
+  for (const el of document.querySelectorAll("a[href],button,input,select,textarea,[role=button]")) {
+    if (el.type === "hidden") continue;
+    const labelled = el.getAttribute("aria-labelledby");
+    const name = (el.getAttribute("aria-label") || (labelled && document.getElementById(labelled)?.textContent) || el.closest("label")?.textContent || (el.id && document.querySelector(`label[for="${el.id}"]`)?.textContent) || el.textContent || el.getAttribute("title") || "").trim();
+    if (!name) unnamed.push(el.outerHTML.slice(0, 80));
+  }
+  const overflow = document.documentElement.scrollWidth > document.documentElement.clientWidth + 1;
+  return { contrast: [...new Set(contrast)], unnamed, overflow, text: document.body.innerText };
+}
+
+const staticServer = createServer((req, res) => {
+  const path = decodeURIComponent(new URL(req.url, MOCK).pathname);
+  const allowed = { "/docs/mockups/relay-wireframes.html": "text/html", "/data/generated/walkthrough.json": "application/json" };
+  if (!allowed[path]) { res.writeHead(404).end(); return; }
+  res.writeHead(200, { "content-type": allowed[path] }).end(readFileSync(join(ROOT, path)));
+});
+
+const server = spawn("npx", ["next", "start", "-p", String(PORT)], { cwd: ROOT, stdio: "ignore", detached: true });
+let browser;
+try {
+  staticServer.listen(PORT + 1);
+  await waitFor(BASE);
+  browser = await chromium.launch({ executablePath: EXE });
+
+  // 1. Every page at every width.
+  const links = new Set();
+  for (const width of WIDTHS) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(`${page.url()}: ${e.message}`));
+    page.on("console", (m) => { if (m.type() === "error") errors.push(`${page.url()}: ${m.text()}`); });
+    const contrast = new Set(), unnamed = new Set(), overflow = [];
+    for (const p of PAGES) {
+      const r = await page.goto(BASE + p);
+      if (r.status() !== 200) errors.push(`${p}: HTTP ${r.status()}`);
+      const a = await page.evaluate(audit);
+      a.contrast.forEach((x) => contrast.add(`${p}: ${x}`));
+      a.unnamed.forEach((x) => unnamed.add(`${p}: ${x}`));
+      if (a.overflow) overflow.push(p);
+      if (width === WIDTHS[0]) for (const h of await page.$$eval("a[href^='/']", (as) => as.map((x) => x.getAttribute("href")))) links.add(h);
+    }
+    check(`${width}px: every page loads with no console or page error`, errors.length === 0, errors.slice(0, 3).join(" | "));
+    check(`${width}px: no horizontal scroll`, overflow.length === 0, overflow.join(", "));
+    check(`${width}px: every text/background pair meets WCAG 2.2 AA contrast`, contrast.size === 0, `${contrast.size} failing, e.g. ${[...contrast].slice(0, 2).join(" | ")}`);
+    if (width === WIDTHS[0]) check("every link, button and field has an accessible name", unnamed.size === 0, [...unnamed].slice(0, 3).join(" | "));
+    await ctx.close();
+  }
+
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(`${page.url()}: ${e.message}`));
+
+  // 2. Every internal link resolves.
+  const bad = [];
+  for (const h of links) { const r = await page.goto(BASE + h); if (r.status() !== 200) bad.push(`${h} ${r.status()}`); }
+  check(`all ${links.size} internal links resolve`, bad.length === 0, bad.join(", "));
+
+  // 3. Every button on every page clicks without an error.
+  let clicks = 0;
+  for (const p of PAGES) {
+    await page.goto(BASE + p);
+    const n = await page.locator("main button:visible").count();
+    for (let i = 0; i < n; i++) {
+      await page.goto(BASE + p);
+      const b = page.locator("main button:visible").nth(i);
+      if (!(await b.count()) || (await b.isDisabled())) continue;
+      await b.click();
+      clicks++;
+    }
+  }
+  check(`every button on every page (${clicks} clicks) runs without a page error`, errors.length === 0, errors.slice(0, 3).join(" | "));
+
+  // 4. Keyboard: the first Tab reaches a skip link that moves focus to the content; focus is always visible.
+  await page.goto(BASE + "/triage");
+  await page.keyboard.press("Tab");
+  const first = await page.evaluate(() => document.activeElement?.textContent?.trim());
+  check("keyboard: the first Tab reaches 'Skip to content'", first === "Skip to content", `got "${first}"`);
+  if (first === "Skip to content") {
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Tab");
+    const inMain = await page.evaluate(() => !!document.activeElement?.closest("main"));
+    check("keyboard: the skip link moves focus into the main content", inMain);
+  }
+  let invisible = 0;
+  for (let i = 0; i < 25; i++) {
+    await page.keyboard.press("Tab");
+    invisible += await page.evaluate(() => { const s = getComputedStyle(document.activeElement); return s.outlineStyle === "none" && s.boxShadow === "none" ? 1 : 0; });
+  }
+  check("keyboard: every focused control shows a visible focus outline", invisible === 0, `${invisible} without an outline`);
+
+  // 5. Triage: plain labels, dismiss by keyboard, restore.
+  await page.goto(BASE + "/triage");
+  const t = await page.locator("main").innerText();
+  check("triage: no raw internal node labels (ExternalEvent, Threshold...)", !/\b(ExternalEvent|LifeEvent|ServiceEvent|Threshold|Publication)\b/.test(t));
+  await page.getByRole("button", { name: "Dismiss" }).first().focus();
+  await page.keyboard.press("Enter");
+  await page.getByLabel("Dismiss reason").selectOption({ index: 1 });
+  await page.getByRole("button", { name: "Dismiss with this reason" }).click().catch(() => {});
+  const dismissed = await page.getByText("Dismissed, with reasons").count();
+  check("triage: dismiss with a reason by keyboard, then restore", dismissed === 1 && (await page.getByRole("button", { name: "Restore" }).click().then(() => true)));
+
+  // 6. Proposal: switching opportunity keeps a valid selection; the amount arithmetic is right.
+  const f = app.featured;
+  const fc = clients.find((c) => c.id === f.clientId);
+  const other = fc.opportunities.find((o) => o.id !== f.opportunityId && (o.action === "fund" || o.action === "trim"));
+  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  if (other) {
+    await page.getByRole("link", { name: other.title }).click();
+    await page.waitForURL(`**opp=${other.id}`);
+    const txt = await page.locator("main").innerText();
+    check("proposal: switching opportunity shows its rationale, not 'No eligible candidate'", !txt.includes("No eligible candidate") && txt.includes("Rationale record"));
+  }
+  // The need, recomputed here from data/ alone (not from the engine): target months x spending,
+  // less unearmarked holdings in Liquidity-eligible products, plus any known outflow.
+  const shelf = json("data/shelf.json"), policy = json("data/policy.json");
+  const liquid = new Set(shelf.filter((p) => p.riskLevel <= policy.liquidity.sleeveMaxRisk && p.liquidityDays <= policy.liquidity.sleeveMaxAccessDays).map((p) => p.id));
+  const usd = (n) => (n >= 1e6 ? `$${(n / 1e6).toFixed(n >= 1e7 ? 1 : 2).replace(/\.?0+$/, "")}M` : n >= 1e3 ? `$${Math.round(n / 1e3)}K` : `$${Math.round(n)}`);
+  for (const c of clients) {
+    for (const o of c.opportunities.filter((x) => x.action === "fund")) {
+      const g = c.goals.find((x) => x.strategy === o.strategy);
+      const have = c.holdings.filter((x) => liquid.has(x.productId) && !x.earmarked).reduce((a, x) => a + x.valueUsd, 0);
+      const need = g.target * c.monthlySpendUsd - have + (o.outflowUsd ?? 0);
+      const amount = o.inflowUsd ? Math.min(o.inflowUsd, need) : need;
+      await page.goto(`${BASE}/household/${c.id}/proposal?opp=${o.id}`);
+      const line = await page.locator("main p", { hasText: "Need:" }).first().innerText().catch(() => "");
+      const cell = await page.locator("tbody tr").first().locator("td").nth(3).innerText();
+      check(`proposal ${o.id}: the need (${usd(need)}) and the amount (${usd(amount)}) on screen match data/`, line.includes(usd(need)) && cell === usd(amount), `${line} | amount ${cell}`);
+    }
+  }
+
+  // Refusal carries to every surface: triage, evidence, proposals, review pack.
+  const refusedOpp = opps.find((o) => o.evidenceExpectedMissing);
+  if (refusedOpp) {
+    await page.goto(`${BASE}/evidence/${refusedOpp.id}`);
+    const ev = /Refused: no supporting evidence/.test(await page.locator("main").innerText());
+    await page.goto(`${BASE}/household/${refusedOpp.householdId}/proposal?opp=${refusedOpp.id}`);
+    const pr = /Refused: this opportunity has no supporting evidence/.test(await page.locator("main").innerText());
+    await page.goto(`${BASE}/meetings/${refusedOpp.householdId}`);
+    const rp = !(await page.locator("main").innerText()).includes(`${refusedOpp.plainTitle ?? refusedOpp.title}: `);
+    await page.goto(`${BASE}/triage`);
+    const owner = clients.find((c) => c.id === refusedOpp.householdId).advisorId;
+    const label = json("data/advisors.json").find((a) => a.id === owner).walkthrough.label;
+    await page.getByRole("button", { name: label }).click();
+    const tr = await page.getByRole("link", { name: "Refused: no supporting evidence" }).count();
+    check("refusal carries to evidence, proposals, the review pack and today's list", ev && pr && rp && tr === 1, `${ev} ${pr} ${rp} ${tr}`);
+  }
+
+  // 7. Communications: the recipient counter 2, 26, 32, 8, and reload behaviour.
+  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  await page.getByRole("radio", { name: new RegExp(json("data/shelf.json").find((p) => p.id === f.productId).name) }).check();
+  await page.getByRole("button", { name: "Accept proposal" }).click();
+  await page.getByRole("link", { name: "Draft client note" }).click();
+  const counter = async () => Number(await page.locator("aside p.text-3xl").innerText());
+  const c0 = await counter();
+  await page.getByRole("button", { name: /Select 12 two-person households/ }).click();
+  const c1 = await counter();
+  const regime1 = await page.locator("aside").innerText();
+  await page.getByLabel(/another advisor/).check();
+  const c2 = await counter();
+  await page.getByRole("button", { name: "Clear" }).click();
+  const c3 = await counter();
+  check("counter: 2, then 26 (retail communication), 32 with prior sends, 8 cleared", c0 === 2 && c1 === 26 && /retail communication/.test(regime1) && c2 === 32 && c3 === 8, `${c0} ${c1} ${c2} ${c3}`);
+  await page.getByLabel(/another advisor/).uncheck();
+  await page.getByRole("button", { name: "Submit for supervision" }).click();
+  await page.getByRole("link", { name: "Supervision console" }).click();
+  await page.waitForURL("**/supervision");
+  await page.getByRole("button", { name: "Approve" }).click({ timeout: 5000 });
+  const sup = await page.locator("main").innerText();
+  check("supervision: approve writes a disposition without claiming a permanent record", /Dispositioned: approved/.test(sup) && !/Written to the audit record/.test(sup));
+  await page.getByRole("navigation").getByRole("link", { name: "Follow-ups" }).click();
+  await page.waitForURL("**/follow-ups");
+  await page.getByRole("heading", { name: "Follow-ups" }).waitFor();
+  check("follow-ups: the approved note waits for the advisor to send", (await page.getByRole("button", { name: "I sent it from my email" }).count()) === 1);
+  await page.reload();
+  check("reload: session state resets as documented (no approved note after reload)", (await page.getByRole("button", { name: "I sent it from my email" }).count()) === 0);
+  await page.goto(BASE + "/communications");
+  check("reload: communications offers the featured proposal when nothing is accepted", (await page.getByRole("button", { name: /Load the featured proposal/ }).count()) === 1);
+
+  // 8. Copy: no firm branding in product copy.
+  await page.goto(BASE + "/triage");
+  check("copy: no firm name in product copy on today's list", !/\bUBS\b/.test(await page.locator("main").innerText()));
+
+  // 9. No outbound: the browser blocks a request to another host (Content-Security-Policy).
+  await page.goto(BASE + "/");
+  const blocked = await page.evaluate(() => new Promise((res) => {
+    document.addEventListener("securitypolicyviolation", (e) => res(e.violatedDirective), { once: true });
+    fetch("https://example.com/collect", { method: "POST", body: "x", mode: "no-cors" }).catch(() => {});
+    setTimeout(() => res(null), 3000);
+  }));
+  check("no outbound: the browser blocks a request to another host (CSP connect-src)", blocked === "connect-src", String(blocked));
+  const head = await page.request.get(BASE + "/");
+  const meta = await page.locator('meta[name="robots"]').getAttribute("content");
+  check("noindex: meta robots and X-Robots-Tag header", /noindex/.test(meta ?? "") && /noindex/.test(head.headers()["x-robots-tag"] ?? ""), `${meta} / ${head.headers()["x-robots-tag"]}`);
+  const robots = await page.request.get(BASE + "/robots.txt");
+  check("noindex: robots.txt disallows everything", robots.status() === 200 && /Disallow: \//.test(await robots.text()));
+
+  // 10. The walkthrough mockup: every story and step, and it matches the prototype.
+  const m = await ctx.newPage();
+  const merr = [];
+  m.on("pageerror", (e) => merr.push(e.message));
+  await m.goto(`${MOCK}/docs/mockups/relay-wireframes.html`);
+  await m.waitForSelector("#step");
+  const wt = json("data/generated/walkthrough.json");
+  let mclicks = 0;
+  for (let s = 0; s < wt.stories.length; s++) {
+    await m.locator(`[data-story="${s}"]`).first().click();
+    for (let k = 0; k < 6; k++) { await m.locator(`[data-to="${k}"]`).first().click(); mclicks++; }
+    for (const b of await m.locator("[data-aud]").all()) { await b.click(); mclicks++; }
+  }
+  for (const b of await m.locator("[data-chapter]").all()) { await b.click(); mclicks++; }
+  check(`mockup: ${mclicks} clicks through every story, step and chapter with no error`, merr.length === 0, merr.join(" | "));
+  const mtext = await m.evaluate(audit);
+  check("mockup: every text/background pair meets WCAG 2.2 AA contrast", mtext.contrast.length === 0, mtext.contrast.slice(0, 2).join(" | "));
+  const robotsMeta = await m.locator('meta[name="robots"]').getAttribute("content").catch(() => null);
+  check("mockup: carries a noindex robots meta", /noindex/.test(robotsMeta ?? ""));
+  // The mockup's first story list must be the prototype's ranked list for that advisor.
+  await m.locator('[data-story="0"]').first().click();
+  await m.locator('[data-to="0"]').first().click();
+  const mockRows = await m.locator(".item > div > div:nth-child(2)").allInnerTexts();
+  await page.goto(BASE + "/triage");
+  const protoRows = (await page.locator("tbody tr td:nth-child(5) .font-medium").allInnerTexts()).slice(0, mockRows.length);
+  check("mockup: today's list order matches the prototype's ranking", mockRows.join("|") === protoRows.join("|"), `${mockRows.join(", ")} vs ${protoRows.join(", ")}`);
+} catch (e) {
+  check("run completed", false, e.message.split("\n")[0]);
+} finally {
+  await browser?.close();
+  staticServer.close();
+  try { process.kill(-server.pid); } catch {}
+}
+const failed = results.filter((r) => !r.ok);
+console.log(`\n${results.length - failed.length} passed, ${failed.length} failed`);
+process.exit(failed.length ? 1 : 0);

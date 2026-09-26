@@ -7,11 +7,11 @@ import { OPPORTUNITIES, opportunity } from "@/lib/fixtures/opportunities";
 import { household } from "@/lib/fixtures/households";
 import { product } from "@/lib/fixtures/shelf";
 import { BOOK } from "@/lib/fixtures/book";
-import { DEMO_COMMUNICATION, PRIOR_DISTRIBUTIONS, PROTOTYPE_TODAY } from "@/lib/fixtures/distributions";
+import { PRIOR_DISTRIBUTIONS, PROTOTYPE_TODAY, templateFor } from "@/lib/fixtures/distributions";
 import { evaluateAll } from "@/lib/constraints/evaluate";
 import { retrieve } from "@/lib/evidence/retrieve";
-import { compose } from "@/lib/drafting/compose";
-import { regimeAfter, RETAIL_THRESHOLD, type Distribution } from "@/lib/recipients/count";
+import { addressees, compose } from "@/lib/drafting/compose";
+import { countRetailRecipients, regimeAfter, RETAIL_THRESHOLD, type Distribution } from "@/lib/recipients/count";
 import { useRelay } from "@/components/state";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { clientFile } from "@/lib/data";
@@ -28,6 +28,7 @@ export function Communications() {
   const [batch, setBatch] = useState<Set<string>>(new Set());
   const [includePrior, setIncludePrior] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [called, setCalled] = useState(false);
 
   const o = oppId ? opportunity(oppId) : undefined;
   const h = o ? household(o.householdId) : undefined;
@@ -36,17 +37,23 @@ export function Communications() {
   const evidence = o ? retrieve(o) : undefined;
   const draft = o && h && ev && evidence && !evidence.refused ? compose(h, o, ev, product(ev.candidate.productId)!, evidence.passages, { length: prof?.values["note.length"] }) : null;
 
+  const comm = o ? templateFor(o) : "";
   const dists = useMemo(() => {
     const d: Distribution[] = [];
     if (!h) return d;
-    const add = (personId: string) => d.push({ communicationId: DEMO_COMMUNICATION, personId, advisorId: clientFile(h.id)?.advisorId ?? APP.defaultAdvisorId, institutional: false, date: PROTOTYPE_TODAY });
-    h.persons.forEach((p) => add(p.id));
+    const add = (personId: string) => d.push({ communicationId: comm, personId, advisorId: clientFile(h.id)?.advisorId ?? APP.defaultAdvisorId, institutional: false, date: PROTOTYPE_TODAY });
+    addressees(h).forEach((p) => add(p.id));
     for (const b of BOOK) if (batch.has(b.id)) for (let i = 0; i < b.persons; i++) add(`${b.id}-p${i}`);
     return d;
-  }, [h, batch]);
-  const { count, regime } = regimeAfter(includePrior ? PRIOR_DISTRIBUTIONS : [], dists, DEMO_COMMUNICATION, PROTOTYPE_TODAY);
+  }, [h, batch, comm]);
+  const { count, regime } = regimeAfter(includePrior ? PRIOR_DISTRIBUTIONS : [], dists, comm, PROTOTYPE_TODAY);
   const households = 1 + batch.size;
   const flipped = count > RETAIL_THRESHOLD;
+  const callFirstRequired = !!prof?.values["contact.callBeforeNote"];
+  const pending = ev ? queue.some((q) => q.candidateId === ev.candidate.id && !q.disposition) : false;
+  // The prior sends, split by the same 30-day window the counter uses.
+  const priorIn = countRetailRecipients(PRIOR_DISTRIBUTIONS, comm, PROTOTYPE_TODAY);
+  const priorOut = new Set(PRIOR_DISTRIBUTIONS.filter((d) => !d.institutional && d.communicationId === comm).map((d) => d.personId)).size - priorIn;
 
   if (!o || !h || !ev || !draft) {
     return (
@@ -99,7 +106,8 @@ export function Communications() {
               ))}
             </ul>
           </Section>
-          <Section title="Batch: send the same note to other households in the book">
+          <Section title="Batch: the same note template for other households in the book">
+            <p className="mb-2 text-xs text-ink-2">Each household would get its own figures. Relay counts every recipient of the same template together, the conservative reading of Rule 2210.</p>
             <div className="mb-2 flex flex-wrap gap-2">
               <button className={btn} onClick={() => setBatch(new Set(BOOK.filter((b) => b.persons === 2).slice(0, 12).map((b) => b.id)))}>
                 Select 12 two-person households
@@ -107,10 +115,10 @@ export function Communications() {
               <button className={btn} onClick={() => setBatch(new Set())}>
                 Clear
               </button>
-              <label className="flex items-center gap-1 text-xs">
+              {priorIn + priorOut > 0 && <label className="flex items-center gap-1 text-xs">
                 <input type="checkbox" checked={includePrior} onChange={(e) => setIncludePrior(e.target.checked)} />
-                Include another advisor&apos;s sends of this note (6 persons in the last 30 days, 3 older)
-              </label>
+                Include another advisor&apos;s sends of this note ({priorIn} persons in the last 30 days, {priorOut} older)
+              </label>}
             </div>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-0.5 md:grid-cols-3">
               {BOOK.map((b) => (
@@ -141,9 +149,17 @@ export function Communications() {
               </p>
               <p className="mt-2 text-xs text-ink-2">Counts persons, not households, across every advisor using this note. Institutional investors excluded.</p>
             </div>
+            {callFirstRequired && (
+              <label className="mt-3 flex items-start gap-2 text-xs">
+                <input type="checkbox" checked={called} onChange={(e) => setCalled(e.target.checked)} />
+                <span>
+                  <Pill tone="fail">Call first</Pill> This client&apos;s rule: I have spoken to them about this before any written note. Supervision cannot approve without it.
+                </span>
+              </label>
+            )}
             <button
               className={`${btnPrimary} mt-3`}
-              disabled={submitted}
+              disabled={submitted || pending}
               onClick={() => {
                 submit({
                   opportunityId: o.id,
@@ -155,13 +171,15 @@ export function Communications() {
                   recipients: count,
                   regime,
                   batchSize: households,
+                  callFirst: callFirstRequired ? { required: true, confirmed: called } : undefined,
+                  settingsVersion: prof?.version,
                 });
                 setSubmitted(true);
               }}
             >
-              {submitted ? "Submitted for supervision" : "Submit for supervision"}
+              {submitted || pending ? "Submitted for supervision" : "Submit for supervision"}
             </button>
-            {submitted && (
+            {(submitted || pending) && (
               <p className="mt-2 text-xs">
                 In the queue. <Link className="underline" href="/supervision">Supervision console</Link> ({queue.length} item{queue.length === 1 ? "" : "s"}).
                 Relay never sends: release is a human act after disposition.
