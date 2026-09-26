@@ -10,5 +10,4 @@ export const whatsapp: ConnectorDefinition = {
   produces: ["chat_message"],
   retention: "supplemental",
   supervisoryNote: "The single most fined channel in the industry. Either it is archived or it is prohibited; there is no third option that survives an exam.",
-  feedsRules: ["off-channel-gap", "sec-17a4-completeness"],
 };

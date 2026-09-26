@@ -10,5 +10,4 @@ export const microsoft365: ConnectorDefinition = {
   produces: ["email_message", "calendar_event"],
   retention: "system_of_record",
   supervisoryNote: "Primary written-correspondence channel. Rule 3110 review and 17a-4 retention both assume it is complete.",
-  feedsRules: ["finra-3110-correspondence", "sec-17a4-completeness", "finra-2210-regime", "off-channel-gap"],
 };

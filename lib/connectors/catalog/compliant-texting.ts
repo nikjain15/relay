@@ -10,5 +10,4 @@ export const compliantTexting: ConnectorDefinition = {
   produces: ["sms_message"],
   retention: "system_of_record",
   supervisoryNote: "The supervised alternative to a personal phone. Its whole purpose is that texting stops being off-channel.",
-  feedsRules: ["finra-3110-correspondence", "sec-17a4-completeness", "off-channel-gap"],
 };

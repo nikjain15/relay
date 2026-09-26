@@ -7,3 +7,10 @@ html { font-family: var(--font); }
 body { background: var(--surface); color: var(--ink); }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 a { text-underline-offset: 3px; }
+
+/* A grid or flex item's automatic minimum size is its min-content width, so one
+   wide table stretches its container past the viewport and the whole page
+   scrolls sideways. Scroll containers are meant to absorb that, and cannot while
+   an ancestor grid item refuses to shrink. Overriding the automatic minimum is
+   the fix; an item that must keep a width sets one explicitly. */
+.grid > *, .flex > * { min-width: 0; }

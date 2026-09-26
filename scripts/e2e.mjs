@@ -1,7 +1,7 @@
 // Browser run over the built prototype and the walkthrough mockup (audit R-21).
 // Usage: npm run build && npm run e2e. Starts `next start` on E2E_PORT (3100),
 // serves the mockup on E2E_PORT + 1, and drives Chromium with playwright-core.
-// Every page at 1440, 1280 and 1024: no console or page error, no horizontal
+// Every page at 1440, 1280, 1024, 768 and 390: no console or page error, no horizontal
 // scroll, every internal link resolves, every button clicks without an error,
 // every control has an accessible name, every text/background pair meets WCAG
 // 2.2 AA contrast, and the first Tab reaches a skip link. Then the demo flows.
@@ -16,7 +16,7 @@ const PORT = Number(process.env.E2E_PORT ?? 3100);
 const BASE = `http://localhost:${PORT}`;
 const MOCK = `http://localhost:${PORT + 1}`;
 const EXE = process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
-const WIDTHS = [1440, 1280, 1024];
+const WIDTHS = [1440, 1280, 1024, 768, 390];
 const json = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 
 const clients = readdirSync(join(ROOT, "data/clients")).map((f) => json(`data/clients/${f}`));
@@ -25,6 +25,7 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
+  "/connectors", "/compliance", "/compliance/log",
   ...clients.map((c) => `/household/${c.id}`),
   ...clients.map((c) => `/meetings/${c.id}`),
   ...opps.map((o) => `/evidence/${o.id}`),
@@ -127,7 +128,16 @@ try {
 
   // 2. Every internal link resolves.
   const bad = [];
-  for (const h of links) { const r = await page.goto(BASE + h); if (r.status() !== 200) bad.push(`${h} ${r.status()}`); }
+  for (const h of links) {
+    // A link may carry a fragment. Navigating to a fragment on the page you are
+    // already on is a same-document navigation and returns no response, so the
+    // path is fetched on its own and the anchor target is checked to exist:
+    // a link to a heading that was renamed is a dead link, not a passing one.
+    const [path, hash] = h.split("#");
+    const r = await page.goto(BASE + (path || "/"));
+    if (r.status() !== 200) { bad.push(`${h} ${r.status()}`); continue; }
+    if (hash && !(await page.evaluate((id) => Boolean(document.getElementById(id)), hash))) bad.push(`${h} no such anchor`);
+  }
   check(`all ${links.size} internal links resolve`, bad.length === 0, bad.join(", "));
 
   // 3. Every button on every page clicks without an error.
@@ -237,8 +247,15 @@ try {
   check("counter: 2, then 26 (retail communication), 32 with prior sends, 8 cleared", c0 === 2 && c1 === 26 && /retail communication/.test(regime1) && c2 === 32 && c3 === 8, `${c0} ${c1} ${c2} ${c3}`);
   await page.getByLabel(/another advisor/).uncheck();
   await page.getByRole("button", { name: "Submit for supervision" }).click();
+  // Follow the in-page link rather than a fresh goto: the queue lives in session
+  // state, and a full page load would reset it, which is what the prototype
+  // documents and what the reload checks below assert.
   await page.getByRole("link", { name: "Supervision console" }).click();
   await page.waitForURL("**/supervision");
+  // The console opens on the agent findings queue, which is the point of it: the
+  // sweep runs whether or not an advisor submitted anything. The submitted draft
+  // is on the second tab.
+  await page.getByRole("tab", { name: /^Drafts/ }).click();
   await page.getByRole("button", { name: "Approve" }).click({ timeout: 5000 });
   const sup = await page.locator("main").innerText();
   check("supervision: approve writes a disposition without claiming a permanent record", /Dispositioned: approved/.test(sup) && !/Written to the audit record/.test(sup));

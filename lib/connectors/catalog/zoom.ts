@@ -10,5 +10,4 @@ export const zoom: ConnectorDefinition = {
   produces: ["meeting_transcript", "calendar_event"],
   retention: "supplemental",
   supervisoryNote: "A recommendation made aloud in a meeting is still a recommendation. Transcripts are the only evidence it happened.",
-  feedsRules: ["reg-bi-care-evidence", "finra-2111-suitability", "off-channel-gap", "senior-investor-2165"],
 };

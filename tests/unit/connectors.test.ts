@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
+import { BASELINE } from "@/lib/compliance/policy";
+import { rulesFedBy, sourcesForRule, unservedRules } from "@/lib/compliance/sources";
 import { CATALOG } from "@/lib/connectors/catalog";
-import { connectorIds, connectorsFeedingRule, getConnector, listConnectors, producedBy } from "@/lib/connectors/registry";
+import { connectorIds, getConnector, listConnectors, producedBy } from "@/lib/connectors/registry";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { CONNECTORS_DATA } from "@/lib/data";
 
@@ -26,14 +28,12 @@ describe("connector catalog", () => {
     for (const c of CATALOG) {
       expect(c.produces.length, c.id).toBeGreaterThan(0);
       expect(c.supervisoryNote.length, c.id).toBeGreaterThan(20);
-      expect(c.feedsRules.length, c.id).toBeGreaterThan(0);
     }
   });
 
-  it("resolves by id and by rule", () => {
+  it("resolves by id", () => {
     expect(getConnector("microsoft-365")?.channel).toBe("email");
     expect(getConnector("nope")).toBeUndefined();
-    expect(connectorsFeedingRule("off-channel-gap").length).toBeGreaterThan(3);
     expect(listConnectors().length).toBe(CATALOG.length);
   });
 
@@ -80,5 +80,31 @@ describe("coverage", () => {
   it("ignores other advisors' connections", () => {
     const r = coverageFor("adv-b", connections, attestations);
     expect(r.channels.find((c) => c.channel === "meeting")!.connected).toHaveLength(0);
+  });
+});
+
+describe("the catalog and the rule set agree", () => {
+  it("every connector a rule requires exists in the catalog", () => {
+    const ids = new Set(CATALOG.map((c) => c.id));
+    for (const r of BASELINE) for (const c of r.requires) expect(ids.has(c), `${r.id} requires ${c}`).toBe(true);
+  });
+
+  it("no rule is left unservable by the whole catalog", () => {
+    // A rule naming a source nothing provides can never fire and never clear,
+    // which is worse than one that fires often: it reads as covered.
+    expect(unservedRules(CATALOG.map((c) => c.id))).toEqual([]);
+  });
+
+  it("derives which rules need a source from the rules themselves", () => {
+    // One direction only. The catalog used to carry its own list and the two
+    // drifted: the archive omitted a rule that requires it.
+    expect(rulesFedBy("archive").map((r) => r.id)).toContain("finra-2210-regime");
+    expect(rulesFedBy("nothing-like-this")).toEqual([]);
+    for (const r of BASELINE) for (const cid of r.requires) expect(rulesFedBy(cid).map((x) => x.id)).toContain(r.id);
+  });
+
+  it("names a rule's sources for the console", () => {
+    expect(sourcesForRule("reg-bi-care-evidence")).toContain("custodian-feed");
+    expect(sourcesForRule("off-channel-gap")).toEqual([]);
   });
 });

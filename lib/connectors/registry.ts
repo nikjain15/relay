@@ -20,10 +20,11 @@ export function connectorsForChannel(channel: ChannelKind): ConnectorDefinition[
   return CATALOG.filter((c) => c.channel === channel);
 }
 
-/** Every connector whose records a given compliance rule depends on. */
-export function connectorsFeedingRule(ruleId: string): ConnectorDefinition[] {
-  return CATALOG.filter((c) => c.feedsRules.includes(ruleId));
-}
+// Which connectors a rule depends on used to be answered here, from a list on
+// each connector. It is answered in lib/compliance/sources.ts instead, derived
+// from the rules' own `requires`. Two copies of one relationship drift, and this
+// one had: the archive omitted a rule that requires it. This module also may not
+// import lib/compliance, because a connector decides nothing.
 
 /** Record classes the connected set can actually produce. */
 export function producedBy(connectorIds: string[]): Set<RecordClass> {

@@ -10,5 +10,4 @@ export const teamsChat: ConnectorDefinition = {
   produces: ["chat_message"],
   retention: "system_of_record",
   supervisoryNote: "External Teams chat with a client is business correspondence and is retained on the same footing as email.",
-  feedsRules: ["finra-3110-correspondence", "sec-17a4-completeness", "off-channel-gap"],
 };
