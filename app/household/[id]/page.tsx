@@ -99,6 +99,20 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
           </p>
         </Section>
       </div>
+      <Section title="Composite persona: built from">
+        <ul className="space-y-0.5 text-xs">
+          {h.groundedIn.map((s) => (
+            <li key={s.url}>
+              <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-1 text-[11px] text-neutral-500">
+          Invented name and figures inside published ranges. <Link className="underline" href="/personas">Who&apos;s who</Link>
+        </p>
+      </Section>
       <Section title="Open opportunities">
         <ul className="space-y-1">
           {opps.map((o) => (

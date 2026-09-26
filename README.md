@@ -30,6 +30,7 @@ npm run dev
 | `docs/AUDIT-PROMPT.md` | The audit prompt used for the earlier passes |
 | `docs/BUILD-SPEC.md` | Build spec v2.0: surfaces, data model, fixtures, engines, demo path, build order |
 | `docs/mockups/relay-wireframes.html` | Low-fidelity mockup: a six-step guided walkthrough of one advisor and one client, plus the three planned screens (private artifact link, not an indexed page) |
+| `docs/PERSONAS.md` | Cited composite personas: every detail with its kind and public source |
 | `docs/DECISIONS.md` | R-09 onward |
 
 Not present, and deliberately not reconstructed: the lost `ARCHITECTURE.md` and its diagrams.

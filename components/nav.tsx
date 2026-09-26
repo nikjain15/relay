@@ -11,6 +11,7 @@ const BUILT = [
   { href: "/communications", label: "Client communications", n: 7 },
   { href: "/supervision", label: "Supervision console", n: 9 },
   { href: "/measurement", label: "Measurement", n: 0 },
+  { href: "/personas", label: "Who's who", n: 0 },
 ];
 const DESIGNED = [
   { href: "/designed/pipeline", label: "Pipeline and prospecting", n: 1 },
