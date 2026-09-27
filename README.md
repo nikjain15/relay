@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://nikjain15.github.io/relay/"><b>Live at nikjain15.github.io/relay ↗</b></a> &nbsp;·&nbsp; walkthrough at <a href="https://nikjain15.github.io/relay/walkthrough/"><code>/walkthrough/</code></a>
+  <a href="https://nikjain15.github.io/relay/"><b>Live at nikjain15.github.io/relay ↗</b></a> &nbsp;·&nbsp; <a href="https://nikjain15.github.io/relay/how-it-works/">How it works</a> &nbsp;·&nbsp; <a href="https://nikjain15.github.io/relay/features/">Features</a> &nbsp;·&nbsp; <a href="https://nikjain15.github.io/relay/impact/">Impact</a> &nbsp;·&nbsp; <a href="https://nikjain15.github.io/relay/architecture/">Architecture</a> &nbsp;·&nbsp; <a href="https://nikjain15.github.io/relay/walkthrough/">Walkthrough</a>
 </p>
 
 ---
@@ -156,6 +156,9 @@ request; the Pages deploy runs on `main` behind a green check.
 | [`docs/BUILD-SPEC.md`](docs/BUILD-SPEC.md) | Surfaces, data model, engine responsibilities, demo path, tests |
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | Principles, tokens, components, icons, charts, and what agent-first means as a rule |
 | [`docs/PERSONAS.md`](docs/PERSONAS.md) | Every composite, with the kind and public source of each detail |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | The layers, the principles, and where things live |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | The working rules the codebase is held to |
+| [`CHANGELOG.md`](CHANGELOG.md) | Notable changes, by pull request |
 | [`data/README.md`](data/README.md) | Every data file, what it holds, and what `validate()` checks |
 | [`evals/README.md`](evals/README.md) | The evaluation corpus, how the expected side is built without the engines, what the eval has caught |
 

@@ -26,7 +26,7 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
-  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery", "/simulate",
+  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery", "/simulate", "/how-it-works", "/features", "/impact", "/architecture",
   ...readdirSync(join(ROOT, "data/documents")).map((f) => `/documents/${f.replace(/\.json$/, "")}`),
   ...clients.map((c) => `/research/${c.id}`),
   ...clients.map((c) => `/household/${c.id}`),

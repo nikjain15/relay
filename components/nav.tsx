@@ -77,6 +77,15 @@ export const AREAS: NavArea[] = [
       { href: "/personas", label: "Who's who", icon: "crm" },
     ],
   },
+  {
+    area: "About",
+    links: [
+      { href: "/how-it-works", label: "How it works", icon: "sweep" },
+      { href: "/features", label: "Features", icon: "list" },
+      { href: "/impact", label: "Impact", icon: "trend" },
+      { href: "/architecture", label: "Architecture", icon: "planning" },
+    ],
+  },
 ];
 
 export function isActive(href: string, path: string): boolean {
