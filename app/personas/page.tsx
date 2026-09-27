@@ -12,7 +12,7 @@ export default function Personas() {
       <PageTitle
         icon="crm"
         title="Who's who"
-        sub="Cited composites: invented names and exact figures, set inside ranges and situations UBS and public sources describe. No real client or advisor. Full detail in docs/PERSONAS.md."
+        sub="Cited composites: invented names and exact figures, each figure set inside a cited range. No real client or advisor. Full detail in docs/PERSONAS.md."
       />
       <Section title="Advisors">
         <div className="grid max-w-5xl gap-4 md:grid-cols-2">

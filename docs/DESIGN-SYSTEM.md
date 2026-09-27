@@ -3,11 +3,11 @@
 **Version:** v1.0, 2026-09-26. Decision R-20.
 
 **Intent:** a tool an advisor at a Swiss private bank would find calm and obvious on first use. It follows
-the public design language of firms like UBS: restrained black and white, warm greys, generous space,
+the public design language of large private banks: restrained black and white, warm greys, generous space,
 light large headings, square corners, and colour saved for what needs attention.
 
-**Boundary:** inspired by that language, never branded. No UBS logo, keys symbol, wordmark, Frutiger
-typeface, photography or brand red as a decorative colour. A pitch prototype that looks like a real UBS
+**Boundary:** inspired by that language, never branded. No firm's logo, keys symbol, wordmark, Frutiger
+typeface, photography or brand red as a decorative colour. A pitch prototype that looks like a real firm's
 product would be a counterfeit, not a design choice; one that clearly fits their world shows judgement.
 
 ---
@@ -159,7 +159,7 @@ style that is not this one; a small set drawn to one grid reads as a system.
 16 (inline with 13px text), 20 (the default, and every navigation and row icon), 24 and 28 (leading a card).
 
 **The boundary, which is the same boundary as the rest of this document.** The set is drawn in the restrained
-institutional idiom that firms like UBS use publicly: geometric, even-weight, unfilled, no rounded-cartoon
+institutional idiom that large private banks use publicly: geometric, even-weight, unfilled, no rounded-cartoon
 shapes and no duotone. It is **not** any firm's proprietary icon set, and it contains no keys symbol, logo,
 wordmark or brand mark. An icon set that tried to reproduce theirs would be a counterfeit for the same reason
 a cloned palette would be.

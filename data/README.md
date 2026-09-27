@@ -8,7 +8,7 @@ lives in code. `tests/invariants/no-client-data-in-code.test.ts` fails if a clie
 appears in `app/`, `components/` or `lib/`.
 
 All clients and advisors are **cited composites** (see `docs/PERSONAS.md`): invented names and figures
-inside situations UBS and public sources describe. No real client or advisor data belongs here.
+inside cited ranges. No real client or advisor data belongs here.
 
 ## Files
 

@@ -8,8 +8,8 @@
 
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tests-311%20passing-brightgreen" alt="Tests: 311 passing">
-  <img src="https://img.shields.io/badge/browser%20checks-60%20passing-brightgreen" alt="Browser checks: 60 passing">
+  <img src="https://img.shields.io/badge/tests-344%20passing-brightgreen" alt="Tests: 344 passing">
+  <img src="https://img.shields.io/badge/browser%20checks-67%20passing-brightgreen" alt="Browser checks: 67 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
   <img src="https://img.shields.io/badge/data-synthetic%20only-lightgrey" alt="Data: synthetic only">
@@ -49,6 +49,8 @@ composite is in [`docs/PERSONAS.md`](docs/PERSONAS.md).
 | **Rule-change proposer** | Ninety days of findings | Tighten-only rule changes, with the findings behind each |
 | **Discovery** | What clients said, in messages, notes and contact summaries | Candidate opportunities cited to the sentence, with a confidence and the documents each would cite |
 | **Options and consequences** | Every shelf product against the household's own rules, applied to a copy of the household | After-tax income, cost over the horizon, access, rate risk, and the morning after, graded |
+| **Meeting prep** | Today's calendar and the client file behind each meeting | A review pack and a briefing for every client meeting |
+| **Ranking** | Every opportunity on the advisor's book | Today's list: materiality times the advisor's own weight for each kind of signal, capped at the advisor's list size |
 | **Policy reader** | A written supervisory procedure | Candidate rules in the engine's own shape, each cited to its sentence, for a person to add to a desk |
 | **Ask** | The book, the findings, the rules, the sources, today's calendar | An answer to a plain question, with the records it read |
 
@@ -58,6 +60,16 @@ opens as an inbox in the order a person works: decide now, review what the agent
 opening beside the list with the draft and the reasoning, and staying on screen as a recorded
 outcome), then what else ran. Three colours say whose line each row is, agent, advisor or client,
 always with the word. Ask, on every screen, answers a plain question from the same records and cites them.
+
+**One source per advisor.** Switch the advisor in the header and every screen, count and answer follows:
+the header, the persona line, the page and Ask all read one computed view of that advisor's book
+(`lib/view/advisor-view.ts`), so no two places on screen can disagree.
+
+**Agents you can read and change.** Each agent says in one card what it is for, what it reads, what it
+checks, what it prepares and what it never does. An advisor can rename, retune or switch off an agent,
+and create a new one from a template; a change that would loosen a compliance desk, or delete or switch
+one off, waits for a principal's approval. Ranking is an agent too: each advisor sets their own weight per
+kind of signal and list size, inside the firm's bounds, and every score on screen shows its arithmetic.
 
 The eight compliance agents are **review desks**: one per team a legal, risk and compliance function
 runs, each carrying the team it mirrors, the authorities it applies, its rules and its cadence, all as
@@ -149,10 +161,10 @@ what the eval has caught so far is in [`evals/README.md`](evals/README.md).
 
 ```bash
 npm ci
-npm run check                    # typecheck, lint, import invariants, data check, 311 tests
+npm run check                    # typecheck, lint, import invariants, data check, 344 tests
 npm run eval                     # every agent over the 300-household corpus, against evals/golden.json
 npm run dev                      # http://localhost:3000
-npx next build && npm run e2e    # 60 browser checks at 1440, 1280, 1024, 768 and 390
+npx next build && npm run e2e    # 67 browser checks at 1440, 1280, 1024, 768 and 390
 npm run stress                   # 1,000 clients, 50 advisors, 2,000 messages, 20,000 events, in memory
 ```
 

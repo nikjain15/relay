@@ -182,7 +182,7 @@ export interface AgentRequest {
 /** Where the ranking desk keeps each advisor's tuned weights in this browser. */
 const TUNED_KEY = "relay.tuned.v1";
 
-export function StateProvider({ children }: { children: ReactNode }) {
+export function StateProvider({ children, initialAdvisorId }: { children: ReactNode; /** For server renders in tests; the app starts on the default advisor. */ initialAdvisorId?: string }) {
   const [dismissed, setDismissed] = useState<Record<string, string>>({});
   const [accepted, setAccepted] = useState<Record<string, string>>({});
   const [queue, setQueue] = useState<QueueItem[]>([]);
@@ -205,7 +205,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [rosterOff, setRosterOff] = useState<Record<string, string[]>>({});
   const logAgent = (agentId: string, advisorId: string, field: string, from: string, to: string, actor: string, reason: string, approvedBy?: string) =>
     setRuleEdits((l) => [...l, { id: `e-${String(l.length + 1).padStart(3, "0")}`, at: new Date().toISOString(), actor, target: "agent", layer: "advisor", layerId: advisorId, agentId, field, from, to, reason, ...(approvedBy ? { approvedBy } : {}) }]);
-  const [advisorId, setAdvisorId] = useState<string>(APP.defaultAdvisorId);
+  const [advisorId, setAdvisorId] = useState<string>(initialAdvisorId ?? APP.defaultAdvisorId);
   // Tuned settings (the ranking desk) are the advisor's own preference, so they are kept in this browser
   // across reloads, per advisor. Everything else in a session resets on reload, as documented.
   const [tunedLoaded, setTunedLoaded] = useState(false);
