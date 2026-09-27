@@ -261,6 +261,8 @@ try {
   const rp = await page.locator("main").innerText();
   check("replay: a past finding is re-run against the rules as they stood and as they are now", /As the rules stood then/.test(rp) && /The same facts, against the rules now/.test(rp) && /Verdict then:/.test(rp));
   await page.goto(`${BASE}/agents`);
+  // The page opens on Your agents; the desks are one tab over.
+  await page.getByRole("tab", { name: /Compliance desks/ }).click();
   const ag = await page.locator("main").innerText();
   check("agents: every agent shows a state in words, what it read and what it prepared", /Last run/.test(ag) && /Prepared/.test(ag) && /(Clear|Needs you|Blocking)/.test(ag) && /This morning/.test(ag));
   await page.goto(`${BASE}/supervision`);
