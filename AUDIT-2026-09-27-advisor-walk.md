@@ -147,3 +147,30 @@ One commit per fix; each message quotes the audit line it came from.
 - **Today's list and Options stack into cards below 768px (requested in review).**
 
 Left as proposals, because each is structural: items 1 to 10 above.
+
+## Follow-up: one source per advisor, and agents you can read and change
+
+Deployed with #13. Then, from review: "they all should read from same data source", and "it is very hard to follow what each agent does ... the user should be able to edit, change, delete, update".
+
+**What was wrong.** Screens disagreed because they did not read the same data:
+
+- **Scope.** The Overview counted the signed-in advisor. Meetings, Follow-ups, Service requests, Paperwork, Prospects, Households, Briefings, Discovery and Suggestions counted the whole firm.
+- **Source.** Several screens read the shipped files instead of the session's data. A household connected on Sources, or a note filed from a dossier, never reached them. The household page showed notes from the shipped file, while the briefing showed the note filed this session.
+- **Findings.** The findings were worked out separately in six places. Supervision ignored desk settings, and Follow-ups ignored rules added this session.
+- **Agent count.** The number of agents was 14, 15 or 16 depending on the page, and the Features page still said "Eight agents" in one heading.
+- **Advisor choice.** Today's list and Preferences each had their own advisor picker that nothing else followed.
+
+**What changed.**
+
+- **One view per advisor.** `lib/view/advisor-view.ts` builds one advisor's view of the session's data: households, opportunities, today's list, findings, prepared actions, meetings, tasks, service requests, paperwork and prospects. Every screen reads it through `useView()`.
+- **"Signed in as" switch.** The header switch changes advisor for every screen at once.
+- **One agent roster.** `lib/agents/roster.ts` holds the agents that are not compliance desks. With the desks, it gives 18 agents: 8 desks, 7 that run every morning, 3 that run when you ask. Every page and the README count from it.
+- **Saved ranking.** Ranking weights are kept in the browser for each advisor until reset.
+- **Guards.** The browser suite now switches advisor from the header for each of the three advisors and checks that every Overview count equals the screen it links to: meetings, overdue tasks, late service requests, escalated forms, findings, today's list and households. It passes for all three, and also after connecting 300 households and 585 messages. `tests/invariants/one-view.test.ts` fails if a screen reads a per-advisor collection or the static client list directly. `tests/invariants/agent-roster.test.ts` fails if an agent count is hard-coded.
+
+**Agents, explained and editable.**
+
+- **Explained.** Every agent card now says, in plain words, what the agent is for, what it reads, what it checks, what it prepares and what it never does. For a compliance desk this is built from the desk's own rules, so adding a rule adds a line.
+- **Compliance desks, tighten-only.** An advisor can rename a desk, describe it, run it more often or give it another rule, and the change takes effect at once. Running it less often, taking a rule away, switching it off or deleting it would loosen supervision. Each becomes a request with a reason, and nothing changes until a principal approves it. The approval applies to that one advisor and is recorded in the change log.
+- **Other agents.** Research, retrieval, ranking and the rest can be switched off by the advisor for themselves. Ask stays on.
+- **New agents from a template.** An advisor can create their own agent from four templates: cash cover below a floor, no contact for too long, one stock above a level, or a phrase in what clients write. It runs in the same sweep as the desks, raises findings on the same Supervision queue, and can be edited or deleted at once. Checked by hand: a 12-month cash floor on Margaret's book raises 4 findings (Renner 0, Thornbury 6, Alcott 11, Vasquez-Hale 8 months), which matches.
