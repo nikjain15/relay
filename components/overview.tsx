@@ -32,12 +32,13 @@ import { scopeFor } from "@/lib/compliance/scope";
 import { sweep, connectedIds } from "@/lib/compliance/sweep";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { rank } from "@/lib/ranking/rank";
+import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { prepareAll, KIND, type PreparedAction } from "@/lib/compliance/actions";
 import { agentStatuses } from "@/lib/compliance/activity";
 import { explain, paramMap } from "@/lib/compliance/dsl";
 
 export function Overview({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, discoveryDecisions, proposalDecisions, book } = useRelay();
+  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, discoveryDecisions, proposalDecisions, book, overlay } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId);
   // The compute figure is real and so differs between the static export and the
@@ -75,7 +76,9 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const overdue = allTasks().filter((t) => t.dueDay < 0 && t.advisorId === advisorId);
   const service = triage(SERVICE_REQUESTS.filter((r) => mine.some((c) => c.id === r.clientId)));
   const escalated = mine.flatMap(openItems).filter((w) => w.status === "escalated");
-  const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed))), [dismissed, book, mine]);
+  // The same ranking Today's list shows: the advisor's resolved weights and list size, tuned or not.
+  const rankingProfile = resolveProfile({ advisorId }, overlay);
+  const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed)), rankingProfile.values["triage.dailyCap"], rankingProfile.values["triage.classWeights"]), [dismissed, book, mine, rankingProfile.values]);
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
   const staleDocs = corpus.filter((d) => d.usable && d.freshness === "stale").length;
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
@@ -129,6 +132,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
     { id: "retrieval", name: "Retrieval", icon: "library", state: staleDocs ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} documents, ${staleDocs} past review`, href: "/documents" },
     { id: "proposer", name: "Rule proposer", icon: "flag", state: proposals.length ? "attention" : "clear", line: `${proposals.length} rule changes proposed to a principal`, href: "/compliance" },
     { id: "meetings", name: "Meetings", icon: "calendar", state: "clear", line: `${meetings.length} meetings today, review packs built`, href: "/meetings" },
+    { id: "ranking", name: "Ranking", icon: "settings", state: "clear", line: `${flagged.length} ranked by ${sourceLabel(rankingProfile.provenance["triage.classWeights"]).toLowerCase()} weights; tune them`, href: "/triage#tune" },
   ];
   const clean = statuses.filter((s) => s.state === "clear").length + others.filter((o) => o.state === "clear").length;
   const firstName = (advisor?.name ?? "").split(" ")[0];

@@ -21,7 +21,7 @@ import { APP } from "@/lib/data/policy";
 interface Turn { q: string; a: Answer; ms: number }
 
 export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
+  const { ruleEdits, connections, caseDispositions, actionDecisions, book, overlay } = useRelay();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
@@ -35,8 +35,8 @@ export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
     const found = sweep(advisorId, policy, connections, book.clients, agents);
     const cases = found.cases.filter((c) => !caseDispositions[c.id]);
     const actions = prepareAll(cases, policy.rules).filter((a) => !actionDecisions[a.id]);
-    return { advisorId, clients: book.clients, documents: book.documents, cases, actions, policy, agents, connections };
-  }, [advisorId, ruleEdits, connections, caseDispositions, actionDecisions, book]);
+    return { advisorId, clients: book.clients, documents: book.documents, cases, actions, policy, agents, connections, overlay };
+  }, [advisorId, ruleEdits, connections, caseDispositions, actionDecisions, book, overlay]);
 
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [turns]);

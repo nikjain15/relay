@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { resolveProfile, SEGMENTS, FIRM } from "@/lib/profile";
+import { resolveProfile, sourceLabel, SEGMENTS, FIRM } from "@/lib/profile";
+import { ADVISORS_DATA } from "@/lib/data";
 import { validateProfiles } from "@/lib/profile/validate";
 
 describe("resolveProfile: four layers", () => {
@@ -61,5 +62,27 @@ describe("validateProfiles", () => {
       seg.values = saved;
     }
     expect(validateProfiles()).toEqual([]);
+  });
+});
+
+describe("the ranking desk: an advisor's tuned weights", () => {
+  const id = ADVISORS_DATA[0].id;
+  it("take effect above the advisor's profile and say whose they are", () => {
+    const r = resolveProfile({ advisorId: id }, { tuned: { [id]: { "triage.classWeights": { market_view: 1 }, "triage.dailyCap": 8 } } });
+    expect(r.values["triage.classWeights"].market_view).toBe(1);
+    expect(r.values["triage.dailyCap"]).toBe(8);
+    expect(r.provenance["triage.dailyCap"]).toBe(`advisor:${id} (tuned)`);
+    expect(sourceLabel(r.provenance["triage.dailyCap"])).toMatch(/Your setting/);
+  });
+  it("stay inside the firm's bounds: an out-of-range weight or list size is ignored", () => {
+    const r = resolveProfile({ advisorId: id }, { tuned: { [id]: { "triage.classWeights": { market_view: 5 }, "triage.dailyCap": 99 } } });
+    expect(r.values["triage.classWeights"].market_view).toBeLessThanOrEqual(1);
+    expect(r.values["triage.dailyCap"]).toBeLessThanOrEqual(20);
+    expect(r.ignored.length).toBeGreaterThan(0);
+  });
+  it("belong to one advisor", () => {
+    const other = ADVISORS_DATA[1].id;
+    const r = resolveProfile({ advisorId: other }, { tuned: { [id]: { "triage.dailyCap": 8 } } });
+    expect(r.values["triage.dailyCap"]).not.toBe(8);
   });
 });

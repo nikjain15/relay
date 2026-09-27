@@ -12,6 +12,7 @@ import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
 import { Brief, CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 import { Icon, CLASS_ICON } from "@/components/icons";
+import { RankingTuner } from "@/components/ranking-tuner";
 
 const REASONS = POLICY.triage.dismissReasons;
 
@@ -39,7 +40,7 @@ export default function Triage() {
 
   return (
     <>
-      <PageTitle icon="list" title="Today's list" sub={`Capped at ${cap}. One decision per row, ranked by materiality and how long it has waited.`} />
+      <PageTitle icon="list" title="Today's list" sub={`Capped at ${cap}. One decision per row, ranked by materiality times the weight you give each kind of signal.`} />
       <Brief
         name="Ranking"
         icon="list"
@@ -47,7 +48,7 @@ export default function Triage() {
         says={<>I ranked {mine.length} opportunities for {advisor.name} and kept the top {rows.length}, capped at {cap} by your preferences. {day.meetings.length} meetings today and {day.alertsOvernight} alerts overnight. {rows[0] ? <>First: {rows[0].plainTitle ?? rows[0].title} for {clientOf(rows[0].householdId)?.name ?? rows[0].householdId}.</> : null}</>}
         points={rows.slice(0, 3).map((o) => ({ text: `${clientOf(o.householdId)?.name ?? o.householdId}: ${o.plainTitle ?? o.title}`, href: `/evidence/${o.id}`, who: "client" as const }))}
         next={rows[0] ? { label: "Why this client, cited", href: `/evidence/${rows[0].id}` } : undefined}
-        note="The score is a weighted sum you can see on each row; a model never ranks. Dismissing with a reason feeds the learning loop."
+        note="The score is materiality times your weight for the kind of signal, shown on each row; a model never ranks. Tune the weights below. Dismissing with a reason feeds the learning loop."
       />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
@@ -72,9 +73,10 @@ export default function Triage() {
         <p className="text-xs text-ink-2 md:col-span-2">{advisor.name}: {advisor.role}. {advisor.book}.</p>
         <p className="text-xs text-ink-2 md:col-span-2">
           Personalized: list of {cap} ({sourceLabel(prof.provenance["triage.dailyCap"])}); signal weights ({sourceLabel(prof.provenance["triage.classWeights"])}).{" "}
-          <Link className="underline" href={`/profiles?advisor=${advisor.id}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
+          <a className="underline" href="#tune">Tune the ranking</a> &middot; <Link className="underline" href={`/profiles?advisor=${advisor.id}`}>Settings</Link> &middot; <Link className="underline" href="/learning">Suggestions</Link>
         </p>
       </div>
+      <RankingTuner advisorId={advisor.id} advisorName={advisor.name} opportunities={mine} dismissed={new Set(Object.keys(dismissed))} titleOf={(o) => `${clientOf(o.householdId)?.name ?? o.householdId}, ${o.plainTitle ?? o.title}`} />
       <TableScroll>
         <table className="w-full min-w-[34rem] border-collapse">
           <thead>
@@ -97,7 +99,10 @@ export default function Triage() {
               return (
                 <tr key={o.id}>
                   <td className={td}>{i + 1}</td>
-                  <td className={td}>{score(o, weights)}</td>
+                  <td className={td}>
+                    <span className="font-medium tabular-nums">{score(o, weights)}</span>
+                    <div className="mt-0.5 whitespace-nowrap text-xs text-ink-2 tabular-nums" title={`Materiality ${o.materiality} times the ${CLASS_LABEL[o.triggerClass].toLowerCase()} weight ${(weights[o.triggerClass] ?? 1).toFixed(2)}`}>{o.materiality} &times; {(weights[o.triggerClass] ?? 1).toFixed(2)}</div>
+                  </td>
                   <td className={td}>
                     <span className="inline-flex items-center gap-1.5"><Icon name={CLASS_ICON[o.triggerClass]} size={16} className="text-ink-3" /><Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill></span>
                     <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>

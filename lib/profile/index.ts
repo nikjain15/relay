@@ -35,8 +35,12 @@ export interface Effective {
 }
 export interface AdvisorProfile { advisorId: string; segmentId: string; version: number; learning: boolean; values: Values }
 export interface Segment { id: string; label: string; version: number; values: Values }
-/** Values accepted from the learning loop this session, keyed by advisor or client id. */
-export interface Overlay { advisor?: Record<string, Values>; client?: Record<string, Values> }
+/**
+ * Values set this session, keyed by advisor or client id: accepted from the learning loop,
+ * or tuned by the advisor on screen (the ranking desk). Tuned values sit above learned ones
+ * and are still bounded by the schema and by the layers allowed to set each key.
+ */
+export interface Overlay { advisor?: Record<string, Values>; client?: Record<string, Values>; tuned?: Record<string, Values> }
 
 export const SCHEMA = schema.settings as unknown as Record<SettingKey, SettingSpec>;
 export const KEYS = Object.keys(SCHEMA) as SettingKey[];
@@ -45,7 +49,7 @@ export const SEGMENTS = segments as unknown as Segment[];
 /** One settings profile per advisor, read from the `profile` block of data/advisors/<id>.json. */
 export const ADVISOR_PROFILES: AdvisorProfile[] = ADVISORS_DATA.map((a) => ({ advisorId: a.id, ...(a.profile ?? { segmentId: "private-wealth", version: 1, learning: true, values: {} }) }));
 
-interface Source { layer: Layer; id: string; version: number; values: Values; learned?: boolean }
+interface Source { layer: Layer; id: string; version: number; values: Values; learned?: boolean; tuned?: boolean }
 
 function stack(advisorId: string | undefined, clientId: string | undefined, overlay: Overlay): Source[] {
   const client = clientId ? CLIENTS.find((c) => c.id === clientId) : undefined;
@@ -58,6 +62,8 @@ function stack(advisorId: string | undefined, clientId: string | undefined, over
     out.push({ layer: "advisor", id: ap.advisorId, version: ap.version, values: ap.values });
     const o = overlay.advisor?.[ap.advisorId];
     if (o) out.push({ layer: "advisor", id: ap.advisorId, version: ap.version, values: o, learned: true });
+    const t = overlay.tuned?.[ap.advisorId];
+    if (t) out.push({ layer: "advisor", id: ap.advisorId, version: ap.version, values: t, tuned: true });
   }
   if (client) {
     out.push({ layer: "client", id: client.id, version: client.preferences?.version ?? 0, values: (client.preferences?.values ?? {}) as Values });
@@ -85,7 +91,7 @@ export function resolveProfile(scope: { advisorId?: string; clientId?: string },
   const values: Record<string, unknown> = {};
   const provenance = {} as Record<SettingKey, string>;
   const ignored: string[] = [];
-  const tag = (s: Source) => (s.layer === "firm" ? "firm" : `${s.layer}:${s.id}`) + (s.learned ? " (learned)" : "");
+  const tag = (s: Source) => (s.layer === "firm" ? "firm" : `${s.layer}:${s.id}`) + (s.learned ? " (learned)" : s.tuned ? " (tuned)" : "");
   for (const key of KEYS) {
     const spec = SCHEMA[key];
     for (const s of layers) {
@@ -115,7 +121,7 @@ export function resolveProfile(scope: { advisorId?: string; clientId?: string },
       provenance[key] = tag(s);
     }
   }
-  const version = layers.map((s) => `${s.layer === "firm" ? "firm" : `${s.layer}:${s.id}`}@${s.version}${s.learned ? "+learned" : ""}`).join(" ");
+  const version = layers.map((s) => `${s.layer === "firm" ? "firm" : `${s.layer}:${s.id}`}@${s.version}${s.learned ? "+learned" : s.tuned ? "+tuned" : ""}`).join(" ");
   return { values: values as unknown as Effective, provenance, ignored, version };
 }
 
@@ -125,6 +131,7 @@ const LAYER_LABEL: Record<Layer, string> = { firm: "Firm default", segment: "Seg
 export function sourceLabel(p: string | undefined): string {
   if (!p) return "Not set";
   const learned = p.endsWith(" (learned)");
+  if (p.endsWith(" (tuned)")) return "Your setting, tuned this session";
   const [layer, id] = p.replace(" (learned)", "").split(":") as [Layer, string?];
   const seg = layer === "segment" ? SEGMENTS.find((s) => s.id === id)?.label : undefined;
   const base = layer === "segment" ? `${LAYER_LABEL.segment}: ${seg ?? id}` : layer === "firm" ? LAYER_LABEL.firm : `${LAYER_LABEL[layer]} setting`;
