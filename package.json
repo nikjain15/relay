@@ -16,7 +16,9 @@
     "e2e": "node scripts/e2e.mjs",
     "stress": "vite-node --config vitest.config.ts scripts/stress.tsx",
     "start": "next start",
-    "samples:build": "vite-node --config vitest.config.ts scripts/build-samples.ts"
+    "samples:build": "vite-node --config vitest.config.ts scripts/build-samples.ts",
+    "eval": "vite-node --config vitest.config.ts evals/cli.ts",
+    "eval:write": "EVAL_WRITE=1 vite-node --config vitest.config.ts evals/cli.ts"
   },
   "dependencies": {
     "next": "15.5.25",

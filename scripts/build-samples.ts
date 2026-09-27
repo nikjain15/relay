@@ -8,7 +8,8 @@ import { sampleCsv } from "@/lib/import/sample";
 const ROOT = new URL("../", import.meta.url).pathname;
 const OUT = join(ROOT, "public/samples");
 mkdirSync(OUT, { recursive: true });
-const s = sampleCsv(120, 7);
+// 300 households, seed 7: the evaluation corpus. Change either number and the golden file under evals/ must be regenerated.
+const s = sampleCsv(300, 7);
 writeFileSync(join(OUT, "clients.csv"), s.clients);
 writeFileSync(join(OUT, "messages.csv"), s.messages);
 writeFileSync(join(OUT, "research-note.md"), `# Holding cash after a business sale

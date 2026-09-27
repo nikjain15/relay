@@ -1,0 +1,28 @@
+{
+  "_note": "Ground truth for the evaluation corpus, by sentence. The sample generator writes messages and notes from these exact sentences, so what each one should trigger is known by construction and reviewed here by hand. A rule fires only where its connector is connected and healthy for the household's advisor; the eval applies that from the advisor files, not from the engine.",
+  "messages": {
+    "Following up on our call. I'd suggest we move a year of spending out of cash into the ladder.": { "direction": "outbound", "rules": ["finra-3110-correspondence"], "discovery": [] },
+    "Confirming Thursday at 10. Both of you, as you asked.": { "direction": "outbound", "rules": [], "discovery": [] },
+    "The fund we discussed will return about 6% a year, which more than covers the gap.": { "direction": "outbound", "rules": ["sec-marketing-206-4-1"], "discovery": [] },
+    "Attached is the form. Sign where marked and send it back whenever convenient.": { "direction": "outbound", "rules": [], "discovery": [] },
+    "I sit on the advisory board of the sponsor, so I can walk you through the terms myself.": { "direction": "outbound", "rules": [], "discovery": [], "why": "Outside business language, but the conduct rule is switched off at the firm layer in the shipped rule set, so nothing fires. The proposer sees it." },
+    "Can we find time next week to talk through the pension?": { "direction": "inbound", "rules": [], "discovery": ["retirement"] },
+    "This is not what I was told when I opened the account. I'm unhappy with how the fees were explained.": { "direction": "inbound", "rules": ["complaint-identification-4513"], "discovery": [] },
+    "We've just accepted an offer on the house. Completion is in six weeks.": { "direction": "inbound", "rules": [], "discovery": ["property-sale"] },
+    "My brother will be handling the paperwork for me from now on. Please send everything to him.": { "direction": "inbound", "rules": [], "discovery": ["third-party"] },
+    "Should I put the whole cash balance into crypto? A friend doubled his last month.": { "direction": "inbound", "rules": [], "discovery": [] }
+  },
+  "notes": {
+    "Mentioned they are thinking about selling the second home next spring.": ["property-sale"],
+    "Asked whether the cash could go somewhere that earns a little more.": ["excess-cash"],
+    "Daughter is getting married in the autumn; wants to help with the deposit on a flat.": ["family-change", "property-sale"],
+    "Retiring at the end of next year; has not decided on the pension option.": ["retirement"],
+    "Moving to Lisbon for two years for work; unsure what that means for taxes.": ["relocation"],
+    "Received an inheritance from an aunt; roughly four hundred thousand.": ["inheritance"],
+    "Company is being acquired; the shares vest on close.": ["liquidity-event"],
+    "Wants to set something up for the grandchildren's school fees.": ["education"]
+  },
+  "contactSummaries": {
+    "Review; nothing changed": []
+  }
+}
