@@ -409,6 +409,7 @@ try {
   await page.reload();
   check("reload: session state resets as documented (no approved note after reload)", (await page.getByRole("button", { name: "I sent it from my email" }).count()) === 0);
   await page.goto(BASE + "/communications");
+  await page.getByRole("button", { name: /Load the featured proposal/ }).waitFor({ timeout: 15_000 }).catch(() => {});
   check("reload: communications offers the featured proposal when nothing is accepted", (await page.getByRole("button", { name: /Load the featured proposal/ }).count()) === 1);
 
   // 7b. One source: for every advisor, each count on the Overview equals the count on the screen it links to.
@@ -474,7 +475,8 @@ try {
   const n = Number(/: (\d+) findings?\./.exec(made)?.[1] ?? -1);
   check("agents: a created agent runs over the existing book and lists what it found", n > 0 && /cash covers \d+ months/i.test(made), made.slice(0, 160));
   await page.keyboard.press("Escape");
-  check("agents: the new agent is listed under Your agents with its findings", /Your agents \(1\)/.test(await page.locator("main").innerText()));
+  const tabText = await page.getByRole("tab", { name: /Your agents/ }).innerText();
+  check("agents: the new agent is listed under Your agents, the first tab, with its findings", /Your agents\s*1/.test(tabText) && (await page.getByRole("tabpanel").getByText("Cash cover watch").count()) > 0, tabText);
 
   // 7c. Lists an advisor scans: search, filter and sort, and the firm's workstation first among CRMs.
   await page.goto(BASE + "/clients");
