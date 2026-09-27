@@ -42,6 +42,12 @@ const check = (name, ok, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  ::  ${detail}` : ""}`);
 };
 
+// A proposal renders on the client after it reads ?opp=; wait until it has, in any of its states.
+async function gotoProposal(page, url) {
+  await page.goto(url);
+  await page.waitForFunction(() => /Rationale record|Refused:|No eligible candidate/.test(document.querySelector("main")?.innerText ?? ""), null, { timeout: 20_000 }).catch(() => {});
+}
+
 async function waitFor(url, ms = 60_000) {
   const end = Date.now() + ms;
   while (Date.now() < end) {
@@ -194,7 +200,7 @@ try {
   const f = app.featured;
   const fc = clients.find((c) => c.id === f.clientId);
   const other = fc.opportunities.find((o) => o.id !== f.opportunityId && (o.action === "fund" || o.action === "trim"));
-  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  await gotoProposal(page, `${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
   if (other) {
     await page.getByRole("link", { name: other.title }).click();
     await page.waitForURL(`**opp=${other.id}`);
@@ -212,7 +218,7 @@ try {
       const have = c.holdings.filter((x) => liquid.has(x.productId) && !x.earmarked).reduce((a, x) => a + x.valueUsd, 0);
       const need = g.target * c.monthlySpendUsd - have + (o.outflowUsd ?? 0);
       const amount = o.inflowUsd ? Math.min(o.inflowUsd, need) : need;
-      await page.goto(`${BASE}/household/${c.id}/proposal?opp=${o.id}`);
+      await gotoProposal(page, `${BASE}/household/${c.id}/proposal?opp=${o.id}`);
       const line = await page.locator("main p", { hasText: "Need:" }).first().innerText().catch(() => "");
       const cell = await page.locator("tbody tr").first().locator("td").nth(3).innerText();
       check(`proposal ${o.id}: the need (${usd(need)}) and the amount (${usd(amount)}) on screen match data/`, line.includes(usd(need)) && cell === usd(amount), `${line} | amount ${cell}`);
@@ -224,7 +230,7 @@ try {
   if (refusedOpp) {
     await page.goto(`${BASE}/evidence/${refusedOpp.id}`);
     const ev = /Refused: no supporting evidence/.test(await page.locator("main").innerText());
-    await page.goto(`${BASE}/household/${refusedOpp.householdId}/proposal?opp=${refusedOpp.id}`);
+    await gotoProposal(page, `${BASE}/household/${refusedOpp.householdId}/proposal?opp=${refusedOpp.id}`);
     const pr = /Refused: this opportunity has no supporting evidence/.test(await page.locator("main").innerText());
     await page.goto(`${BASE}/meetings/${refusedOpp.householdId}`);
     const rp = !(await page.locator("main").innerText()).includes(`${refusedOpp.plainTitle ?? refusedOpp.title}: `);
@@ -318,9 +324,7 @@ try {
   check("ask: a plain question is answered from household arithmetic with the record cited and a link to the household", /Liquidity covers \d+ months/.test(askText) && /data\/clients\/hh-renner\.json#holdings/.test(askText) && /From household arithmetic/.test(askText));
   await page.keyboard.press("Escape");
   // Options: the figures an advisor compares, and the morning after per row.
-  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
-  // The options render on the client after the query string is read; wait for them rather than race the render.
-  await page.getByText("The economics for the household").first().waitFor({ timeout: 20_000 }).catch(() => {});
+  await gotoProposal(page, `${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
   const opt = await page.locator("main").innerText();
   check("options: after-tax income, cost over the horizon, access and the morning after on every row, and the economics of the selected option", /Income after tax, a year/.test(opt) && /Cost, 3 yrs/.test(opt) && /Morning after/.test(opt) && /(Clean|Review|Blocked)/.test(opt) && /The economics for the household/.test(opt) && /Rate risk/.test(opt) && /Rationale record/.test(opt), [/Income after tax, a year/, /Cost, 3 yrs/, /Morning after/, /The economics for the household/, /Rate risk/, /Rationale record/].filter((r) => !r.test(opt)).join(" ") + " :: " + opt.slice(0, 300).replace(/\n/g, " "));
   // Sources: three steps, the connector catalogue with what each unlocks, and a gap named.
@@ -370,7 +374,7 @@ try {
   check("proposer: a rule change waits on a principal, and a loosening is seen but not proposed", /Proposed by the agent, waiting on a principal/.test(cp) && /Seen, not proposed/.test(cp) && /stricter direction/.test(cp));
 
   // 7. Communications: the recipient counter 2, 26, 32, 8, and reload behaviour.
-  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  await gotoProposal(page, `${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
   await page.getByRole("radio", { name: new RegExp(json("data/shelf.json").find((p) => p.id === f.productId).name) }).check();
   await page.getByRole("button", { name: "Accept proposal" }).click();
   await page.getByRole("link", { name: "Draft client note" }).click();
