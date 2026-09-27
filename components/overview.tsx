@@ -70,9 +70,10 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const connected = useMemo(() => connectedIds(advisorId, connections), [advisorId, connections]);
   const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, openCases, connected), [agents, policy, found, actions, openCases, connected]);
   const blocking = openCases.filter((c) => c.severity === "block" && c.reason === "fired");
-  const meetings = todaysMeetings();
-  const overdue = allTasks().filter((t) => t.dueDay < 0);
-  const service = triage(SERVICE_REQUESTS);
+  // Margaret's morning: her calendar, her tasks, her clients' requests, not the firm's.
+  const meetings = todaysMeetings(advisorId);
+  const overdue = allTasks().filter((t) => t.dueDay < 0 && t.advisorId === advisorId);
+  const service = triage(SERVICE_REQUESTS.filter((r) => mine.some((c) => c.id === r.clientId)));
   const escalated = mine.flatMap(openItems).filter((w) => w.status === "escalated");
   const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed))), [dismissed, book, mine]);
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
