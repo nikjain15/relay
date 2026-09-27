@@ -59,10 +59,13 @@ const surname = (name: string) => name.replace(/\b(family|household)\b/gi, "").r
 
 /** The household a question is about, by any word of its name. */
 export function householdIn(q: string, clients: ClientFile[]): ClientFile | undefined {
-  const words: string[] = q.toLowerCase().match(/[a-z][a-z'-]{2,}/g) ?? [];
+  // Possessives and hyphens split: "Smith's goals" names Smith, "Lee-Park" names Lee and Park.
+  const words: string[] = q.toLowerCase().replace(/['\u2019]s\b/g, "").match(/[a-z]+/g) ?? [];
   let best: { c: ClientFile; len: number } | undefined;
   for (const c of clients) {
-    const parts = surname(c.name).toLowerCase().split(/[\s-]+/).filter((p) => p.length > 2);
+    const all = surname(c.name).toLowerCase().split(/[\s-]+/).filter(Boolean);
+    // A two-letter surname counts when it is the whole name; otherwise short parts are initials.
+    const parts = all.filter((p) => p.length > 2 || all.length === 1);
     for (const p of parts) if (words.includes(p) && (!best || p.length > best.len)) best = { c, len: p.length };
   }
   return best?.c;
