@@ -21,17 +21,22 @@ const PATHS = ["existing", "referral", "event", "signal"];
 const ID = /^[a-z0-9][a-z0-9-]*$/;
 const money = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n >= 0;
 
-export function validate(): string[] {
+
+/**
+ * Every check one client record must pass, shared by the build-time validator
+ * and the in-browser import: an imported spreadsheet row is held to exactly
+ * the same rules as a shipped file. `ctx` carries the id sets the checks
+ * cross-reference; `seen` accumulates ids across a batch so duplicates are caught.
+ */
+export function clientErrors(
+  c: ClientFile,
+  ctx: { docIds: Set<string>; productIds: Set<string>; advisorIds: Set<string> },
+  seen: { ids: Set<string>; personIds: Set<string>; oppIds: Set<string> } = { ids: new Set(), personIds: new Set(), oppIds: new Set() },
+): string[] {
   const errors: string[] = [];
   const err = (m: string) => errors.push(m);
-  const ids = new Set<string>();
-  const personIds = new Set<string>();
-  const oppIds = new Set<string>();
-  const docIds = new Set(DOCUMENTS.map((d) => d.id));
-  const productIds = new Set(SHELF_DATA.map((p) => p.id));
-  const advisorIds = new Set(ADVISORS_DATA.map((a) => a.id));
-
-  for (const c of CLIENTS as ClientFile[]) {
+  const { docIds, productIds, advisorIds } = ctx;
+  const { ids, personIds, oppIds } = seen;
     const at = `client ${c.id}`;
     for (const k of ["id", "name", "tier", "advisorId", "totalUsd", "monthlySpendUsd", "persons", "holdings", "goals", "constraints", "opportunities", "groundedIn"] as const) {
       if (c[k] === undefined) err(`${at}: missing ${k}`);
@@ -100,7 +105,21 @@ export function validate(): string[] {
       }
       if (w.audience.one[1] !== addressees(toHousehold(c)).length) err(`${at}: walkthrough audience says ${w.audience.one[1]} people but the note is addressed to ${addressees(toHousehold(c)).length}`);
     }
-  }
+  return errors;
+}
+
+export function validate(): string[] {
+  const errors: string[] = [];
+  const err = (m: string) => errors.push(m);
+  const ids = new Set<string>();
+  const personIds = new Set<string>();
+  const oppIds = new Set<string>();
+  const docIds = new Set(DOCUMENTS.map((d) => d.id));
+  const productIds = new Set(SHELF_DATA.map((p) => p.id));
+  const advisorIds = new Set(ADVISORS_DATA.map((a) => a.id));
+
+  const seen = { ids, personIds, oppIds };
+  for (const c of CLIENTS as ClientFile[]) errors.push(...clientErrors(c, { docIds, productIds, advisorIds }, seen));
   for (const p of PROSPECTS) {
     if (!advisorIds.has(p.advisorId)) err(`prospect ${p.id}: unknown advisor ${p.advisorId}`);
     if (!p.groundedIn?.length) err(`prospect ${p.id}: no sources`);

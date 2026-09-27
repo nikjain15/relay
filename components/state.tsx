@@ -8,7 +8,11 @@ import type { Overlay } from "@/lib/profile";
 import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
 import type { ConnectionState, ConnectionStatus } from "@/lib/connectors/types";
-import { CONNECTORS_DATA } from "@/lib/data";
+import { CLIENTS, CONNECTORS_DATA } from "@/lib/data";
+import type { ClientFile, Doc, Opportunity } from "@/lib/types";
+import { CORPUS } from "@/lib/fixtures/corpus";
+import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
+import { toOpportunity, type Candidate } from "@/lib/discovery/discover";
 
 export type Disposition = "approved" | "returned" | "blocked";
 
@@ -92,6 +96,32 @@ interface State {
    */
   actionDecisions: Record<string, { decision: "accepted" | "declined"; at: string }>;
   decideAction: (actionId: string, decision: "accepted" | "declined") => void;
+  /**
+   * The session dataset: records connected from files in this browser, held
+   * in memory beside the shipped book and never sent anywhere. Every engine
+   * reads the merged book through `book`.
+   */
+  dataset: { clients: ClientFile[]; documents: Doc[]; batches: ImportBatch[] };
+  addBatch: (batch: ImportBatch, clients: ClientFile[], documents: Doc[]) => void;
+  clearDataset: () => void;
+  /** The merged book: shipped records plus the session dataset, with accepted discoveries on today's list. */
+  book: { clients: ClientFile[]; documents: Doc[]; opportunities: Opportunity[] };
+  /** What the advisor did with each discovery candidate. Accepting puts it on today's list for the session. */
+  discoveryDecisions: Record<string, { decision: "accepted" | "declined"; at: string }>;
+  decideDiscovery: (candidate: Candidate, decision: "accepted" | "declined") => void;
+}
+
+export interface ImportBatch {
+  id: string;
+  fileName: string;
+  kind: "clients" | "messages" | "document" | "records";
+  rows: number;
+  accepted: number;
+  errors: string[];
+  warnings: string[];
+  at: string;
+  /** How long parsing, mapping and validation took, in milliseconds, in this browser. */
+  ms: number;
 }
 
 const Ctx = createContext<State | null>(null);
@@ -108,6 +138,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [caseDispositions, setCaseDispositions] = useState<State["caseDispositions"]>({});
   const [proposalDecisions, setProposalDecisions] = useState<State["proposalDecisions"]>({});
   const [actionDecisions, setActionDecisions] = useState<State["actionDecisions"]>({});
+  const [dataset, setDataset] = useState<State["dataset"]>({ clients: [], documents: [], batches: [] });
+  const [discoveryDecisions, setDiscoveryDecisions] = useState<State["discoveryDecisions"]>({});
+  const [acceptedDiscoveries, setAcceptedDiscoveries] = useState<Opportunity[]>([]);
+  const book = {
+    clients: [...CLIENTS, ...dataset.clients],
+    documents: [...CORPUS, ...dataset.documents],
+    opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
+  };
   const overlay: Overlay = {};
   for (const s of learned) {
     const side = (overlay[s.scope] ??= {});
@@ -146,6 +184,21 @@ export function StateProvider({ children }: { children: ReactNode }) {
     revertEdit: (id) => setRuleEdits((l) => l.filter((x) => x.id !== id)),
     connections,
     caseDispositions,
+    dataset,
+    addBatch: (batch, clients, documents) =>
+      setDataset((d) => ({
+        // A re-imported id replaces the earlier record rather than duplicating it.
+        clients: [...d.clients.filter((c) => !clients.some((n) => n.id === c.id)), ...clients],
+        documents: [...d.documents.filter((x) => !documents.some((n) => n.id === x.id)), ...documents],
+        batches: [...d.batches, batch],
+      })),
+    clearDataset: () => setDataset({ clients: [], documents: [], batches: [] }),
+    book,
+    discoveryDecisions,
+    decideDiscovery: (k, decision) => {
+      setDiscoveryDecisions((s) => ({ ...s, [k.id]: { decision, at: new Date().toISOString() } }));
+      if (decision === "accepted") setAcceptedDiscoveries((l) => [...l.filter((o) => o.id !== `opp-${k.id.replace(/^disc-/, "")}`), toOpportunity(k)]);
+    },
     actionDecisions,
     decideAction: (id, decision) => setActionDecisions((s) => ({ ...s, [id]: { decision, at: new Date().toISOString() } })),
     proposalDecisions,

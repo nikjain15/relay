@@ -221,7 +221,7 @@ const PROBES: Probe[] = [
   {
     id: "supervisory-inputs",
     run: (x) => {
-      const a = ACCOUNT_INPUTS.accounts.find((k) => k.clientId === x.c.id);
+      const a = x.c.supervisory ?? ACCOUNT_INPUTS.accounts.find((k) => k.clientId === x.c.id);
       if (!a) {
         x.unknowns.push({ id: "no-account-inputs", probe: "supervisory-inputs", text: "The firm's systems hold no supervisory record for this account.", why: "Trusted contact, complaints and disbursement flags cannot be checked.", cites: [x.cite("supervisory", "Supervisory record, none")] });
         return;
@@ -286,8 +286,8 @@ function f(id: string, kind: ClaimKind, confidence: number, text: string, cites:
   return { id, probe: probe ?? id.replace(/-.*$/, ""), section: kind === "observed" ? "observed" : "inferred", kind, confidence, text, cites, askThis };
 }
 
-export function brief(clientId: string, connections: ConnectionState[] = CONNECTORS_DATA.connections): Briefing | undefined {
-  const c = clientFile(clientId);
+export function brief(clientId: string, connections: ConnectionState[] = CONNECTORS_DATA.connections, clients: ClientFile[] = CLIENTS): Briefing | undefined {
+  const c = clients.find((x) => x.id === clientId) ?? (clients === CLIENTS ? clientFile(clientId) : undefined);
   if (!c) return undefined;
   const path = `clients/${c.id}.json`;
   const x: Ctx = {
@@ -332,8 +332,8 @@ export function brief(clientId: string, connections: ConnectionState[] = CONNECT
   };
 }
 
-export function briefAll(connections?: ConnectionState[]): Briefing[] {
-  return CLIENTS.map((c) => brief(c.id, connections)!);
+export function briefAll(connections?: ConnectionState[], clients: ClientFile[] = CLIENTS): Briefing[] {
+  return clients.map((c) => brief(c.id, connections, clients)!);
 }
 
 export const PROBE_IDS = PROBES.map((p) => p.id);

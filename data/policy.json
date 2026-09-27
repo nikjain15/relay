@@ -98,5 +98,30 @@
     "citedBoost": 0.25,
     "stalePenalty": 0.5,
     "reviewDueWithinDays": 14
+  },
+  "import": {
+    "_note": "How a spreadsheet's holding columns map onto the shelf when a book is connected from a file. Product ids are data, never spelled in code.",
+    "holdingColumns": {
+      "treasuryUsd": {
+        "productId": "prod-tsy-ladder",
+        "name": "Treasury ladder"
+      },
+      "muniUsd": {
+        "productId": "prod-muni-ladder",
+        "name": "Municipal ladder"
+      }
+    },
+    "defaultEvidence": {
+      "liquidity": [
+        "doc-liquidity-note",
+        "doc-tsy-onepager"
+      ],
+      "concentration": [
+        "doc-concentration-note"
+      ],
+      "review": [
+        "doc-review-procedure"
+      ]
+    }
   }
 }

@@ -8,6 +8,7 @@ export const POLICY = policy as unknown as {
   liquidity: { cashProductId: string; sleeveMaxRisk: number; sleeveMaxAccessDays: number; lockupDays: number };
   proposals: { coreProductId: string };
   communications: { disclosureDocId: string };
+  import: { holdingColumns: Record<string, { productId: string; name: string }>; defaultEvidence: Record<"liquidity" | "concentration" | "review", string[]> };
   retrieval: { corpusDay: number; floor: number; topK: number; citedBoost: number; stalePenalty: number; reviewDueWithinDays: number };
   prospecting: { warmth: Record<"existing" | "referral" | "event" | "signal", number>; sizeBands: { minUsd: number; points: number }[] };
   servicing: {
