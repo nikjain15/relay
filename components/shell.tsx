@@ -7,13 +7,52 @@
 // morning list on a phone between meetings needs the content column to have the
 // whole screen. The drawer closes on navigation and on Escape, and focus goes to
 // it when it opens, so it is usable without a mouse.
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { Nav, NavList } from "@/components/nav";
+import { Icon } from "@/components/icons";
+import { Palette } from "@/components/palette";
+import { useRelay } from "@/components/state";
+import { policyFrom } from "@/lib/compliance/store";
+import { scopeFor } from "@/lib/compliance/scope";
+import { sweep } from "@/lib/compliance/sweep";
+import { APP } from "@/lib/data/policy";
+
+/**
+ * What the agents are holding, in the header, on every screen.
+ *
+ * The point of an agent layer is that it works when nobody is looking at it, so
+ * the count belongs where an advisor cannot miss it rather than on one page they
+ * have to remember to open. It reads "clear" when it is clear, because a badge
+ * that only ever appears when something is wrong teaches people to ignore the
+ * space it occupies.
+ */
+function AgentStatus() {
+  const { ruleEdits, connections, caseDispositions } = useRelay();
+  const open = useMemo(() => {
+    const advisorId = APP.defaultAdvisorId;
+    const found = sweep(advisorId, policyFrom(ruleEdits, scopeFor(advisorId)), connections);
+    return found.cases.filter((c) => !caseDispositions[c.id]);
+  }, [ruleEdits, connections, caseDispositions]);
+  const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired").length;
+
+  return (
+    <Link
+      href="/supervision"
+      className={`flex items-center gap-1.5 rounded border px-2 py-1 text-[12px] ${blocking ? "border-critical/40 bg-critical-soft text-critical" : open.length ? "border-line-strong text-ink" : "border-line text-ink-2"}`}
+    >
+      <Icon name="agent" size={16} />
+      <span className="hidden sm:inline">{open.length === 0 ? "Agents clear" : `${open.length} finding${open.length === 1 ? "" : "s"}`}</span>
+      <span className="sm:hidden">{open.length === 0 ? "Clear" : open.length}</span>
+    </Link>
+  );
+}
 
 export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [palette, setPalette] = useState(false);
   const path = usePathname();
   const drawer = useRef<HTMLDivElement>(null);
 
@@ -27,6 +66,19 @@ export function Shell({ children }: { children: ReactNode }) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Command or control K opens the palette anywhere, which is the shortcut this
+  // class of tool has taught people to reach for.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPalette((v) => !v);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <>
@@ -42,14 +94,27 @@ export function Shell({ children }: { children: ReactNode }) {
           className="-ml-1 inline-flex h-9 w-9 items-center justify-center rounded border border-line text-ink lg:hidden"
         >
           <span className="sr-only">{open ? "Close sections" : "Open sections"}</span>
-          <span aria-hidden className="text-base leading-none">{open ? "×" : "≡"}</span>
+          <Icon name={open ? "close" : "menu"} size={20} />
         </button>
         <span className="text-[17px] font-semibold tracking-tight">Relay</span>
-        <span className="ml-auto hidden text-xs text-ink-2 sm:inline" role="note">
+        <span className="hidden text-xs text-ink-3 xl:inline" role="note">
           Illustrative prototype &middot; synthetic data &middot; no model calls
         </span>
-        <span className="ml-auto text-xs text-ink-2 sm:hidden" role="note">Prototype</span>
+
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setPalette(true)}
+            className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[12px] text-ink-2 hover:text-ink"
+          >
+            <Icon name="search" size={16} />
+            <span className="hidden sm:inline">Jump to</span>
+          </button>
+          <AgentStatus />
+        </div>
       </header>
+
+      <Palette open={palette} onClose={() => setPalette(false)} />
 
       {open && (
         <div className="fixed inset-0 top-14 z-20 lg:hidden">

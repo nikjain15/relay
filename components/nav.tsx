@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { APP } from "@/lib/data/policy";
+import { Icon, type IconName } from "@/components/icons";
 
 const F = APP.featured;
 
-export interface NavLink { href: string; label: string; note?: string }
+export interface NavLink { href: string; label: string; note?: string; icon: IconName }
 export interface NavArea { area: string; links: NavLink[] }
 
 /**
@@ -21,51 +22,51 @@ export const AREAS: NavArea[] = [
   {
     area: "Today",
     links: [
-      { href: "/", label: "Overview" },
-      { href: "/triage", label: "Today's list", note: "What needs a decision" },
-      { href: "/meetings", label: "Meetings" },
-      { href: "/follow-ups", label: "Follow-ups" },
-      { href: "/servicing", label: "Service requests" },
+      { href: "/", label: "Overview", icon: "home" },
+      { href: "/triage", label: "Today's list", note: "What needs a decision", icon: "list" },
+      { href: "/meetings", label: "Meetings", icon: "calendar" },
+      { href: "/follow-ups", label: "Follow-ups", icon: "check" },
+      { href: "/servicing", label: "Service requests", icon: "clock" },
     ],
   },
   {
     area: "Clients",
     links: [
-      { href: "/clients", label: "My clients" },
-      { href: `/household/${F.clientId}`, label: "Client picture" },
-      { href: `/evidence/${F.opportunityId}`, label: "Why this client" },
-      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options" },
+      { href: "/clients", label: "My clients", icon: "people" },
+      { href: `/household/${F.clientId}`, label: "Client picture", icon: "document" },
+      { href: `/evidence/${F.opportunityId}`, label: "Why this client", icon: "eye" },
+      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", icon: "filter" },
     ],
   },
   {
     area: "Communications",
     links: [
-      { href: "/communications", label: "Note and audience" },
-      { href: "/supervision", label: "Supervision queue" },
+      { href: "/communications", label: "Note and audience", icon: "email" },
+      { href: "/supervision", label: "Supervision queue", icon: "shield" },
     ],
   },
   {
     area: "Compliance",
     links: [
-      { href: "/connectors", label: "Connected channels", note: "What is captured" },
-      { href: "/compliance", label: "Rules and agents" },
-      { href: "/compliance/log", label: "Change log" },
+      { href: "/connectors", label: "Connected channels", note: "What is captured", icon: "social" },
+      { href: "/compliance", label: "Rules and agents", icon: "rules" },
+      { href: "/compliance/log", label: "Change log", icon: "log" },
     ],
   },
   {
     area: "Growth",
     links: [
-      { href: "/pipeline", label: "New clients" },
-      { href: "/onboarding", label: "Paperwork" },
-      { href: "/measurement", label: "Measurement" },
+      { href: "/pipeline", label: "New clients", icon: "plus" },
+      { href: "/onboarding", label: "Paperwork", icon: "esign" },
+      { href: "/measurement", label: "Measurement", icon: "chart" },
     ],
   },
   {
     area: "Settings",
     links: [
-      { href: "/profiles", label: "Preferences" },
-      { href: "/learning", label: "Suggestions" },
-      { href: "/personas", label: "Who's who" },
+      { href: "/profiles", label: "Preferences", icon: "settings" },
+      { href: "/learning", label: "Suggestions", icon: "agent" },
+      { href: "/personas", label: "Who's who", icon: "crm" },
     ],
   },
 ];
@@ -110,10 +111,13 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       href={l.href}
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
-                      className={`block border-l-2 px-3 py-2 sm:py-1.5 ${active ? "border-ink bg-selected font-semibold text-ink" : "border-transparent text-ink-2 hover:bg-subtle hover:text-ink"}`}
+                      className={`flex items-start gap-2.5 border-l-2 px-3 py-2 sm:py-1.5 ${active ? "border-ink bg-selected font-semibold text-ink" : "border-transparent text-ink-2 hover:bg-subtle hover:text-ink"}`}
                     >
-                      {l.label}
-                      {l.note && active && <span className="mt-0.5 block text-[11px] font-normal text-ink-3">{l.note}</span>}
+                      <Icon name={l.icon} size={16} className="mt-px" />
+                      <span className="min-w-0">
+                        {l.label}
+                        {l.note && active && <span className="mt-0.5 block text-[11px] font-normal text-ink-3">{l.note}</span>}
+                      </span>
                     </Link>
                   </li>
                 );

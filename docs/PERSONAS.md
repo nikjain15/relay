@@ -7,8 +7,8 @@ client, no real advisor, and no UBS-internal data is used. Real UBS advisor team
 attributed to any named person.
 
 **How sources were read.** From this workspace only web search was available (ubs.com and advisors.ubs.com
-were blocked), so each source below was read through search summaries, not first-hand. Nik should open
-the links marked **check** once before the interview.
+were blocked), so each source below was read through search summaries, not first-hand. Open
+the links marked **check** once.
 
 **Legend for the "Kind" column:** *Published* = stated by the source; *Derived* = arithmetic on published
 figures; *Chosen* = invented, deliberately inside the published range.

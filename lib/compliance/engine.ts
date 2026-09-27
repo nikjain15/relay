@@ -8,10 +8,10 @@
 //
 // Deterministic. No model client may be imported here, so the same facts always
 // produce the same verdict and a past decision can be replayed exactly.
-import type { FactBag, Outcome, Verdict } from "@/lib/compliance/types";
+import type { FactBag, FactValue, Outcome, Verdict } from "@/lib/compliance/types";
 import type { EffectiveRule, ResolvedPolicy } from "@/lib/compliance/policy";
 import { activeRules } from "@/lib/compliance/policy";
-import { evaluate, paramMap, render } from "@/lib/compliance/dsl";
+import { evaluate, factsUsed, paramMap, render } from "@/lib/compliance/dsl";
 
 export interface EvaluateInput {
   facts: FactBag;
@@ -39,6 +39,34 @@ function confidenceFor(rule: EffectiveRule, input: EvaluateInput): number {
   const used = rule.evidence.filter((k) => k in conf && input.facts[k] !== undefined);
   if (used.length === 0) return 1;
   return Math.min(...used.map((k) => conf[k] ?? 1));
+}
+
+/**
+ * Would this rule's verdict change if the facts we are unsure about were wrong?
+ *
+ * Without this, a confidence floor sends every uncertain clear to a person, even
+ * when a fact we are certain about already settles it. The specified-adult rule
+ * showed why that is not a harmless excess: its inferred inputs carry 0.7 against
+ * a 0.8 floor, so it queued "possible diminished capacity or financial
+ * exploitation" against a 41-year-old, whose age rules the rule out with
+ * certainty. A supervisor reading that learns to distrust the queue.
+ *
+ * So an uncertain fact only reaches a person when flipping it would flip the
+ * verdict. Booleans are flipped one at a time and then all together, which covers
+ * the shape every rule in the catalog actually uses.
+ */
+function uncertaintyMatters(rule: EffectiveRule, input: EvaluateInput, params: Record<string, FactValue>): boolean {
+  const conf = input.factConfidence ?? {};
+  const read = factsUsed(rule.when);
+  const shaky = [...read].filter((k) => (conf[k] ?? 1) < rule.confidenceFloor && typeof input.facts[k] === "boolean");
+  if (shaky.length === 0) return true; // Not a boolean inference: fall back to the floor.
+
+  const flip = (keys: string[]) => {
+    const facts: FactBag = { ...input.facts };
+    for (const k of keys) facts[k] = !(facts[k] as boolean);
+    return evaluate(rule.when, facts, params);
+  };
+  return shaky.some((k) => flip([k])) || (shaky.length > 1 && flip(shaky));
 }
 
 export function evaluateRule(rule: EffectiveRule, input: EvaluateInput): Verdict {
@@ -77,8 +105,9 @@ export function evaluateRule(rule: EffectiveRule, input: EvaluateInput): Verdict
     remediation: fired ? render(rule.remediation, { ...input.facts, ...params }) : "",
     citation: rule.citation,
     // A human dispositions anything that fired, and anything the agent is not
-    // sure enough about to clear on its own.
-    requiresHuman: fired || confidence < rule.confidenceFloor,
+    // sure enough about to clear on its own, unless the uncertainty could not
+    // have changed the verdict anyway.
+    requiresHuman: fired || (confidence < rule.confidenceFloor && uncertaintyMatters(rule, input, params)),
   };
 }
 

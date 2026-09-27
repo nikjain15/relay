@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Icon, type IconName } from "@/components/icons";
 export { CLASS_LABEL, NODE_LABEL } from "@/lib/labels";
 
 /** Status label. Text always states the status; colour only reinforces it. */
@@ -59,12 +60,14 @@ export function Card({
   sub,
   right,
   tone = "plain",
+  icon,
   children,
 }: {
   title?: ReactNode;
   sub?: ReactNode;
   right?: ReactNode;
   tone?: "plain" | "critical" | "caution" | "positive";
+  icon?: IconName;
   children?: ReactNode;
 }) {
   const edge = {
@@ -77,9 +80,12 @@ export function Card({
     <section className={`rounded border ${edge} p-4 sm:p-5`}>
       {(title || right) && (
         <header className="mb-3 flex flex-wrap items-start justify-between gap-2">
-          <div className="min-w-0">
-            {title && <h3 className="text-[14px] font-semibold text-ink">{title}</h3>}
-            {sub && <p className="mt-1 text-[13px] text-ink-2">{sub}</p>}
+          <div className="flex min-w-0 gap-2.5">
+            {icon && <Icon name={icon} size={20} className="mt-px shrink-0 text-ink-3" />}
+            <div className="min-w-0">
+              {title && <h3 className="text-[14px] font-semibold text-ink">{title}</h3>}
+              {sub && <p className="mt-1 text-[13px] text-ink-2">{sub}</p>}
+            </div>
           </div>
           {right && <div className="shrink-0">{right}</div>}
         </header>
@@ -96,16 +102,74 @@ export function CardGrid({ cols = 2, children }: { cols?: 2 | 3 | 4; children: R
 }
 
 /** The three or four figures a screen leads with. Readable at phone width. */
-export function StatRow({ items }: { items: { value: ReactNode; label: string; tone?: "plain" | "critical" | "positive" }[] }) {
+export function StatRow({ items }: { items: { value: ReactNode; label: string; tone?: "plain" | "critical" | "positive"; icon?: IconName }[] }) {
   return (
     <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
       {items.map((s) => (
         <div key={s.label} className="rounded border border-line px-3 py-3">
-          <p className={`text-xl font-light leading-none ${s.tone === "critical" ? "text-critical" : s.tone === "positive" ? "text-positive" : "text-ink"}`}>{s.value}</p>
-          <p className="mt-1.5 text-[11px] uppercase tracking-wide text-ink-3">{s.label}</p>
+          <div className="flex items-baseline gap-1.5">
+            {s.icon && <Icon name={s.icon} size={16} className="translate-y-px text-ink-3" />}
+            <p className={`text-xl font-light leading-none ${s.tone === "critical" ? "text-critical" : s.tone === "positive" ? "text-positive" : "text-ink"}`}>{s.value}</p>
+          </div>
+          <p className="mt-1.5 text-[11px] text-ink-3">{s.label}</p>
         </div>
       ))}
     </div>
+  );
+}
+
+/**
+ * One line of work: an icon, what it is, and what it needs. The density unit for
+ * an agent-first screen, where the system has already done the reading and the
+ * person is choosing what to act on.
+ */
+export function Row({
+  icon,
+  title,
+  meta,
+  tone = "plain",
+  right,
+  href,
+  children,
+}: {
+  icon?: IconName;
+  title: ReactNode;
+  meta?: ReactNode;
+  tone?: "plain" | "critical" | "caution" | "positive";
+  right?: ReactNode;
+  href?: string;
+  children?: ReactNode;
+}) {
+  const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" }[tone];
+  const body = (
+    <>
+      {icon && <Icon name={icon} size={20} className={`mt-px ${accent}`} />}
+      <span className="min-w-0 flex-1">
+        <span className="block text-[14px] text-ink">{title}</span>
+        {meta && <span className="mt-0.5 block text-[12px] text-ink-3">{meta}</span>}
+        {children}
+      </span>
+      {right && <span className="shrink-0 self-center">{right}</span>}
+    </>
+  );
+  return (
+    <div className="border-b border-line last:border-b-0">
+      {href ? (
+        <a href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</a>
+      ) : (
+        <div className="flex items-start gap-3 px-1 py-3">{body}</div>
+      )}
+    </div>
+  );
+}
+
+/** Long explanation, folded away. A screen states its point and keeps the essay behind this. */
+export function More({ summary, children }: { summary: string; children: ReactNode }) {
+  return (
+    <details className="mt-3 text-[13px]">
+      <summary className="cursor-pointer text-ink-2 underline decoration-line-strong">{summary}</summary>
+      <div className="mt-2 max-w-2xl text-ink-2">{children}</div>
+    </details>
   );
 }
 

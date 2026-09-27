@@ -19,7 +19,7 @@ import { clientFile } from "@/lib/data";
 import type { Candidate, Constraint, Household, Opportunity } from "@/lib/types";
 import { PRIOR_DISTRIBUTIONS, PROTOTYPE_TODAY, templateFor } from "@/lib/fixtures/distributions";
 
-// One test per finding of the R-21 audit (docs/AUDIT-2026-09-26-r21.md). Each
+// One test per finding of the R-21 audit (the R-21 audit record, kept privately). Each
 // failed on the code before its fix.
 
 const renner = household("hh-renner")!;

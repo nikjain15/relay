@@ -7,7 +7,7 @@ is data a supervisor edits at runtime, resolved firm to segment to advisor to cl
 tightened; agents run that rule set across the book on a cadence, draft the finding with its citation
 and evidence, and hand every decision to a person.
 
-**The three claims a hiring manager should test, and where to look:**
+**The three claims worth testing, and where to look:**
 
 | Claim | Where it is true, not just stated |
 |---|---|

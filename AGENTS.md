@@ -2,7 +2,7 @@
 
 ## Project
 
-Relay, an advisor advice-to-action layer, built as an interview artifact. Synthetic data only. Next.js
+Relay, an advisor advice-to-action layer. A working prototype on synthetic data only. Next.js
 15, React 19, TypeScript strict, Tailwind 3, Vitest, dependency-cruiser. Mirrors `nikjain15/roleos-app`.
 
 ## Setup and checks
@@ -23,7 +23,7 @@ Relay, an advisor advice-to-action layer, built as an interview artifact. Synthe
 - **No em-dashes** in any document or UI string.
 - Regulatory citations carry rule, paragraph and adoption status. A proposed rule is never stated as
   current.
-- Decisions go in `docs/DECISIONS.md`, R- sequence, numbered against a fresh read.
+- Product decisions are recorded in an append-only log kept outside this repository, numbered against a fresh read. A decision that lives only in a conversation is not a decision.
 
 ## PRs
 
