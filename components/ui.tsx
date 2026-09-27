@@ -58,7 +58,7 @@ export function Stat({ value, label }: { value: ReactNode; label: string }) {
 
 export const th = "border-b border-line-strong px-3 py-2 text-left text-xs font-normal text-ink-2";
 export const td = "border-b border-line px-3 py-3 align-top";
-const base = "inline-flex h-8 items-center rounded px-3 text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+const base = "inline-flex min-h-8 items-center rounded px-3 py-1 text-left leading-snug text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
 export const btn = `${base} border border-ink bg-surface text-ink hover:bg-subtle`;
 export const btnPrimary = `${base} border border-ink bg-ink text-surface hover:opacity-85`;
 
