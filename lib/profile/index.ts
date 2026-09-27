@@ -131,7 +131,7 @@ const LAYER_LABEL: Record<Layer, string> = { firm: "Firm default", segment: "Seg
 export function sourceLabel(p: string | undefined): string {
   if (!p) return "Not set";
   const learned = p.endsWith(" (learned)");
-  if (p.endsWith(" (tuned)")) return "Your setting, tuned this session";
+  if (p.endsWith(" (tuned)")) return "Your setting, tuned by you";
   const [layer, id] = p.replace(" (learned)", "").split(":") as [Layer, string?];
   const seg = layer === "segment" ? SEGMENTS.find((s) => s.id === id)?.label : undefined;
   const base = layer === "segment" ? `${LAYER_LABEL.segment}: ${seg ?? id}` : layer === "firm" ? LAYER_LABEL.firm : `${LAYER_LABEL[layer]} setting`;

@@ -17,6 +17,7 @@ import type { CapturedMessage } from "@/lib/data";
 import type { CoverageReport } from "@/lib/connectors/coverage";
 import type { FactBag, Scope } from "@/lib/compliance/types";
 import { figures } from "@/lib/policy/checks";
+import { liquidityMonths } from "@/lib/household-math";
 
 export interface FactSet {
   scope: Scope;
@@ -193,6 +194,11 @@ export function accountFacts(input: {
     channel: grievance?.channel ?? "",
   };
   if (grievance) facts.complaintExcerpt = grievance.text.slice(0, 160);
+  // Household arithmetic an advisor's own agent can watch: cash cover against the family's target, and time since contact.
+  facts.cashCoverMonths = liquidityMonths(client);
+  const cashGoal = client.goals.find((g) => g.strategy === "Liquidity" && g.unit === "months");
+  if (cashGoal) facts.cashTargetMonths = cashGoal.target;
+  if (client.contactHistory.length) facts.daysSinceContact = -Math.max(...client.contactHistory.map((e) => e.day));
   if (age !== undefined) facts.clientAge = age;
   if (conc) {
     facts.instrument = conc.instrument;

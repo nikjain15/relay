@@ -36,6 +36,11 @@ export interface RuleEdit {
   from: string;
   to: string;
   reason: string;
+  /**
+   * A principal's approval of a change a lower layer may not make alone (switching a desk off,
+   * running it less often, taking a rule away, removing the desk). Without it the change is refused.
+   */
+  approvedBy?: string;
 }
 
 export const SEED_EDITS: RuleEdit[] = EDITS_DATA.edits as RuleEdit[];
@@ -129,12 +134,21 @@ export function resolveAgents(edits: RuleEdit[] = SEED_EDITS, scope?: { segmentI
     .sort((a, b) => LAYER_ORDER.indexOf(a.layer) - LAYER_ORDER.indexOf(b.layer) || Date.parse(a.at) - Date.parse(b.at));
   for (const e of ordered) {
     const a = agents.find((x) => x.id === e.agentId);
+    // An advisor's own agent lives in session state, not the catalog; its edits are logged here and applied there.
+    if (!a && e.agentId?.startsWith("custom-")) continue;
     if (!a) { rejected.push({ agentId: e.agentId!, layer: e.layer, layerId: e.layerId, field: e.field, attempted: e.to, reason: "No such agent." }); continue; }
-    const firm = e.layer === "firm";
+    // A principal may approve for one advisor what that advisor could not do alone.
+    const firm = e.layer === "firm" || Boolean(e.approvedBy);
     const refuse = (reason: string) => rejected.push({ agentId: a.id, layer: e.layer, layerId: e.layerId, field: e.field, attempted: e.to, reason });
-    if (e.field === "enabled") {
+    if (e.field === "name" || e.field === "mission") {
+      // Wording only: what the advisor calls the desk and how they describe it. Changes no behaviour, so any layer may.
+      if (e.field === "name") a.name = e.to; else a.mission = e.to;
+    } else if (e.field === "deleted") {
+      if (e.to === "true" && !firm) { refuse("Removing a desk loosens supervision. A principal has to approve it."); continue; }
+      a.enabled = e.to !== "true"; a.deleted = e.to === "true"; a.setBy!.enabled = e.layer;
+    } else if (e.field === "enabled") {
       const on = e.to === "true";
-      if (!on && !firm && a.enabled) { refuse("A lower layer cannot switch an agent off. The desk runs for every advisor the firm runs it for."); continue; }
+      if (!on && !firm && a.enabled) { refuse("A lower layer cannot switch an agent off without a principal's approval. The desk runs for every advisor the firm runs it for."); continue; }
       a.enabled = on; a.setBy!.enabled = e.layer;
     } else if (e.field === "cadence") {
       const to = e.to as AgentDefinition["cadence"];

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { AGENTS } from "@/lib/compliance/agents";
+import { ROSTER } from "@/lib/agents/roster";
 import { Card, CardGrid, More, PageTitle, Section } from "@/components/ui";
 import { AboutNav, NextPage, Takeaways } from "@/components/about";
 
@@ -41,7 +43,7 @@ export default function Architecture() {
         <div className="overflow-x-auto rounded border border-line bg-subtle p-4">
           <svg viewBox="0 0 760 410" role="img" aria-label="Five layers: read-only sources at the bottom, data, deterministic engines, agents, and the human gate at the top" className="min-w-[640px] text-ink">
             <Layer x={20} y={20} w={720} label="The human gate" sub="Accept or decline a prepared action; disposition a finding; add a rule; send from your own tools. Relay never sends" cls="text-advisor" />
-            <Layer x={20} y={100} w={720} label="Agents" sub="Eight compliance desks, research, dossier, retrieval, discovery, consequences, proposer, policy reader, Ask: each reads, cites, prepares; none decides" cls="text-agent" />
+            <Layer x={20} y={100} w={720} label="Agents" sub={`${AGENTS.length} compliance desks and ${ROSTER.map((x) => x.name === "Ask" ? "Ask" : x.name.toLowerCase()).join(", ")}: each reads, cites, prepares; none decides`} cls="text-agent" />
             <Layer x={20} y={180} w={720} label="Deterministic engines" sub="Constraints, ranking, recipients, the rule engine, retrieval, household arithmetic, option economics, the simulator; no model client imported" cls="text-ink" />
             <Layer x={20} y={260} w={720} label="Data: one file per record" sub="Clients, advisors, documents, rules, desks, connectors, policy, a change log; validated on every build" cls="text-ink" />
             <Layer x={20} y={340} w={720} label="Sources, read only" sub="CRM, custodian, portfolio, planning, archive, e-sign, documents, a dropped spreadsheet, a public record" cls="text-client" />

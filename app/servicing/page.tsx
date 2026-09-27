@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { CLIENTS, SERVICE_REQUESTS } from "@/lib/data";
-import { triage } from "@/lib/servicing/classify";
+import { useView } from "@/components/view";
 import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
 import { POLICY } from "@/lib/data/policy";
 import { Icon } from "@/components/icons";
 
 export default function Servicing() {
-  const list = triage(SERVICE_REQUESTS);
+  // The signed-in advisor's clients' requests, from the same view the Overview counts.
+  const v = useView();
+  const list = v.serviceRequests;
   return (
     <>
       <PageTitle
@@ -17,7 +20,7 @@ export default function Servicing() {
       <AgentBar
         name="Service"
         icon="clock"
-        read={`${list.length} open requests on ${new Set(list.map((r) => r.channel)).size} channels`}
+        read={`${list.length} open requests from ${v.advisor.name}'s clients on ${new Set(list.map((r) => r.channel)).size} channels`}
         left={[`${list.filter((r) => r.callbackRequired).length} need a callback before any money moves`, `${list.filter((r) => r.overdue).length} past target`, `${list.filter((r) => !r.callbackRequired).length} replies drafted for the team`]}
         steps={[
           { icon: "email", who: "client", title: "Read each request as the client wrote it", detail: "The text, the channel and when it arrived." },
@@ -48,7 +51,7 @@ export default function Servicing() {
             </thead>
             <tbody>
               {list.map((r) => {
-                const c = CLIENTS.find((x) => x.id === r.clientId)!;
+                const c = v.clientOf(r.clientId)!;
                 return (
                   <tr key={r.id}>
                     <td className={td}>

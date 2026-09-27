@@ -8,10 +8,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icons";
+import { AGENT_COUNT, inWords } from "@/lib/agents/roster";
 
 export const ABOUT = [
   { href: "/how-it-works", label: "How it works", icon: "sweep" as IconName, blurb: "The loop, every morning" },
-  { href: "/features", label: "Features", icon: "list" as IconName, blurb: "Fourteen agents, one gate" },
+  { href: "/features", label: "Features", icon: "list" as IconName, blurb: `${inWords(AGENT_COUNT)} agents, one gate` },
   { href: "/impact", label: "Impact", icon: "trend" as IconName, blurb: "What changes, measured" },
   { href: "/architecture", label: "Architecture", icon: "planning" as IconName, blurb: "The approach" },
 ];

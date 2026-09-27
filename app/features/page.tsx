@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AGENTS } from "@/lib/compliance/agents";
+import { ROSTER, MORNING, ON_REQUEST, AGENT_COUNT, inWords } from "@/lib/agents/roster";
 import { EXTRACTORS } from "@/lib/discovery/discover";
 import { PROBE_IDS } from "@/lib/research/brief";
 import { CATALOG } from "@/lib/connectors/catalog";
@@ -9,26 +10,22 @@ import { AboutNav, NextPage, Takeaways } from "@/components/about";
 
 export const metadata = { title: "Features" };
 
-const OTHER: { name: string; icon: IconName; reads: string; leaves: string; href: string }[] = [
-  { name: "Research", icon: "briefing", reads: "The client file, the service queue, the firm's record, the channels", leaves: `A briefing from ${PROBE_IDS.length} probes: what changed, observed, inferred with a confidence, not established`, href: "/research" },
-  { name: "Dossier", icon: "crm", reads: "The file, the CRM, the captured corpus, the firm's documents, the public record", leaves: "Every claim cited, sources checked against each other, a CRM note a person files", href: "/clients" },
-  { name: "Retrieval", icon: "library", reads: "The document corpus, on every opportunity", leaves: "Cited passages with a reason per score, conflicts shown as conflicts, or a refusal", href: "/documents" },
-  { name: "Discovery", icon: "search", reads: "What clients said, in messages, notes and contact summaries", leaves: `Candidate opportunities from ${EXTRACTORS.length} extractors, each cited to its sentence`, href: "/discovery" },
-  { name: "Options and consequences", icon: "hourglass", reads: "Every shelf product against the household's rules, on a copy of the household", leaves: "After-tax income, cost, access, rate risk, and the morning after, graded", href: "/simulate" },
-  { name: "Rule-change proposer", icon: "flag", reads: "Ninety days of findings", leaves: "Tighten-only rule changes with the findings behind each, for a principal", href: "/compliance" },
-  { name: "Policy reader", icon: "document", reads: "A written supervisory procedure", leaves: "Candidate rules in the engine's own shape, each cited to its sentence, for a person to add to a desk", href: `/agents/${AGENTS[0].id}` },
-  { name: "Ask", icon: "agent", reads: "The book, the findings, the rules, the sources, today's calendar", leaves: "An answer to a plain question, with the records it read", href: "/" },
-];
+// The roster's entries, with the figures only this page shows.
+const OTHER = ROSTER.map((a) => ({
+  ...a,
+  icon: a.icon as IconName,
+  leaves: a.id === "research" ? `A briefing from ${PROBE_IDS.length} probes: what changed, observed, inferred with a confidence, not established` : a.id === "discovery" ? `Candidate opportunities from ${EXTRACTORS.length} extractors, each cited to its sentence` : a.leaves,
+}));
 
 export default function Features() {
   return (
     <>
-      <PageTitle icon="list" title="Features" sub="Fourteen agents, the screens they feed, the tools they read, and the guarantees underneath all of them." />
+      <PageTitle icon="list" title="Features" sub={`${inWords(AGENT_COUNT)} agents, the screens they feed, the tools they read, and the guarantees underneath all of them.`} />
       <AboutNav />
       <Takeaways
         items={[
           <>{AGENTS.length} compliance review desks mirror the teams a legal, risk and compliance function runs, and an advisor&apos;s layer can tighten any of them and loosen none.</>,
-          <>Eight more agents read the book for the advisor: research, dossier, retrieval, discovery, options and consequences, the proposer, the policy reader, and Ask.</>,
+          <>{inWords(MORNING.length)} more run on the book every morning ({MORNING.map((a) => a.name.toLowerCase()).join(", ")}), and {ON_REQUEST.length} run when you ask ({ON_REQUEST.map((a) => a.name === "Ask" ? "Ask" : a.name.toLowerCase()).join(", ")}).</>,
           <>Everything is data and everything is cited. A client, a rule, a desk, a connector: one file each. Add a file and it is in the product.</>,
         ]}
       />
@@ -52,7 +49,7 @@ export default function Features() {
         <p className="mt-2 text-[12px] text-ink-3">Open any desk to see its rules, its findings, tune its cadence for one advisor, or read a written policy into it.</p>
       </Section>
 
-      <Section title="Eight agents that read the book for the advisor">
+      <Section title={`${inWords(ROSTER.length)} more agents that read the book for the advisor`}>
         <TableScroll>
           <table className="w-full min-w-[44rem] border-collapse text-[13px]">
             <thead><tr><th className={th}>Agent</th><th className={th}>Reads</th><th className={th}>Leaves for a person</th></tr></thead>

@@ -1,9 +1,14 @@
-import { ADVISORS_DATA, PROSPECTS } from "@/lib/data";
-import { rankProspects, prospectScore, introDraft, PATH_LABEL } from "@/lib/prospecting/rank";
+"use client";
+
+import { prospectScore, introDraft, PATH_LABEL } from "@/lib/prospecting/rank";
+import { useView } from "@/components/view";
 import { usd } from "@/lib/format";
 import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
 
 export default function Pipeline() {
+  // The signed-in advisor's prospects, from the same view Ask answers "who should I call" from.
+  const v = useView();
+  const P = v.prospects;
   return (
     <>
       <PageTitle
@@ -14,8 +19,8 @@ export default function Pipeline() {
       <AgentBar
         name="Prospecting"
         icon="plus"
-        read={`${PROSPECTS.length} prospects across ${ADVISORS_DATA.filter((a) => rankProspects(PROSPECTS, a.id).length).length} books, each with its signal and the path in`}
-        left={[`${PROSPECTS.length} ranked by path, fit and size`, `${PROSPECTS.filter((p) => p.path !== "signal").length} warm paths found`, `${PROSPECTS.filter((p) => p.path !== "signal").length} introduction asks drafted`, `${PROSPECTS.filter((p) => p.path === "signal").length} left cold, with no draft`]}
+        read={`${P.length} prospects in ${v.advisor.name}'s book, each with its signal and the path in`}
+        left={[`${P.length} ranked by path, fit and size`, `${P.filter((p) => p.path !== "signal").length} warm paths found`, `${P.filter((p) => p.path !== "signal").length} introduction asks drafted`, `${P.filter((p) => p.path === "signal").length} left cold, with no draft`]}
         steps={[
           { icon: "search", who: "agent", title: "Read each prospect's signal and provenance", detail: "Every prospect names the public source its situation is built from." },
           { icon: "social", who: "agent", title: "Scored the path in", detail: "An existing client or a referral 3, an event 2, a signal alone 1." },
@@ -25,8 +30,8 @@ export default function Pipeline() {
         ]}
         note="In production a model would tailor the ask's wording to the referrer; the ranking stays arithmetic."
       />
-      {ADVISORS_DATA.map((a) => {
-        const list = rankProspects(PROSPECTS, a.id);
+      {[v.advisor].map((a) => {
+        const list = P;
         if (!list.length) return null;
         return (
           <Section key={a.id} title={`${a.name}: ${a.role}`}>

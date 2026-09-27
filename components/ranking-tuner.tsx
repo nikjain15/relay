@@ -115,7 +115,7 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {isTuned && <button type="button" className={btn} onClick={() => resetTuning(advisorId)}>Reset to {sourceLabel(base.provenance["triage.classWeights"]).toLowerCase()}</button>}
           </div>
-          <p className="mt-2 text-[11px] text-ink-3">Deterministic: the weights are yours, the arithmetic is code, and a model never reorders the list. The ranking only orders what you see; it never changes which options pass a household&apos;s rules. In production the setting is a versioned write to your profile; here it lasts for the session.</p>
+          <p className="mt-2 text-[11px] text-ink-3">Deterministic: the weights are yours, the arithmetic is code, and a model never reorders the list. The ranking only orders what you see; it never changes which options pass a household&apos;s rules. Kept in this browser for each advisor until you reset it; in production it is a versioned write to your profile.</p>
         </div>
       </div>
     </section>

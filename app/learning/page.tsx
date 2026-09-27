@@ -21,9 +21,10 @@ const WHERE: Record<string, [string, string]> = {
 const LOOP = ["Capture what advisors and clients do", "Learn a pattern with enough evidence", "Propose one change, with the evidence", "The advisor accepts or declines", "Apply it as a new settings version", "Measure the outcome", "Keep it, or undo it"];
 
 export default function Learning() {
-  const { overlay, rejected, learned, acceptSuggestion, declineSuggestion, undoSuggestion } = useRelay();
+  const { overlay, rejected, learned, acceptSuggestion, declineSuggestion, undoSuggestion, advisorId } = useRelay();
   const refused: Refused[] = [];
-  const all = suggest({ overlay, rejected, refused }).filter((s) => !learned.some((l) => l.id === s.id));
+  // Suggestions for the signed-in advisor and their clients, not the firm's.
+  const all = suggest({ overlay, rejected, refused }).filter((s) => !learned.some((l) => l.id === s.id) && s.advisorId === advisorId);
   const open = all.filter((s) => !s.heldBack);
   const held = all.filter((s) => s.heldBack);
   const who = (s: Suggestion) => (s.scope === "client" ? clientName(s.scopeId) : ADVISORS_DATA.find((a) => a.id === s.scopeId)?.name ?? s.scopeId);

@@ -13,6 +13,8 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
+import { explainAgent } from "@/lib/agents/explain";
+import { DeskEditor } from "@/components/agent-editor";
 import { Icon } from "@/components/icons";
 import { Brief, Card, Legend, More, PageTitle, Pill, Row, Section, StateDot, Trace, Who, btn, btnPrimary, textarea } from "@/components/ui";
 import { Desks } from "@/components/desks";
@@ -29,7 +31,10 @@ import { CATALOG } from "@/lib/connectors/catalog";
 
 const SEVERITY_LABEL = { note: "Note", flag: "Flag for review", block: "Block" } as const;
 
-export function AgentDetail({ agentId, advisorId }: { agentId: string; advisorId: string }) {
+export function AgentDetail({ agentId }: { agentId: string }) {
+  // The signed-in advisor, from session state: every screen follows the same one.
+  const advisorId = useRelay().advisorId;
+  const [editingDesk, setEditingDesk] = useState(false);
   const { ruleEdits, editRule, connections, caseDispositions, actionDecisions, book, addRule } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const [editing, setEditing] = useState<EditableLayer>(scope.layers[scope.layers.length - 1]);
@@ -89,6 +94,24 @@ export function AgentDetail({ agentId, advisorId }: { agentId: string; advisorId
           { icon: "people", who: "advisor", title: "Left every disposition to a person", detail: "I never clear my own findings." },
         ]}
       />
+
+      {(() => {
+        const x = explainAgent(agent, policy.rules);
+        return (
+          <section className="mb-6 rounded border border-line p-4" aria-label="What this desk does">
+            <p className="text-[14px] text-ink">{x.role}</p>
+            <dl className="mt-3 grid gap-x-4 gap-y-1.5 text-[13px] sm:grid-cols-[6rem_1fr]">
+              <dt className="text-ink-3">Reads</dt><dd className="text-ink-2">{x.reads}</dd>
+              <dt className="text-ink-3">Checks</dt><dd className="text-ink-2">{x.checks.join("; ")}</dd>
+              <dt className="text-ink-3">Prepares</dt><dd className="text-ink-2">{x.prepares.join("; ")}</dd>
+              <dt className="text-ink-3">Runs</dt><dd className="text-ink-2">{x.runs}</dd>
+              <dt className="text-ink-3">Never</dt><dd className="text-ink-2">{x.never}</dd>
+            </dl>
+            <p className="mt-3 flex flex-wrap gap-2"><button type="button" className={btn} onClick={() => setEditingDesk(true)}>Edit this desk</button><a className="self-center text-[12px] underline" href="#policy">Read a written policy into it</a></p>
+          </section>
+        );
+      })()}
+      <DeskEditor agent={editingDesk ? agent : null} onClose={() => setEditingDesk(false)} />
 
       <div className="mb-6 flex flex-wrap items-center gap-2 text-[13px]">
         <StateDot state={status.state} />
