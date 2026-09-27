@@ -2,7 +2,7 @@
 //
 // An .xlsx file is a zip of XML parts. The browser can inflate a zip entry on
 // its own (DecompressionStream with "deflate-raw"), and it can parse XML on
-// its own (DOMParser), so the whole reader is: walk the zip's central
+// its own, so the whole reader is: walk the zip's central
 // directory, inflate the parts we need, read the shared strings, read the
 // first worksheet's cells. Formulas are ignored in favour of their cached
 // values, dates come through as Excel serials (the mapper does not need
@@ -62,46 +62,46 @@ function col(ref: string): number {
   return n - 1;
 }
 
-/** The first worksheet as rows of strings, with the first row as the header. */
+const decode = (x: string) => x.replace(/&(amp|lt|gt|quot|apos|#x[0-9a-fA-F]+|#\d+);/g, (m, e: string) =>
+  e === "amp" ? "&" : e === "lt" ? "<" : e === "gt" ? ">" : e === "quot" ? '"' : e === "apos" ? "'" : String.fromCodePoint(e[1] === "x" ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10)));
+const attr = (tag: string, name: string) => new RegExp(`(?:^|\\s)${name}="([^"]*)"`).exec(tag)?.[1];
+/** Every <t> inside a fragment, joined: a shared string may be split into runs. */
+const runs = (xml: string) => Array.from(xml.matchAll(/<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/g), (m) => decode(m[1])).join("");
+
+/** The first worksheet as rows of strings, with the first row as the header. Plain pattern matching over the XML, so it runs in a browser and in Node alike. */
 export async function parseXlsx(buf: ArrayBuffer): Promise<{ headers: string[]; rows: Record<string, string>[]; sheet: string }> {
   const list = entries(buf);
   const find = (name: string) => list.find((e) => e.name === name);
   const workbook = find("xl/workbook.xml");
   if (!workbook) throw new Error("No xl/workbook.xml: not an .xlsx workbook");
-  const parser = new DOMParser();
-  const wb = parser.parseFromString(await inflate(buf, workbook), "application/xml");
-  const firstSheet = wb.getElementsByTagName("sheet")[0];
-  const sheetName = firstSheet?.getAttribute("name") ?? "Sheet1";
-  const rid = firstSheet?.getAttribute("r:id") ?? firstSheet?.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id");
+  const wb = await inflate(buf, workbook);
+  const firstSheet = /<sheet\b[^>]*\/?>/.exec(wb)?.[0] ?? "";
+  const sheetName = attr(firstSheet, "name") ?? "Sheet1";
+  const rid = attr(firstSheet, "r:id");
   let target = "xl/worksheets/sheet1.xml";
   const rels = find("xl/_rels/workbook.xml.rels");
   if (rels && rid) {
-    const r = parser.parseFromString(await inflate(buf, rels), "application/xml");
-    for (const rel of Array.from(r.getElementsByTagName("Relationship"))) {
-      if (rel.getAttribute("Id") === rid) target = "xl/" + (rel.getAttribute("Target") ?? "").replace(/^\/?xl\//, "").replace(/^\//, "");
+    for (const m of (await inflate(buf, rels)).matchAll(/<Relationship\b[^>]*\/?>/g)) {
+      if (attr(m[0], "Id") === rid) target = "xl/" + (attr(m[0], "Target") ?? "").replace(/^\/?xl\//, "").replace(/^\//, "");
     }
   }
   const strings: string[] = [];
   const ss = find("xl/sharedStrings.xml");
-  if (ss) {
-    const doc = parser.parseFromString(await inflate(buf, ss), "application/xml");
-    for (const si of Array.from(doc.getElementsByTagName("si"))) {
-      strings.push(Array.from(si.getElementsByTagName("t")).map((t) => t.textContent ?? "").join(""));
-    }
-  }
+  if (ss) for (const m of (await inflate(buf, ss)).matchAll(/<si>([\s\S]*?)<\/si>/g)) strings.push(runs(m[1]));
   const sheetEntry = find(target);
   if (!sheetEntry) throw new Error(`Worksheet ${target} not found`);
-  const sheet = parser.parseFromString(await inflate(buf, sheetEntry), "application/xml");
+  const sheet = await inflate(buf, sheetEntry);
   const grid: string[][] = [];
-  for (const row of Array.from(sheet.getElementsByTagName("row"))) {
+  for (const row of sheet.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)) {
     const cells: string[] = [];
-    for (const c of Array.from(row.getElementsByTagName("c"))) {
-      const ref = c.getAttribute("r") ?? "";
-      const t = c.getAttribute("t");
-      const v = c.getElementsByTagName("v")[0]?.textContent ?? "";
-      let value = v;
+    for (const c of row[1].matchAll(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g)) {
+      const tag = c[1], body = c[2] ?? "";
+      const ref = attr(tag, "r") ?? "";
+      const t = attr(tag, "t");
+      const v = /<v>([\s\S]*?)<\/v>/.exec(body)?.[1] ?? "";
+      let value = decode(v);
       if (t === "s") value = strings[Number(v)] ?? "";
-      else if (t === "inlineStr") value = Array.from(c.getElementsByTagName("t")).map((x) => x.textContent ?? "").join("");
+      else if (t === "inlineStr") value = runs(body);
       else if (t === "b") value = v === "1" ? "true" : "false";
       cells[col(ref)] = value;
     }

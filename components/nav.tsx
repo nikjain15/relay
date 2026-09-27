@@ -61,6 +61,7 @@ export const AREAS: NavArea[] = [
     links: [
       { href: "/pipeline", label: "New clients", icon: "plus" },
       { href: "/onboarding", label: "Paperwork", icon: "esign" },
+      { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
       { href: "/measurement", label: "Measurement", icon: "chart" },
     ],
   },
@@ -70,6 +71,7 @@ export const AREAS: NavArea[] = [
       { href: "/profiles", label: "Preferences", icon: "settings" },
       { href: "/learning", label: "Suggestions", icon: "agent" },
       { href: "/personas", label: "Who's who", icon: "crm" },
+      { href: "/data", label: "Connect data", note: "Files stay in the browser", icon: "link" },
     ],
   },
 ];

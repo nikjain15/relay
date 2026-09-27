@@ -7,7 +7,7 @@ import { household } from "@/lib/fixtures/households";
 import { rank, score } from "@/lib/ranking/rank";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { retrieve } from "@/lib/evidence/retrieve";
-import { ADVISORS_DATA, clientFile } from "@/lib/data";
+import { ADVISORS_DATA, CLIENTS, toHousehold } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
 import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
@@ -16,24 +16,26 @@ import { Icon, CLASS_ICON } from "@/components/icons";
 const REASONS = POLICY.triage.dismissReasons;
 
 export default function Triage() {
-  const { dismissed, dismiss, restore, accepted, overlay } = useRelay();
+  const { dismissed, dismiss, restore, accepted, overlay, book } = useRelay();
+  const shipped = new Set(OPPORTUNITIES.map((o) => o.id));
+  const clientOf = (id: string) => book.clients.find((c) => c.id === id);
   const [choosing, setChoosing] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [advisorId, setAdvisorId] = useState(APP.defaultAdvisorId);
   // Falls back to the first advisor if app.json names one that is not in the data.
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId) ?? ADVISORS_DATA[0];
   const day = advisor.walkthrough ?? { meetings: [], alertsOvernight: 0 };
-  const mine = OPPORTUNITIES.filter((o) => clientFile(o.householdId)?.advisorId === advisor.id);
+  const mine = book.opportunities.filter((o) => clientOf(o.householdId)?.advisorId === advisor.id);
   const prof = resolveProfile({ advisorId: advisor.id }, overlay);
   const cap = prof.values["triage.dailyCap"];
   const weights = prof.values["triage.classWeights"];
   const rows = rank(mine, new Set(Object.keys(dismissed)), cap, weights);
   const lastContact = (hid: string) => {
-    const h = clientFile(hid)?.contactHistory ?? [];
+    const h = clientOf(hid)?.contactHistory ?? [];
     const last = h.reduce<(typeof h)[number] | undefined>((m, e) => (!m || e.day > m.day ? e : m), undefined);
     return last ? `${last.channel}, ${-last.day} days ago` : "No contact logged";
   };
-  const dismissedRows = OPPORTUNITIES.filter((o) => dismissed[o.id]);
+  const dismissedRows = book.opportunities.filter((o) => dismissed[o.id]);
 
   return (
     <>
@@ -78,8 +80,10 @@ export default function Triage() {
           </thead>
           <tbody>
             {rows.map((o, i) => {
-              const h = household(o.householdId)!;
-              const refused = retrieve(o).refused;
+              const h = household(o.householdId) ?? toHousehold(clientOf(o.householdId)!);
+              const refused = retrieve(o, book.documents).refused;
+              const isShipped = shipped.has(o.id) && CLIENTS.some((c) => c.id === h.id);
+              const clientHref = isShipped ? `/household/${h.id}` : `/data#${h.id}`;
               const proposable = !refused && (o.action === "fund" || o.action === "trim");
               return (
                 <tr key={o.id}>
@@ -90,9 +94,10 @@ export default function Triage() {
                     <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
                   </td>
                   <td className={td}>
-                    <Link className="underline decoration-line-strong hover:decoration-accent" href={`/household/${h.id}`}>
+                    <Link className="underline decoration-line-strong hover:decoration-accent" href={clientHref}>
                       {h.name}
                     </Link>
+                    {!isShipped && <span className="ml-1 align-middle"><Pill tone="neutral">Connected</Pill></span>}
                     <div className="text-xs text-ink-2">{h.tier}</div>
                     <div className="text-xs text-ink-2">{lastContact(h.id)}</div>
                   </td>
@@ -106,20 +111,28 @@ export default function Triage() {
                         </li>
                       ))}
                     </ol>
-                    <Link className="text-xs text-accent underline" href={`/evidence/${o.id}`}>
-                      Evidence
-                    </Link>
+                    {isShipped ? (
+                      <Link className="text-xs text-accent underline" href={`/evidence/${o.id}`}>
+                        Evidence
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-ink-2">{refused ? "No document in the corpus supports this" : `Cites ${o.evidenceDocIds.length} document${o.evidenceDocIds.length === 1 ? "" : "s"}`}</span>
+                    )}
                   </td>
                   <td className={`${td} whitespace-nowrap`}>
                     <div className="flex flex-col items-start gap-1">
-                      {proposable ? (
+                      {proposable && !isShipped ? (
+                        <span className="text-xs text-ink-2">Options run on the shipped book; a connected household is evaluated on Supervision and in its briefing</span>
+                      ) : proposable ? (
                         <Link className={btn} href={`/household/${h.id}/proposal?opp=${o.id}`}>
                           {accepted[o.id] ? "Proposal accepted" : "Propose action"}
                         </Link>
-                      ) : refused ? (
+                      ) : refused && isShipped ? (
                         <Link className="text-xs text-critical underline" href={`/evidence/${o.id}`}>
                           Refused: no supporting evidence
                         </Link>
+                      ) : refused ? (
+                        <span className="text-xs text-critical">Refused: no supporting evidence</span>
                       ) : (
                         <span className="text-xs text-ink-2">Review task, no product action</span>
                       )}

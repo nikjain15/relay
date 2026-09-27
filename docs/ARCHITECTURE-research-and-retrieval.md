@@ -1,6 +1,6 @@
 # Relay: document retrieval and the client research agent
 
-**Version:** v1.0, 2026-09-27. Built in the prototype; the production mapping in §7 is design.
+**Version:** v1.1, 2026-09-27 (v1.1 adds the discovery agent, §2.4, and connecting data from files, §6; v1.0 the same day). Built in the prototype; the production mapping in §7 is design.
 
 **In one line:** retrieval ranks passages against the record with a reason for every score, excludes what is
 superseded, marks what is stale, shows two current documents that disagree as disagreeing, and refuses by naming
@@ -142,6 +142,27 @@ Two defects found by reading the first output, before any screen existed, and no
 proceeds were being reported as unknown held-away assets, and a disagreement touching a related, uncited
 passage was being asserted against a record that did not cite it.
 
+### 2.4 The discovery agent
+
+The insight engine upstream flags what the data feeds show. What it cannot see is what the client said:
+"we've accepted an offer on the house", "my brother will handle the paperwork now", "retiring at the end of
+next year". Those sentences sit in captured messages, team notes and contact summaries, and each is the
+start of an opportunity or a risk. `lib/discovery/discover.ts` reads them with nine extractors (property,
+retirement, relocation, inheritance, a company sale or vesting, a family change, someone new acting for
+the client, cash the client wants working, school fees), each a pattern with a confidence and a corpus
+query. Every candidate cites the sentence and the record it came from, is read at ten points less
+confidence when it is a colleague's account rather than the client's words, is marked as a duplicate when
+the list already carries that class for the household, and is matched to the corpus documents that would
+support the conversation. A candidate with none arrives saying so; accepted, it lands on today's list
+refused until a document exists. The agent never adds anything to the list: the advisor accepts or
+declines each candidate on `/discovery`, and an accepted one becomes an opportunity for the session with
+the sentence as its reason path.
+
+Two false positives found by reading the first output and now tests: "the inherited holding" read as an
+inheritance, and "grandchildren's education trust" read as a birth. And one defect found by reading the
+connect screen: a message file dropped together with its book was matched against the book as the screen
+last rendered it, so every message was rejected; a drop now works through one accumulator, households first.
+
 ## 3. Surfaces
 
 | Route | What it shows |
@@ -151,6 +172,8 @@ passage was being asserted against a record that did not cite it.
 | `/documents/[docId]` | The document passage by passage, a citation landing on the passage; its state, its chain, its disagreements, what cites it |
 | `/research` | Every briefing: today's meetings first, then the most unknown; claims by kind across the book; what is most often missing |
 | `/research/[id]` | The briefing, four sections in order, questions, assembled-from, and what it cannot have seen |
+| `/discovery` | Candidates waiting on the advisor, each cited to its sentence with its confidence and the documents it would cite; by kind and by source |
+| `/data` | Connect a spreadsheet, a message export or a document in the browser; what was accepted and rejected per file; a live run of every agent over the book |
 
 ## 4. Enforced, and seen failing
 
@@ -161,6 +184,32 @@ passage was being asserted against a record that did not cite it.
 | Every briefing citation resolves to a value in `data/` (`tests/unit/research.test.ts`) | A probe citing `memos[0]` |
 | A missing citation is never rescued by a related passage (`tests/unit/retrieval.test.ts`) | The refusal loosened to "only when nothing is above the floor" |
 | The proposer's guard drops any loosening (`tests/unit/compliance-deeper.test.ts`) | The guard replaced with `return true` |
+
+## 6. Connecting data, and proving it
+
+A book of any size can be connected from a file: a `.csv` or `.xlsx` of households (one row each), a
+`.csv` or `.xlsx` of messages naming the household, a `.md` or `.txt` document, or `.json` records. The
+file is read in the browser (`lib/import/`): a forty-line CSV parser, and an `.xlsx` reader with no
+dependency that walks the zip's central directory, inflates the parts with `DecompressionStream`, and
+reads the shared strings and the first sheet's cells by pattern. Rows map to records through one
+alias table, so "Monthly spend" and `monthlySpendUsd` both land, and Liquidity months, total assets and
+the opportunities on today's list are computed from the record, never typed. Every record is then held to
+exactly the checks a shipped file is held to (`clientErrors()` in `lib/data/validate.ts`): a row that
+fails is named and is not in the book.
+
+The connected records join the shipped book in session state (`book` in `components/state.tsx`), and
+every engine reads the merged book: the sweep, the research agent, retrieval and discovery all take the
+dataset as an argument. The live run on `/data` then runs each agent over the whole book with the
+milliseconds each step took and the counts as they are produced; the loop yields to the screen between
+batches and nothing is slowed down to look busy. A 1,000-household book generated in the browser runs
+in about two seconds.
+
+What it proves: that records arrive in the shape the engines need from a spreadsheet, that the validator
+is the same one, and that every agent runs over a book of that size in a browser. What it does not prove:
+a live connection to a CRM or a custodian, which is a connector with credentials and needs a server this
+prototype does not have. The connector contract on `/connectors` is what such a connection would satisfy;
+a file is the same records arriving by a different road. Nothing is uploaded, because there is nowhere
+to upload to.
 
 ## 5. Production mapping
 

@@ -15,11 +15,11 @@ import { prepareAll, KIND } from "@/lib/compliance/actions";
 import { APP } from "@/lib/data/policy";
 
 export default function FollowUps() {
-  const { queue, markSent, log, addLog, ruleEdits, connections, caseDispositions, actionDecisions } = useRelay();
+  const { queue, markSent, log, addLog, ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
   const [done, setDone] = useState<Record<string, boolean>>({});
   const accepted = (() => {
     const policy = policyFrom(ruleEdits, scopeFor(APP.defaultAdvisorId));
-    const open = sweep(APP.defaultAdvisorId, policy, connections).cases.filter((c) => !caseDispositions[c.id]);
+    const open = sweep(APP.defaultAdvisorId, policy, connections, book.clients).cases.filter((c) => !caseDispositions[c.id]);
     return prepareAll(open, policy.rules).filter((a) => actionDecisions[a.id]?.decision === "accepted");
   })();
   const approved = queue.filter((q) => q.disposition === "approved");

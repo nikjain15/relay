@@ -26,7 +26,7 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
-  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents",
+  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery",
   ...readdirSync(join(ROOT, "data/documents")).map((f) => `/documents/${f.replace(/\.json$/, "")}`),
   ...clients.map((c) => `/research/${c.id}`),
   ...clients.map((c) => `/household/${c.id}`),
@@ -259,6 +259,37 @@ try {
   if (before) await page.getByRole("button", { name: "Accept" }).first().click();
   const afterText = await page.locator("main").innerText();
   check("prepared actions: a finding carries what the agent prepared, and accepting records it without sending", before > 0 && /Prepared by the agent/.test(afterText) && /accepted/.test(afterText) && /Nothing is sent or written by accepting/.test(afterText));
+  // Discovery on the shipped book: accept a candidate, then find it on its advisor's list. Runs before data is connected, so the day's cap does not hide it among a hundred connected rows.
+  await page.goto(`${BASE}/discovery`);
+  const disc = await page.locator("main").innerText();
+  const acceptable = await page.getByRole("button", { name: "Accept" }).count();
+  if (acceptable) await page.getByRole("button", { name: "Accept" }).first().click();
+  await page.getByRole("navigation").getByRole("link", { name: "Today's list" }).click();
+  await page.waitForURL("**/triage");
+  // The accepted candidate belongs to one advisor's book; today's list shows one advisor at a time.
+  let onList = false;
+  for (const b of await page.getByRole("group", { name: "Advisor" }).getByRole("button").all()) {
+    await b.click();
+    if (/found in a (message|note|contact)/.test(await page.locator("main").innerText())) { onList = true; break; }
+  }
+  check("discovery: candidates cite their sentence; accepting one puts it on today's list for the session", /Read from a (message|note|contact)/.test(disc) && acceptable > 0 && onList);
+  // Connect data: the sample spreadsheet goes in through the file input, every row is accepted, the agents run over it live, and the book grows.
+  await page.goto(`${BASE}/data`);
+  await page.locator('input[type="file"]').setInputFiles([join(ROOT, "public/samples/clients.csv"), join(ROOT, "public/samples/messages.csv"), join(ROOT, "public/samples/research-note.md")]);
+  // Files are read one after another; wait for the last one's row before reading the table.
+  await page.getByRole("cell", { name: /messages\.csv/ }).waitFor({ timeout: 15000 });
+  await page.getByText("Run every agent now").waitFor();
+  const connected = await page.locator("main").innerText();
+  const sampleRows = readFileSync(join(ROOT, "public/samples/clients.csv"), "utf8").trim().split("\n").length - 1;
+  const messageRows = readFileSync(join(ROOT, "public/samples/messages.csv"), "utf8").trim().split("\n").length - 1;
+  const flat = connected.replace(/\s+/g, " ");
+  check(`connect data: ${sampleRows} spreadsheet rows, ${messageRows} messages and a document are read in the browser and every row passes the validator`, new RegExp(`clients\\.csv clients ${sampleRows} ${sampleRows} 0`).test(flat) && new RegExp(`messages\\.csv messages ${messageRows} ${messageRows} 0`).test(flat) && /research-note\.md/.test(connected));
+  await page.getByRole("button", { name: /Run every agent now/ }).click();
+  await page.getByText(/Done in [\d.]+ seconds of compute/).waitFor({ timeout: 60000 });
+  const ran = await page.locator("main").innerText();
+  check("live run: every agent runs over the connected book with real timings and visible counts", /Compliance agents swept/.test(ran) && /Research agent briefed/.test(ran) && /Retrieval cited/.test(ran) && /Discovery read/.test(ran) && /ms\./.test(ran));
+  const xlsxOk = await page.evaluate(() => typeof DecompressionStream !== "undefined");
+  check("connect data: the browser can inflate an .xlsx with no library (DecompressionStream present)", xlsxOk);
   await page.goto(`${BASE}/compliance`);
   const cp = await page.locator("main").innerText();
   check("proposer: a rule change waits on a principal, and a loosening is seen but not proposed", /Proposed by the agent, waiting on a principal/.test(cp) && /Seen, not proposed/.test(cp) && /stricter direction/.test(cp));

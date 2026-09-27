@@ -142,7 +142,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [discoveryDecisions, setDiscoveryDecisions] = useState<State["discoveryDecisions"]>({});
   const [acceptedDiscoveries, setAcceptedDiscoveries] = useState<Opportunity[]>([]);
   const book = {
-    clients: [...CLIENTS, ...dataset.clients],
+    // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
+    clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients],
     documents: [...CORPUS, ...dataset.documents],
     opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
   };
