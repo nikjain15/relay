@@ -3,6 +3,23 @@
 Notable changes, by pull request. Decisions behind each are numbered in the build spec.
 
 ## Unreleased
+- The personas are described as cited composites without naming a firm; source links are unchanged.
+- The stress run renders every page inside the advisor view again, and checks the empty state by signing in as an advisor with no households.
+
+## #15: One design system, one name per page, and the advisor persona on every page
+- One type scale and radius scale as tokens, used by every screen and the mockup; one control set for buttons, fields and chips.
+- Each page carries one name, the same in the navigation, the heading and the browser tab.
+- The header labels the advisor as an advisor, and a persona line says who they are and which of their households are in the prototype.
+
+## #14: One source of data per advisor; agents explained, editable and creatable
+- One computed view of the signed-in advisor's book feeds the header, every page and Ask.
+- Every agent explained on one card; desks, custom agents and the rest of the roster can be edited, switched off or deleted, and new agents created from templates; loosening a desk waits for a principal.
+
+## #13: Audit: an advisor's morning, walked and fixed
+- The audit report of an advisor's morning in nine steps, with Ask tested against the records.
+- Why this client shows the rank and the score arithmetic; ranking tuned per advisor; Ask answers many more real questions; every link works under the Pages base path; the layout holds from phone to desktop.
+
+## #12: Agent-first workflow
 - Every workflow screen opens with the agent speaking first: a Brief with the figures in the sentence, what matters, one next step, and a trace.
 - The overview as a morning inbox: decide now, review what the agents prepared by household, what else ran. A prepared action opens in a panel with the draft, the reasoning and where it goes, and a decision stays on screen as a recorded outcome; declining asks for a reason.
 - A page per review desk: rules, findings, sources, a tune panel, and a policy reader that turns a written procedure into candidate rules cited to their sentences, which a person adds to the desk through the change log.
