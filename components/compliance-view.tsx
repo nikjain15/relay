@@ -14,7 +14,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Banner, Card, CardGrid, Field, PageTitle, Pill, Section, StatRow, btn, btnPrimary, input, textarea } from "@/components/ui";
+import { Banner, Card, CardGrid, Field, More, PageTitle, Pill, Section, StatRow, btn, btnPrimary, input, textarea } from "@/components/ui";
+import { Icon, type IconName } from "@/components/icons";
 import type { Severity } from "@/lib/compliance/types";
 import { SEVERITY_ORDER } from "@/lib/compliance/types";
 import type { EffectiveRule } from "@/lib/compliance/policy";
@@ -27,6 +28,8 @@ import { coverageFacts } from "@/lib/compliance/facts";
 import { CONNECTORS_DATA } from "@/lib/data";
 
 const SEVERITY_LABEL: Record<Severity, string> = { note: "Note", flag: "Flag for review", block: "Block" };
+/** A rule's icon says what it watches, which is faster to scan than its authority. */
+const SCOPE_ICON: Record<string, IconName> = { communication: "email", coverage: "archive", proposal: "document", account: "people" };
 function Provenance({ rule, field, layers }: { rule: EffectiveRule; field: "enabled" | "severity" | string; layers: EditableLayer[] }) {
   const layer =
     field === "enabled" ? rule.setBy.enabled : field === "severity" ? rule.setBy.severity : rule.setBy.params[field] ?? "firm";
@@ -58,6 +61,7 @@ function RuleCard({
           {rule.title}
         </span>
       }
+      icon={SCOPE_ICON[rule.scope] ?? "rules"}
       sub={`${rule.authority} · ${rule.citation}`}
       tone={missing.length ? "caution" : "plain"}
       right={
@@ -80,9 +84,9 @@ function RuleCard({
       <p className="text-[13px] text-ink-2">
         <span className="font-medium text-ink">Fires when</span> {explain(rule.when, params).replace(/\n\s*/g, " ")}
       </p>
-      <p className="mt-2 text-[13px] text-ink-2">
-        <span className="font-medium text-ink">Watched by</span>{" "}
-        {owner ? owner.name : <span className="text-critical">no enabled agent</span>}
+      <p className="mt-2 flex items-center gap-1.5 text-[13px] text-ink-2">
+        <Icon name="agent" size={16} className="text-ink-3" />
+        {owner ? owner.name : <span className="text-critical">Watched by no enabled agent</span>}
       </p>
 
       <button type="button" className={`${btn} mt-3`} onClick={() => setOpen((v) => !v)} aria-expanded={open}>
@@ -189,15 +193,15 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
     <>
       <PageTitle
         title="Rules and agents"
-        sub="The rule set is data, not code. A change here is in force on the next evaluation, everywhere in Relay, with no release. Every change is attributable and every change needs a reason."
+        sub="The rule set is data. A change here is in force on the next evaluation, everywhere, with no release."
       />
 
       <StatRow
         items={[
-          { value: inForce.length, label: "Rules in force" },
-          { value: agents.filter((a) => a.enabled).length, label: "Agents running" },
-          { value: cases.length, label: "Open cases", tone: cases.length ? "critical" : "positive" },
-          { value: policy.rejected.length, label: "Refused changes", tone: policy.rejected.length ? "critical" : "plain" },
+          { value: inForce.length, label: "Rules in force", icon: "rules" },
+          { value: agents.filter((a) => a.enabled).length, label: "Agents running", icon: "agent" },
+          { value: cases.length, label: "Open cases", icon: "shield", tone: cases.length ? "critical" : "positive" },
+          { value: policy.rejected.length, label: "Refused changes", icon: "block", tone: policy.rejected.length ? "critical" : "plain" },
         ]}
       />
 
@@ -221,10 +225,7 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
       )}
 
       <Section title="Who is editing">
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
-          Rules resolve firm, then segment, then advisor, then client. A lower layer may enable a rule the firm left off, raise a severity and
-          move a threshold in the stricter direction. It cannot disable a mandatory rule, lower a severity, or loosen a threshold.
-        </p>
+        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">Firm, then segment, then advisor, then client. A lower layer can only tighten.</p>
         <div className="flex flex-wrap gap-2">
           {scope.layers.map((l) => (
             <button
@@ -238,6 +239,11 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
             </button>
           ))}
         </div>
+        <More summary="What tighten-only means, exactly">
+          A lower layer may enable a rule the firm left off, raise a severity, and move a threshold in the stricter
+          direction. It may not disable a mandatory rule, lower a severity, or loosen a threshold. A refused change is
+          recorded rather than dropped, because a layer that tried to loosen a rule is itself a supervision signal.
+        </More>
       </Section>
 
       {pending && (
@@ -265,8 +271,7 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
 
       <Section title="Agents">
         <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
-          An agent detects, classifies and assembles the evidence on its own. It never dispositions. Anything that fires, and anything it is
-          not confident enough to clear, reaches a principal with the finding drafted and the citation attached.
+          Each one detects, classifies and assembles evidence on its own, and dispositions nothing.
         </p>
         <CardGrid cols={2}>
           {agents.map((a) => {
@@ -275,6 +280,7 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
             return (
               <Card
                 key={a.id}
+                icon="agent"
                 title={a.name}
                 sub={a.mission}
                 right={<Pill tone={a.enabled ? "pass" : "neutral"}>{a.enabled ? "Running" : "Off"}</Pill>}
@@ -300,7 +306,7 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
 
       <Section title="Live sample: record completeness">
         <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
-          The agents as configured above, run against this advisor&apos;s actual coverage. Change a rule and this changes with it.
+          The configuration above, run against this advisor&apos;s actual coverage. Change a rule and this changes with it.
         </p>
         {cases.length === 0 ? (
           <Card tone="positive" title="Nothing needs a person">

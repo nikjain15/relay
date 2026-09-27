@@ -12,7 +12,8 @@ import { household } from "@/lib/fixtures/households";
 import { opportunity } from "@/lib/fixtures/opportunities";
 import { runChecks } from "@/lib/policy/checks";
 import { useRelay, type Disposition } from "@/components/state";
-import { Banner, Card, CardGrid, PageTitle, Pill, Section, StatRow, TableScroll, btn, btnPrimary, input, td, th } from "@/components/ui";
+import { Banner, Card, CardGrid, More, PageTitle, Pill, Section, StatRow, TableScroll, btn, btnPrimary, input, td, th } from "@/components/ui";
+import { Icon, type IconName } from "@/components/icons";
 import { policyFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
 import { sweep } from "@/lib/compliance/sweep";
@@ -23,6 +24,7 @@ const REASON_LABEL: Record<Case["reason"], string> = {
   cannot_evaluate: "Cannot evaluate",
   low_confidence: "Needs confirming",
 };
+const REASON_ICON: Record<Case["reason"], IconName> = { fired: "alert", cannot_evaluate: "block", low_confidence: "eye" };
 
 function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?: string) => void }) {
   const [comment, setComment] = useState("");
@@ -66,15 +68,15 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
     <>
       <PageTitle
         title="Supervision console"
-        sub="The principal sees the same objects the advisor saw, plus everything the agents found on their own. Relay drafts the finding and the remediation; the disposition is yours."
+        sub="Everything the agents found on their own, plus every draft waiting for release. Relay drafts the finding; the disposition is yours."
       />
 
       <StatRow
         items={[
-          { value: open.length, label: "Open findings", tone: open.length ? "critical" : "positive" },
-          { value: blocking.length, label: "Blocking", tone: blocking.length ? "critical" : "positive" },
-          { value: pendingDrafts.length, label: "Drafts awaiting release" },
-          { value: found.accountsScanned, label: "Accounts swept" },
+          { value: open.length, label: "Open findings", icon: "shield", tone: open.length ? "critical" : "positive" },
+          { value: blocking.length, label: "Blocking", icon: "block", tone: blocking.length ? "critical" : "positive" },
+          { value: pendingDrafts.length, label: "Drafts awaiting release", icon: "email" },
+          { value: found.accountsScanned, label: "Accounts swept", icon: "sweep" },
         ]}
       />
 
@@ -90,16 +92,24 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
       )}
 
       <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Queues">
-        <button type="button" role="tab" aria-selected={tab === "findings"} className={tab === "findings" ? btnPrimary : btn} onClick={() => setTab("findings")}>
+        <button type="button" role="tab" aria-selected={tab === "findings"} className={`${tab === "findings" ? btnPrimary : btn} gap-1.5`} onClick={() => setTab("findings")}>
+          <Icon name="agent" size={16} />
           Agent findings ({open.length})
         </button>
-        <button type="button" role="tab" aria-selected={tab === "drafts"} className={tab === "drafts" ? btnPrimary : btn} onClick={() => setTab("drafts")}>
+        <button type="button" role="tab" aria-selected={tab === "drafts"} className={`${tab === "drafts" ? btnPrimary : btn} gap-1.5`} onClick={() => setTab("drafts")}>
+          <Icon name="email" size={16} />
           Drafts ({pendingDrafts.length})
         </button>
       </div>
 
       {tab === "findings" && (
         <Section title="What the agents found, without being asked">
+          <More summary="What is autonomous here, and what is not">
+            Detection, classification, evidence assembly, the drafted finding, the drafted remediation, the citation and
+            the order of this queue are all autonomous. The disposition is not. Anything that fired reaches a person, so
+            does anything whose confidence sits below its rule&apos;s floor, and so does anything a rule could not
+            evaluate because its source is missing, which is reported rather than passed.
+          </More>
           {open.length === 0 ? (
             <Card tone="positive" title="Nothing open">
               <p className="text-[13px] text-ink-2">
@@ -113,6 +123,7 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
                 <Card
                   key={c.id}
                   tone={c.reason !== "fired" ? "caution" : c.severity === "block" ? "critical" : "plain"}
+                  icon={REASON_ICON[c.reason]}
                   title={c.ruleTitle}
                   sub={`${c.subjectLabel} · ${c.agentName} · ${c.citation}`}
                   right={<Pill tone={c.reason === "fired" && c.severity === "block" ? "fail" : "accent"}>{REASON_LABEL[c.reason]}</Pill>}

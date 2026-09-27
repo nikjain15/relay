@@ -111,6 +111,31 @@ describe("engine", () => {
     expect(v.requiresHuman).toBe(true);
   });
 
+  it("does not queue an uncertain clear when a certain fact already settles it", () => {
+    // Regression. The specified-adult rule's inferred inputs sit below its floor,
+    // so every account reached a principal, including a 41-year-old's: the age
+    // gate rules the rule out with certainty and no flip of an inference changes
+    // that. A queue full of findings like that is a queue nobody reads.
+    const p = resolvePolicy([]);
+    const rule = activeRules(p).find((r) => r.id === "senior-investor-2165")!;
+    const young = evaluateRule(rule, {
+      facts: { clientAge: 41, unusualDisbursement: false, newThirdPartyContact: false, trustedContactOnFile: true, clientId: "c" },
+      availableConnectors: ALL_CONNECTORS,
+      factConfidence: { unusualDisbursement: 0.7, newThirdPartyContact: 0.7 },
+    });
+    expect(young.outcome).toBe("clear");
+    expect(young.requiresHuman).toBe(false);
+
+    // Over the age gate, the same uncertainty decides the verdict, so it goes to a person.
+    const older = evaluateRule(rule, {
+      facts: { clientAge: 79, unusualDisbursement: false, newThirdPartyContact: false, trustedContactOnFile: true, clientId: "c" },
+      availableConnectors: ALL_CONNECTORS,
+      factConfidence: { unusualDisbursement: 0.7, newThirdPartyContact: 0.7 },
+    });
+    expect(older.outcome).toBe("clear");
+    expect(older.requiresHuman).toBe(true);
+  });
+
   it("routes a low-confidence clear to a human anyway", () => {
     const p = resolvePolicy([]);
     const v = evaluateRule(activeRules(p).find((r) => r.id === "complaint-identification-4513")!, {

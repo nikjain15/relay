@@ -9,7 +9,8 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Banner, Card, CardGrid, PageTitle, Pill, Section, StatRow, btn, btnPrimary } from "@/components/ui";
+import { Banner, Card, CardGrid, More, PageTitle, Pill, Section, StatRow, btn, btnPrimary } from "@/components/ui";
+import { CHANNEL_ICON, Icon } from "@/components/icons";
 import { CATALOG } from "@/lib/connectors/catalog";
 import { coverageFor, type ChannelCoverage } from "@/lib/connectors/coverage";
 import type { ChannelKind, ConnectorDefinition } from "@/lib/connectors/types";
@@ -59,8 +60,18 @@ function ConnectorRow({ c, advisorId }: { c: ConnectorDefinition; advisorId: str
         )}
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        {status === "connected" && <Pill tone="pass">Connected</Pill>}
-        {status === "degraded" && <Pill tone="fail">Degraded</Pill>}
+        {status === "connected" && (
+          <span className="flex items-center gap-1 text-[12px] text-positive">
+            <Icon name="check" size={16} />
+            Connected
+          </span>
+        )}
+        {status === "degraded" && (
+          <span className="flex items-center gap-1 text-[12px] text-critical">
+            <Icon name="alert" size={16} />
+            Degraded
+          </span>
+        )}
         <button
           type="button"
           className={status === "connected" ? btn : btnPrimary}
@@ -83,22 +94,29 @@ export function ConnectorsView({ advisorId }: { advisorId: string }) {
     <>
       <PageTitle
         title="Connected channels"
-        sub="Relay reads these sources. It never sends on any of them. The question this screen answers is not what is connected, it is what you are using that nothing is capturing."
+        sub="Relay reads these sources and never sends on any of them. Not what is connected: what you are using that nothing is capturing."
       />
 
       <StatRow
         items={[
-          { value: `${Math.round(report.completeness * 100)}%`, label: "Channels captured", tone: report.defensible ? "positive" : "critical" },
-          { value: gaps.length, label: "Open gaps", tone: gaps.length ? "critical" : "positive" },
-          { value: connections.filter((c) => c.advisorId === advisorId && c.status === "connected").length, label: "Connected sources" },
-          { value: report.defensible ? "Yes" : "No", label: "Defensible record", tone: report.defensible ? "positive" : "critical" },
+          { value: `${Math.round(report.completeness * 100)}%`, label: "Channels captured", icon: "shield", tone: report.defensible ? "positive" : "critical" },
+          { value: gaps.length, label: "Open gaps", icon: "alert", tone: gaps.length ? "critical" : "positive" },
+          { value: connections.filter((c) => c.advisorId === advisorId && c.status === "connected").length, label: "Connected sources", icon: "custodian" },
+          { value: report.defensible ? "Yes" : "No", label: "Defensible record", icon: "check", tone: report.defensible ? "positive" : "critical" },
         ]}
       />
 
       {gaps.length > 0 && (
         <Banner tone="critical" title={`${gaps.length} ${gaps.length === 1 ? "channel is" : "channels are"} in use and not fully on the record`}>
           Completeness reads {Math.round(report.completeness * 100)} percent, which looks passable. It is not: business conducted on an
-          uncaptured channel cannot be produced on request, and that is the finding that has cost firms the most.
+          uncaptured channel cannot be produced on request.
+          <More summary="How completeness is measured, and why a degraded source counts as a gap">
+            The denominator is the channels the advisor has attested to using, not the connectors that happen to be
+            connected, because a channel nobody connected is exactly the one that goes unmeasured. A connected but
+            degraded source counts as uncaptured for the period it was failing: records that were never read are not
+            records. A channel captured by something that is not the retained copy reads as evidence without
+            retention, which is its own finding rather than a pass.
+          </More>
         </Banner>
       )}
 
@@ -109,6 +127,7 @@ export function ConnectorsView({ advisorId }: { advisorId: string }) {
               <Card
                 key={g.channel}
                 tone="critical"
+                icon={CHANNEL_ICON[g.channel]}
                 title={CHANNEL_LABEL[g.channel]}
                 sub={g.finding}
                 right={<Pill tone="fail">{STATUS[g.status].label}</Pill>}
@@ -140,6 +159,7 @@ export function ConnectorsView({ advisorId }: { advisorId: string }) {
           {inUse.map((ch) => (
             <Card
               key={ch.channel}
+              icon={CHANNEL_ICON[ch.channel]}
               title={CHANNEL_LABEL[ch.channel]}
               sub={ch.finding}
               right={<Pill tone={STATUS[ch.status].tone}>{STATUS[ch.status].label}</Pill>}
@@ -156,11 +176,11 @@ export function ConnectorsView({ advisorId }: { advisorId: string }) {
 
       <Section title="What each source feeds">
         <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
-          A rule that has no source cannot be evaluated, and Relay says so rather than returning a clear. This is the map between the two.
+          A rule with no source cannot be evaluated, and says so rather than returning a clear.
         </p>
         <CardGrid cols={3}>
           {CATALOG.map((c) => (
-            <Card key={c.id} title={c.name} sub={c.supervisoryNote}>
+            <Card key={c.id} icon={CHANNEL_ICON[c.channel]} title={c.name} sub={c.supervisoryNote}>
               <p className="text-[13px] text-ink-2">
                 <span className="font-medium text-ink">Rules that need it:</span>{" "}
                 {rulesFedBy(c.id).length ? (
