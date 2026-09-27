@@ -23,8 +23,8 @@ constraint, not a preference an advisor can switch off.
 
 ```
 firm defaults ─▶ segment ─▶ advisor ─▶ client
-profiles/        profiles/     profiles/advisors/   preferences block in
-firm.json        segments.json <id>.json            clients/<id>.json
+profiles/        profiles/     profile block in     preferences block in
+firm.json        segments.json advisors/<id>.json   clients/<id>.json
                                  + accepted           + accepted
                                    suggestions          suggestions
 ```
@@ -139,7 +139,7 @@ accept-or-decline step.
 - **Lookups, not computation.** Resolution is at most four lookups per setting. A Wealth Advice Center
   advisor has about 1,000 households; resolving all of them is trivial, and profiles can be precomputed
   with the nightly triage run and cached per session.
-- **One file or row per scope.** Adding an advisor is one profile file; adding a client preference is one
+- **One file or row per scope.** Adding an advisor is one file, profile included; adding a client preference is one
   field in that client's file. No code change, and `npm run check` validates it.
 - **Learners are independent.** A new learner is one function that emits suggestions through `guard()`.
   It cannot bypass bounds, layers or the rule/preference split.
@@ -150,7 +150,7 @@ accept-or-decline step.
 
 | Prototype | Production |
 |---|---|
-| `data/profiles/*.json`, client `preferences` | Settings service: a versioned table keyed by (scope, scope id, setting), with effective date, author and approver |
+| `data/profiles/*.json`, advisor `profile`, client `preferences` | Settings service: a versioned table keyed by (scope, scope id, setting), with effective date, author and approver |
 | `data/events.json` | Event stream from the advisor workstation and client channels, retained under the firm's records policy |
 | Session overlay for accepted suggestions | Versioned write to the settings service; the rationale record keeps the version |
 | `suggest()` on page load | Scheduled job alongside the nightly triage run; suggestions queued per advisor |

@@ -13,6 +13,7 @@
 //
 // Deterministic. No model client may be imported here.
 import type { ClientFile, ServiceRequest } from "@/lib/types";
+import type { CapturedMessage } from "@/lib/data";
 import type { CoverageReport } from "@/lib/connectors/coverage";
 import type { FactBag, Scope } from "@/lib/compliance/types";
 import { figures } from "@/lib/policy/checks";
@@ -40,6 +41,8 @@ export const INFERRED = {
 const PROJECTION = /\b(will (return|earn|grow|outperform|yield)|expected return|guarantee[ds]?|projected|target return)\b/i;
 const TESTIMONIAL = /\b(client(s)? (say|said|love|rave)|best advisor|testimonial|endorse[sd]?)\b/i;
 const GRIEVANCE = /\b(unacceptable|misled|not what (i|we) (was|were) told|lost money because|complain(t|ing)?|unhappy with|demand)\b/i;
+const RECOMMENDATION = /\b(recommend|suggest|suitable|you should|i'd suggest|we should (move|place|sell|buy))\b/i;
+const OUTSIDE_BUSINESS = /\b(advisory board|board of|sit on the board|my (consulting|side) (work|business)|outside (business|role|directorship)|my own (company|firm|fund))\b/i;
 const SENSITIVE = /\b(\d{3}-\d{2}-\d{4}|account (number|no\.?) ?[:#]? ?\d{4,}|routing number)\b/i;
 
 /**
@@ -173,6 +176,8 @@ export function accountFacts(input: {
   newThirdPartyContact?: boolean;
   trustedContactOnFile: boolean;
   complaintLogged: boolean;
+  /** The custodian's prior valuations of the largest single name, oldest first. Day 0 is never stored; it is the client file. */
+  history?: { day: number; pct: number }[];
 }): FactSet {
   const { client } = input;
   const conc = input.custodianConnected ? largestConcentration(client) : undefined;
@@ -192,6 +197,19 @@ export function accountFacts(input: {
   if (conc) {
     facts.instrument = conc.instrument;
     facts.concentrationPct = conc.pct;
+    const ceiling = client.constraints.find((k) => k.kind === "maxSingleName");
+    if (ceiling) {
+      facts.concentrationCeilingPct = ceiling.pct;
+      facts.concentrationHeadroomPts = Math.round((ceiling.pct - conc.pct) * 10) / 10;
+    }
+    // A trend needs the past and the present on one axis. The present is the
+    // file, so a stored "today" could never disagree with it.
+    const past = (input.history ?? []).filter((h) => h.day < 0).sort((a, b) => a.day - b.day);
+    if (past.length) {
+      const series = [...past, { day: 0, pct: conc.pct }];
+      facts.concentrationHistory = series.map((h) => `day ${h.day}: ${h.pct}%`);
+      facts.concentrationDriftPts = Math.round((conc.pct - past[0].pct) * 10) / 10;
+    }
   }
   return {
     scope: "account",
@@ -203,5 +221,50 @@ export function accountFacts(input: {
       unusualDisbursement: INFERRED.advisorNote,
       newThirdPartyContact: INFERRED.advisorNote,
     },
+  };
+}
+
+/**
+ * A captured message, from the corpus the connectors ingested rather than a
+ * draft an advisor submitted. Same rules, same engine: the surveillance agent
+ * reads what was actually said on a captured channel, in both directions.
+ * A message on a source that is not connected and healthy never reaches here;
+ * the sweep counts it as not swept instead.
+ */
+export function messageFacts(m: CapturedMessage, input: { obaOnFile: boolean; complaintLogged: boolean; channelApproved: boolean }): FactSet {
+  const facts: FactBag = {
+    messageId: m.id,
+    advisorId: m.advisorId,
+    clientId: m.clientId ?? "",
+    channel: m.channel,
+    direction: m.direction,
+    channelApproved: input.channelApproved,
+    recipientCount30d: 1,
+    principalApproved: false,
+    reviewed: false,
+    machineDrafted: false,
+    containsRecommendation: m.direction === "outbound" && RECOMMENDATION.test(m.text),
+    containsProjection: m.direction === "outbound" && PROJECTION.test(m.text),
+    containsTestimonial: m.direction === "outbound" && TESTIMONIAL.test(m.text),
+    containsSensitiveData: SENSITIVE.test(m.text),
+    complaintLanguage: m.direction === "inbound" && GRIEVANCE.test(m.text),
+    complaintLogged: input.complaintLogged,
+    outsideBusinessLanguage: m.direction === "outbound" && OUTSIDE_BUSINESS.test(m.text),
+    obaOnFile: input.obaOnFile,
+    excerpt: m.text.slice(0, 140),
+    capacity: "dual",
+  };
+  if (facts.complaintLanguage) facts.complaintExcerpt = m.text.slice(0, 160);
+  // Only a positive classification is an inference here. Over a corpus, treating
+  // every negative as uncertain queues every clean message for a person, which
+  // is the queue nobody reads. A negative is sampled instead, under Rule 3110's
+  // sample rate, which is the production answer to "did the classifier miss one".
+  const classified = ["containsProjection", "containsTestimonial", "containsSensitiveData", "containsRecommendation", "complaintLanguage", "outsideBusinessLanguage"];
+  return {
+    scope: "communication",
+    subject: m.id,
+    subjectLabel: `Captured ${m.channel}, ${m.direction}${m.clientId ? `, ${m.clientId.replace(/^hh-/, "")}` : ""}, day ${m.day}`,
+    facts,
+    confidence: Object.fromEntries(classified.filter((k) => facts[k] === true).map((k) => [k, INFERRED.textClassification])),
   };
 }

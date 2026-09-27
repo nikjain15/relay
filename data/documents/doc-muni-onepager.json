@@ -1,0 +1,15 @@
+{
+  "id": "doc-muni-onepager",
+  "title": "Municipal ladder, 1 to 7 years",
+  "kind": "product one-pager",
+  "desk": "Product desk",
+  "day": 1,
+  "reviewEveryDays": 365,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "A municipal ladder provides tax-exempt income with scheduled maturities for high-bracket households."
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "id": "hh-ng",
+  "name": "Ng",
+  "archetype": "First savings, remote coverage",
+  "tier": "Wealth Advice Center",
+  "advisorId": "adv-b",
+  "totalUsd": 95000,
+  "monthlySpendUsd": 4200,
+  "hardPart": "Three years into a first career; an emergency fund of two months; asks about speculative investments by text",
+  "persons": [
+    {
+      "id": "p-ng-1",
+      "name": "W. Ng",
+      "role": "primary",
+      "age": 33
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 86600,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 8400,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 2,
+      "target": 6,
+      "unit": "months",
+      "assumption": "6 months of spending at $4.2K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 86600,
+      "target": 1200000,
+      "unit": "USD",
+      "assumption": "Retirement at 65; contributions of $900 a month"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 0,
+      "unit": "USD",
+      "assumption": "No legacy goal stated"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 3
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 4
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -95,
+      "channel": "Video",
+      "summary": "Onboarding; set the 6-month cash target and the monthly contribution"
+    }
+  ],
+  "notes": [],
+  "tasks": [
+    {
+      "text": "Send the emergency-fund explainer",
+      "owner": "Advisor",
+      "dueDay": 3
+    }
+  ],
+  "paperwork": [],
+  "supervisory": {
+    "trustedContactOnFile": false,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [
+    {
+      "id": "msg-b01",
+      "connectorId": "compliant-texting",
+      "channel": "sms",
+      "direction": "inbound",
+      "day": -2,
+      "text": "Should I put the whole cash balance into crypto? A friend doubled his last month."
+    },
+    {
+      "id": "msg-b02",
+      "connectorId": "compliant-texting",
+      "channel": "sms",
+      "direction": "outbound",
+      "day": -2,
+      "text": "I'd suggest not: that cash is your emergency fund and it is already under target. Let's get to six months first, then talk about anything speculative with a small, fixed amount."
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-ng-liquidity",
+      "householdId": "hh-ng",
+      "triggerClass": "household_threshold",
+      "title": "Emergency fund covers 2 of 6 months",
+      "materiality": 58,
+      "observedDay": 1,
+      "action": "fund",
+      "strategy": "Liquidity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Liquidity funded 2 of 6 target months"
+        },
+        {
+          "kind": "Household",
+          "label": "Ng household"
+        },
+        {
+          "kind": "Constraint",
+          "label": "Household minimum 3 months"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note"
+      ],
+      "plainTitle": "Two months of cash against a six-month target",
+      "clientNote": "We noticed your cash set aside for emergencies is below the target we agreed."
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS Wealth Advice Center",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/wealth-advice-center.html"
+    },
+    {
+      "label": "Liquidity, Longevity, Legacy framework (UBS Wealth Way)",
+      "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Evenings by text or video"
+    }
+  }
+}

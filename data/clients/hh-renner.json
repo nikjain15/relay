@@ -130,6 +130,38 @@
       "requestedDay": -4
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "valuationHistory": {
+    "concentrationPct": [
+      {
+        "day": -90,
+        "pct": 70.4
+      },
+      {
+        "day": -60,
+        "pct": 71.1
+      },
+      {
+        "day": -30,
+        "pct": 70.8
+      }
+    ]
+  },
+  "messages": [
+    {
+      "id": "msg-001",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -2,
+      "text": "Following our call: the Treasury ladder we discussed will return about 4.5% a year, which comfortably covers the renovation. I'd suggest we place three years of spending in it."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-renner-property",

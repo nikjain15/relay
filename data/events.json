@@ -577,6 +577,180 @@
       "clientId": "hh-vasquez-hale",
       "type": "draft_edited",
       "change": "shortened"
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-c",
+      "clientId": "hh-castellanos",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -1,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-c",
+      "clientId": "hh-desrosiers",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -2,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-c",
+      "clientId": "hh-castellanos",
+      "type": "triage_decision",
+      "triggerClass": "life_event",
+      "decision": "acted"
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -3,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-c",
+      "clientId": "hh-desrosiers",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -4,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-c",
+      "clientId": "hh-castellanos",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -5,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-c",
+      "clientId": "hh-desrosiers",
+      "type": "triage_decision",
+      "triggerClass": "life_event",
+      "decision": "acted"
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -6,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-c",
+      "clientId": "hh-castellanos",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -7,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-c",
+      "clientId": "hh-desrosiers",
+      "type": "triage_decision",
+      "triggerClass": "market_view",
+      "decision": "dismissed",
+      "reason": "Not material for this household"
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-c",
+      "type": "day_end",
+      "worked": 6
+    },
+    {
+      "day": -8,
+      "advisorId": "adv-c",
+      "clientId": "hh-marchetti-oyelaran",
+      "type": "pack_opened",
+      "firstSection": "decisions"
     }
   ]
 }

@@ -120,6 +120,22 @@
       "requestedDay": -2
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [
+    {
+      "id": "msg-004",
+      "connectorId": "compliant-texting",
+      "channel": "sms",
+      "direction": "outbound",
+      "day": -1,
+      "text": "Confirming Thursday at 2pm for the annual review. Both of you, as you asked."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-alcott-liquidity",

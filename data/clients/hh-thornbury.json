@@ -109,6 +109,39 @@
       "requestedDay": -1
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": true,
+    "newThirdPartyContact": false,
+    "note": "A 1.2M wire to a fund, requested by the client's CFO rather than the client."
+  },
+  "valuationHistory": {
+    "concentrationPct": [
+      {
+        "day": -90,
+        "pct": 68.0
+      },
+      {
+        "day": -60,
+        "pct": 71.5
+      },
+      {
+        "day": -30,
+        "pct": 74.2
+      }
+    ]
+  },
+  "messages": [
+    {
+      "id": "msg-002",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -5,
+      "text": "Happy to make the introduction. I sit on the advisory board of the fund's sponsor, so I can walk you through the terms myself."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-thornbury-cashflow",

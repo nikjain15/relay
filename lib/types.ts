@@ -138,14 +138,38 @@ export interface Passage {
   title: string;
   day: number;
   text: string;
+  /** Passage id inside its document, so a citation resolves to a passage and not just a title. */
+  passageId?: string;
 }
+
+/** A structured assertion a passage makes, so two documents that disagree can be shown as disagreeing. */
+export interface Claim {
+  topic: string;
+  value: string;
+}
+
+export interface DocPassage {
+  id: string;
+  text: string;
+  claims?: Claim[];
+}
+
+export type DocStatus = "current" | "superseded" | "withdrawn";
 
 export interface Doc {
   id: string;
   title: string;
   kind: "research note" | "product one-pager" | "term sheet" | "model fact sheet" | "procedure extract" | "disclosure";
+  /** Who wrote it. Illustrative desks, never a real firm's research office. */
+  desk: string;
+  /** Publication day on the corpus clock (policy.json retrieval.corpusDay is today). Relative, never a calendar date. */
   day: number;
-  passages: string[];
+  /** How often the desk re-reviews it. Past this it is stale and retrieval says so. */
+  reviewEveryDays: number;
+  status: DocStatus;
+  supersedes?: string;
+  supersededBy?: string;
+  passages: DocPassage[];
 }
 
 export interface BookRecord {
@@ -263,7 +287,26 @@ export interface ServiceRequest {
   text: string;
 }
 
-/** One client's complete record, as stored in data/clients/<id>.json. */
+/** What the firm's systems say about an account: read from CRM and custodian, never from the client's own words. */
+export interface SupervisoryInputs {
+  trustedContactOnFile: boolean;
+  complaintLogged: boolean;
+  unusualDisbursement: boolean;
+  newThirdPartyContact: boolean;
+  note?: string;
+}
+
+/** A message a connector captured, in either direction. The advisor and client are the file it sits in. */
+export interface ClientMessage {
+  id: string;
+  connectorId: string;
+  channel: string;
+  direction: "inbound" | "outbound";
+  day: number;
+  text: string;
+}
+
+/** One client's complete record, as stored in data/clients/<id>.json. Everything about the client is in this one file. */
 export interface ClientFile extends Household {
   advisorId: string;
   contactHistory: ContactEvent[];
@@ -272,6 +315,10 @@ export interface ClientFile extends Household {
   /** Client-layer settings (data/profiles/schema.json). */
   preferences?: { version: number; values: Record<string, unknown> };
   paperwork: PaperworkItem[];
+  supervisory: SupervisoryInputs;
+  /** The custodian's prior valuations of the largest single name. Day 0 is never stored; it is the holdings. */
+  valuationHistory?: { concentrationPct: { day: number; pct: number }[] };
+  messages: ClientMessage[];
   opportunities: Opportunity[];
   walkthrough?: Walkthrough;
 }

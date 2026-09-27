@@ -1,0 +1,139 @@
+{
+  "id": "adv-b",
+  "name": "Advisor B",
+  "role": "Wealth Advice Center advisor, remote coverage",
+  "book": "About 1,000 households, each under $250K investable",
+  "facts": [
+    {
+      "detail": "Remote, pooled coverage from the Weehawken, Charlotte or Dallas hub",
+      "kind": "Published"
+    },
+    {
+      "detail": "Clients under $250K investable",
+      "kind": "Published"
+    },
+    {
+      "detail": "About 1,000 households: 200+ professionals serving 200,000 to 300,000 clients",
+      "kind": "Derived"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS Wealth Advice Center",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/wealth-advice-center.html"
+    },
+    {
+      "label": "Working with the UBS Wealth Advice Center (disclosure)",
+      "url": "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf"
+    }
+  ],
+  "profile": {
+    "segmentId": "wealth-advice-center",
+    "version": 1,
+    "learning": true,
+    "values": {}
+  },
+  "obaOnFile": false,
+  "connections": [
+    {
+      "connectorId": "microsoft-365",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 7734
+    },
+    {
+      "connectorId": "compliant-texting",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 6120
+    },
+    {
+      "connectorId": "archive",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 13980
+    },
+    {
+      "connectorId": "salesforce-fsc",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:20",
+      "recordsIngested": 2201
+    }
+  ],
+  "attestations": [
+    {
+      "channel": "email",
+      "used": true
+    },
+    {
+      "channel": "sms",
+      "used": true
+    },
+    {
+      "channel": "crm",
+      "used": true
+    },
+    {
+      "channel": "archive",
+      "used": true
+    },
+    {
+      "channel": "voice",
+      "used": true,
+      "note": "Pooled queue. Every call is on the recorded line."
+    }
+  ],
+  "prospects": [
+    {
+      "id": "pr-pell-adult-child",
+      "label": "Adult child of an existing client",
+      "path": "existing",
+      "pathDetail": "C. Pell asked whether their daughter could open an account",
+      "signal": "New graduate, first 401(k)",
+      "estimatedUsd": 15000,
+      "fit": 2,
+      "lastTouchDays": 6,
+      "groundedIn": [
+        {
+          "label": "Wealth Advice Center serves clients under $250K",
+          "url": "https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf"
+        }
+      ]
+    }
+  ],
+  "walkthrough": {
+    "label": "Advisor B, Wealth Advice Center",
+    "day": "Tuesday",
+    "households": "about 1,000",
+    "alertsOvernight": 61,
+    "summary": "Licensed advisor at the Charlotte hub, working by phone and video. About 1,000 client households, each under $250K invested. No dedicated relationships: the constraint is contacts per day.",
+    "meetings": [
+      {
+        "time": "9:00",
+        "title": "Callback queue: 14",
+        "kind": "queue",
+        "purpose": "Returning client calls"
+      },
+      {
+        "time": "10:30",
+        "title": "Video: new client",
+        "kind": "prospect",
+        "prospectId": "pr-pell-adult-child",
+        "purpose": "C. Pell's daughter, first account"
+      },
+      {
+        "time": "1:00",
+        "title": "Callback queue: 11",
+        "kind": "queue",
+        "purpose": "Returning client calls"
+      },
+      {
+        "time": "3:30",
+        "title": "Video: retirement check-in",
+        "kind": "review",
+        "clientId": "hh-pell",
+        "purpose": "Annual check-in; cash covers 4 of 6 months"
+      }
+    ]
+  }
+}

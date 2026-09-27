@@ -18,6 +18,7 @@ import { useRelay } from "@/components/state";
 import { policyFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
 import { sweep } from "@/lib/compliance/sweep";
+import { prepareAll } from "@/lib/compliance/actions";
 import { APP } from "@/lib/data/policy";
 
 /**
@@ -30,21 +31,24 @@ import { APP } from "@/lib/data/policy";
  * space it occupies.
  */
 function AgentStatus() {
-  const { ruleEdits, connections, caseDispositions } = useRelay();
-  const open = useMemo(() => {
+  const { ruleEdits, connections, caseDispositions, actionDecisions } = useRelay();
+  const { open, prepared } = useMemo(() => {
     const advisorId = APP.defaultAdvisorId;
-    const found = sweep(advisorId, policyFrom(ruleEdits, scopeFor(advisorId)), connections);
-    return found.cases.filter((c) => !caseDispositions[c.id]);
-  }, [ruleEdits, connections, caseDispositions]);
+    const policy = policyFrom(ruleEdits, scopeFor(advisorId));
+    const found = sweep(advisorId, policy, connections);
+    const open = found.cases.filter((c) => !caseDispositions[c.id]);
+    const prepared = prepareAll(open, policy.rules).filter((a) => !actionDecisions[a.id]).length;
+    return { open, prepared };
+  }, [ruleEdits, connections, caseDispositions, actionDecisions]);
   const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired").length;
 
   return (
     <Link
-      href="/supervision"
+      href="/agents"
       className={`flex items-center gap-1.5 rounded border px-2 py-1 text-[12px] ${blocking ? "border-critical/40 bg-critical-soft text-critical" : open.length ? "border-line-strong text-ink" : "border-line text-ink-2"}`}
     >
       <Icon name="agent" size={16} />
-      <span className="hidden sm:inline">{open.length === 0 ? "Agents clear" : `${open.length} finding${open.length === 1 ? "" : "s"}`}</span>
+      <span className="hidden sm:inline">{open.length === 0 ? "Agents clear" : `${open.length} finding${open.length === 1 ? "" : "s"} · ${prepared} prepared`}</span>
       <span className="sm:hidden">{open.length === 0 ? "Clear" : open.length}</span>
     </Link>
   );

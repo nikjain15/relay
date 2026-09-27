@@ -12,26 +12,24 @@ inside situations UBS and public sources describe. No real client or advisor dat
 
 ## Files
 
-| File | What it holds |
+One file per record. Add a file, run `npm run data:build`, and it is in the app: nothing else changes.
+
+| Path | What it holds |
 |---|---|
-| `clients/<id>.json` | One complete client record: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks (`{text, owner, dueDay}`, negative days are overdue), `preferences` (client-layer settings, see `profiles/schema.json`), paperwork, flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
-| `advisors.json` | Advisor A and Advisor B, with sources and their day: `meetings` are `{time, title, kind, clientId?, prospectId?, purpose}`, where kind is call, review, prospect, internal or queue. A client meeting gets a review pack |
-| `policy.json` | Firm policy the engines read: dismiss reasons; the cash product, sleeve limits and lock-up for Liquidity (a holding counts toward Liquidity when its product meets the sleeve limits); the core model; the disclosure document; prospect warmth and size bands (largest first); servicing routing rules (money movement first, callback required). The list size, class weights and escalation days are in `profiles/firm.json`. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
-| `app.json` | App settings: the day label, the default advisor, the featured client, opportunity and product for the menu and demo, the client whose review pack the walkthrough shows, and default talking points |
-| `profiles/schema.json` | Every personalizable setting: kind (preference or rule), type, bounds, which layers may set it |
-| `profiles/firm.json` | Firm defaults for every setting; the floor for rules |
-| `profiles/segments.json` | Segment layer: private wealth; Wealth Advice Center (larger list, brief notes, video, 7-day escalation) |
-| `profiles/advisors/<id>.json` | One file per advisor: segment, learning on or off, advisor-level settings |
-| `profiles/learning.json` | Learning-loop thresholds: window, minimum events, agreement, step, cooling-off, check period |
-| `events.json` | Synthetic behavior the learning loop reads: triage decisions, list completion, options chosen, draft edits, review-pack use, client responses by channel, declined suggestions |
-| `shelf.json` | The approved products, with plain-English names used in client notes |
-| `documents.json` | The illustrative research notes, one-pagers and procedures that evidence cites. Relative dates only |
-| `book.json` | Other households in Advisor A's book, for the batch-send demo |
-| `communications.json` | The prototype's fixed "today", the note template for each kind of proposal (`"Liquidity:fund"`; the counter counts per template), and earlier sends of the demo note by a second advisor |
-| `prospects.json` | Prospects per advisor: signal, path in, estimated assets, fit, sources |
-| `service-requests.json` | Incoming client requests: text, channel, hours since received |
-| `funnel.json` | Synthetic conversion funnel for the measurement page |
-| `generated/walkthrough.json` | **Generated. Do not edit.** Built from the files above by the real engines |
+| `clients/<id>.json` | Everything about one client: profile, people (with ages), holdings, goals, the family's rules, contact history, team notes, tasks, paperwork, `supervisory` (what the firm's CRM and custodian say: trusted contact, complaint, disbursement and third-party flags), `valuationHistory` (the custodian's prior valuations of the largest single name at day -90, -60, -30; day 0 is never stored), `messages` (every captured message in either direction, with the connector it came through), `preferences` (client-layer settings), flagged opportunities, sources (`groundedIn`), and for four clients a `walkthrough` story |
+| `advisors/<id>.json` | One advisor: role, book, sources, `profile` (the advisor layer of the settings resolver), `obaOnFile`, `connections` (per source: status, last ingest, records), `attestations` (which channels they say they use), `prospects`, and their day (`walkthrough.meetings`) |
+| `documents/<id>.json` | One document the evidence layer may quote: desk, publication day on the corpus clock, review cycle, status (current, superseded, withdrawn) with both ends of any supersession chain, and passages as `{ id, text, claims? }`. Relative dates only |
+| `compliance/rules.json` | The rule set: authority and citation, scope, severity, whether mandatory, the condition tree, editable parameters, evidence keys, the drafted finding and remediation, the connectors required, and `actions` (what the agent prepares when it fires) |
+| `compliance/agents.json` | The agent bundles: rules watched, scope, cadence, last run |
+| `compliance/edits.json` | The seeded change log |
+| `compliance/history.json` | Findings raised over the past 90 days with the facts each rule read and the principal's disposition; read by the proposer and the replay |
+| `policy.json` | Firm policy the engines read: dismiss reasons; the Liquidity sleeve; the core model; the disclosure document; retrieval (corpus day, floor, boosts); prospect warmth and size bands; servicing routing rules. The FINRA 25-in-30-days threshold is regulation and stays in `lib/recipients/count.ts` |
+| `app.json` | What is featured: the day label, the default advisor, the featured client, opportunity and product |
+| `profiles/schema.json`, `firm.json`, `segments.json`, `learning.json` | Every personalizable setting with its bounds; firm defaults; the two segments; learning-loop thresholds |
+| `events.json` | Synthetic behavior the learning loop reads |
+| `shelf.json`, `book.json`, `communications.json`, `service-requests.json`, `funnel.json` | The approved products; other households for the batch demo; the note templates and prior sends; incoming requests; the measurement funnel |
+| `generated/bundle.json` | **Generated. Do not edit.** Every client, advisor and document, built by `scripts/build-data.ts` |
+| `generated/walkthrough.json` | **Generated. Do not edit.** The mockup's data, built by the real engines |
 
 ## Fetching a client
 
@@ -59,13 +57,17 @@ path, materiality outside 0 to 100, an opportunity citing a document that does n
 `evidenceExpectedMissing` to exercise a refusal), an `outflowUsd` without an `outflowLabel`, a client with no
 people or no sources, an unknown advisor or product, a walkthrough whose audience or left-over figure
 disagrees with the engine, an event with an unknown type, section or channel, a money-movement rule that is
-not first or has its callback off, or a stale `generated/walkthrough.json`.
+not first or has its callback off, a document with a one-sided supersession chain or a publication day after the
+corpus day, a stored day 0 snapshot, a message or past finding pointing at an unknown client, connector or rule, or a
+stale `generated/walkthrough.json`.
 
 A funding opportunity may carry `inflowUsd` (new cash the event brings) and `outflowUsd` with
 `outflowLabel` (a known payment the goal must also cover, such as `"capital call"`).
 
-## Adding a client
+## Adding a client, an advisor or a document
 
-Copy an existing file in `clients/`, give it a new `id` (prefix `hh-`), keep holdings summing to
-`totalUsd`, give Liquidity months that match unearmarked cash divided by `monthlySpendUsd`, add at least
-one source to `groundedIn`, then add its import to `lib/data/index.ts`.
+Copy an existing file in the folder, name the file after its `id` (`hh-` for a client, `adv-` for an
+advisor, `doc-` for a document), keep holdings summing to `totalUsd`, give Liquidity months that match
+unearmarked Liquidity-eligible holdings divided by `monthlySpendUsd` (the validator tells you the number
+it computed), add at least one source to `groundedIn`, then run `npm run data:build`. There is no import
+to add and no list to update; `data:check` fails if the bundle is stale.

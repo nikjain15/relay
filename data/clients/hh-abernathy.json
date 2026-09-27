@@ -1,0 +1,206 @@
+{
+  "id": "hh-abernathy",
+  "name": "Abernathy",
+  "archetype": "Inherited concentration in retirement",
+  "tier": "$5M+",
+  "advisorId": "adv-a",
+  "totalUsd": 19500000,
+  "monthlySpendUsd": 45000,
+  "hardPart": "An inherited utility holding has grown to 38% of assets against a 30% family rule, with a low cost basis and a couple who have not been reached in 200 days",
+  "persons": [
+    {
+      "id": "p-ab-1",
+      "name": "H. Abernathy",
+      "role": "primary",
+      "age": 71
+    },
+    {
+      "id": "p-ab-2",
+      "name": "D. Abernathy",
+      "role": "spouse",
+      "age": 69
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Inherited utility holding",
+      "valueUsd": 7410000,
+      "singleName": true,
+      "shortTermLotsUsd": 0
+    },
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 10190000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 1900000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 42,
+      "target": 36,
+      "unit": "months",
+      "assumption": "36 months of spending at $45K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 17600000,
+      "target": 15000000,
+      "unit": "USD",
+      "assumption": "Spending to 95 for both"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 5000000,
+      "unit": "USD",
+      "assumption": "Stated intent: the utility holding passes to three grandchildren"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 30
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 24
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    },
+    {
+      "kind": "excludedProductTypes",
+      "types": [
+        "private_credit",
+        "structured_note"
+      ]
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -200,
+      "channel": "Meeting",
+      "summary": "Annual review; H. reluctant to sell any of the inherited holding"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -15,
+      "text": "Two calls unreturned this month. D. Abernathy's assistant says they are travelling until next week."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Schedule the overdue annual review",
+      "owner": "Client service associate",
+      "dueDay": -30
+    },
+    {
+      "text": "Prepare the staged-sale illustration for the utility holding",
+      "owner": "Wealth strategist",
+      "dueDay": 10
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Annual client information confirmation",
+      "requestedDay": -40
+    }
+  ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "valuationHistory": {
+    "concentrationPct": [
+      {
+        "day": -90,
+        "pct": 31.4
+      },
+      {
+        "day": -60,
+        "pct": 33.9
+      },
+      {
+        "day": -30,
+        "pct": 36.2
+      }
+    ]
+  },
+  "messages": [
+    {
+      "id": "msg-a01",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -16,
+      "text": "Hoping to find time for the annual review when you are back. Nothing urgent, but the utility position has grown and I'd like to walk through the options with you both."
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-abernathy-concentration",
+      "householdId": "hh-abernathy",
+      "triggerClass": "household_threshold",
+      "title": "Inherited holding at 38% against a 30% family rule, rising",
+      "materiality": 74,
+      "observedDay": 1,
+      "action": "trim",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Concentration 38% against 30%, up from 31% in 90 days"
+        },
+        {
+          "kind": "Household",
+          "label": "Abernathy household"
+        },
+        {
+          "kind": "Holding",
+          "label": "Inherited utility holding, $7.41M, all long-term lots"
+        },
+        {
+          "kind": "Constraint",
+          "label": "Family rule: at most 30% in one name"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-concentration-note"
+      ],
+      "plainTitle": "38% of wealth in one inherited stock; the family's rule is 30%"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    },
+    {
+      "label": "Liquidity, Longevity, Legacy framework (UBS Wealth Way)",
+      "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+    },
+    {
+      "label": "Signal types UBS's AI flags for advisors",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Afternoons; D.'s assistant books the calls"
+    }
+  }
+}

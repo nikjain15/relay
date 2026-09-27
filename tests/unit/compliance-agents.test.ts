@@ -5,7 +5,7 @@ import { accountFacts, communicationFacts, coverageFacts, proposalFacts, INFERRE
 import { agentsFrom, appendEdit, changeLog, editsAsOf, policyFrom, SEED_EDITS, toLayers, type RuleEdit } from "@/lib/compliance/store";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { sweep, connectedIds } from "@/lib/compliance/sweep";
-import { CLIENTS, CONNECTORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
+import { ADVISORS_DATA, CLIENTS, CONNECTORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 
 const ALL = ["microsoft-365", "archive", "custodian-feed", "salesforce-fsc", "zoom", "compliant-texting", "esign"];
 
@@ -102,9 +102,10 @@ describe("agents", () => {
   });
 
   it("route an inferred clear to a human as low confidence, not as a finding", () => {
-    const agent = AGENTS.find((a) => a.id === "client-protection")!;
+    // The complaint rule lives with communications surveillance, which sweeps the captured corpus in both directions.
+    const agent = AGENTS.find((a) => a.id === "communications-surveillance")!;
     const run = runAgent(agent, policy, {
-      scope: "account",
+      scope: "communication",
       subject: "hh-x",
       subjectLabel: "Test",
       facts: { complaintLanguage: false, complaintLogged: false },
@@ -266,8 +267,8 @@ describe("the standing sweep", () => {
   });
 
   it("only sweeps this advisor's book", () => {
-    const a = sweep("adv-a", policy, CONNECTORS_DATA.connections);
-    const b = sweep("adv-b", policy, CONNECTORS_DATA.connections);
-    expect(a.accountsScanned + b.accountsScanned).toBe(CLIENTS.length);
+    const perAdvisor = ADVISORS_DATA.map((a) => sweep(a.id, policy, CONNECTORS_DATA.connections).accountsScanned);
+    expect(perAdvisor.every((n) => n < CLIENTS.length)).toBe(true);
+    expect(perAdvisor.reduce((s, n) => s + n, 0)).toBe(CLIENTS.length);
   });
 });

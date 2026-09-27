@@ -113,6 +113,13 @@
       "note": "Drafted; advisor to review before it is sent"
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [],
   "opportunities": [
     {
       "id": "opp-vh-rollover",

@@ -1,6 +1,6 @@
 # Relay: build spec
 
-**Version:** v2.6, 2026-09-26 (v2.6 adds channel connectors, the configurable FINRA and SEC rule set, the compliance agents and the standing sweep, and rebuilds the shell and every screen for phone width; design in `ARCHITECTURE-compliance.md`; v2.5 applies the R-21 audit: exact funding need with known outflows, the call-first rule enforced, money movement widened, guards made transitive, AA contrast, see the R-21 audit record; v2.4 applies one design system to the prototype and the mockup, R-20; v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
+**Version:** v2.8, 2026-09-27 (v2.8 makes every record one file, discovered by folder and bundled by `scripts/build-data.ts`, with everything about a client in its file; adds a third advisor and five households so every agent has something to find on every book; adds prepared actions per finding and the `/agents` status surface; trims prose and puts an icon on every row; v2.7 makes retrieval a surface with visible relevance, passage-level citation, conflicts, staleness and a naming refusal; adds the client research agent; deepens compliance with the captured corpus, drift over time, the rule-change proposer and replay; adds ten icons and three chart forms; design in `ARCHITECTURE-research-and-retrieval.md` and `ARCHITECTURE-compliance.md` v1.1; v2.6 adds channel connectors, the configurable FINRA and SEC rule set, the compliance agents and the standing sweep, and rebuilds the shell and every screen for phone width; design in `ARCHITECTURE-compliance.md`; v2.5 applies the R-21 audit: exact funding need with known outflows, the call-first rule enforced, money movement widened, guards made transitive, AA contrast, see the R-21 audit record; v2.4 applies one design system to the prototype and the mockup, R-20; v2.3 adds four-layer personalization and the learning loop, R-19, design in `ARCHITECTURE-personalization.md`; v2.0 built the six core surfaces; v2.1 builds the remaining three and deepens every screen, R-17; v2.2 completes the journey with clients, meetings, review packs and follow-ups, and moves policy and settings into data, R-18). **Status: built.** Every surface in §2 exists and the §7 path was driven in a browser. Written fresh from PRD v0.4 (the lost v1.0 is not reconstructed; R-09).
 **Rule (D-73):** the PRD states intent, this file states implementation, code follows this
 file. A decision not written here is not made; an engineer who has to invent one adds it here first.
 
@@ -41,6 +41,11 @@ resets on reload, which is what a demo wants.
 | - | Follow-ups | `/follow-ups` | **Build** (v2.2) | Tasks by owner, overdue first; approved notes the advisor marks as sent from their own email; a call log. Relay never sends |
 | 10 | Connected channels | `/connectors` | **Build** (v2.6) | Ten sources across twelve channel kinds; gaps first with the regulation named; connect or disconnect recomputes coverage for the agents too; the rules that need each source, derived from the rules themselves. A degraded source counts as uncaptured |
 | 11 | Rules and agents | `/compliance` | **Build** (v2.6) | Twelve FINRA and SEC rules as editable data: severity, thresholds and whether each is in force, with provenance per field and the condition explained in words. A change needs a reason, is refused on screen if it would loosen the rule, and is live on the next evaluation. Five agents with their cadence and rule bundle; a live sample runs the current configuration against the advisor's real coverage; warns when a mandatory rule is watched by no enabled agent |
+| 13 | Why this client, as retrieval | `/evidence/[oppId]` | **Build** (v2.7) | Cited passages ranked with the score decomposed into reasons; a cited document sharing no term marked as such; sources that disagree shown side by side; related uncited passages; the refusal naming the missing ids, the unmatched terms and the nearest miss with why it is not enough |
+| 14 | Document library | `/documents`, `/documents/[docId]` | **Build** (v2.7) | Every document with age against its review cycle, status and supersession chain, what cites it; freshness distribution; open disagreements; a citation lands on the passage |
+| 15 | Briefings | `/research`, `/research/[id]` | **Build** (v2.7) | Per household: since you last spoke, observed (cited to a field), inferred (with confidence and the confirming question), could not establish (with why), questions, assembled-from, what it cannot have seen |
+| 16 | Replay | `/compliance/replay` | **Build** (v2.7) | A past finding re-run against the rules as they stood at its timestamp and as they are now, the fields that differ and the entries that changed them; findings that do not reproduce reported |
+| 17 | Agents | `/agents` | **Build** (v2.8) | Every agent with a state in words, when it last ran, what it read, what it raised and what it prepared; the research agent, retrieval and the proposer beside them; the morning's runs as a timeline; prepared actions by kind |
 | 12 | Change log | `/compliance/log` | **Build** (v2.6) | Every change with actor, layer, field, old and new value and the reason; refused changes marked; replay to any past moment reconstructs the rule set as it stood |
 
 `/` is the journey page. A left navigation lists every surface grouped by journey phase. (v2.0: the three designed ones were visibly
@@ -147,6 +152,14 @@ threshold, step, cooling-off, check period). `suggest()` in `lib/learning/learn.
 learners; `guard()` rejects rules, out-of-bounds values and disallowed layers. Accepted suggestions are a
 session overlay passed to `resolveProfile()`. Full design: `docs/ARCHITECTURE-personalization.md`.
 
+### 5.6 Data layout (v2.8)
+
+`data/clients/<id>.json`, `data/advisors/<id>.json` and `data/documents/<id>.json`, one file per record, named by id, bundled into `data/generated/bundle.json` by `npm run data:build`; `data:check` fails when the bundle is stale and `build-data.ts` fails on a file whose name is not its id. The client file now holds `supervisory`, `valuationHistory` and `messages`; the advisor file holds `profile`, `obaOnFile`, `connections`, `attestations` and `prospects`. The derived views (`PROSPECTS`, `CONNECTORS_DATA`, `ACCOUNT_INPUTS`, `SNAPSHOTS`, `MESSAGES`, `ADVISOR_INPUTS`) are built in `lib/data/index.ts` so no engine knows which file holds what. Twelve households across three advisors; every agent raises something on every book.
+
+### 5.5 Data added in v2.7
+
+`data/documents.json` documents carry `desk`, `reviewEveryDays`, `status`, `supersedes`, `supersededBy`, and passages as `{ id, text, claims? }`; `policy.json` `retrieval` holds the corpus day, floor, top K, citation boost, stale penalty and review-due window. `data/compliance/snapshots.json` (prior concentration valuations; day 0 never stored), `messages.json` (the captured corpus), `history.json` (90 days of findings with facts and dispositions), `advisor-inputs.json` (outside business on file). `rules.json` v2 adds `finra-2111-drift`; the complaint rule moves to the surveillance bundle and the conduct agent to the communication scope, so both read the corpus.
+
 ### 5.1 Data added in v2.1
 
 - `data/prospects.json`: prospects for each advisor with the signal, path in, estimated assets and a source.
@@ -179,6 +192,14 @@ session overlay passed to `resolveProfile()`. Full design: `docs/ARCHITECTURE-pe
 | `lib/compliance/agents.ts` | Five agents as data, each a rule bundle, scope and cadence; cases carry the citation, the remediation and exactly the facts the rule read; `uncoveredMandatoryRules()` | No (enforced, v2.6) |
 | `lib/compliance/sweep.ts` | The standing sweep across an advisor's whole book: record completeness plus every client account | No (enforced, v2.6) |
 | `lib/compliance/store.ts` | The change log is the state: `policyFrom(edits, scope, asOf)` folds it onto the baseline, so a change is live with no release and a replay to a timestamp reproduces the past rule set | No (enforced, v2.6) |
+| `lib/evidence/search.ts` | Lexical passage search: stems, idf with unseen terms weighted as the rarest, a signed `Reason` per score step, every hit returned above or below the floor | No (enforced) |
+| `lib/evidence/corpus.ts` | `docState()` (age, review, freshness, usable), `conflictsAmong()` from structured claims, never merged | No (enforced) |
+| `lib/research/brief.ts` | Twelve probes over the client file, the service queue, account inputs, coverage and the corpus; `Finding` (observed or inferred with a floor) and `Unknown` (with why), every claim cited to a field | n/a; imports no model, no profile |
+| `lib/compliance/facts.ts` `messageFacts` | A captured message into the communication fact bag; only a positive classification is an inference | No (enforced, v2.7) |
+| `lib/compliance/propose.ts` | Three learners over 90 days of findings and the sweep; `guard()` resolves each proposal in its scope and drops any the resolver would refuse; observations for patterns that argue for loosening | No (enforced, v2.7) |
+| `lib/compliance/replay.ts` | `replay(finding, edits)`: policy as of the timestamp and now, both verdicts, the fields that differ, the entries between, `reproduces` | No (enforced, v2.7) |
+| `lib/compliance/actions.ts` | `prepareActions(case, rule)`: the rule's `actions` templates rendered from the facts the rule read; seven kinds; accepting is a session decision that sends and writes nothing | No (enforced, v2.8) |
+| `lib/compliance/activity.ts` | `agentStatuses()` and `activity()`: per-agent state, counts and last run, and the morning's timeline, derived from the sweep and never stored | No (enforced, v2.8) |
 | `lib/compliance/sources.ts` | Which rules need a source, derived from the rules' own `requires`; `unservedRules()` | No (enforced, v2.6) |
 
 ## 7. Demo click path
@@ -199,7 +220,11 @@ Aligned to `00-BRIEF.md` §7, twelve minutes.
 `npm run check` must pass. `npm run e2e` (after `npx next build`) drives every page and the mockup in
 Chromium at 1440, 1280, 1024, 768 and 390 (v2.6 added the last two, and they found eight pages that
 still scrolled sideways and two dead fragment links): errors, horizontal scroll, links, buttons, accessible names, contrast of
-every text element, keyboard and skip link, the demo flows, the recomputed amounts, CSP and noindex.
+every text element, keyboard and skip link, the demo flows, the recomputed amounts, CSP and noindex. v2.7 adds the
+document, briefing and replay pages at every width (49 checks) and asserts the refusal names the missing citation and
+the nearest miss, every cited passage prints a decomposed score, the library shows a disagreement, the briefing
+separates observed from inferred and cites a file, the replay shows then against now, and the proposer shows a
+proposal waiting and a loosening seen but not proposed.
 `npm run stress` times the engines and page renders on 1,000 clients, 50 advisors and 20,000 events, and
 exercises malformed data and empty states. `tests/unit/audit-r21.test.ts` holds one test per R-21 finding. Beyond the invariants and recipient tests already present:
 constraints (each rule fails on the Renner fixture for the right product; a compliant product passes),

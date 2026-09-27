@@ -7,8 +7,9 @@ describe("data/ is valid", () => {
     expect(validate()).toEqual([]);
   });
 
-  it("seven clients, four with a walkthrough story", () => {
-    expect(CLIENTS).toHaveLength(7);
+  it("twelve clients across three advisors, four with a walkthrough story", () => {
+    expect(CLIENTS).toHaveLength(12);
+    expect(new Set(CLIENTS.map((c) => c.advisorId)).size).toBe(3);
     expect(CLIENTS.filter((c) => c.walkthrough).map((c) => c.id).sort()).toEqual(["hh-alcott", "hh-pell", "hh-renner", "hh-thornbury"]);
   });
 });

@@ -1,0 +1,250 @@
+{
+  "id": "hh-castellanos",
+  "name": "Castellanos",
+  "archetype": "Owner after a sale",
+  "tier": "$5M+",
+  "advisorId": "adv-c",
+  "totalUsd": 11800000,
+  "monthlySpendUsd": 28000,
+  "hardPart": "Practice sold four months ago; $4.9M in cash and a short ladder at 175 months of spending, a new house being built, and no plan for the rest",
+  "persons": [
+    {
+      "id": "p-cast-1",
+      "name": "R. Castellanos",
+      "role": "primary",
+      "age": 63
+    },
+    {
+      "id": "p-cast-2",
+      "name": "E. Castellanos",
+      "role": "spouse",
+      "age": 61
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 6900000,
+      "singleName": false
+    },
+    {
+      "name": "Cash from the practice sale",
+      "productId": "prod-mmf",
+      "valueUsd": 4200000,
+      "singleName": false
+    },
+    {
+      "name": "Municipal ladder",
+      "productId": "prod-muni-ladder",
+      "valueUsd": 700000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 175,
+      "target": 36,
+      "unit": "months",
+      "assumption": "36 months of spending at $28K a month; the house build is a separate budget"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 7600000,
+      "target": 8500000,
+      "unit": "USD",
+      "assumption": "Spending from 65 to 95 with the house paid for"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 2000000,
+      "unit": "USD",
+      "assumption": "Stated intent: a gift to each of two children on their fortieth birthdays"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 24
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    },
+    {
+      "kind": "excludedProductTypes",
+      "types": [
+        "private_credit"
+      ]
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -35,
+      "channel": "Meeting",
+      "summary": "Sale proceeds received; agreed to leave them in cash until the house budget is known"
+    },
+    {
+      "day": -130,
+      "channel": "Call",
+      "summary": "Sale terms agreed; discussed the earn-out"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -6,
+      "text": "E. Castellanos called: the builder wants a $250K deposit wired to a new account by Friday."
+    },
+    {
+      "from": "Planning specialist",
+      "day": -20,
+      "text": "Earn-out of up to $1.1M pays over three years if the practice hits its targets; not counted anywhere yet."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Model the house budget against the cash held",
+      "owner": "Planning specialist",
+      "dueDay": 2
+    },
+    {
+      "text": "Verify the builder's wire instructions by callback",
+      "owner": "Client service associate",
+      "dueDay": -1
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Updated investment policy statement after the sale",
+      "requestedDay": -25
+    },
+    {
+      "form": "Standing wire instructions: builder",
+      "requestedDay": -6,
+      "note": "New payee; callback required before first use"
+    }
+  ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": true,
+    "newThirdPartyContact": false,
+    "note": "A $250K wire to a payee first seen this week, requested by phone through the spouse."
+  },
+  "messages": [
+    {
+      "id": "msg-c01",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "inbound",
+      "day": -6,
+      "text": "The builder needs the $250K deposit by Friday. I'll send the account details separately. Can you set it up?"
+    },
+    {
+      "id": "msg-c02",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -5,
+      "text": "We can, once one of you confirms the instructions by phone on the number we have on file. New payee, so that call is not optional. I'd suggest we also move a year of spending out of cash into the ladder while we're at it."
+    },
+    {
+      "id": "msg-c03",
+      "connectorId": "compliant-texting",
+      "channel": "sms",
+      "direction": "outbound",
+      "day": -2,
+      "text": "See you Tuesday at 10. I sit on the foundation's investment committee that morning so it may run a few minutes late."
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-castellanos-excess-cash",
+      "householdId": "hh-castellanos",
+      "triggerClass": "household_threshold",
+      "title": "Cash and short ladder at 175 months of spending against a 36-month target",
+      "materiality": 78,
+      "observedDay": 2,
+      "action": "review",
+      "strategy": "Liquidity",
+      "reasonPath": [
+        {
+          "kind": "Threshold",
+          "label": "Liquidity funded 175 of 36 target months"
+        },
+        {
+          "kind": "Household",
+          "label": "Castellanos household"
+        },
+        {
+          "kind": "Holding",
+          "label": "Cash from the practice sale, $4.2M"
+        },
+        {
+          "kind": "Goal",
+          "label": "Longevity funded $7.6M of $8.5M"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-liquidity-note",
+        "doc-muni-onepager"
+      ],
+      "plainTitle": "$4.9M in cash and short bonds, nearly five times the family's own target"
+    },
+    {
+      "id": "opp-castellanos-legacy",
+      "householdId": "hh-castellanos",
+      "triggerClass": "life_event",
+      "title": "Practice sale closed; Legacy goal stated and unfunded",
+      "materiality": 55,
+      "observedDay": 35,
+      "action": "review",
+      "strategy": "Legacy",
+      "reasonPath": [
+        {
+          "kind": "LifeEvent",
+          "label": "Business sale closed, day 35"
+        },
+        {
+          "kind": "Household",
+          "label": "Castellanos household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Legacy funded $0 of $2M"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "The practice is sold; the gifts to the children are not yet planned"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS Entrepreneurs Group (business owners, sale, concentration)",
+      "url": "https://advisors.ubs.com/entrepreneursgroup/"
+    },
+    {
+      "label": "Signal types UBS's AI flags for advisors",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+    },
+    {
+      "label": "Liquidity, Longevity, Legacy framework (UBS Wealth Way)",
+      "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Mid-morning; E. handles the calendar"
+    }
+  }
+}

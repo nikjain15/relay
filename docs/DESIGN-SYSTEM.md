@@ -62,6 +62,9 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 | `Stat` | A large light number and its label, for the one or two figures a screen leads with |
 | `Pill` | Status badge: neutral, pass, fail, accent. Always words, never only colour |
 | `btn`, `btnPrimary` | 32px buttons: outlined ink, solid ink |
+| `Row`, `Card`, `CardGrid`, `StatRow`, `Banner`, `More` | The layout primitives of the agent-first rebuild (§7) |
+| `Timeline` | A run of events, most recent first: time, icon, one line, one line of context |
+| `StateDot` | One glance: a dot and the word for it (clear, needs you, blocking, off). Never the dot alone |
 | `th`, `td` | Table cells: light headers, hairline rows, 12px vertical padding |
 
 **Layout:** a 56px top bar (product name left, the prototype disclosure right), a 240px navigation rail
@@ -113,6 +116,10 @@ a cloned palette would be.
 states the thing, or it takes a `label` and becomes the accessible name. Without a label it is `aria-hidden`,
 because a decorative glyph announced by a screen reader is noise.
 
+**Added 2026-09-27, with the retrieval and research pass:** `library`, `quote`, `conflict`, `hourglass`, `trend`,
+`replay`, `briefing`, `question`, `flag` and `link`, on the same grid. Each names the thing a row is about (a citation,
+a disagreement, a document past its review date, a rising series, a rule change proposed) beside the word for it.
+
 **The one concession to convention.** `agent` is a four-point star. It is what this class of product now means
 by "the system did this on its own", and an advisor meeting Relay after any other 2026 tool will read it
 faster than anything invented here.
@@ -153,4 +160,34 @@ not matter at 8am.
    that looked like a chat would claim something the product does not do.
 5. **What is autonomous is said out loud.** Every agent surface states which steps ran without a person and
    which one cannot, rather than implying the system is either magic or a form.
+6. **The agent's work arrives prepared, not described.** A finding carries the hold, the callback, the form,
+   the task and the drafted note the rule calls for, each one an accept or a decline. The person's unit of
+   work is a decision, not a to-do list they have to write themselves.
+7. **Every row has an icon, and every state has a word.** A trigger class, a document kind, a service
+   request kind and an agent each map to one glyph in `components/icons.tsx`, so a table can be scanned
+   by shape before it is read. A state is a `StateDot`: a dot beside its word, never the dot alone.
+8. **One sentence under a title, at most.** The subtitle says what the screen is for; the argument for
+   the approach lives in a `More` at the bottom.
 
+
+---
+
+## 8. Charts
+
+**Version:** added 2026-09-27. Set lives in `components/charts.tsx`.
+
+Three forms and no more, each built from `data/` and drawn with the tokens: `Bars` for a distribution across
+categories (label, thin bar, number), `Meter` for shares of one whole (one stacked bar with a 2px gap between
+segments and a worded legend), and `Sparkline` for one series over time (2px line, end marker, an optional dashed
+ceiling, the values printed under it). Rules that hold for all three:
+
+- **Monochrome ink unless a segment carries a status**, in which case the status colour appears with the word that
+  names it. No categorical palette exists in this system, so nothing is ever told apart by hue alone.
+- **Every value is also printed as text.** The picture shows the shape; the text carries the numbers; the two cannot
+  disagree, and a screen reader gets the numbers.
+- **One axis.** A sparkline shows one series. Two measures of different scale are two sparklines.
+- **Thin marks, recessive scaffolding.** 1.5px bars, 2px lines, a 3.5px end marker, hairline track.
+- **Where they appear:** the overview (findings by agent, channels by coverage, briefing and corpus figures), the
+  evidence screen (what the query matched), the document library (freshness, by desk), briefings (assembled from,
+  claims by kind, what is most often missing), the supervision console (a concentration series against its
+  ceiling on a drift finding) and the replay screen (findings by rule).

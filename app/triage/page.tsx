@@ -11,6 +11,7 @@ import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
 import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
+import { Icon, CLASS_ICON } from "@/components/icons";
 
 const REASONS = POLICY.triage.dismissReasons;
 
@@ -36,7 +37,7 @@ export default function Triage() {
 
   return (
     <>
-      <PageTitle title="Today's list" sub={`Ranked by materiality and trigger class, capped at ${cap} a day. One decision per row.`} />
+      <PageTitle title="Today's list" sub={`Capped at ${cap}. One decision per row.`} />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
           <button key={a.id} className={a.id === advisor.id ? btnPrimary : btn} aria-pressed={a.id === advisor.id} onClick={() => setAdvisorId(a.id)}>
@@ -85,7 +86,7 @@ export default function Triage() {
                   <td className={td}>{i + 1}</td>
                   <td className={td}>{score(o, weights)}</td>
                   <td className={td}>
-                    <Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill>
+                    <span className="inline-flex items-center gap-1.5"><Icon name={CLASS_ICON[o.triggerClass]} size={16} className="text-ink-3" /><Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill></span>
                     <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
                   </td>
                   <td className={td}>

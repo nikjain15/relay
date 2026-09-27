@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CLIENTS, SERVICE_REQUESTS } from "@/lib/data";
 import { triage } from "@/lib/servicing/classify";
 import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { Icon } from "@/components/icons";
 
 export default function Servicing() {
   const list = triage(SERVICE_REQUESTS);
@@ -42,7 +43,7 @@ export default function Servicing() {
                     </td>
                     <td className={`${td} max-w-sm`}>&ldquo;{r.text}&rdquo;</td>
                     <td className={td}>
-                      <Pill tone={r.callbackRequired ? "fail" : "accent"}>{r.kind}</Pill>
+                      <span className="inline-flex items-center gap-1.5"><Icon name={r.callbackRequired ? "voice" : "clock"} size={16} className={r.callbackRequired ? "text-critical" : "text-ink-3"} /><Pill tone={r.callbackRequired ? "fail" : "accent"}>{r.kind}</Pill></span>
                     </td>
                     <td className={td}>{r.route}</td>
                     <td className={td}>

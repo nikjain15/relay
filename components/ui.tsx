@@ -205,3 +205,41 @@ export const textarea = "w-full rounded border border-line-strong bg-surface p-2
 export function TableScroll({ children }: { children: ReactNode }) {
   return <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">{children}</div>;
 }
+
+/** A vertical run of events, most recent first: a time, an icon, one line, one line of context. */
+export function Timeline({ items }: { items: { at: string; icon: IconName; title: ReactNode; meta?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive"; href?: string }[] }) {
+  const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" };
+  return (
+    <ol className="relative border-l border-line pl-5">
+      {items.map((it, i) => {
+        const body = (
+          <>
+            <span className={`absolute -left-[31px] top-1 flex h-5 w-5 items-center justify-center rounded-full border border-line bg-surface ${accent[it.tone ?? "plain"]}`} aria-hidden="true">
+              <Icon name={it.icon} size={16} />
+            </span>
+            <span className="block text-[11px] tabular-nums text-ink-3">{it.at}</span>
+            <span className="block text-[14px] text-ink">{it.title}</span>
+            {it.meta && <span className="block text-[12px] text-ink-2">{it.meta}</span>}
+          </>
+        );
+        return (
+          <li key={i} className="relative pb-4 last:pb-0">
+            {it.href ? <a href={it.href} className="block hover:underline">{body}</a> : body}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** One glance: a dot and a word. Never the dot alone. */
+export function StateDot({ state }: { state: "clear" | "attention" | "blocked" | "off" }) {
+  const cls = { clear: "bg-positive", attention: "bg-caution", blocked: "bg-critical", off: "bg-line-strong" }[state];
+  const word = { clear: "Clear", attention: "Needs you", blocked: "Blocking", off: "Off" }[state];
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-2">
+      <span className={`inline-block h-2 w-2 rounded-full ${cls}`} aria-hidden="true" />
+      {word}
+    </span>
+  );
+}

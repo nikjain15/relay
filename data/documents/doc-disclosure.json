@@ -1,0 +1,15 @@
+{
+  "id": "doc-disclosure",
+  "title": "Standard client communication disclosure",
+  "kind": "disclosure",
+  "desk": "Compliance",
+  "day": 1,
+  "reviewEveryDays": 365,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "This note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor."
+    }
+  ]
+}

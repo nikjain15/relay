@@ -38,7 +38,7 @@ describe("fixture numbers the PRD and demo depend on", () => {
   it("corpus uses relative days only, and no document names a real Chief Investment Office", () => {
     for (const d of CORPUS) {
       expect(Number.isInteger(d.day)).toBe(true);
-      expect(`${d.title} ${d.passages.join(" ")}`).not.toMatch(/\b(19|20)\d\d-\d\d-\d\d\b|Chief Investment Office|\bCIO\b/);
+      expect(`${d.title} ${d.passages.map((p) => p.text).join(" ")}`).not.toMatch(/\b(19|20)\d\d-\d\d-\d\d\b|Chief Investment Office|\bCIO\b/);
     }
   });
 

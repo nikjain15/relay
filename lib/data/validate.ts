@@ -4,7 +4,8 @@ import type { ClientFile } from "@/lib/types";
 import { POLICY, APP } from "@/lib/data/policy";
 import { validateProfiles } from "@/lib/profile/validate";
 import { evaluateAll } from "@/lib/constraints/evaluate";
-import { toHousehold, COMMUNICATIONS, ADVISORS_DATA, CLIENTS, DOCUMENTS, PROSPECTS, SERVICE_REQUESTS, SHELF_DATA } from "@/lib/data";
+import { toHousehold, COMMUNICATIONS, ADVISORS_DATA, CLIENTS, DOCUMENTS, PROSPECTS, SERVICE_REQUESTS, SHELF_DATA, SNAPSHOTS, MESSAGES, HISTORY, ADVISOR_INPUTS, RULES_DATA } from "@/lib/data";
+import { CATALOG } from "@/lib/connectors/catalog";
 import { liquidityMonths } from "@/lib/household-math";
 import { usd } from "@/lib/format";
 import { addressees } from "@/lib/drafting/compose";
@@ -137,6 +138,33 @@ export function validate(): string[] {
   if (!productIds.has(POLICY.liquidity.cashProductId)) err(`policy.json: unknown cashProductId`);
   if (!productIds.has(POLICY.proposals.coreProductId)) err(`policy.json: unknown coreProductId`);
   if (!docIds.has(POLICY.communications.disclosureDocId)) err(`policy.json: unknown disclosureDocId`);
+  const DOC_KINDS = ["research note", "product one-pager", "term sheet", "model fact sheet", "procedure extract", "disclosure"];
+  const DOC_STATUS = ["current", "superseded", "withdrawn"];
+  for (const d of DOCUMENTS) {
+    const at = `document ${d.id}`;
+    if (!ID.test(d.id)) err(`${at}: id must be lower case letters, digits and hyphens`);
+    if (!d.title?.trim() || !d.desk?.trim()) err(`${at}: needs a title and a desk`);
+    if (!DOC_KINDS.includes(d.kind)) err(`${at}: unknown kind ${d.kind}`);
+    if (!DOC_STATUS.includes(d.status)) err(`${at}: unknown status ${d.status}`);
+    if (!Number.isInteger(d.day) || d.day > POLICY.retrieval.corpusDay) err(`${at}: day must be an integer on or before the corpus day ${POLICY.retrieval.corpusDay}`);
+    if (!(d.reviewEveryDays > 0)) err(`${at}: reviewEveryDays must be above zero`);
+    if (!d.passages?.length) err(`${at}: needs at least one passage`);
+    const pids = new Set<string>();
+    for (const p of d.passages ?? []) {
+      if (!p.id || pids.has(p.id)) err(`${at}: passage ids must be present and unique`);
+      pids.add(p.id);
+      if (!p.text?.trim()) err(`${at}: passage ${p.id} is empty`);
+      for (const c of p.claims ?? []) if (!c.topic?.trim() || !c.value?.trim()) err(`${at}: passage ${p.id} has a claim without a topic and value`);
+    }
+    // A supersession chain is stated on both ends, so neither document can quietly forget the other.
+    if (d.status === "superseded" && !d.supersededBy) err(`${at}: superseded but supersededBy is not set`);
+    if (d.supersededBy && !docIds.has(d.supersededBy)) err(`${at}: supersededBy ${d.supersededBy} does not exist`);
+    if (d.supersededBy && DOCUMENTS.find((x) => x.id === d.supersededBy)?.supersedes !== d.id) err(`${at}: ${d.supersededBy} does not say it supersedes ${d.id}`);
+    if (d.supersedes && DOCUMENTS.find((x) => x.id === d.supersedes)?.supersededBy !== d.id) err(`${at}: ${d.supersedes} does not say it is superseded by ${d.id}`);
+    if (d.supersedes && d.status !== "current") err(`${at}: a document that supersedes another must be current`);
+  }
+  if (!(POLICY.retrieval.floor > 0 && POLICY.retrieval.floor < 1)) err("policy.json: retrieval.floor must be between 0 and 1");
+  if (!(POLICY.retrieval.stalePenalty >= 0 && POLICY.retrieval.stalePenalty <= 1)) err("policy.json: retrieval.stalePenalty must be 0 to 1");
   if (!Object.values(COMMUNICATIONS.templates ?? {}).includes(COMMUNICATIONS.demoCommunication)) err("communications.json: demoCommunication must be one of the templates");
   for (const r of POLICY.servicing.rules) {
     try { new RegExp(r.pattern); } catch { err(`policy.json: bad servicing pattern ${r.pattern}`); }
@@ -147,6 +175,50 @@ export function validate(): string[] {
   else if (!POLICY.servicing.rules[0].callbackRequired) err("policy.json: Money movement must require a callback");
   const bands = POLICY.prospecting.sizeBands;
   if (bands.some((b, i) => i > 0 && b.minUsd >= bands[i - 1].minUsd)) err("policy.json: prospecting sizeBands must be ordered from the largest minUsd down");
+  // Compliance data the deeper agents read. Every reference must resolve, and a
+  // stored snapshot may never carry a "today" that could disagree with the file.
+  const ruleIds = new Set(RULES_DATA.rules.map((r) => r.id));
+  const connectorIds = new Set(CATALOG.map((c) => c.id));
+  for (const s of SNAPSHOTS.series) {
+    if (!ids.has(s.clientId)) err(`snapshots: unknown client ${s.clientId}`);
+    if (s.concentrationPct.some((h) => h.day >= 0)) err(`snapshots ${s.clientId}: day 0 is computed from the client file, never stored`);
+    if (s.concentrationPct.some((h, i, a) => i > 0 && h.day <= a[i - 1].day)) err(`snapshots ${s.clientId}: days must rise`);
+    if (s.concentrationPct.some((h) => !(h.pct >= 0 && h.pct <= 100))) err(`snapshots ${s.clientId}: pct must be 0 to 100`);
+    if (!CLIENTS.find((c) => c.id === s.clientId)?.holdings.some((h) => h.singleName)) err(`snapshots ${s.clientId}: client has no single-name holding to track`);
+  }
+  for (const c of CLIENTS as ClientFile[]) {
+    if (!c.supervisory) err(`client ${c.id}: missing supervisory (the firm's record for this account)`);
+    if (!Array.isArray(c.messages)) err(`client ${c.id}: missing messages (an empty list is fine)`);
+  }
+  const msgIds = new Set<string>();
+  for (const m of MESSAGES.messages) {
+    if (msgIds.has(m.id) || !ID.test(m.id)) err(`message ${m.id}: id must be unique, lower case letters, digits and hyphens`);
+    msgIds.add(m.id);
+    if (!advisorIds.has(m.advisorId)) err(`message ${m.id}: unknown advisor ${m.advisorId}`);
+    if (m.clientId && !ids.has(m.clientId)) err(`message ${m.id}: unknown client ${m.clientId}`);
+    if (m.clientId && CLIENTS.find((c) => c.id === m.clientId)?.advisorId !== m.advisorId) err(`message ${m.id}: client ${m.clientId} belongs to another advisor`);
+    if (!connectorIds.has(m.connectorId)) err(`message ${m.id}: unknown connector ${m.connectorId}`);
+    if (!["inbound", "outbound"].includes(m.direction)) err(`message ${m.id}: direction must be inbound or outbound`);
+    if (!(m.day <= 0)) err(`message ${m.id}: day must be zero or negative`);
+    if (!m.text?.trim()) err(`message ${m.id}: empty`);
+    if (/\u2014/.test(m.text)) err(`message ${m.id}: em-dash`);
+  }
+  for (const a of ADVISOR_INPUTS.advisors) if (!advisorIds.has(a.advisorId)) err(`advisor ${a.advisorId}: unknown`);
+  const hIds = new Set<string>();
+  for (const h of HISTORY.findings) {
+    if (hIds.has(h.id)) err(`history ${h.id}: duplicate id`);
+    hIds.add(h.id);
+    if (Number.isNaN(Date.parse(h.at))) err(`history ${h.id}: at must be ISO 8601`);
+    if (!ruleIds.has(h.ruleId)) err(`history ${h.id}: unknown rule ${h.ruleId}`);
+    if (!advisorIds.has(h.scope.advisorId)) err(`history ${h.id}: unknown advisor ${h.scope.advisorId}`);
+    for (const c of h.connectors) if (!connectorIds.has(c)) err(`history ${h.id}: unknown connector ${c}`);
+    if (!["clear", "flag", "block", "cannot_evaluate"].includes(h.outcome)) err(`history ${h.id}: unknown outcome ${h.outcome}`);
+    if (!["cleared", "returned", "blocked"].includes(h.disposition)) err(`history ${h.id}: unknown disposition ${h.disposition}`);
+    if (!h.dispositionBy || !h.comment) err(`history ${h.id}: needs dispositionBy and a comment`);
+    const rule = RULES_DATA.rules.find((r) => r.id === h.ruleId)!;
+    for (const k of Object.keys(h.factConfidence ?? {})) if (!(k in h.facts)) err(`history ${h.id}: confidence for a fact it does not carry, ${k}`);
+    if (rule && !rule.evidence.some((k) => k in h.facts)) err(`history ${h.id}: carries none of the facts ${h.ruleId} reads`);
+  }
   errors.push(...validateProfiles());
   return errors;
 }

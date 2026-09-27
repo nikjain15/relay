@@ -9,7 +9,7 @@ import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 export default function Clients() {
   return (
     <>
-      <PageTitle title="My clients" sub="Every client in the book, with what needs attention. All figures come from data/clients." />
+      <PageTitle title="My clients" sub="The book, with what needs attention." />
       {ADVISORS_DATA.map((a) => {
         const mine = CLIENTS.filter((c) => c.advisorId === a.id);
         return (

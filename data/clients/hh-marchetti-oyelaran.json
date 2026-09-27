@@ -1,0 +1,209 @@
+{
+  "id": "hh-marchetti-oyelaran",
+  "name": "Marchetti-Oyelaran",
+  "archetype": "Blended family, estate in flux",
+  "tier": "$5M+",
+  "advisorId": "adv-c",
+  "totalUsd": 6900000,
+  "monthlySpendUsd": 19000,
+  "hardPart": "A 68-year-old retiree and a 41-year-old spouse; a new power of attorney arrived from the spouse's sibling; children from the first marriage are the named beneficiaries",
+  "persons": [
+    {
+      "id": "p-mo-1",
+      "name": "G. Marchetti",
+      "role": "primary",
+      "age": 68
+    },
+    {
+      "id": "p-mo-2",
+      "name": "F. Oyelaran",
+      "role": "spouse",
+      "age": 41
+    },
+    {
+      "id": "p-mo-3",
+      "name": "L. Marchetti",
+      "role": "beneficiary",
+      "age": 39
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 5300000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 760000,
+      "singleName": false
+    },
+    {
+      "name": "Municipal ladder",
+      "productId": "prod-muni-ladder",
+      "valueUsd": 840000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 84,
+      "target": 24,
+      "unit": "months",
+      "assumption": "24 months of spending at $19K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 6100000,
+      "target": 5500000,
+      "unit": "USD",
+      "assumption": "G.'s spending to 95, F.'s to 100"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 1500000,
+      "unit": "USD",
+      "assumption": "Stated intent: equal treatment of L. and F., not yet documented"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 18
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -45,
+      "channel": "Call",
+      "summary": "G. asked about updating beneficiaries; said F. would follow up"
+    },
+    {
+      "day": -210,
+      "channel": "Meeting",
+      "summary": "Annual review; both attended; no changes"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Client service associate",
+      "day": -4,
+      "text": "F. Oyelaran's brother delivered a signed power of attorney for G. and asked for online access to the accounts."
+    },
+    {
+      "from": "Advisor",
+      "day": -44,
+      "text": "G. sounded uncertain about which children he meant. Follow up with both spouses on the line."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Confirm the power of attorney with G. directly, by phone on the number on file",
+      "owner": "Advisor",
+      "dueDay": 0
+    },
+    {
+      "text": "Ask Legal whether the POA is on the firm's form",
+      "owner": "Client service associate",
+      "dueDay": 1
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Beneficiary designation update",
+      "requestedDay": -44
+    },
+    {
+      "form": "Trusted contact designation",
+      "requestedDay": -44,
+      "note": "Sent twice; not returned"
+    }
+  ],
+  "supervisory": {
+    "trustedContactOnFile": false,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": true,
+    "note": "A power of attorney presented in person by a relative of the younger spouse, with a request for account access, on an account whose oldest holder is 68."
+  },
+  "messages": [
+    {
+      "id": "msg-c04",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "inbound",
+      "day": -3,
+      "text": "This is not what we were told at the review. My brother is only trying to help G. with the paperwork and now you want another call. I'm unhappy with how this is being handled."
+    },
+    {
+      "id": "msg-c05",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -3,
+      "text": "I understand, and I'm sorry it feels that way. Any change to who may act on G.'s account needs G. on the phone with us first. That protects him and it protects you. I'll call tomorrow at ten."
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-marchetti-estate",
+      "householdId": "hh-marchetti-oyelaran",
+      "triggerClass": "life_event",
+      "title": "Power of attorney presented; beneficiaries and Legacy intent undocumented",
+      "materiality": 84,
+      "observedDay": 4,
+      "action": "review",
+      "strategy": "Legacy",
+      "reasonPath": [
+        {
+          "kind": "LifeEvent",
+          "label": "Power of attorney presented, day 4"
+        },
+        {
+          "kind": "Household",
+          "label": "Marchetti-Oyelaran household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Legacy funded $0 of $1.5M, intent undocumented"
+        },
+        {
+          "kind": "ServiceEvent",
+          "label": "Beneficiary update requested 44 days ago, not returned"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "Someone new wants to act on G.'s account; the estate wishes are not written down"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    },
+    {
+      "label": "Liquidity, Longevity, Legacy framework (UBS Wealth Way)",
+      "url": "https://www.ubs.com/global/en/wealthmanagement/what-we-offer/wealth-way.html"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "Weekday mornings, G. on the line"
+    }
+  }
+}

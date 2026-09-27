@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Two jobs, never on the same runner: the sequential check (typecheck, lint,
+# import invariants, data check, tests) and the browser suite over the built
+# site at five widths. The Pages deploy waits on both being green.
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Architecture invariants (no outbound transport, no model client in deterministic code)
+        run: npm run invariant:imports
+      - name: Data is consistent and the generated bundle is current
+        run: npm run data:check
+      - name: Tests, including the invariant suite
+        run: npm test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright-core install --with-deps chromium
+      - name: Build
+        run: npx next build
+      - name: Browser suite at 1440, 1280, 1024, 768 and 390
+        run: npm run e2e

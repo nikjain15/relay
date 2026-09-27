@@ -28,6 +28,9 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
       <div className="mb-4 max-w-3xl rounded border border-line p-3 text-xs">
         <ClientPreferences clientId={c.id} />
       </div>
+      <p className="mb-2 text-[13px]">
+        <Link className="underline" href={`/research/${c.id}`}>Briefing: what has changed, what is inferred, and what could not be established</Link>
+      </p>
       <p className="mb-4 text-ink-2">
         {c.persons.map((p) => `${p.name}${p.age ? ` (${p.age})` : ""}`).join(", ")} &middot; {c.tier} &middot; {usd(c.totalUsd)}
         {r.lastContact && <> &middot; last contact: {r.lastContact.channel}, {-r.lastContact.day} days ago, {r.lastContact.summary.toLowerCase()}</>}

@@ -1,6 +1,6 @@
 {
   "note": "Firm baseline compliance rules, as data. The supervision console edits these at runtime and the next evaluation uses them. Advisor and client layers may enable and tighten, never disable a mandatory rule or soften one. Citations are to real rules; thresholds are the firm's choice within them.",
-  "version": 4,
+  "version": 3,
   "rules": [
     {
       "id": "finra-2210-regime",
@@ -11,18 +11,57 @@
       "severity": "block",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "recipientCount30d", "cmp": "gt", "param": "threshold" },
-        { "fact": "principalApproved", "cmp": "eq", "value": false }
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "recipientCount30d",
+            "cmp": "gt",
+            "param": "threshold"
+          },
+          {
+            "fact": "principalApproved",
+            "cmp": "eq",
+            "value": false
+          }
+        ]
+      },
       "params": [
-        { "key": "threshold", "label": "Retail investors in a rolling 30 days", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 25, "note": "Rule 2210(a) sets 25. A firm may supervise below it; it may not supervise above it." }
+        {
+          "key": "threshold",
+          "label": "Retail investors in a rolling 30 days",
+          "type": "number",
+          "value": 25,
+          "stricter": "lower",
+          "min": 1,
+          "max": 25,
+          "note": "Rule 2210(a) sets 25. A firm may supervise below it; it may not supervise above it."
+        }
       ],
-      "evidence": ["recipientCount30d", "templateId", "channel", "regime"],
+      "evidence": [
+        "recipientCount30d",
+        "templateId",
+        "channel",
+        "regime"
+      ],
       "finding": "This note reaches {recipientCount30d} retail investors in a rolling 30 days, over the {threshold} threshold, so it is a retail communication and needs principal approval before use.",
       "remediation": "Route to a principal for pre-use approval, or reduce the distribution below the threshold.",
       "confidenceFloor": 0.95,
-      "requires": ["microsoft-365", "archive"]
+      "requires": [
+        "microsoft-365",
+        "archive"
+      ],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold the distribution until a principal approves it. {recipientCount30d} retail investors in 30 days is above the threshold."
+        },
+        {
+          "kind": "draft_note",
+          "to": "principal",
+          "subject": "Pre-approval requested: {templateId}",
+          "body": "This note reaches {recipientCount30d} retail investors within 30 days, which makes it a retail communication under Rule 2210. The draft, its sources and its audience count are attached for approval."
+        }
+      ]
     },
     {
       "id": "finra-3110-correspondence",
@@ -33,20 +72,72 @@
       "severity": "flag",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "recipientCount30d", "cmp": "lte", "param": "threshold" },
-        { "fact": "reviewed", "cmp": "eq", "value": false },
-        { "fact": "containsRecommendation", "cmp": "eq", "value": true }
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "recipientCount30d",
+            "cmp": "lte",
+            "param": "threshold"
+          },
+          {
+            "fact": "reviewed",
+            "cmp": "eq",
+            "value": false
+          },
+          {
+            "fact": "containsRecommendation",
+            "cmp": "eq",
+            "value": true
+          }
+        ]
+      },
       "params": [
-        { "key": "threshold", "label": "Correspondence ceiling", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 25 },
-        { "key": "sampleRate", "label": "Review sample rate for non-recommendation correspondence", "type": "number", "value": 0.1, "stricter": "higher", "min": 0, "max": 1, "note": "Correspondence is reviewed, not pre-approved. Recommendations are reviewed every time." }
+        {
+          "key": "threshold",
+          "label": "Correspondence ceiling",
+          "type": "number",
+          "value": 25,
+          "stricter": "lower",
+          "min": 1,
+          "max": 25
+        },
+        {
+          "key": "sampleRate",
+          "label": "Review sample rate for non-recommendation correspondence",
+          "type": "number",
+          "value": 0.1,
+          "stricter": "higher",
+          "min": 0,
+          "max": 1,
+          "note": "Correspondence is reviewed, not pre-approved. Recommendations are reviewed every time."
+        }
       ],
-      "evidence": ["recipientCount30d", "containsRecommendation", "channel", "clientId"],
+      "evidence": [
+        "recipientCount30d",
+        "containsRecommendation",
+        "channel",
+        "clientId"
+      ],
       "finding": "Correspondence carrying a recommendation has not been through supervisory review.",
       "remediation": "Queue for review under the written supervisory procedures. Pre-approval is not required at this distribution.",
       "confidenceFloor": 0.9,
-      "requires": ["microsoft-365"]
+      "requires": [
+        "microsoft-365"
+      ],
+      "actions": [
+        {
+          "kind": "task",
+          "text": "Queue this message for review under the written supervisory procedures",
+          "owner": "Team supervisor",
+          "dueInDays": 2
+        },
+        {
+          "kind": "draft_note",
+          "to": "advisor",
+          "subject": "A recommendation went out without review",
+          "body": "The message on {channel} carried a recommendation and was not reviewed before it went out. Nothing further is needed from the client; the review is being done now, and the next one goes through the queue first."
+        }
+      ]
     },
     {
       "id": "off-channel-gap",
@@ -57,18 +148,53 @@
       "severity": "block",
       "mandatory": true,
       "enabled": true,
-      "when": { "any": [
-        { "fact": "gapChannels", "cmp": "exists" },
-        { "fact": "completeness", "cmp": "lt", "param": "minCompleteness" }
-      ]},
+      "when": {
+        "any": [
+          {
+            "fact": "gapChannels",
+            "cmp": "exists"
+          },
+          {
+            "fact": "completeness",
+            "cmp": "lt",
+            "param": "minCompleteness"
+          }
+        ]
+      },
       "params": [
-        { "key": "minCompleteness", "label": "Minimum record completeness", "type": "number", "value": 1, "stricter": "higher", "min": 0, "max": 1, "note": "The industry has paid billions in fines for exactly this. The firm default is total coverage." }
+        {
+          "key": "minCompleteness",
+          "label": "Minimum record completeness",
+          "type": "number",
+          "value": 1,
+          "stricter": "higher",
+          "min": 0,
+          "max": 1,
+          "note": "The industry has paid billions in fines for exactly this. The firm default is total coverage."
+        }
       ],
-      "evidence": ["gapChannels", "completeness", "advisorId"],
+      "evidence": [
+        "gapChannels",
+        "completeness",
+        "advisorId"
+      ],
       "finding": "{gapChannels} in use with nothing capturing them. Record completeness is {completeness}.",
       "remediation": "Connect a capture source for each channel, or prohibit the channel and attest to it.",
       "confidenceFloor": 1,
-      "requires": []
+      "requires": [],
+      "actions": [
+        {
+          "kind": "connect_source",
+          "channels": "{gapChannels}",
+          "text": "Connect a capture source for each channel in use, or prohibit the channel and record the attestation."
+        },
+        {
+          "kind": "task",
+          "text": "Confirm with the advisor which of {gapChannels} carry client business, and route each to a captured channel",
+          "owner": "Compliance",
+          "dueInDays": 5
+        }
+      ]
     },
     {
       "id": "sec-17a4-completeness",
@@ -79,13 +205,28 @@
       "severity": "flag",
       "mandatory": true,
       "enabled": true,
-      "when": { "fact": "partialChannels", "cmp": "exists" },
+      "when": {
+        "fact": "partialChannels",
+        "cmp": "exists"
+      },
       "params": [],
-      "evidence": ["partialChannels", "advisorId"],
+      "evidence": [
+        "partialChannels",
+        "advisorId"
+      ],
       "finding": "{partialChannels} captured but held by no system of record. Evidence exists and retention does not.",
       "remediation": "Point the channel at the archive, which is the 17a-4 copy, by WORM or the audit-trail alternative.",
       "confidenceFloor": 1,
-      "requires": ["archive"]
+      "requires": [
+        "archive"
+      ],
+      "actions": [
+        {
+          "kind": "connect_source",
+          "channels": "{partialChannels}",
+          "text": "Point each of {partialChannels} at the archive, so the retained copy exists and not only the evidence."
+        }
+      ]
     },
     {
       "id": "reg-bi-care-evidence",
@@ -96,22 +237,71 @@
       "severity": "block",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "isRecommendation", "cmp": "eq", "value": true },
-        { "any": [
-          { "fact": "alternativesConsidered", "cmp": "lt", "param": "minAlternatives" },
-          { "fact": "costsCompared", "cmp": "eq", "value": false },
-          { "fact": "basisRecorded", "cmp": "eq", "value": false }
-        ]}
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "isRecommendation",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "any": [
+              {
+                "fact": "alternativesConsidered",
+                "cmp": "lt",
+                "param": "minAlternatives"
+              },
+              {
+                "fact": "costsCompared",
+                "cmp": "eq",
+                "value": false
+              },
+              {
+                "fact": "basisRecorded",
+                "cmp": "eq",
+                "value": false
+              }
+            ]
+          }
+        ]
+      },
       "params": [
-        { "key": "minAlternatives", "label": "Reasonably available alternatives on record", "type": "number", "value": 2, "stricter": "higher", "min": 1, "max": 10, "note": "Reg BI requires reasonably available alternatives, not all of them. The rule does not itself mandate documenting the analysis; this is the firm's evidence standard." }
+        {
+          "key": "minAlternatives",
+          "label": "Reasonably available alternatives on record",
+          "type": "number",
+          "value": 2,
+          "stricter": "higher",
+          "min": 1,
+          "max": 10,
+          "note": "Reg BI requires reasonably available alternatives, not all of them. The rule does not itself mandate documenting the analysis; this is the firm's evidence standard."
+        }
       ],
-      "evidence": ["alternativesConsidered", "costsCompared", "basisRecorded", "clientId", "productId"],
+      "evidence": [
+        "alternativesConsidered",
+        "costsCompared",
+        "basisRecorded",
+        "clientId",
+        "productId"
+      ],
       "finding": "Recommendation lacks complete care-obligation evidence: {alternativesConsidered} alternatives on record against a standard of {minAlternatives}.",
       "remediation": "Complete the rationale record before release: basis, reasonably available alternatives, costs compared, why this client.",
       "confidenceFloor": 0.95,
-      "requires": ["custodian-feed"]
+      "requires": [
+        "custodian-feed"
+      ],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold the recommendation until the rationale record is complete: alternatives, costs and the basis for this client."
+        },
+        {
+          "kind": "task",
+          "text": "Complete the care-obligation record for {productId} before release",
+          "owner": "Advisor",
+          "dueInDays": 1
+        }
+      ]
     },
     {
       "id": "sec-marketing-206-4-1",
@@ -119,19 +309,52 @@
       "authority": "SEC",
       "citation": "SEC Rule 206(4)-1, Advisers Act marketing rule",
       "scope": "communication",
-      "severity": "block",
+      "severity": "flag",
       "mandatory": true,
       "enabled": true,
-      "when": { "any": [
-        { "fact": "containsProjection", "cmp": "eq", "value": true },
-        { "fact": "containsTestimonial", "cmp": "eq", "value": true }
-      ]},
+      "when": {
+        "any": [
+          {
+            "fact": "containsProjection",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "fact": "containsTestimonial",
+            "cmp": "eq",
+            "value": true
+          }
+        ]
+      },
       "params": [],
-      "evidence": ["containsProjection", "containsTestimonial", "channel", "capacity"],
+      "evidence": [
+        "containsProjection",
+        "containsTestimonial",
+        "channel",
+        "capacity"
+      ],
       "finding": "Client-facing text contains performance projection or testimonial content.",
       "remediation": "Remove it. The firm blocks projections in client-facing drafts entirely while the FINRA projections proposal is unadopted.",
       "confidenceFloor": 0.85,
-      "requires": []
+      "requires": [],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold the message. Client-facing text with a projection or a testimonial does not go out as written."
+        },
+        {
+          "kind": "draft_note",
+          "to": "client",
+          "subject": "A correction to my last message",
+          "body": "In my last message I described a return figure as if it were an outcome. It is not: it is an illustration, and the actual result will depend on markets and rates. The options themselves stand, and I would rather we discuss them on a call than in writing."
+        },
+        {
+          "kind": "task",
+          "text": "Rewrite the message without the projection and resend through review",
+          "owner": "Advisor",
+          "dueInDays": 1
+        }
+      ]
     },
     {
       "id": "senior-investor-2165",
@@ -142,22 +365,81 @@
       "severity": "flag",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "clientAge", "cmp": "gte", "param": "age" },
-        { "any": [
-          { "fact": "unusualDisbursement", "cmp": "eq", "value": true },
-          { "fact": "newThirdPartyContact", "cmp": "eq", "value": true },
-          { "fact": "trustedContactOnFile", "cmp": "eq", "value": false }
-        ]}
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "clientAge",
+            "cmp": "gte",
+            "param": "age"
+          },
+          {
+            "any": [
+              {
+                "fact": "unusualDisbursement",
+                "cmp": "eq",
+                "value": true
+              },
+              {
+                "fact": "newThirdPartyContact",
+                "cmp": "eq",
+                "value": true
+              },
+              {
+                "fact": "trustedContactOnFile",
+                "cmp": "eq",
+                "value": false
+              }
+            ]
+          }
+        ]
+      },
       "params": [
-        { "key": "age", "label": "Specified adult age", "type": "number", "value": 65, "stricter": "lower", "min": 18, "max": 90, "note": "Rule 2165 defines a specified adult as 65 or older, or 18 plus with a reasonable belief of impairment." }
+        {
+          "key": "age",
+          "label": "Specified adult age",
+          "type": "number",
+          "value": 65,
+          "stricter": "lower",
+          "min": 18,
+          "max": 90,
+          "note": "Rule 2165 defines a specified adult as 65 or older, or 18 plus with a reasonable belief of impairment."
+        }
       ],
-      "evidence": ["clientAge", "unusualDisbursement", "newThirdPartyContact", "trustedContactOnFile", "clientId"],
+      "evidence": [
+        "clientAge",
+        "unusualDisbursement",
+        "newThirdPartyContact",
+        "trustedContactOnFile",
+        "clientId"
+      ],
       "finding": "Specified adult aged {clientAge} with an exploitation indicator present.",
       "remediation": "Escalate for a hold decision under Rule 2165 and confirm a trusted contact is on file.",
       "confidenceFloor": 0.8,
-      "requires": ["custodian-feed", "salesforce-fsc"]
+      "requires": [
+        "custodian-feed",
+        "salesforce-fsc"
+      ],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold any disbursement or beneficiary change on this account under Rule 2165 pending a principal's decision."
+        },
+        {
+          "kind": "callback",
+          "text": "Call the client on the number on file, not the number in the request, and confirm the instruction in their own words."
+        },
+        {
+          "kind": "request_form",
+          "form": "Trusted contact designation",
+          "text": "Request a trusted contact if none is on file (trusted contact on file: {trustedContactOnFile})."
+        },
+        {
+          "kind": "task",
+          "text": "Record the conversation and the decision on the account under Rule 2165",
+          "owner": "Advisor",
+          "dueInDays": 2
+        }
+      ]
     },
     {
       "id": "complaint-identification-4513",
@@ -168,16 +450,52 @@
       "severity": "flag",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "complaintLanguage", "cmp": "eq", "value": true },
-        { "fact": "complaintLogged", "cmp": "eq", "value": false }
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "complaintLanguage",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "fact": "complaintLogged",
+            "cmp": "eq",
+            "value": false
+          }
+        ]
+      },
       "params": [],
-      "evidence": ["complaintLanguage", "complaintExcerpt", "clientId", "channel"],
+      "evidence": [
+        "complaintLanguage",
+        "complaintExcerpt",
+        "clientId",
+        "channel"
+      ],
       "finding": "Client message reads as a grievance and no complaint record exists.",
       "remediation": "Log it in the complaint register and route per the firm's complaint procedure.",
       "confidenceFloor": 0.7,
-      "requires": ["microsoft-365"]
+      "requires": [
+        "microsoft-365"
+      ],
+      "actions": [
+        {
+          "kind": "task",
+          "text": "Open a complaint record for this message and route it under Rule 4513",
+          "owner": "Compliance",
+          "dueInDays": 1
+        },
+        {
+          "kind": "draft_note",
+          "to": "client",
+          "subject": "I have read your message",
+          "body": "Thank you for telling me plainly. I have logged what you raised so it is looked at properly and not only by me, and I would like to call you to hear the rest of it. Would tomorrow morning suit?"
+        },
+        {
+          "kind": "schedule",
+          "title": "Call the client about the concern raised",
+          "withinDays": 1
+        }
+      ]
     },
     {
       "id": "finra-2111-suitability",
@@ -188,15 +506,47 @@
       "severity": "flag",
       "mandatory": false,
       "enabled": true,
-      "when": { "fact": "concentrationPct", "cmp": "gt", "param": "maxConcentration" },
+      "when": {
+        "fact": "concentrationPct",
+        "cmp": "gt",
+        "param": "maxConcentration"
+      },
       "params": [
-        { "key": "maxConcentration", "label": "Single-name concentration ceiling", "type": "number", "value": 25, "stricter": "lower", "min": 1, "max": 100, "note": "A client IPS may set a tighter ceiling. It may not set a looser one." }
+        {
+          "key": "maxConcentration",
+          "label": "Single-name concentration ceiling",
+          "type": "number",
+          "value": 25,
+          "stricter": "lower",
+          "min": 1,
+          "max": 100,
+          "note": "A client IPS may set a tighter ceiling. It may not set a looser one."
+        }
       ],
-      "evidence": ["concentrationPct", "instrument", "clientId"],
+      "evidence": [
+        "concentrationPct",
+        "instrument",
+        "clientId"
+      ],
       "finding": "{instrument} is {concentrationPct} percent of investable assets against a ceiling of {maxConcentration}.",
       "remediation": "Document the rationale for holding, or propose a bounded reduction from the approved shelf.",
       "confidenceFloor": 1,
-      "requires": ["custodian-feed"]
+      "requires": [
+        "custodian-feed"
+      ],
+      "actions": [
+        {
+          "kind": "task",
+          "text": "Document the rationale for holding {instrument} at {concentrationPct} percent, or prepare a bounded reduction from the approved shelf",
+          "owner": "Advisor",
+          "dueInDays": 7
+        },
+        {
+          "kind": "schedule",
+          "title": "Concentration review with the client",
+          "withinDays": 14
+        }
+      ]
     },
     {
       "id": "reg-s-p-safeguards",
@@ -207,16 +557,42 @@
       "severity": "block",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "containsSensitiveData", "cmp": "eq", "value": true },
-        { "fact": "channelApproved", "cmp": "eq", "value": false }
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "containsSensitiveData",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "fact": "channelApproved",
+            "cmp": "eq",
+            "value": false
+          }
+        ]
+      },
       "params": [],
-      "evidence": ["containsSensitiveData", "channel", "clientId"],
+      "evidence": [
+        "containsSensitiveData",
+        "channel",
+        "clientId"
+      ],
       "finding": "Client identifying information sent over an unapproved channel.",
       "remediation": "Recall is not possible. Record the incident and assess notification under the amended safeguards rule.",
       "confidenceFloor": 0.85,
-      "requires": []
+      "requires": [],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold the message. Client identifying data does not travel on {channel}."
+        },
+        {
+          "kind": "task",
+          "text": "Move the exchange to an approved channel and record the incident under Reg S-P",
+          "owner": "Compliance",
+          "dueInDays": 1
+        }
+      ]
     },
     {
       "id": "genai-supervision-24-09",
@@ -227,21 +603,64 @@
       "severity": "block",
       "mandatory": true,
       "enabled": true,
-      "when": { "all": [
-        { "fact": "machineDrafted", "cmp": "eq", "value": true },
-        { "any": [
-          { "fact": "unsourcedFigures", "cmp": "gt", "value": 0 },
-          { "fact": "citationCount", "cmp": "lt", "param": "minCitations" }
-        ]}
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "machineDrafted",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "any": [
+              {
+                "fact": "unsourcedFigures",
+                "cmp": "gt",
+                "value": 0
+              },
+              {
+                "fact": "citationCount",
+                "cmp": "lt",
+                "param": "minCitations"
+              }
+            ]
+          }
+        ]
+      },
       "params": [
-        { "key": "minCitations", "label": "Minimum citations in generated client text", "type": "number", "value": 1, "stricter": "higher", "min": 0, "max": 10, "note": "Existing rules apply to AI tools. Grounding is the firm's evidence that they did." }
+        {
+          "key": "minCitations",
+          "label": "Minimum citations in generated client text",
+          "type": "number",
+          "value": 1,
+          "stricter": "higher",
+          "min": 0,
+          "max": 10,
+          "note": "Existing rules apply to AI tools. Grounding is the firm's evidence that they did."
+        }
       ],
-      "evidence": ["machineDrafted", "unsourcedFigures", "citationCount", "modelVersion", "promptVersion"],
+      "evidence": [
+        "machineDrafted",
+        "unsourcedFigures",
+        "citationCount",
+        "modelVersion",
+        "promptVersion"
+      ],
       "finding": "Machine-drafted client text with {unsourcedFigures} unsourced figures and {citationCount} citations.",
       "remediation": "Block release. Every quantitative claim must trace to a cited passage or a computed value.",
       "confidenceFloor": 1,
-      "requires": []
+      "requires": [],
+      "actions": [
+        {
+          "kind": "hold",
+          "what": "Hold the generated text: {unsourcedFigures} figures have no source and {citationCount} citations are present."
+        },
+        {
+          "kind": "task",
+          "text": "Source every figure or remove it, then add a citation, then resubmit",
+          "owner": "Advisor",
+          "dueInDays": 1
+        }
+      ]
     },
     {
       "id": "outside-business-3270",
@@ -252,16 +671,124 @@
       "severity": "note",
       "mandatory": false,
       "enabled": false,
-      "when": { "all": [
-        { "fact": "outsideBusinessLanguage", "cmp": "eq", "value": true },
-        { "fact": "obaOnFile", "cmp": "eq", "value": false }
-      ]},
+      "when": {
+        "all": [
+          {
+            "fact": "outsideBusinessLanguage",
+            "cmp": "eq",
+            "value": true
+          },
+          {
+            "fact": "obaOnFile",
+            "cmp": "eq",
+            "value": false
+          }
+        ]
+      },
       "params": [],
-      "evidence": ["outsideBusinessLanguage", "advisorId", "channel"],
+      "evidence": [
+        "outsideBusinessLanguage",
+        "advisorId",
+        "channel"
+      ],
       "finding": "Message suggests an outside business activity with nothing on file.",
       "remediation": "Confirm with the advisor and collect a disclosure if one is owed.",
       "confidenceFloor": 0.6,
-      "requires": ["microsoft-365"]
+      "requires": [
+        "microsoft-365"
+      ],
+      "actions": [
+        {
+          "kind": "request_form",
+          "form": "Outside business activity disclosure",
+          "text": "Request the disclosure form from the advisor; none is on file."
+        },
+        {
+          "kind": "task",
+          "text": "Confirm whether the activity described on {channel} is an outside business activity under Rule 3270",
+          "owner": "Compliance",
+          "dueInDays": 5
+        }
+      ]
+    },
+    {
+      "id": "finra-2111-drift",
+      "title": "Concentration rising toward the household's ceiling",
+      "authority": "FINRA",
+      "citation": "FINRA Rule 2111(a), quantitative suitability, read over time rather than at a point",
+      "scope": "account",
+      "severity": "flag",
+      "mandatory": false,
+      "enabled": true,
+      "when": {
+        "all": [
+          {
+            "fact": "concentrationDriftPts",
+            "cmp": "gt",
+            "param": "driftPoints"
+          },
+          {
+            "fact": "concentrationHeadroomPts",
+            "cmp": "lt",
+            "param": "headroomPoints"
+          }
+        ]
+      },
+      "params": [
+        {
+          "key": "driftPoints",
+          "label": "Rise over 90 days, in points",
+          "type": "number",
+          "value": 5,
+          "stricter": "lower",
+          "min": 1,
+          "max": 30,
+          "note": "Fires when the largest single name has risen by more than this over the custodian's last 90 days of valuations."
+        },
+        {
+          "key": "headroomPoints",
+          "label": "Headroom below the household's own ceiling, in points",
+          "type": "number",
+          "value": 10,
+          "stricter": "higher",
+          "min": 0,
+          "max": 50,
+          "note": "Only a position this close to the household's stated limit is worth a person's time; the point-in-time rule handles a breach."
+        }
+      ],
+      "evidence": [
+        "concentrationPct",
+        "concentrationCeilingPct",
+        "concentrationDriftPts",
+        "concentrationHistory",
+        "instrument",
+        "clientId"
+      ],
+      "finding": "{instrument} has risen {concentrationDriftPts} points in 90 days to {concentrationPct}% against the household's {concentrationCeilingPct}% ceiling ({concentrationHistory}).",
+      "remediation": "Raise it with the client before the ceiling is crossed: a staged plan now is cheaper than a forced trim later. Record the conversation on the account.",
+      "confidenceFloor": 0.8,
+      "requires": [
+        "custodian-feed"
+      ],
+      "actions": [
+        {
+          "kind": "draft_note",
+          "to": "client",
+          "subject": "Your {instrument} position has grown",
+          "body": "Your {instrument} holding has risen to {concentrationPct} percent of your investable assets, against the {concentrationCeilingPct} percent limit you set. Nothing needs to happen this week. I would like to walk through the options before it crosses the line, because a staged plan now is cheaper than a forced one later."
+        },
+        {
+          "kind": "schedule",
+          "title": "Concentration conversation before the ceiling is crossed",
+          "withinDays": 21
+        },
+        {
+          "kind": "task",
+          "text": "Prepare a staged-reduction illustration for {instrument}",
+          "owner": "Wealth strategist",
+          "dueInDays": 10
+        }
+      ]
     }
   ]
 }

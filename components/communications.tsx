@@ -58,7 +58,7 @@ export function Communications() {
   if (!o || !h || !ev || !draft) {
     return (
       <>
-        <PageTitle title="Client communications" sub="Drafts are composed only from an accepted proposal and its cited evidence." />
+        <PageTitle title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
         <p className="mb-3">No accepted proposal yet. Accept one from a proposal screen, or load the demo proposal.</p>
         {(() => {
           const o = opportunity(F.opportunityId);

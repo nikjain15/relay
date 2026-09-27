@@ -10,7 +10,17 @@ import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import { renderToString } from "react-dom/server";
 import type { ReactElement } from "react";
-import { ADVISORS_DATA, ALL_OPPORTUNITIES, CLIENTS, PROSPECTS, SERVICE_REQUESTS, toHousehold } from "@/lib/data";
+import { ADVISORS_DATA, ALL_OPPORTUNITIES, CLIENTS, PROSPECTS, SERVICE_REQUESTS, SNAPSHOTS, MESSAGES, HISTORY, CONNECTORS_DATA, ADVISOR_INPUTS, toHousehold } from "@/lib/data";
+import { briefAll } from "@/lib/research/brief";
+import { retrieve } from "@/lib/evidence/retrieve";
+import { sweep } from "@/lib/compliance/sweep";
+import { propose } from "@/lib/compliance/propose";
+import { replayAll } from "@/lib/compliance/replay";
+import { policyFrom, SEED_EDITS } from "@/lib/compliance/store";
+import { scopeFor } from "@/lib/compliance/scope";
+import ResearchPage from "@/app/research/page";
+import DocumentsPage from "@/app/documents/page";
+import BriefingPage from "@/app/research/[id]/page";
 import { HOUSEHOLDS } from "@/lib/fixtures/households";
 import type { Advisor } from "@/lib/data/advisor";
 import { ADVISOR_PROFILES, resolveProfile } from "@/lib/profile";
@@ -109,6 +119,17 @@ ADVISOR_PROFILES.splice(0, ADVISOR_PROFILES.length, ...ADVISORS_DATA.map((a, i) 
 EVENTS.splice(0, EVENTS.length, ...events);
 PROSPECTS.splice(0, PROSPECTS.length);
 SERVICE_REQUESTS.splice(0, SERVICE_REQUESTS.length);
+// The compliance data the deeper agents read points at the shipped clients; swap in fixture-scale equivalents.
+SNAPSHOTS.series.splice(0, SNAPSHOTS.series.length);
+HISTORY.findings.splice(0, HISTORY.findings.length);
+ADVISOR_INPUTS.advisors.splice(0, ADVISOR_INPUTS.advisors.length, ...advisors.map((a) => ({ advisorId: a.id, obaOnFile: false })));
+MESSAGES.messages.splice(0, MESSAGES.messages.length, ...clients.flatMap((c, i) => Array.from({ length: 2 }, (_, k) => ({
+  id: `msg-s${i}-${k}`, advisorId: c.advisorId, clientId: c.id, connectorId: "microsoft-365", channel: "email",
+  direction: k ? ("inbound" as const) : ("outbound" as const), day: -(i % 30),
+  text: i % 9 === 0 ? "This fund will return 8% a year, I'd suggest we place it all there." : `Message ${i} ${k}. `.repeat(1 + (i % 40)),
+}))));
+const stressConnections = advisors.flatMap((a) => [{ connectorId: "microsoft-365", advisorId: a.id, status: "connected" as const }, { connectorId: "custodian-feed", advisorId: a.id, status: "connected" as const }]);
+CONNECTORS_DATA.connections.splice(0, CONNECTORS_DATA.connections.length, ...stressConnections);
 
 // 3. Time the engines.
 // app.json still points at the shipped demo client and advisor, which the fixture replaces; those are the only expected errors.
@@ -122,6 +143,11 @@ time(`rank, each of ${N_ADVISORS} advisors`, () => advisors.map((a) => { const p
 time(`evaluateAll, every opportunity (${N_CLIENTS * 2})`, () => clients.flatMap((c) => c.opportunities.map((o) => evaluateAll(o, toHousehold(c)))), (r) => `${r.flat().length} candidates`);
 time(`reviewPack for ${N_CLIENTS} clients`, () => clients.map((c) => reviewPack(c.id)));
 time("allTasks()", () => allTasks(), (t) => `${t.length} tasks`);
+time(`retrieve, every opportunity (${N_CLIENTS * 2})`, () => clients.flatMap((c) => c.opportunities.map((o) => retrieve(o))), (r) => `${r.filter((x) => !x.refused).length} with evidence`);
+time(`brief() for ${N_CLIENTS} clients`, () => briefAll(), (b) => `${b.reduce((s, x) => s + x.unknowns.length, 0)} unknowns`);
+time(`sweep, each of ${N_ADVISORS} advisors, ${N_CLIENTS * 2} messages`, () => advisors.map((a) => sweep(a.id, policyFrom(SEED_EDITS, scopeFor(a.id)), CONNECTORS_DATA.connections)), (r) => `${r.reduce((s, x) => s + x.cases.length, 0)} cases, ${r.reduce((s, x) => s + x.messagesScanned, 0)} messages swept`);
+time("propose() with an empty history", () => propose(policyFrom(SEED_EDITS, scopeFor(advisors[0].id)), [], SEED_EDITS), (p) => `${p.proposals.length} proposals`);
+time("replayAll() with an empty history", () => replayAll(SEED_EDITS), (r) => `${r.length} replays`);
 
 // 4. Time server renders of the busiest pages.
 const pages: [string, () => ReactElement | Promise<ReactElement>][] = [
@@ -133,6 +159,9 @@ const pages: [string, () => ReactElement | Promise<ReactElement>][] = [
   ["/follow-ups", () => <FollowUpsPage />],
   ["/triage", () => <TriagePage />],
   ["/household/[unicode, long text]", () => HouseholdPage({ params: Promise.resolve({ id: "hh-s0" }) })],
+  ["/research (1000 briefings)", () => <ResearchPage />],
+  ["/research/[unicode, long text]", () => BriefingPage({ params: Promise.resolve({ id: "hh-s0" }) })],
+  ["/documents", () => <DocumentsPage />],
 ];
 for (const [name, el] of pages) {
   try {

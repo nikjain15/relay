@@ -1,6 +1,6 @@
 # Relay: connectors, compliance agents and a configurable rule set
 
-**Version:** v1.0, 2026-09-26. Built in the prototype; the production mapping in §8 is design.
+**Version:** v1.1, 2026-09-27 (v1.1 adds surveillance over the captured corpus, suitability drift over time, the rule-change proposer and replay of a past finding; v1.0 2026-09-26). Built in the prototype; the production mapping in §8 is design.
 
 **In one line:** connectors read the channels an advisor actually uses and decide nothing; the rule set
 is data a supervisor edits at runtime, resolved firm to segment to advisor to client and only ever
@@ -187,11 +187,11 @@ supervisor can reason about "who is watching communications" instead of about tw
 
 | Agent | Watches | Cadence |
 |---|---|---|
-| Communications surveillance | 2210 regime, 3110 review, 206(4)-1 marketing, RN 24-09, Reg S-P | On every draft |
+| Communications surveillance | 2210 regime, 3110 review, 206(4)-1 marketing, RN 24-09, Reg S-P, 4513 complaints | On every draft, and over every captured message |
 | Record completeness | Off-channel gaps, 17a-4 retention | Daily |
 | Recommendation evidence | Reg BI care obligation | On every proposal |
-| Client protection | 2165 specified adults, 4513 complaints, 2111 suitability | Daily |
-| Conduct | 3270 outside business activities | Weekly |
+| Client protection | 2165 specified adults, 2111 suitability at a point, 2111 concentration drift over 90 days | Daily |
+| Conduct | 3270 outside business activities, over the captured corpus | Weekly |
 
 **What is autonomous:** detection, classification, evidence assembly, the drafted finding, the drafted
 remediation, the citation, and the ranking of the queue.
@@ -219,11 +219,89 @@ being sent to a principal with a finding that named no fact the rule used. A rul
 its own evidence keys. A queue full of findings a supervisor cannot act on is how a surveillance system
 gets ignored, and that is a product failure, not a tuning problem.
 
+### 5.2 The corpus, not the inbox
+
+A check on a submitted draft catches what the advisor brought you. The sweep now also reads
+`data/compliance/messages.json`: every captured message on a source that is connected and healthy, in both
+directions, against the communication rules through the same engine (`messageFacts()`). In the seeded data it
+finds a projection in an outbound email the advisor never submitted for review, and a grievance in an inbound
+text that nobody logged. A message on a degraded source is not skipped silently: the sweep counts it as **not
+swept** and the console says so, because not swept reported as clear is the failure the whole layer exists to
+prevent.
+
+One rule of the corpus differs from the draft check, on purpose. Only a **positive** text classification is an
+inference. Treating every negative as uncertain queued every clean message for a person, which is the queue
+nobody reads; a negative is sampled instead, under Rule 3110's sample rate, which is the production answer to
+"did the classifier miss one".
+
+### 5.3 Drift, not only a point
+
+Point-in-time suitability misses a position that is rising toward its ceiling. `data/compliance/snapshots.json`
+holds the custodian's prior valuations of each household's largest single name at day -90, -60 and -30; **day 0
+is never stored**, it is the client file, so the two cannot disagree and `validate()` fails a stored day 0. The
+adapter derives `concentrationDriftPts` and `concentrationHeadroomPts` against the household's own ceiling, and
+the rule `finra-2111-drift` fires when the rise exceeds `driftPoints` and the headroom is under
+`headroomPoints`. In the seeded data it fires on a household at 77 percent against its own 80, rising nine
+points in ninety days, and not on the one that is flat far above a firm parameter; the point-in-time rule owns
+that. The case card draws the series with the ceiling.
+
+### 5.4 The proposer
+
+An agent that reads what the other agents keep finding and drafts a rule change for a principal. Three
+learners over the last 90 days of findings (`data/compliance/history.json`) and the current sweep:
+
+| Pattern | Proposes | Layer |
+|---|---|---|
+| A rule that is off whose language was seen twice or more | Enable it | Firm |
+| A threshold cleared within 15 percent of the line three times in one segment | Tighten it by a fifth | That segment |
+| A flag-severity rule whose every finding was confirmed, twice or more | Raise it to block | Firm |
+
+It may only propose in the stricter direction, and that is enforced twice: the learners draft only stricter
+changes, and `guard()` resolves every proposal in the scope it targets exactly as the console would resolve an
+accepted edit, dropping any the resolver would refuse. The mirror pattern, a rule fired three times and cleared
+every time, becomes an **observation** that says why the agent will not draft it: the change it argues for is a
+loosening, and only a principal at the firm layer may make one. Accepting a proposal appends an ordinary edit to
+the change log in the principal's name, through the same resolver; declining records a reason. Nothing is
+applied by the agent.
+
+### 5.5 Replay
+
+"What were the rules when you cleared that?" is answered by reconstruction. Each past finding stores the facts
+the rule read and its timestamp; `replay()` folds the change log onto the baseline up to that timestamp,
+evaluates the stored facts, and then evaluates them again against the rules now. The screen shows both
+verdicts, the fields that differ, and the entries in between that changed them. A finding whose recorded
+outcome the replay does not reproduce is reported as such, because that is a fact about the log. In the seeded
+data one finding comes out differently today: a projection flagged on 2026-09-12 would be blocked now, because
+of the firm's severity change two days later. Undo that entry in the session and the replay changes with it,
+because the log is the state.
+
+### 5.6 Prepared actions: automation up to the gate
+
+A finding that only says "look at this" leaves the work to the person. So each rule carries, as data,
+the actions its finding calls for (`actions` in `rules.json`): a hold on a release, a callback on the
+number on file, a form to request, a task with an owner and a due date, a note drafted to a client, an
+advisor or a principal, a source to connect. `lib/compliance/actions.ts` renders them from exactly the
+facts the rule read and hands them over prepared, on the finding, on the overview and in the header
+count. A person accepts or declines each one. Accepting sends nothing and writes nothing: an accepted
+note is a draft the advisor sends, an accepted task lands on the follow-up list for the session.
+Adding an action to a rule is editing JSON; adding a kind of action is one entry in `KIND` and one
+renderer.
+
+### 5.7 Status
+
+`lib/compliance/activity.ts` turns the same sweep into what a status screen and a header need: per
+agent, when it last ran, what it read, what it raised, what it prepared and what it could not evaluate,
+with a state in words (clear, needs you, blocking, off); and a timeline of the morning's runs. Nothing
+is stored, so the status can never disagree with the queue. `/agents` shows the five compliance agents
+beside the research agent, retrieval and the proposer, because they are the same kind of thing: work
+done before anyone asked, handed to a person.
+
 ## 6. Where the model is, and where it is not
 
 | Step | Deterministic code | Model |
 |---|---|---|
 | Extract a fact from free text, such as whether a message reads as a grievance | | Yes, with a confidence below one |
+| Render a prepared action from a rule's template and the facts | Yes | Could draft the note's prose; never the hold, the callback or the task |
 | Transcribe and summarise a meeting | | Yes |
 | Compose the language of a finding or a remediation | Templates today | Yes in production |
 | Evaluate a rule against the facts | Yes | Never |
@@ -247,6 +325,8 @@ below its confidence floor and in front of a person.
 | Personalization cannot widen what is allowed | `personalization-cannot-widen` and its transitive twin, `tests/invariants/personalization-cannot-widen` | Yes |
 | No client data or id literal in code | `tests/invariants/no-client-data-in-code` | Yes, it caught a hard-coded advisor id during this build |
 | Every table scrolls itself, not the page | `tests/invariants/responsive` | Yes |
+| A stored trend never carries a day 0 | `validate()` | Yes, a planted day 0 snapshot |
+| The proposer cannot loosen a rule | `guard()` and `tests/unit/compliance-deeper` | Yes, the guard replaced with `return true` |
 
 ## 8. Production mapping
 
@@ -257,6 +337,10 @@ below its confidence floor and in front of a person.
 | `data/compliance/rules.json` | A rule service, versioned, with the same JSON contract; the console writes through it |
 | Change log in session state | An append-only table, one row per change, with a reversal as its own row |
 | `sweep()` called on render | A scheduled job per cadence, writing cases to a supervisory work queue |
+| `data/compliance/messages.json` | The ingestion pipeline's captured records, read by the communication rules on their cadence |
+| `data/compliance/snapshots.json` | The custodian's valuation history, read as a series |
+| `data/compliance/history.json` | The supervisory system of record's past findings, with facts and dispositions |
+| Proposals accepted in session | Change requests in the rule service, approved by a principal, logged like any edit |
 | Case dispositions in session state | The firm's supervisory system of record, with the facts the rule read attached to each disposition |
 | Inferred facts from regular expressions | A typed extraction model with per-fact confidence, evaluated against a labelled set before it is trusted |
 
@@ -267,5 +351,8 @@ below its confidence floor and in front of a person.
 - It does not decide a supervisory regime with a model.
 - It does not report a rule as clear when it could not evaluate it.
 - It does not let a lower layer produce a weaker rule than the layer above.
+- It does not propose a weaker rule, and says so when the pattern argues for one.
+- It does not report a message on a degraded source as swept.
+- It does not send, schedule or record a prepared action. A person accepts it, and then a person does it.
 - It does not claim a guard is enforced until that guard has been seen failing on a deliberate
   violation.

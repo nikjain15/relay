@@ -1,0 +1,22 @@
+{
+  "id": "doc-liquidity-note-v1",
+  "title": "Sizing a Liquidity strategy (earlier edition)",
+  "kind": "research note",
+  "desk": "Research desk",
+  "day": -30,
+  "reviewEveryDays": 90,
+  "status": "superseded",
+  "supersededBy": "doc-liquidity-note",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "A Liquidity strategy is sized to cover one to three years of planned spending in cash and short-dated instruments.",
+      "claims": [
+        {
+          "topic": "liquidity.horizon",
+          "value": "one to three years of planned spending"
+        }
+      ]
+    }
+  ]
+}

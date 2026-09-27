@@ -33,9 +33,18 @@ figures; *Chosen* = invented, deliberately inside the published range.
 | Client segment | Emerging affluent, under $250K investable | Published | [WAC disclosure](https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf) **check** |
 | Load | About 1,000 households | Derived | 200+ professionals serving 200,000 to 300,000 clients (UBS gives both figures): roughly 1,000 to 1,500 each. **Changed from "about 900"** |
 
+## Advisor C: business-owner and retiree practice, Chicago
+
+| Detail | Value | Kind | Grounded in |
+|---|---|---|---|
+| Practice focus | Owners of closely held businesses before and after a sale, and the retirees they become | Published (pattern) | [Entrepreneurs Group](https://advisors.ubs.com/entrepreneursgroup/) **check** |
+| Team shape | Advisor, associate advisor, client service associate, shared planning specialist | Published (pattern) | Team pages as for Advisor A |
+| Book | About $610M, 142 households | Chosen | About 1.5 times the reported average per advisor (Derived, as for Advisor A) |
+| Outside activity | A disclosed seat on a community foundation's investment committee | Chosen | Rule 3270 disclosure is public regulation; the seat is invented so the conduct rule has a disclosed case to contrast with an undisclosed one |
+
 ---
 
-## The seven households
+## The twelve households
 
 | # | Household (invented name) | Situation | Kind | Grounded in |
 |---|---|---|---|---|
@@ -46,6 +55,11 @@ figures; *Chosen* = invented, deliberately inside the published range.
 | 5 | **Vasquez-Hale**, $1.2M, 1 person, $500K to $5M | First advisory relationship; 401(k) rollover pending | Chosen | $500K to $5M tier (InvestmentNews above); rollover recommendations are a Reg BI focus ([SEC staff bulletin on account recommendations](https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail)) |
 | 6 | **Thornbury**, $23.1M, 2 people, $5M+ | Business owner; operating stake 77% of assets; late-stage funding round; $1.2M capital call due | Chosen within published pattern | [Entrepreneurs Group](https://advisors.ubs.com/entrepreneursgroup/) (business owners, sale, concentration) **check**; late-stage business funding is a STAAT signal type (UBS AI for advisors, above) |
 | 7 | **Pell**, $180K, 1 person, Wealth Advice Center | Emerging affluent, remote coverage | Published segment | WAC serves clients under $250K ([WAC disclosure](https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf) **check**) |
+| 8 | **Castellanos**, $11.8M, 2 people, $5M+ | Owner four months after selling a practice; cash far above the family's own target; a new payee wire; an earn-out nobody has counted | Chosen within published pattern | Entrepreneurs Group above; business sale as a STAAT signal type |
+| 9 | **Marchetti-Oyelaran**, $6.9M, 3 people, $5M+ | A 68-year-old and a 41-year-old spouse; a power of attorney presented by a relative; beneficiaries from a first marriage; estate intent undocumented | Chosen | FINRA Rules 2165 and 4512 (specified adults, trusted contact) are public regulation; the situation is invented to exercise them |
+| 10 | **Desrosiers**, $3.4M, 1 person, $500K to $5M | Eighteen months from retirement; a 401(k) held at the employer; a pension election pending | Chosen | Rollover recommendations under Reg BI (SEC staff bulletin above) |
+| 11 | **Ng**, $95K, 1 person, Wealth Advice Center | First savings; two months of emergency fund; asks about speculative investments by text | Published segment | WAC disclosure above |
+| 12 | **Abernathy**, $19.5M, 2 people, $5M+ | An inherited utility holding at 38 percent against a 30 percent family rule and rising; not reached in 200 days | Chosen | Concentrated positions as a founder-and-family practice theme (Advisor A sources); Liquidity, Longevity, Legacy (Wealth Way) |
 
 ---
 

@@ -40,7 +40,7 @@ export function compose(h: Household, opp: Opportunity, ev: Evaluation, product:
           ? `your ${goal.strategy.toLowerCase()} goal is funded at ${usd(goal.funded)} of ${usd(goal.target)}`
           : `this affects your ${opp.strategy.toLowerCase()} goal`;
   const passage = evidence[0];
-  const disclosure = CORPUS.find((d) => d.id === POLICY.communications.disclosureDocId)!.passages[0];
+  const disclosure = CORPUS.find((d) => d.id === POLICY.communications.disclosureDocId)!.passages[0].text;
   const firstNames = addressees(h).map((p) => p.name).join(" and ");
   const amount = usd(ev.candidate.amountUsd);
   const opener = opp.clientNote ?? `We noted a change on your account: ${opp.title.charAt(0).toLowerCase()}${opp.title.slice(1)}.`;
@@ -51,7 +51,7 @@ export function compose(h: Household, opp: Opportunity, ev: Evaluation, product:
     "",
     `${opener} At present, ${goalLine}.`,
     `One option to discuss is ${verb} ${amount} ${prep} ${productName}.${passage && !brief ? ` ${passage.text}` : ""}`,
-    passage ? `[Source: ${passage.title}, prototype corpus, day ${passage.day}]` : "",
+    passage ? `[Source: ${passage.title}${passage.passageId ? `, passage ${passage.passageId}` : ""}, prototype corpus, day ${passage.day}]` : "",
     "",
     disclosure,
   ].join("\n");

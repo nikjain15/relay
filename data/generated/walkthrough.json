@@ -105,7 +105,7 @@
           "top": false
         }
       ],
-      "listTotal": 10,
+      "listTotal": 11,
       "chain": [
         "Sold a property: $4.1M",
         "No cash set aside: 0 of 36 months",
@@ -114,11 +114,11 @@
       ],
       "quotes": [
         {
-          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
-          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
@@ -261,7 +261,7 @@
         }
       ],
       "choose": "prod-tsy-ladder",
-      "draft": "Dear M. Renner and J. Renner,\n\nWe noticed the $4.1M from your property sale. At present, your cash set aside for planned spending covers 0 of 36 months.\nOne option to discuss is placing $3.06M in short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear M. Renner and J. Renner,\n\nWe noticed the $4.1M from your property sale. At present, your cash set aside for planned spending covers 0 of 36 months.\nOne option to discuss is placing $3.06M in short-term US Treasury bonds. Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.\n[Source: Sizing a Liquidity strategy, passage p2, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Congratulate them on the sale",
         "Ask about the renovation budget and timing",
@@ -287,10 +287,10 @@
       ],
       "groundingBundle": {
         "documents": [
-          "Sizing a Liquidity strategy",
-          "Treasury ladder, 0 to 3 years",
           "Managing single-name concentration",
-          "Exchange fund, 7-year lockup"
+          "Exchange fund, 7-year lockup",
+          "Sizing a Liquidity strategy",
+          "Treasury ladder, 0 to 3 years"
         ]
       }
     },
@@ -394,7 +394,7 @@
           "top": false
         }
       ],
-      "listTotal": 10,
+      "listTotal": 11,
       "chain": [
         "Spending $22K a month",
         "Cash covers 11 of 36 months",
@@ -403,11 +403,11 @@
       ],
       "quotes": [
         {
-          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
-          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
@@ -544,7 +544,7 @@
         }
       ],
       "choose": "prod-tsy-ladder",
-      "draft": "Dear R. Alcott and S. Alcott,\n\nAs your required withdrawals begin, we reviewed your cash. At present, your cash set aside for planned spending covers 11 of 36 months.\nOne option to discuss is moving $550K into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear R. Alcott and S. Alcott,\n\nAs your required withdrawals begin, we reviewed your cash. At present, your cash set aside for planned spending covers 11 of 36 months.\nOne option to discuss is moving $550K into short-term US Treasury bonds. Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.\n[Source: Sizing a Liquidity strategy, passage p2, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Start from their 2:00 review agenda",
         "Show the 11 of 36 months gap on screen",
@@ -571,8 +571,8 @@
       "groundingBundle": {
         "documents": [
           "Sizing a Liquidity strategy",
-          "Treasury ladder, 0 to 3 years",
-          "Municipal ladder, 1 to 7 years"
+          "Municipal ladder, 1 to 7 years",
+          "Treasury ladder, 0 to 3 years"
         ]
       }
     },
@@ -676,7 +676,7 @@
           "top": false
         }
       ],
-      "listTotal": 10,
+      "listTotal": 11,
       "chain": [
         "$1.2M capital call in 60 days",
         "Cash covers 6 of 24 months",
@@ -685,11 +685,11 @@
       ],
       "quotes": [
         {
-          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
-          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         }
       ],
@@ -821,7 +821,7 @@
         }
       ],
       "choose": "prod-tsy-ladder",
-      "draft": "Dear K. Thornbury and L. Thornbury,\n\nAhead of the $1.2M capital call, we reviewed your cash. At present, your cash set aside for planned spending covers 6 of 24 months.\nOne option to discuss is moving $2.1M into short-term US Treasury bonds. A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear K. Thornbury and L. Thornbury,\n\nAhead of the $1.2M capital call, we reviewed your cash. At present, your cash set aside for planned spending covers 6 of 24 months.\nOne option to discuss is moving $2.1M into short-term US Treasury bonds. Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.\n[Source: Sizing a Liquidity strategy, passage p2, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Confirm the capital call date with the CFO",
         "Show the 6 of 24 months gap",
@@ -847,8 +847,8 @@
       ],
       "groundingBundle": {
         "documents": [
-          "Sizing a Liquidity strategy",
-          "Managing single-name concentration"
+          "Managing single-name concentration",
+          "Sizing a Liquidity strategy"
         ]
       }
     },
@@ -921,13 +921,19 @@
           "top": true
         },
         {
+          "who": "W. Ng",
+          "what": "Two months of cash against a six-month target",
+          "kind": "household_threshold",
+          "top": false
+        },
+        {
           "who": "C. Pell",
           "what": "Research note: reduce single-sector funds",
           "kind": "market_view",
           "top": false
         }
       ],
-      "listTotal": 2,
+      "listTotal": 3,
       "chain": [
         "Spending $5K a month",
         "Cash covers 4 of 6 months",
@@ -935,11 +941,11 @@
       ],
       "quotes": [
         {
-          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
-          "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold.",
+          "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
           "source": "Sizing a Liquidity strategy (illustrative, prototype corpus day 2)"
         },
         {
@@ -1067,7 +1073,7 @@
         }
       ],
       "choose": "prod-mmf",
-      "draft": "Dear C. Pell,\n\nWe reviewed the cash you keep for planned spending. At present, your cash set aside for planned spending covers 4 of 6 months.\nOne option to discuss is moving $10K into a government money market fund.\n[Source: Sizing a Liquidity strategy, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
+      "draft": "Dear C. Pell,\n\nWe reviewed the cash you keep for planned spending. At present, your cash set aside for planned spending covers 4 of 6 months.\nOne option to discuss is moving $10K into a government money market fund.\n[Source: Sizing a Liquidity strategy, passage p2, prototype corpus, day 2]\n\nThis note describes options for discussion. It is not a projection of future performance and not a recommendation until reviewed with your advisor.",
       "talkingPoints": [
         "Keep it to one topic: the cash cushion",
         "Confirm the $5K monthly figure",
@@ -1182,6 +1188,33 @@
     ],
     "paperwork": [
       {
+        "client": "Marchetti-Oyelaran family",
+        "form": "Beneficiary designation update",
+        "status": "escalated",
+        "daysOpen": 44,
+        "after": 14,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi G. Marchetti, a quick reminder that the beneficiary designation update is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Marchetti-Oyelaran family",
+        "form": "Trusted contact designation",
+        "status": "escalated",
+        "daysOpen": 44,
+        "after": 14,
+        "note": "Sent twice; not returned",
+        "draft": "Draft for you to send: \"Hi G. Marchetti, a quick reminder that the trusted contact designation is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Abernathy family",
+        "form": "Annual client information confirmation",
+        "status": "escalated",
+        "daysOpen": 40,
+        "after": 14,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi H. Abernathy, a quick reminder that the annual client information confirmation is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
         "client": "Alcott family",
         "form": "Beneficiary designation update",
         "status": "escalated",
@@ -1191,6 +1224,15 @@
         "draft": "Draft for you to send: \"Hi R. Alcott, a quick reminder that the beneficiary designation update is still waiting for your signature. I can walk you through it on a short call.\""
       },
       {
+        "client": "Castellanos family",
+        "form": "Updated investment policy statement after the sale",
+        "status": "escalated",
+        "daysOpen": 25,
+        "after": 14,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi R. Castellanos, a quick reminder that the updated investment policy statement after the sale is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
         "client": "D. Vasquez-Hale",
         "form": "401(k) rollover form",
         "status": "escalated",
@@ -1198,6 +1240,15 @@
         "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi D. Vasquez-Hale, a quick reminder that the 401(k) rollover form is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "P. Desrosiers",
+        "form": "Client information refresh",
+        "status": "escalated",
+        "daysOpen": 20,
+        "after": 14,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi P. Desrosiers, a quick reminder that the client information refresh is still waiting for your signature. I can walk you through it on a short call.\""
       },
       {
         "client": "E. Brandvold",
@@ -1216,6 +1267,24 @@
         "after": 14,
         "note": "",
         "draft": "Draft for you to send: \"Hi E. Brandvold, a quick reminder that the us tax status confirmation is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "P. Desrosiers",
+        "form": "Rollover recommendation record",
+        "status": "due",
+        "daysOpen": 9,
+        "after": 14,
+        "note": "",
+        "draft": "Draft for you to send: \"Hi P. Desrosiers, a quick reminder that the rollover recommendation record is still waiting for your signature. I can walk you through it on a short call.\""
+      },
+      {
+        "client": "Castellanos family",
+        "form": "Standing wire instructions: builder",
+        "status": "due",
+        "daysOpen": 6,
+        "after": 14,
+        "note": "New payee; callback required before first use",
+        "draft": "Draft for you to send: \"Hi R. Castellanos, a quick reminder that the standing wire instructions: builder is still waiting for your signature. I can walk you through it on a short call.\""
       },
       {
         "client": "Okafor-Lind family",
@@ -1449,6 +1518,43 @@
             "prospect": null
           }
         ]
+      },
+      {
+        "advisor": "Advisor C, Chicago",
+        "items": [
+          {
+            "time": "10:00",
+            "title": "Castellanos post-sale plan",
+            "kind": "review",
+            "purpose": "First review since the practice sale closed; cash is well above target",
+            "client": "Castellanos family",
+            "prospect": null
+          },
+          {
+            "time": "11:30",
+            "title": "Referral: the practice buyer",
+            "kind": "prospect",
+            "purpose": "First conversation, introduced by the Castellanos family",
+            "client": null,
+            "prospect": "The buyer of the Castellanos practice"
+          },
+          {
+            "time": "2:30",
+            "title": "Marchetti-Oyelaran estate call",
+            "kind": "call",
+            "purpose": "The new power of attorney; who the firm may speak to",
+            "client": "Marchetti-Oyelaran family",
+            "prospect": null
+          },
+          {
+            "time": "4:00",
+            "title": "Compliance check-in",
+            "kind": "internal",
+            "purpose": "Open findings and the proposed rule changes",
+            "client": null,
+            "prospect": null
+          }
+        ]
       }
     ],
     "reviewPack": {
@@ -1497,8 +1603,8 @@
       ],
       "documents": [
         "Sizing a Liquidity strategy",
-        "Treasury ladder, 0 to 3 years",
-        "Municipal ladder, 1 to 7 years"
+        "Municipal ladder, 1 to 7 years",
+        "Treasury ladder, 0 to 3 years"
       ]
     },
     "personalization": [
@@ -1564,15 +1670,15 @@
         ]
       },
       {
-        "client": "C. Pell",
-        "advisor": "Advisor B, Wealth Advice Center",
-        "version": "firm@1 segment:wealth-advice-center@1 advisor:adv-b@1 client:hh-pell@1",
+        "client": "Castellanos family",
+        "advisor": "Advisor C, Chicago",
+        "version": "firm@1 segment:private-wealth@1 advisor:adv-c@1 client:hh-castellanos@1",
         "settings": [
           {
             "label": "Items on today's list",
             "kind": "preference",
-            "value": "20",
-            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+            "value": "12",
+            "from": "Firm default"
           },
           {
             "label": "How much each kind of signal counts",
@@ -1589,32 +1695,32 @@
           {
             "label": "Review pack section order",
             "kind": "preference",
-            "value": "Open items → Gaps → What changed → Decisions → Talking points → Documents",
-            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+            "value": "Decisions → Gaps → What changed → Open items → Talking points → Documents",
+            "from": "Advisor setting"
           },
           {
             "label": "Client note length",
             "kind": "preference",
-            "value": "brief",
-            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+            "value": "full",
+            "from": "Firm default"
           },
           {
             "label": "Preferred channel",
             "kind": "preference",
-            "value": "video",
-            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+            "value": "email",
+            "from": "Firm default"
           },
           {
             "label": "Best time to reach",
             "kind": "preference",
-            "value": "After 6pm on weekdays",
+            "value": "Mid-morning; E. handles the calendar",
             "from": "Client setting"
           },
           {
             "label": "Escalate unsigned forms after (days)",
             "kind": "rule",
-            "value": "7",
-            "from": "Segment: Wealth Advice Center, remote pooled coverage"
+            "value": "14",
+            "from": "Firm default"
           },
           {
             "label": "Speak to the client before any written note",
@@ -1672,6 +1778,24 @@
         "heldBack": null
       },
       {
+        "who": "Advisor C, Chicago",
+        "setting": "How much each kind of signal counts",
+        "from": "market view: 0.7",
+        "to": "0.6",
+        "because": "You dismissed 6 of 6 market view items in 30 days (Not material for this household).",
+        "measure": "Share of this kind of item dismissed falls; nothing you acted on drops off the list.",
+        "heldBack": null
+      },
+      {
+        "who": "Advisor C, Chicago",
+        "setting": "Items on today's list",
+        "from": "12",
+        "to": "7",
+        "because": "Over 8 days you worked through 6 items on average and never more than 6, against a list of 12.",
+        "measure": "Share of the list worked each day rises; nothing material waits more than a day.",
+        "heldBack": null
+      },
+      {
         "who": "Alcott family",
         "setting": "Preferred channel",
         "from": "email",
@@ -1701,6 +1825,20 @@
     ],
     "followUps": [
       {
+        "client": "Abernathy family",
+        "text": "Schedule the overdue annual review",
+        "owner": "Client service associate",
+        "due": "30 days overdue",
+        "overdue": true
+      },
+      {
+        "client": "P. Desrosiers",
+        "text": "Chase the client information refresh",
+        "owner": "Client service associate",
+        "due": "6 days overdue",
+        "overdue": true
+      },
+      {
         "client": "Alcott family",
         "text": "Update beneficiary forms",
         "owner": "Client service associate",
@@ -1712,6 +1850,13 @@
         "text": "Follow up on the rollover signature",
         "owner": "Advisor",
         "due": "2 days overdue",
+        "overdue": true
+      },
+      {
+        "client": "Castellanos family",
+        "text": "Verify the builder's wire instructions by callback",
+        "owner": "Client service associate",
+        "due": "1 days overdue",
         "overdue": true
       },
       {
@@ -1736,10 +1881,38 @@
         "overdue": false
       },
       {
+        "client": "Marchetti-Oyelaran family",
+        "text": "Confirm the power of attorney with G. directly, by phone on the number on file",
+        "owner": "Advisor",
+        "due": "due today",
+        "overdue": false
+      },
+      {
+        "client": "Marchetti-Oyelaran family",
+        "text": "Ask Legal whether the POA is on the firm's form",
+        "owner": "Client service associate",
+        "due": "due in 1 days",
+        "overdue": false
+      },
+      {
         "client": "C. Pell",
         "text": "Schedule the annual check-in",
         "owner": "Callback queue",
         "due": "due in 2 days",
+        "overdue": false
+      },
+      {
+        "client": "Castellanos family",
+        "text": "Model the house budget against the cash held",
+        "owner": "Planning specialist",
+        "due": "due in 2 days",
+        "overdue": false
+      },
+      {
+        "client": "W. Ng",
+        "text": "Send the emergency-fund explainer",
+        "owner": "Advisor",
+        "due": "due in 3 days",
         "overdue": false
       },
       {
@@ -1754,6 +1927,20 @@
         "text": "Map deferred compensation vesting dates",
         "owner": "Junior advisor",
         "due": "due in 7 days",
+        "overdue": false
+      },
+      {
+        "client": "P. Desrosiers",
+        "text": "Model lump sum against annuity",
+        "owner": "Planning specialist",
+        "due": "due in 7 days",
+        "overdue": false
+      },
+      {
+        "client": "Abernathy family",
+        "text": "Prepare the staged-sale illustration for the utility holding",
+        "owner": "Wealth strategist",
+        "due": "due in 10 days",
         "overdue": false
       },
       {

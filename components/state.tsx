@@ -78,6 +78,20 @@ interface State {
    */
   caseDispositions: Record<string, { disposition: Disposition; comment?: string; at: string }>;
   disposeCase: (caseId: string, d: Disposition, comment?: string) => void;
+  /**
+   * What a principal did with each rule change the proposer drafted. Accepting
+   * one appends an ordinary edit to the change log in the principal's name;
+   * declining records the refusal so the agent stops asking this session.
+   */
+  proposalDecisions: Record<string, { decision: "accepted" | "declined"; reason: string; at: string }>;
+  decideProposal: (proposalId: string, decision: "accepted" | "declined", reason: string) => void;
+  /**
+   * What a person did with each action an agent prepared. Accepting a task puts
+   * it on the follow-up list for the session; accepting a note makes it a draft
+   * the advisor sends. Nothing is sent or written by accepting.
+   */
+  actionDecisions: Record<string, { decision: "accepted" | "declined"; at: string }>;
+  decideAction: (actionId: string, decision: "accepted" | "declined") => void;
 }
 
 const Ctx = createContext<State | null>(null);
@@ -92,6 +106,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [ruleEdits, setRuleEdits] = useState<RuleEdit[]>(SEED_EDITS);
   const [connections, setConnections] = useState<ConnectionState[]>(CONNECTORS_DATA.connections);
   const [caseDispositions, setCaseDispositions] = useState<State["caseDispositions"]>({});
+  const [proposalDecisions, setProposalDecisions] = useState<State["proposalDecisions"]>({});
+  const [actionDecisions, setActionDecisions] = useState<State["actionDecisions"]>({});
   const overlay: Overlay = {};
   for (const s of learned) {
     const side = (overlay[s.scope] ??= {});
@@ -130,6 +146,10 @@ export function StateProvider({ children }: { children: ReactNode }) {
     revertEdit: (id) => setRuleEdits((l) => l.filter((x) => x.id !== id)),
     connections,
     caseDispositions,
+    actionDecisions,
+    decideAction: (id, decision) => setActionDecisions((s) => ({ ...s, [id]: { decision, at: new Date().toISOString() } })),
+    proposalDecisions,
+    decideProposal: (id, decision, reason) => setProposalDecisions((s) => ({ ...s, [id]: { decision, reason, at: new Date().toISOString() } })),
     disposeCase: (caseId, disposition, comment) =>
       setCaseDispositions((s) => ({ ...s, [caseId]: { disposition, comment, at: new Date().toISOString() } })),
     setConnectorStatus: (advisorId, connectorId, status) =>
