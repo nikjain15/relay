@@ -6,7 +6,7 @@ import { briefAll } from "@/lib/research/brief";
 import { todaysMeetings, clientName } from "@/lib/meetings/prep";
 import { ADVISORS_DATA, CLIENTS } from "@/lib/data";
 import { APP } from "@/lib/data/policy";
-import { More, PageTitle, Pill, Section, StatRow, TableScroll, td, th } from "@/components/ui";
+import { Brief, More, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 import { Bars, Meter } from "@/components/charts";
 import { Icon } from "@/components/icons";
 
@@ -21,19 +21,20 @@ export default function ResearchIndex() {
   const byProbe = Object.entries(
     all.flatMap((b) => b.unknowns).reduce<Record<string, number>>((acc, u) => ((acc[u.probe] = (acc[u.probe] ?? 0) + 1), acc), {}),
   ).sort((a, b) => b[1] - a[1]);
-  const label = (id: string) => ADVISORS_DATA.find((a) => a.id === id)?.walkthrough?.label ?? id;
+  const label = (id: string) => ADVISORS_DATA.find((a) => a.id === id)?.name ?? id;
 
   return (
     <>
-      <PageTitle title="Briefings" sub={`${APP.todayLabel}. Today's meetings first, then the most unknown.`} />
+      <PageTitle icon="briefing" title="Briefings" sub={`${APP.todayLabel}. Today's meetings first, then the most unknown.`} />
 
-      <StatRow
-        items={[
-          { value: all.length, label: "Households briefed", icon: "briefing" },
-          { value: total("since"), label: "Changes since last contact", icon: "trend" },
-          { value: total("inferred"), label: "Inferences, each with a confidence", icon: "eye" },
-          { value: total("unknowns"), label: "Things not established", icon: "question", tone: total("unknowns") ? "critical" : "positive" },
-        ]}
+      <Brief
+        name="Research"
+        icon="briefing"
+        at="day 0, 06:30"
+        says={<>I briefed all {all.length} households before anyone opened this page: {total("since")} things changed since you last spoke to each, {total("inferred")} things I inferred with a confidence, and {total("unknowns")} I could not establish and say so. Today&apos;s meetings are first.</>}
+        points={rows.filter((r) => r.meeting).slice(0, 3).map((r) => ({ text: `${r.meeting!.time} ${r.b.name}: ${r.b.since.length} changed since you spoke, ${r.b.unknowns.length} not established.`, href: `/research/${r.b.clientId}`, who: "client" as const, icon: "calendar" as const }))}
+        next={rows[0] ? { label: `Open the ${rows[0].b.name} briefing`, href: `/research/${rows[0].b.clientId}` } : undefined}
+        note="A model would phrase a briefing; it would not decide what is observed and what is inferred. Every claim cites a field."
       />
 
       <Section title="Claims across the book">

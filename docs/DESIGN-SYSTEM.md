@@ -72,6 +72,10 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 
 | Component | What it is |
 |---|---|
+| `Brief` | Under the title of every workflow screen: the agent speaks first, in a sentence with the figures in it, then the few things that matter, one next step, and a trace. `AgentBar` renders as one |
+| `ActionPanel` | A prepared action opened beside the list: the draft or task, who acts, where it goes, the trace, and a decision that stays on screen as a recorded outcome |
+| `Ask` | The drawer on every screen: a question in, an answer from the records with citations and links |
+| `Mark` | A two-letter monogram for a vendor or a source; no logo or wordmark is ever shipped |
 | `AgentBar` | Under the title of every workflow screen: which agent fed it, what it read, what it left for a person, a folded trace of how, and the step a model would own in production |
 | `Trace` | How an agent got here, in four or five steps, each with the perspective that did it; folded under a finding or a bar |
 | `Who`, `Legend` | The perspective word in its colour, and the three words once per screen |

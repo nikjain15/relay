@@ -26,7 +26,7 @@ export default function FollowUps() {
   const tasks = allTasks();
   return (
     <>
-      <PageTitle title="Follow-ups" sub="What the team owes after the advice. Relay never sends: the advisor sends approved notes and logs what happened." />
+      <PageTitle icon="check" title="Follow-ups" sub="What the team owes after the advice. Relay never sends: the advisor sends approved notes and logs what happened." />
       <AgentBar
         name="Follow-up"
         icon="check"

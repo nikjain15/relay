@@ -12,7 +12,7 @@ import { household } from "@/lib/fixtures/households";
 import { opportunity } from "@/lib/fixtures/opportunities";
 import { runChecks } from "@/lib/policy/checks";
 import { useRelay, type Disposition } from "@/components/state";
-import { Banner, Card, CardGrid, More, PageTitle, Pill, Section, StatRow, TableScroll, btn, btnPrimary, input, td, th } from "@/components/ui";
+import { Brief, Banner, Card, CardGrid, More, PageTitle, Pill, Section, StatRow, TableScroll, btn, btnPrimary, input, td, th } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { policyFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
@@ -59,7 +59,7 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
   const [comment, setComment] = useState<Record<string, string>>({});
 
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
-  const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
+  const policy = useMemo(() => policyFrom(ruleEdits, scope, undefined, book.rules), [ruleEdits, scope, book.rules]);
   const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
 
   const open = found.cases.filter((c) => !caseDispositions[c.id]);
@@ -69,8 +69,17 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
   return (
     <>
       <PageTitle
-        title="Supervision console"
+        icon="shield"
+        title="Supervision queue"
         sub="What the agents found, what they prepared, and every draft waiting for release. The disposition is yours."
+      />
+      <Brief
+        name="Supervision"
+        icon="shield"
+        at="day 0, 06:25"
+        says={<>The desks swept {found.accountsScanned} accounts and {found.messagesScanned} captured messages{found.channelsScanned.length ? ` on ${found.channelsScanned.join(", ")}` : ""}. {open.length ? <>{open.length} finding{open.length === 1 ? "" : "s"} wait on a principal, {blocking.length} blocking; each arrives with the facts read, the citation and what the agent prepared.</> : "Nothing is open."} {pendingDrafts.length ? `${pendingDrafts.length} draft${pendingDrafts.length === 1 ? "" : "s"} wait for release.` : ""}</>}
+        points={blocking.slice(0, 3).map((c) => ({ text: `${c.ruleTitle}: ${c.subjectLabel}`, tone: "critical" as const }))}
+        note="An agent detects, cites and prepares. It never clears its own finding; you clear, return or block, and the disposition is recorded against the rules as they stood."
       />
 
       <StatRow
@@ -86,7 +95,7 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
         <Banner tone="caution" title={`${found.messagesNotSwept.length} captured message${found.messagesNotSwept.length === 1 ? "" : "s"} not swept`}>
           {found.messagesNotSwept.map((m) => `${m.id} (${m.channel}, ${m.connectorId})`).join(", ")}: the source is connected but not healthy, so what it holds since the failure is not
           being read. Not swept is reported as not swept, never as clear.{" "}
-          <Link href="/connectors" className="underline">Connected channels</Link>.
+          <Link href="/sources" className="underline">Connected channels</Link>.
         </Banner>
       )}
 
@@ -94,7 +103,7 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
         <Banner tone="caution" title="Some rules could not be evaluated">
           {found.blockedBy.join(", ")} {found.blockedBy.length === 1 ? "is" : "are"} not connected, so the rules that read from{" "}
           {found.blockedBy.length === 1 ? "it" : "them"} return cannot evaluate rather than a clear.{" "}
-          <Link href="/connectors" className="underline">
+          <Link href="/sources" className="underline">
             Connect the source
           </Link>
           .

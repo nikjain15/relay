@@ -28,7 +28,9 @@ reads it first; there is no other instruction file.
   real firm's CIO. Illustrative documents carry relative, non-calendar dates.
 - **No em-dashes** in any document or UI string.
 - **Design tokens only.** No hex colour or palette class in `app/` or `components/`; `app/tokens.css` is the
-  single source. No firm's logo, wordmark or brand mark anywhere.
+  single source. No firm's logo, wordmark or brand mark anywhere. A vendor in the connector catalogue is
+  named in text with a two-letter monogram (`Mark`), and the Sources screen says the names are for
+  demonstration and imply no affiliation.
 - **Commits and pull requests carry no tooling attribution.** Author them as the person merging them.
 - Regulatory citations carry rule, paragraph and adoption status. A proposed rule is never stated as
   current.

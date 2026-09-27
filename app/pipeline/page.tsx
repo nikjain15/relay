@@ -7,6 +7,7 @@ export default function Pipeline() {
   return (
     <>
       <PageTitle
+        icon="plus"
         title="Finding new clients"
         sub="Prospects ranked by how warm the path in is, how well they fit the practice, and size. Relay drafts the ask; the advisor sends it."
       />

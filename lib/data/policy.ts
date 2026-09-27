@@ -6,7 +6,7 @@ import app from "@/data/app.json";
 export const POLICY = policy as unknown as {
   triage: { dismissReasons: string[] };
   liquidity: { cashProductId: string; sleeveMaxRisk: number; sleeveMaxAccessDays: number; lockupDays: number };
-  proposals: { coreProductId: string };
+  proposals: { coreProductId: string; horizonYears: number; taxAssumptions: { federalOrdinaryPct: number; federalQualifiedPct: number; statePct: number; niitPct: number } };
   communications: { disclosureDocId: string };
   import: { holdingColumns: Record<string, { productId: string; name: string }>; defaultEvidence: Record<"liquidity" | "concentration" | "review", string[]> };
   retrieval: { corpusDay: number; floor: number; topK: number; citedBoost: number; stalePenalty: number; reviewDueWithinDays: number };

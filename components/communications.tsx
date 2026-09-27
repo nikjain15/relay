@@ -58,7 +58,7 @@ export function Communications() {
   if (!o || !h || !ev || !draft) {
     return (
       <>
-        <PageTitle title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
+        <PageTitle icon="email" title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
         <AgentBar
           name="Drafting"
           icon="email"
@@ -96,7 +96,7 @@ export function Communications() {
 
   return (
     <>
-      <PageTitle title="Client communications" sub={`${h.name}: ${o.title}`} />
+      <PageTitle icon="email" title="Client communications" sub={`${h.name}: ${o.title}`} />
       <AgentBar
         name="Drafting"
         icon="email"

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRelay } from "@/components/state";
 import { brief, type Finding, type Unknown } from "@/lib/research/brief";
 import { clientName } from "@/lib/meetings/prep";
-import { Card, More, PageTitle, Pill, Section, StatRow } from "@/components/ui";
+import { Brief, Card, More, PageTitle, Pill, Section } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { Bars } from "@/components/charts";
 
@@ -63,17 +63,21 @@ export function ResearchView({ id }: { id: string }) {
   return (
     <>
       <PageTitle
+        icon="briefing"
         title={`Briefing: ${clientName(b.clientId)}`}
         sub={b.lastContact ? `Last conversation ${ago(b.lastContact.day)} by ${b.lastContact.channel.toLowerCase()}. What has changed since, what the file says, what Relay infers, and what it could not establish.` : "No conversation is logged. What the file says, what Relay infers, and what it could not establish."}
       />
 
-      <StatRow
-        items={[
-          { value: b.since.length, label: "Changed since you spoke", icon: "trend" },
-          { value: b.observed.length, label: "Observed, cited to a field", icon: "check" },
-          { value: b.inferred.length, label: "Inferred, with confidence", icon: "eye", tone: b.inferred.length ? "plain" : "positive" },
-          { value: b.unknowns.length, label: "Could not establish", icon: "question", tone: b.unknowns.length ? "critical" : "positive" },
+      <Brief
+        name="Research"
+        icon="briefing"
+        at="day 0, 06:30"
+        says={<>{b.lastContact ? `You last spoke ${ago(b.lastContact.day)} by ${b.lastContact.channel.toLowerCase()}.` : "No conversation is logged."} Since then {b.since.length} thing{b.since.length === 1 ? "" : "s"} changed. I can cite {b.observed.length} facts to a field, I infer {b.inferred.length} with a confidence, and {b.unknowns.length ? `there are ${b.unknowns.length} things I could not establish; ask about those first.` : "there is nothing I could not establish."}</>}
+        points={[
+          ...b.since.slice(0, 2).map((f) => ({ text: f.text, who: "client" as const, icon: "trend" as const })),
+          ...b.unknowns.slice(0, 2).map((u) => ({ text: u.text, tone: "caution" as const })),
         ]}
+        next={b.questions[0] ? { label: `Ask: ${b.questions[0].text.slice(0, 70)}${b.questions[0].text.length > 70 ? "..." : ""}`, href: "#questions" } : undefined}
       />
 
       <Section title="Since you last spoke">
@@ -124,6 +128,7 @@ export function ResearchView({ id }: { id: string }) {
 
       {b.questions.length > 0 && (
         <Section title="Questions worth asking">
+          <div id="questions" className="scroll-mt-20" />
           <ol className="list-inside list-decimal space-y-1.5 text-[14px]">
             {b.questions.map((q, i) => (
               <li key={i}>
@@ -142,7 +147,7 @@ export function ResearchView({ id }: { id: string }) {
         <Section title="What this briefing cannot have seen">
           {b.blindSpots.length ? (
             <p className="text-[13px] text-ink">
-              {b.blindSpots.join(", ")}: in use by the advisor, captured by nothing. <Link href="/connectors" className="underline">Connected channels</Link>.
+              {b.blindSpots.join(", ")}: in use by the advisor, captured by nothing. <Link href="/sources" className="underline">Connected channels</Link>.
             </p>
           ) : (
             <p className="text-[13px] text-ink-2">Every channel the advisor uses is captured.</p>

@@ -4,7 +4,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Card, More, PageTitle, Pill, Section, StatRow, btn, btnPrimary } from "@/components/ui";
+import { Brief, Card, More, PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
 import { Icon, CLASS_ICON } from "@/components/icons";
 import { Bars, Meter } from "@/components/charts";
 import { discover, EXTRACTORS } from "@/lib/discovery/discover";
@@ -22,21 +22,23 @@ export function DiscoveryView() {
 
   return (
     <>
-      <PageTitle title="Discovery" sub="Opportunities found in what clients said, not in what the feeds show. Each cites its sentence. You accept it onto today's list." />
+      <PageTitle icon="search" title="Discovery" sub="Opportunities found in what clients said, not in what the feeds show. Each cites its sentence. You accept it onto today's list." />
 
-      <StatRow
-        items={[
-          { value: open.length, label: "Candidates waiting on you", icon: "search", tone: open.length ? "plain" : "positive" },
-          { value: accepted.length, label: "Accepted onto today's list", icon: "list" },
-          { value: candidates.filter((k) => !k.evidence.length).length, label: "Without a citable document", icon: "block", tone: candidates.some((k) => !k.evidence.length) ? "critical" : "positive" },
-          { value: book.clients.reduce((n, c) => n + (c.messages?.length ?? 0) + c.notes.length + c.contactHistory.length, 0), label: "Records read", icon: "email" },
-        ]}
+      <Brief
+        name="Discovery"
+        icon="search"
+        at="day 0, 06:40"
+        says={<>I read {book.clients.reduce((n, c) => n + (c.messages?.length ?? 0) + c.notes.length + c.contactHistory.length, 0)} messages, notes and contact summaries for what clients said, not what the feeds show. {open.length ? <>{open.length} look like opportunities and wait on you, each cited to its sentence with a confidence.</> : "Everything I found has been decided."} {accepted.length ? `${accepted.length} accepted onto today's list this session.` : ""}{candidates.some((k) => !k.evidence.length) ? ` ${candidates.filter((k) => !k.evidence.length).length} have no citable document, so the evidence screen will refuse them.` : ""}</>}
+        points={open.slice(0, 3).map((k) => ({ text: `${k.clientName}: ${k.extractor.label}, "${k.source.excerpt.slice(0, 80)}${k.source.excerpt.length > 80 ? "..." : ""}"`, who: "client" as const, icon: "quote" as const }))}
+        next={open.length ? { label: "Decide the first one", href: "#found" } : undefined}
+        note="In production a model would read free text for these events; here a set of extractors does, and either way a person accepts each one."
       />
 
       <Section title={open.length ? "Found, waiting on you" : "Nothing waiting"}>
+        <div id="found" className="scroll-mt-20" />
         {open.length === 0 ? (
           <Card tone="positive" icon="check" title="Every candidate has been decided">
-            <p className="text-[13px] text-ink-2">Connect more data on <Link href="/data" className="underline">Connect data</Link> and the agent reads it.</p>
+            <p className="text-[13px] text-ink-2">Connect more data on <Link href="/sources" className="underline">Connect data</Link> and the agent reads it.</p>
           </Card>
         ) : (
           <div className="rounded border border-line px-4">

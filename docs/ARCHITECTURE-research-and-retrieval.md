@@ -217,7 +217,7 @@ might phrase the supervisor's questions; it would never decide what they are or 
 | `/research` | Every briefing: today's meetings first, then the most unknown; claims by kind across the book; what is most often missing |
 | `/research/[id]` | The briefing, four sections in order, questions, assembled-from, and what it cannot have seen |
 | `/discovery` | Candidates waiting on the advisor, each cited to its sentence with its confidence and the documents it would cite; by kind and by source |
-| `/data` | Connect a spreadsheet, a message export or a document in the browser; what was accepted and rejected per file; a live run of every agent over the book |
+| `/sources` | Connect a spreadsheet, a message export or a document in the browser, beside the tools and channels; what was accepted and rejected per file; a live run of every agent over the book |
 
 ## 4. Enforced, and seen failing
 
@@ -243,7 +243,7 @@ fails is named and is not in the book.
 
 The connected records join the shipped book in session state (`book` in `components/state.tsx`), and
 every engine reads the merged book: the sweep, the research agent, retrieval and discovery all take the
-dataset as an argument. The live run on `/data` then runs each agent over the whole book with the
+dataset as an argument. The live run on `/sources` then runs each agent over the whole book with the
 milliseconds each step took and the counts as they are produced; the loop yields to the screen between
 batches and nothing is slowed down to look busy. A 1,000-household book generated in the browser runs
 in about two seconds.
@@ -251,7 +251,7 @@ in about two seconds.
 What it proves: that records arrive in the shape the engines need from a spreadsheet, that the validator
 is the same one, and that every agent runs over a book of that size in a browser. What it does not prove:
 a live connection to a CRM or a custodian, which is a connector with credentials and needs a server this
-prototype does not have. The connector contract on `/connectors` is what such a connection would satisfy;
+prototype does not have. The connector catalogue on `/sources` is what such a connection would satisfy;
 a file is the same records arriving by a different road. Nothing is uploaded, because there is nowhere
 to upload to.
 

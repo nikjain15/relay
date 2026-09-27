@@ -1,6 +1,6 @@
 {
   "id": "adv-a",
-  "name": "Advisor A",
+  "name": "Margaret Ellison",
   "role": "Senior advisor, founder and executive practice, New York",
   "book": "About $820M across 183 households; four relationships above $50M",
   "facts": [
@@ -240,7 +240,7 @@
     }
   ],
   "walkthrough": {
-    "label": "Advisor A, New York",
+    "label": "Margaret Ellison, New York",
     "day": "Tuesday",
     "households": 183,
     "alertsOvernight": 47,

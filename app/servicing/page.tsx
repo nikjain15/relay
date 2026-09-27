@@ -10,6 +10,7 @@ export default function Servicing() {
   return (
     <>
       <PageTitle
+        icon="clock"
         title="Service requests"
         sub="Each request classified by rule and routed with a response-time target. Measured on time to resolution, never on volume. Replies are drafted; people send them."
       />

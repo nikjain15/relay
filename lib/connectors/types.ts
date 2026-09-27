@@ -23,7 +23,8 @@ export type ChannelKind =
   | "custodian"
   | "archive"
   | "esign"
-  | "planning";
+  | "planning"
+  | "portfolio";
 
 /** What a connector may do. Read verbs only, by design. */
 export type ReadCapability =
@@ -80,6 +81,12 @@ export interface ConnectorDefinition {
    * this module may not import (connectors decide nothing).
    */
   supervisoryNote: string;
+  /**
+   * Connector ids this one stands in for. A rule names the generic source it
+   * needs ("custodian-feed"); connecting any custodian that produces the same
+   * records satisfies it. Read by the sweep, never by a connector.
+   */
+  satisfies?: string[];
 }
 
 /** Per-advisor connection state. Lives in data/, not in the definition. */

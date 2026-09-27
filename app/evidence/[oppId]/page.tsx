@@ -74,7 +74,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
 
   return (
     <>
-      <PageTitle title="Why this client" sub={`${h.name}: ${o.title}`} />
+      <PageTitle icon="eye" title="Why this client" sub={`${h.name}: ${o.title}`} />
 
       <StatRow
         items={[

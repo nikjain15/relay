@@ -7,7 +7,7 @@ import { fmtChange } from "@/lib/profile/format";
 import { LEARNING, suggest, type Refused, type Suggestion } from "@/lib/learning/learn";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
-import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
+import { Brief, PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
 
 const WHERE: Record<string, [string, string]> = {
   "triage.classWeights": ["/triage", "Today's list"],
@@ -26,7 +26,7 @@ export default function Learning() {
   const all = suggest({ overlay, rejected, refused }).filter((s) => !learned.some((l) => l.id === s.id));
   const open = all.filter((s) => !s.heldBack);
   const held = all.filter((s) => s.heldBack);
-  const who = (s: Suggestion) => (s.scope === "client" ? clientName(s.scopeId) : ADVISORS_DATA.find((a) => a.id === s.scopeId)?.walkthrough?.label ?? s.scopeId);
+  const who = (s: Suggestion) => (s.scope === "client" ? clientName(s.scopeId) : ADVISORS_DATA.find((a) => a.id === s.scopeId)?.name ?? s.scopeId);
   const card = (s: Suggestion, actions: React.ReactNode) => (
     <li key={s.id} className="rounded border border-line p-3">
       <p className="font-medium">
@@ -43,7 +43,14 @@ export default function Learning() {
   );
   return (
     <>
-      <PageTitle title="Suggestions" sub="Learned from how you work. It proposes; you decide. Never a rule." />
+      <PageTitle icon="trend" title="Suggestions" sub="Learned from how you work. It proposes; you decide. Never a rule." />
+      <Brief
+        name="Learning"
+        icon="trend"
+        says={<>I watched how you and your clients work and found {open.length} pattern{open.length === 1 ? "" : "s"} with enough evidence to propose a settings change{held.length ? `, and ${held.length} more I am holding back until the evidence is stronger` : ""}. {learned.length ? `${learned.length} accepted this session and applied as a new settings version.` : "Nothing is applied until you accept it."}</>}
+        points={open.slice(0, 3).map((s) => ({ text: `${who(s)}: ${s.detail}`, who: "advisor" as const }))}
+        note="A suggestion can move a preference. It can never loosen a rule; the guard refuses that and the refusal is listed below."
+      />
       <ol className="mb-4 flex max-w-6xl flex-wrap gap-1 text-xs" aria-label="The learning loop">
         {LOOP.map((x, i) => (
           <li key={x} className="rounded border border-line px-2 py-0.5">{i + 1}. {x}</li>

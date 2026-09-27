@@ -256,7 +256,7 @@ const PROBES: Probe[] = [
       const gaps = report.channels.filter((ch) => ch.attested && ch.status === "gap");
       const partial = report.channels.filter((ch) => ch.attested && ch.status === "partial");
       if (gaps.length) {
-        x.unknowns.push({ id: "blind-spots", probe: "coverage", text: `${gaps.length} channel${gaps.length === 1 ? "" : "s"} the advisor uses ${gaps.length === 1 ? "is" : "are"} not captured at all: ${gaps.map((m) => m.channel).join(", ")}. Anything the client said there is not in this briefing.${partial.length ? ` ${partial.length} more (${partial.map((m) => m.channel).join(", ")}) ${partial.length === 1 ? "is" : "are"} captured without a retained copy.` : ""}`, why: "A briefing assembled from captured channels is only as complete as the capture.", cites: [x.cite(`advisors/${x.c.advisorId}.json#connections`, "Connected channels", "/connectors")] });
+        x.unknowns.push({ id: "blind-spots", probe: "coverage", text: `${gaps.length} channel${gaps.length === 1 ? "" : "s"} the advisor uses ${gaps.length === 1 ? "is" : "are"} not captured at all: ${gaps.map((m) => m.channel).join(", ")}. Anything the client said there is not in this briefing.${partial.length ? ` ${partial.length} more (${partial.map((m) => m.channel).join(", ")}) ${partial.length === 1 ? "is" : "are"} captured without a retained copy.` : ""}`, why: "A briefing assembled from captured channels is only as complete as the capture.", cites: [x.cite(`advisors/${x.c.advisorId}.json#connections`, "Connected channels", "/sources")] });
       }
     },
   },

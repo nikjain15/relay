@@ -11,70 +11,65 @@ export interface NavLink { href: string; label: string; note?: string; icon: Ico
 export interface NavArea { area: string; links: NavLink[] }
 
 /**
- * Six areas, agents first.
+ * Six areas, in the order an advisor's day runs.
  *
  * The first build listed every surface at one level, which read as a site map.
  * The second grouped by the advisor's day, which read as a CRM with an agent
- * bolted on. This one is grouped by what the system is: the agents and what
- * they produce, then the decisions they leave for a person, then the book they
- * read, the rules they run under, what they learn, and the data they run on.
- * On a phone only the current area is expanded.
+ * bolted on. The third grouped by what the system is, which read as a console.
+ * This one is grouped by what the advisor does: today's decisions, the agents
+ * that prepared them, the households, the sources they read, the rules they run
+ * under, and the pages that explain it all. On a phone only the current area
+ * is expanded.
  */
 export const AREAS: NavArea[] = [
   {
-    area: "Agents",
+    area: "Today",
     links: [
-      { href: "/", label: "Overview", note: "What ran, what needs you", icon: "home" },
-      { href: "/agents", label: "Agent status", note: "Every agent, its last run", icon: "agent" },
-      { href: "/simulate", label: "Before you act", note: "The morning after, first", icon: "hourglass" },
-      { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
-      { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
-      { href: "/documents", label: "Retrieval", note: "What may be quoted", icon: "library" },
-    ],
-  },
-  {
-    area: "Decisions",
-    links: [
+      { href: "/", label: "Overview", note: "What needs you, in order", icon: "home" },
       { href: "/triage", label: "Today's list", note: "One decision per row", icon: "list" },
       { href: "/supervision", label: "Supervision queue", note: "Findings and prepared actions", icon: "shield" },
-      { href: "/communications", label: "Note and audience", note: "The counter sets the regime", icon: "email" },
       { href: "/meetings", label: "Meetings", note: "Review packs, built", icon: "calendar" },
+      { href: "/communications", label: "Note and audience", note: "The counter sets the regime", icon: "email" },
       { href: "/follow-ups", label: "Follow-ups", icon: "check" },
     ],
   },
   {
-    area: "Book",
+    area: "Agents",
     links: [
-      { href: "/clients", label: "Households", icon: "people" },
+      { href: "/agents", label: "Agent status", note: "Every desk, tune it, teach it", icon: "agent" },
+      { href: "/simulate", label: "Before you act", note: "The morning after, first", icon: "hourglass" },
+      { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
+      { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
+      { href: "/documents", label: "Retrieval", note: "What may be quoted", icon: "library" },
+      { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
+    ],
+  },
+  {
+    area: "Households",
+    links: [
+      { href: "/clients", label: "Households", note: "Research any of them", icon: "people" },
       { href: "/servicing", label: "Service requests", icon: "clock" },
       { href: `/evidence/${F.opportunityId}`, label: "Why this client", note: "The reason path, cited", icon: "eye" },
-      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", note: "Bounded, each with its reason", icon: "filter" },
+      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", note: "Compared, then the morning after", icon: "filter" },
       { href: "/pipeline", label: "Prospects", icon: "plus" },
       { href: "/onboarding", label: "Paperwork", icon: "esign" },
     ],
   },
   {
+    area: "Sources",
+    links: [
+      { href: "/sources", label: "Sources", note: "Your book, your tools, your policies", icon: "link" },
+      { href: "/personas", label: "Who's who", icon: "crm" },
+    ],
+  },
+  {
     area: "Rules",
     links: [
-      { href: "/compliance", label: "Rules and agents", note: "Tighten only", icon: "rules" },
-      { href: "/connectors", label: "Connected sources", note: "What is captured", icon: "social" },
+      { href: "/compliance", label: "Rules and desks", note: "Tighten only", icon: "rules" },
       { href: "/compliance/log", label: "Change log", icon: "log" },
       { href: "/compliance/replay", label: "Replay", note: "Rules as they stood", icon: "replay" },
-    ],
-  },
-  {
-    area: "Learning",
-    links: [
-      { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
       { href: "/profiles", label: "Preferences", icon: "settings" },
       { href: "/measurement", label: "Measurement", icon: "chart" },
-    ],
-  },
-  {
-    area: "Data",
-    links: [
-      { href: "/data", label: "Connect data", note: "Files stay in the browser", icon: "link" },
-      { href: "/personas", label: "Who's who", icon: "crm" },
     ],
   },
   {
@@ -92,6 +87,7 @@ export function isActive(href: string, path: string): boolean {
   const base = href.split("?")[0];
   if (base === "/") return path === "/";
   if (base === "/compliance") return path === "/compliance";
+  if (base === "/agents") return path === "/agents" || path.startsWith("/agents/");
   if (base.startsWith("/household/")) {
     if (!path.startsWith("/household/")) return false;
     return base.endsWith("/proposal") ? path.endsWith("/proposal") : !path.endsWith("/proposal");

@@ -15,7 +15,15 @@
     "lockupDays": 90
   },
   "proposals": {
-    "coreProductId": "prod-core-model"
+    "coreProductId": "prod-core-model",
+    "horizonYears": 3,
+    "taxAssumptions": {
+      "_note": "Illustrative marginal rates for the after-tax income column. A plan or a tax adviser supplies the client's own; the screen says which was used.",
+      "federalOrdinaryPct": 37,
+      "federalQualifiedPct": 20,
+      "statePct": 6,
+      "niitPct": 3.8
+    }
   },
   "communications": {
     "disclosureDocId": "doc-disclosure"

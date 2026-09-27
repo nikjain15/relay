@@ -1,6 +1,6 @@
 {
   "id": "adv-b",
-  "name": "Advisor B",
+  "name": "Daniel Okoro",
   "role": "Wealth Advice Center advisor, remote coverage",
   "book": "About 1,000 households, each under $250K investable",
   "facts": [
@@ -102,7 +102,7 @@
     }
   ],
   "walkthrough": {
-    "label": "Advisor B, Wealth Advice Center",
+    "label": "Daniel Okoro, Wealth Advice Center, Charlotte",
     "day": "Tuesday",
     "households": "about 1,000",
     "alertsOvernight": 61,

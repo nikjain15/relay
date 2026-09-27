@@ -7,6 +7,7 @@ import type { Regime } from "@/lib/recipients/count";
 import type { Overlay } from "@/lib/profile";
 import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
+import type { RuleDefinition } from "@/lib/compliance/types";
 import type { ConnectionState, ConnectionStatus } from "@/lib/connectors/types";
 import { CLIENTS, CONNECTORS_DATA } from "@/lib/data";
 import type { ClientFile, Doc, Opportunity, TeamNote } from "@/lib/types";
@@ -94,8 +95,16 @@ interface State {
    * it on the follow-up list for the session; accepting a note makes it a draft
    * the advisor sends. Nothing is sent or written by accepting.
    */
-  actionDecisions: Record<string, { decision: "accepted" | "declined"; at: string }>;
-  decideAction: (actionId: string, decision: "accepted" | "declined") => void;
+  actionDecisions: Record<string, { decision: "accepted" | "declined"; at: string; reason?: string }>;
+  decideAction: (actionId: string, decision: "accepted" | "declined", reason?: string) => void;
+  /**
+   * Rules read from a policy document and added to a desk this session. Each
+   * is a RuleDefinition like any in the baseline, and the desk edit that gives
+   * it to an agent is an ordinary entry in the change log. In production this
+   * is a write to the rule catalog with the same attribution.
+   */
+  addedRules: RuleDefinition[];
+  addRule: (rule: RuleDefinition, agentId: string, actor: string, reason: string) => void;
   /**
    * The session dataset: records connected from files in this browser, held
    * in memory beside the shipped book and never sent anywhere. Every engine
@@ -104,8 +113,8 @@ interface State {
   dataset: { clients: ClientFile[]; documents: Doc[]; batches: ImportBatch[] };
   addBatch: (batch: ImportBatch, clients: ClientFile[], documents: Doc[]) => void;
   clearDataset: () => void;
-  /** The merged book: shipped records plus the session dataset, with accepted discoveries on today's list. */
-  book: { clients: ClientFile[]; documents: Doc[]; opportunities: Opportunity[] };
+  /** The merged book: shipped records plus the session dataset, with accepted discoveries on today's list, and the rules added this session. */
+  book: { clients: ClientFile[]; documents: Doc[]; opportunities: Opportunity[]; rules: RuleDefinition[] };
   /** What the advisor did with each discovery candidate. Accepting puts it on today's list for the session. */
   /** Notes an agent drafted and a person filed into a client record, for the session. In production a CRM write through the connector. */
   notesAdded: Record<string, TeamNote[]>;
@@ -145,12 +154,14 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [discoveryDecisions, setDiscoveryDecisions] = useState<State["discoveryDecisions"]>({});
   const [acceptedDiscoveries, setAcceptedDiscoveries] = useState<Opportunity[]>([]);
   const [notesAdded, setNotesAdded] = useState<Record<string, TeamNote[]>>({});
+  const [addedRules, setAddedRules] = useState<RuleDefinition[]>([]);
   const withNotes = (c: ClientFile): ClientFile => (notesAdded[c.id]?.length ? { ...c, notes: [...c.notes, ...notesAdded[c.id]] } : c);
   const book = {
     // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
     clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients].map(withNotes),
     documents: [...CORPUS, ...dataset.documents],
     opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
+    rules: addedRules,
   };
   const overlay: Overlay = {};
   for (const s of learned) {
@@ -208,7 +219,12 @@ export function StateProvider({ children }: { children: ReactNode }) {
       if (decision === "accepted") setAcceptedDiscoveries((l) => [...l.filter((o) => o.id !== `opp-${k.id.replace(/^disc-/, "")}`), toOpportunity(k)]);
     },
     actionDecisions,
-    decideAction: (id, decision) => setActionDecisions((s) => ({ ...s, [id]: { decision, at: new Date().toISOString() } })),
+    decideAction: (id, decision, reason) => setActionDecisions((s) => ({ ...s, [id]: { decision, at: new Date().toISOString(), reason } })),
+    addedRules,
+    addRule: (rule, agentId, actor, reason) => {
+      setAddedRules((l) => [...l.filter((r) => r.id !== rule.id), rule]);
+      setRuleEdits((l) => [...l, { id: `e-${String(l.length + 1).padStart(3, "0")}`, at: new Date().toISOString(), actor, target: "agent", layer: "firm", layerId: "firm", agentId, field: "addRule", from: "", to: rule.id, reason }]);
+    },
     proposalDecisions,
     decideProposal: (id, decision, reason) => setProposalDecisions((s) => ({ ...s, [id]: { decision, reason, at: new Date().toISOString() } })),
     disposeCase: (caseId, disposition, comment) =>

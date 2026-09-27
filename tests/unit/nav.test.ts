@@ -52,9 +52,9 @@ describe("navigation", () => {
     }
   });
 
-  it("holds the agents first and stays small enough to scan", () => {
-    expect(AREAS[0].area).toBe("Agents");
-    expect(AREAS).toHaveLength(7);
+  it("opens on today and stays small enough to scan", () => {
+    expect(AREAS[0].area).toBe("Today");
+    expect(AREAS).toHaveLength(6);
     for (const a of AREAS) expect(a.links.length, a.area).toBeLessThanOrEqual(6);
   });
 
@@ -71,11 +71,12 @@ describe("navigation", () => {
   });
 
   it("opens on the area the route belongs to", () => {
-    expect(currentArea("/")).toBe("Agents");
-    expect(currentArea("/connectors")).toBe("Rules");
+    expect(currentArea("/")).toBe("Today");
+    expect(currentArea("/sources")).toBe("Sources");
     expect(currentArea("/compliance/log")).toBe("Rules");
-    expect(currentArea("/supervision")).toBe("Decisions");
+    expect(currentArea("/supervision")).toBe("Today");
+    expect(currentArea("/agents/complaints")).toBe("Agents");
     // An unknown route falls back to the first area rather than nothing.
-    expect(currentArea("/nowhere")).toBe("Agents");
+    expect(currentArea("/nowhere")).toBe("Today");
   });
 });

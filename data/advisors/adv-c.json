@@ -1,6 +1,6 @@
 {
   "id": "adv-c",
-  "name": "Advisor C",
+  "name": "Thomas Reinholt",
   "role": "Senior advisor, business-owner and retiree practice, Chicago",
   "book": "About $610M across 142 households; most between $5M and $25M",
   "facts": [
@@ -198,7 +198,7 @@
     }
   ],
   "walkthrough": {
-    "label": "Advisor C, Chicago",
+    "label": "Thomas Reinholt, Chicago",
     "day": "Tuesday",
     "households": 142,
     "alertsOvernight": 38,

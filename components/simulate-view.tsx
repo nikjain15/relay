@@ -39,9 +39,9 @@ export function SimulateView() {
   const opp = opps.find((o) => o.id === oppId) ?? opps[0];
   const sims = useMemo(() => {
     if (!client || !opp) return [];
-    const policy = policyFrom(ruleEdits, scopeFor(client.advisorId));
+    const policy = policyFrom(ruleEdits, scopeFor(client.advisorId), undefined, book.rules);
     return simulateAll(client, opp, policy, connectedIds(client.advisorId, connections));
-  }, [client, opp, ruleEdits, connections]);
+  }, [client, opp, ruleEdits, connections, book.rules]);
   const [pick, setPick] = useState<string | null>(null);
   const sel = sims.find((s) => s.candidate.id === pick) ?? sims.find((s) => s.grade === "clean") ?? sims.find((s) => s.grade === "review") ?? sims[0];
   const cols = useMemo(() => {
@@ -50,14 +50,14 @@ export function SimulateView() {
     return [...keys].map((k) => ({ key: k, label: sims.flatMap((s) => s.consequences).find((c) => c.key === k)!.label }));
   }, [sims]);
 
-  if (!client || !opp) return <PageTitle title="Before you act" sub="No household has a fundable or trimmable opportunity." />;
+  if (!client || !opp) return <PageTitle icon="hourglass" title="Before you act" sub="No household has a fundable or trimmable opportunity." />;
 
   const clean = sims.filter((s) => s.grade === "clean").length;
   const blocked = sims.filter((s) => s.grade === "blocked").length;
 
   return (
     <>
-      <PageTitle title="Before you act" sub="Every option, carried through to the morning after. The agent runs the consequences; you choose." />
+      <PageTitle icon="hourglass" title="Before you act" sub="Every option, carried through to the morning after. The agent runs the consequences; you choose." />
       <Legend className="-mt-5 mb-6 lg:hidden" />
 
       <div className="mb-4 flex flex-wrap gap-1.5" role="group" aria-label="Household">

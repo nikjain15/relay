@@ -9,7 +9,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Card, CardGrid, More, PageTitle, Section, StatRow, StateDot, Timeline } from "@/components/ui";
+import { Brief, Card, CardGrid, More, PageTitle, Section, StatRow, StateDot, Timeline, btn } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { Bars } from "@/components/charts";
 import { policyFrom, agentsFrom } from "@/lib/compliance/store";
@@ -26,8 +26,8 @@ import { discover, EXTRACTORS } from "@/lib/discovery/discover";
 export function AgentsView({ advisorId }: { advisorId: string }) {
   const { ruleEdits, connections, caseDispositions, actionDecisions, proposalDecisions, book, discoveryDecisions } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
-  const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
-  const agents = useMemo(() => agentsFrom(ruleEdits, undefined, scope), [ruleEdits, scope]);
+  const policy = useMemo(() => policyFrom(ruleEdits, scope, undefined, book.rules), [ruleEdits, scope, book.rules]);
+  const agents = useMemo(() => agentsFrom(ruleEdits, undefined, scope, book.rules), [ruleEdits, scope, book.rules]);
   const found = useMemo(() => sweep(advisorId, policy, connections, book.clients, agents), [advisorId, policy, connections, book.clients, agents]);
   const open = found.cases.filter((c) => !caseDispositions[c.id]);
   const actions = useMemo(() => prepareAll(open, policy.rules), [open, policy]);
@@ -54,7 +54,13 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
 
   return (
     <>
-      <PageTitle title="Agents" sub={`${advisor?.walkthrough?.label ?? advisorId}. What ran, over what, and what is left for a person.`} />
+      <PageTitle icon="agent" title="Agents" sub={`${advisor?.name ?? advisorId}. What ran, over what, and what is left for a person. Open any desk to tune it or teach it a policy.`} />
+      <Brief
+        name="Agent status"
+        says={<>{statuses.filter((s) => s.agent.enabled).length + 4} agents are running for {advisor?.name ?? advisorId}. {open.length} findings are open, {pendingActions.length} prepared actions wait on a person, and {openProposals.length} rule change{openProposals.length === 1 ? "" : "s"} wait on a principal.</>}
+        points={statuses.filter((s) => s.state !== "clear").slice(0, 3).map((s) => ({ text: `${s.agent.name}: ${s.open} raised${s.blocking ? `, ${s.blocking} blocking` : ""}`, href: `/agents/${s.agent.id}`, tone: (s.state === "blocked" ? "critical" : "caution") as "critical" | "caution" }))}
+        next={{ label: "Open the first desk", href: `/agents/${statuses[0]?.agent.id ?? ""}` }}
+      />
 
       <StatRow
         items={[
@@ -76,7 +82,7 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
                 <dt className="text-ink-3">Prepared</dt><dd className="text-ink">{s.actionsPrepared} action{s.actionsPrepared === 1 ? "" : "s"}</dd>
               </dl>
               <p className="mt-2 text-[12px]">
-                <Link href="/supervision" className="underline">Findings</Link> · <Link href="/compliance" className="underline">Rules</Link>
+                <Link href={`/agents/${s.agent.id}`} className={btn}>Open, tune, teach a policy</Link>
               </p>
             </Card>
           ))}

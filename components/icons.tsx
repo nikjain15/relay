@@ -118,7 +118,7 @@ export function Icon({ name, size = 20, label, className }: IconProps) {
 export const CHANNEL_ICON: Record<string, IconName> = {
   email: "email", calendar: "calendar", meeting: "meeting", voice: "voice", sms: "sms",
   chat: "chat", social: "social", crm: "crm", custodian: "custodian", archive: "archive",
-  esign: "esign", planning: "planning",
+  esign: "esign", planning: "planning", portfolio: "chart",
 };
 
 /** Trigger classes map to icons in one place, so a row says what kind of thing it is before its words do. */

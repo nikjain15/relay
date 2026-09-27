@@ -10,7 +10,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, CLIENTS, toHousehold } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
-import { CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
+import { Brief, CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 import { Icon, CLASS_ICON } from "@/components/icons";
 
 const REASONS = POLICY.triage.dismissReasons;
@@ -39,11 +39,20 @@ export default function Triage() {
 
   return (
     <>
-      <PageTitle title="Today's list" sub={`Capped at ${cap}. One decision per row.`} />
+      <PageTitle icon="list" title="Today's list" sub={`Capped at ${cap}. One decision per row, ranked by materiality and how long it has waited.`} />
+      <Brief
+        name="Ranking"
+        icon="list"
+        at="day 0, 06:45"
+        says={<>I ranked {mine.length} opportunities for {advisor.name} and kept the top {rows.length}, capped at {cap} by your preferences. {day.meetings.length} meetings today and {day.alertsOvernight} alerts overnight. {rows[0] ? <>First: {rows[0].plainTitle ?? rows[0].title} for {clientOf(rows[0].householdId)?.name ?? rows[0].householdId}.</> : null}</>}
+        points={rows.slice(0, 3).map((o) => ({ text: `${clientOf(o.householdId)?.name ?? o.householdId}: ${o.plainTitle ?? o.title}`, href: `/evidence/${o.id}`, who: "client" as const }))}
+        next={rows[0] ? { label: "Why this client, cited", href: `/evidence/${rows[0].id}` } : undefined}
+        note="The score is a weighted sum you can see on each row; a model never ranks. Dismissing with a reason feeds the learning loop."
+      />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
           <button key={a.id} className={a.id === advisor.id ? btnPrimary : btn} aria-pressed={a.id === advisor.id} onClick={() => setAdvisorId(a.id)}>
-            {a.walkthrough?.label ?? a.name}
+            {a.name}
           </button>
         ))}
       </div>
@@ -83,7 +92,7 @@ export default function Triage() {
               const h = household(o.householdId) ?? toHousehold(clientOf(o.householdId)!);
               const refused = retrieve(o, book.documents).refused;
               const isShipped = shipped.has(o.id) && CLIENTS.some((c) => c.id === h.id);
-              const clientHref = isShipped ? `/household/${h.id}` : `/data#${h.id}`;
+              const clientHref = isShipped ? `/household/${h.id}` : `/sources#${h.id}`;
               const proposable = !refused && (o.action === "fund" || o.action === "trim");
               return (
                 <tr key={o.id}>

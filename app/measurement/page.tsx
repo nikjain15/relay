@@ -7,7 +7,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { addressees, compose } from "@/lib/drafting/compose";
 import { classify } from "@/lib/recipients/count";
 import { runChecks } from "@/lib/policy/checks";
-import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { Brief, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 
 // Gates computed live over every eligible proposal in the fixtures, with the
 // same functions the test suite asserts on.
@@ -53,7 +53,13 @@ export default function Measurement() {
   const top = FUNNEL[0].count;
   return (
     <>
-      <PageTitle title="Measurement" sub="Conversion, not volume. The north star is approved client actions per surfaced opportunity." />
+      <PageTitle icon="chart" title="Measurement" sub="Conversion, not volume. The north star is approved client actions per surfaced opportunity." />
+      <Brief
+        name="Measurement"
+        icon="chart"
+        says={<>Of {top.toLocaleString()} opportunities surfaced in the pilot week, {FUNNEL[FUNNEL.length - 1].count.toLocaleString()} became approved client actions. The gates below are the invariants, each with its failure count; {g.every((x) => x.fails === 0) ? "none failed." : `${g.filter((x) => x.fails > 0).length} failed.`}</>}
+        note="The funnel is synthetic. The conversion between an insight flagged and an action taken is the figure a pilot establishes, and this screen is built to hold it."
+      />
       <div className="grid gap-6 xl:grid-cols-2">
         <Section title="Conversion funnel, pilot cohort, one week (synthetic)">
           <TableScroll>
