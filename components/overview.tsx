@@ -81,10 +81,14 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
   const recordsRead = found.accountsScanned + found.messagesScanned + corpus.filter((d) => d.usable).length + mine.reduce((s, c) => s + c.notes.length + c.contactHistory.length, 0);
 
+  // A gap is a channel nothing reads; a partial one is read but has no retained copy. They are not the same claim.
+  const uncaptured = coverage.gaps.filter((g) => g.status === "gap");
+  const unretained = coverage.gaps.filter((g) => g.status === "partial");
+
   // What only a person can settle, ranked by cost of being wrong.
   const coverageRules = new Set(["off-channel-gap", "sec-17a4-completeness"]);
   const decisions = [
-    ...(!coverage.defensible ? [{ icon: "link" as const, tone: "critical" as const, href: "/sources", title: `${coverage.gaps.length} channel${coverage.gaps.length === 1 ? "" : "s"} you use ${coverage.gaps.length === 1 ? "is" : "are"} not captured`, meta: `${coverage.gaps.map((g) => g.channel).join(", ")}. Business conducted there cannot be produced on request.`, right: "Connect" }] : []),
+    ...(!coverage.defensible ? [{ icon: "link" as const, tone: "critical" as const, href: "/sources", title: uncaptured.length ? `${uncaptured.length} channel${uncaptured.length === 1 ? "" : "s"} you use ${uncaptured.length === 1 ? "is" : "are"} not captured` : `${unretained.length} channel${unretained.length === 1 ? "" : "s"} captured without a retained copy`, meta: `${uncaptured.length ? `${uncaptured.map((g) => g.channel).join(", ")}: business conducted there cannot be produced on request.` : ""}${uncaptured.length && unretained.length ? " " : ""}${unretained.length ? `${unretained.map((g) => g.channel).join(", ")} ${unretained.length === 1 ? "is" : "are"} read but not retained.` : ""}`, right: "Connect" }] : []),
     ...blocking.filter((c) => !coverageRules.has(c.ruleId)).map((c) => ({ icon: "shield" as const, tone: "critical" as const, href: "/supervision", title: c.ruleTitle, meta: `${c.subjectLabel} · ${c.citation}`, right: "Disposition" })),
     ...(escalated.length ? [{ icon: "esign" as const, tone: "caution" as const, href: "/onboarding", title: `${escalated.length} form${escalated.length === 1 ? "" : "s"} past the escalation deadline`, meta: escalated.slice(0, 3).map((w) => w.form).join(", "), right: "Chase" }] : []),
     ...(service.filter((r) => r.overdue).length ? [{ icon: "clock" as const, tone: "caution" as const, href: "/servicing", title: `${service.filter((r) => r.overdue).length} service request${service.filter((r) => r.overdue).length === 1 ? "" : "s"} past target`, meta: "Money movement needs a callback to a number on file", right: "Call back" }] : []),

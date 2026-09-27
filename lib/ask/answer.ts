@@ -70,6 +70,17 @@ export function householdIn(q: string, clients: ClientFile[]): ClientFile | unde
 
 const has = (q: string, re: RegExp) => re.test(q);
 
+/** Not captured (nothing reads it) and not retained (read, no retained copy) are different claims. */
+function captureLine(gaps: { channel: string; status: string }[]): string {
+  const none = gaps.filter((g) => g.status === "gap").map((g) => g.channel);
+  const partial = gaps.filter((g) => g.status === "partial").map((g) => g.channel);
+  if (!none.length && !partial.length) return "every channel you use is captured";
+  return [
+    none.length ? `${none.length} channel${none.length === 1 ? "" : "s"} you use not captured (${none.join(", ")})` : "",
+    partial.length ? `${partial.length} captured without a retained copy (${partial.join(", ")})` : "",
+  ].filter(Boolean).join(", and ");
+}
+
 export function answer(question: string, ctx: AskContext): Answer {
   const q = question.trim().toLowerCase();
   const advisor = ADVISORS_DATA.find((a) => a.id === ctx.advisorId);
@@ -99,7 +110,7 @@ export function answer(question: string, ctx: AskContext): Answer {
     const meetings = todaysMeetings(ctx.advisorId);
     const parts = [
       blocking.length ? `${blocking.length} blocking finding${blocking.length === 1 ? "" : "s"}: ${blocking.slice(0, 2).map((k) => `${k.ruleTitle} on ${k.subjectLabel}`).join("; ")}` : "no blocking finding",
-      gaps.length ? `${gaps.length} channel${gaps.length === 1 ? "" : "s"} you use not captured (${gaps.map((g) => g.channel).join(", ")})` : "every channel you use is captured",
+      captureLine(gaps),
       `${ctx.actions.length} prepared action${ctx.actions.length === 1 ? "" : "s"} waiting`,
       meetings.length ? `${meetings.length} meetings, the first at ${meetings[0].time}` : "no meetings",
     ];
@@ -140,7 +151,7 @@ export function answer(question: string, ctx: AskContext): Answer {
     const connected = ctx.connections.filter((s) => s.advisorId === ctx.advisorId && s.status === "connected").map((s) => CATALOG.find((k) => k.id === s.connectorId)?.name ?? s.connectorId);
     const named = CATALOG.find((k) => q.includes(k.name.toLowerCase()) || q.includes(k.vendor.toLowerCase().split(" ")[0]));
     const namedLine = named ? ` ${named.name} (${named.vendor}) reads ${named.summary.toLowerCase().replace(/\.$/, "")}; ${ctx.connections.some((s) => s.advisorId === ctx.advisorId && s.connectorId === named.id && s.status === "connected") ? "it is connected." : "it is in the catalogue and not connected."}` : "";
-    return done({ text: `${connected.length} sources connected: ${connected.join(", ")}. ${report.gaps.length ? `${report.gaps.length} channel${report.gaps.length === 1 ? "" : "s"} in use and not captured: ${report.gaps.map((g) => g.channel).join(", ")}.` : "Every channel you use is captured."}${namedLine} Relay reads in place and writes nothing back.`, links: [{ label: "Sources", href: "/sources" }], via: "the coverage report", cites: [{ label: "Connections", record: `data/advisors/${ctx.advisorId}.json#connections`, href: "/sources" }] });
+    return done({ text: `${connected.length} sources connected: ${connected.join(", ")}. ${captureLine(report.gaps).replace(/^./, (x) => x.toUpperCase())}.${namedLine} Relay reads in place and writes nothing back.`, links: [{ label: "Sources", href: "/sources" }], via: "the coverage report", cites: [{ label: "Connections", record: `data/advisors/${ctx.advisorId}.json#connections`, href: "/sources" }] });
   }
 
   if (has(q, /\b(document|cite|quote|research note|library|stale|review date)\b/)) {
