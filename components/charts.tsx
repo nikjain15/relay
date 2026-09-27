@@ -6,6 +6,7 @@
 // the status colour appears with the word that names it (design system
 // principle 3). Every value is also printed as text, so nothing here is read by
 // colour or by eye alone, and a screen reader gets the numbers.
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 type Tone = "plain" | "critical" | "caution" | "positive" | "muted";
@@ -31,7 +32,7 @@ export function Bars({ items, max, ariaLabel }: { items: BarItem[]; max?: number
         const label = <span className="truncate text-[13px] text-ink">{it.label}</span>;
         return (
           <li key={i} className="grid grid-cols-[minmax(0,11rem)_1fr_auto] items-center gap-3">
-            {it.href ? <a href={it.href} className="truncate text-[13px] text-ink underline decoration-line-strong hover:decoration-ink">{it.label}</a> : label}
+            {it.href ? <Link href={it.href} className="truncate text-[13px] text-ink underline decoration-line-strong hover:decoration-ink">{it.label}</Link> : label}
             <span className="h-1.5 w-full rounded bg-subtle" aria-hidden="true">
               <span className={`block h-1.5 rounded ${BAR[it.tone ?? "plain"]}`} style={{ width: `${w}%` }} />
             </span>

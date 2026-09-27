@@ -9,10 +9,13 @@ import type { NextConfig } from "next";
 // set response headers, so the same connect-src policy also ships as a <meta>
 // tag in app/layout.tsx, and noindex as the robots meta and robots.txt.
 const EXPORT = process.env.RELAY_EXPORT === "1";
+const BASE_PATH = EXPORT ? (process.env.RELAY_BASE_PATH ?? "/relay") : "";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  ...(EXPORT ? { output: "export" as const, basePath: process.env.RELAY_BASE_PATH ?? "/relay", trailingSlash: true } : {}),
+  // Files under public/ are not rewritten by basePath; a link to one reads this.
+  env: { NEXT_PUBLIC_BASE_PATH: BASE_PATH },
+  ...(EXPORT ? { output: "export" as const, basePath: BASE_PATH, trailingSlash: true } : {}),
   async headers() {
     return [
       {

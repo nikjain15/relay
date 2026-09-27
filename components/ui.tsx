@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icons";
 export { CLASS_LABEL, NODE_LABEL } from "@/lib/labels";
@@ -173,7 +174,7 @@ export function Row({
   return (
     <div className={`border-b border-line last:border-b-0 ${stripe}`}>
       {href ? (
-        <a href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</a>
+        <Link href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</Link>
       ) : (
         <div className="flex items-start gap-3 px-1 py-3">{body}</div>
       )}
@@ -274,7 +275,7 @@ export function Timeline({ items }: { items: { at: string; icon: IconName; title
         );
         return (
           <li key={i} className="relative pb-4 last:pb-0">
-            {it.href ? <a href={it.href} className="block hover:underline">{body}</a> : body}
+            {it.href ? <Link href={it.href} className="block hover:underline">{body}</Link> : body}
           </li>
         );
       })}
@@ -390,13 +391,13 @@ export function Brief({ name, icon = "agent", at, says, points = [], next, steps
                     <span className="min-w-0 text-[13px] text-ink-2">{p.who && <Who who={p.who} />}{p.text}</span>
                   </>
                 );
-                return <li key={i}>{p.href ? <a href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</a> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
+                return <li key={i}>{p.href ? <Link href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</Link> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
               })}
             </ul>
           )}
           {next && (
             <p className="mt-3">
-              {next.href ? <a href={next.href} className={btnPrimary}>{next.label}</a> : <button type="button" className={btnPrimary} onClick={next.onClick}>{next.label}</button>}
+              {next.href ? <Link href={next.href} className={btnPrimary}>{next.label}</Link> : <button type="button" className={btnPrimary} onClick={next.onClick}>{next.label}</button>}
             </p>
           )}
           {steps && <Trace steps={steps} summary="How I got there" />}

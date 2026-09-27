@@ -138,6 +138,8 @@ try {
     // path is fetched on its own and the anchor target is checked to exist:
     // a link to a heading that was renamed is a dead link, not a passing one.
     const [path, hash] = h.split("#");
+    // A file under public/ (a sample to download) is fetched, not navigated to.
+    if (/\.[a-z0-9]+$/i.test(path)) { const s = (await fetch(BASE + path)).status; if (s !== 200) bad.push(`${h} ${s}`); continue; }
     const r = await page.goto(BASE + (path || "/"));
     if (r.status() !== 200) { bad.push(`${h} ${r.status()}`); continue; }
     if (hash && !(await page.evaluate((id) => Boolean(document.getElementById(id)), hash))) bad.push(`${h} no such anchor`);
