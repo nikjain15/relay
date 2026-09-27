@@ -2,7 +2,7 @@
   "name": "relay",
   "version": "0.1.0",
   "private": true,
-  "description": "Relay: advisor advice-to-action layer. Interview prototype, synthetic data only.",
+  "description": "Relay: advisor advice-to-action layer. Working prototype, synthetic data only.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
