@@ -28,7 +28,7 @@ module.exports = {
       comment:
         "lib/constraints, lib/ranking, lib/recipients, lib/policy, lib/learning, lib/profile, lib/evidence (the refusal), lib/servicing (the money-movement callback), lib/onboarding (escalation) and lib/household-math are deterministic. They may not import a model client.",
       severity: "error",
-      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding)/|^lib/household-math" },
+      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding|simulate|discovery|research|compliance)/|^lib/household-math" },
       to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)" },
     },
     {
@@ -44,7 +44,7 @@ module.exports = {
       comment:
         "Closes the one-hop gap found in the R-21 audit: a helper outside these folders (lib/household-math, lib/format, lib/data) could import a model client and be reached from a deterministic module. No deterministic module may reach one by any path.",
       severity: "error",
-      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding)/|^lib/household-math" },
+      from: { path: "^lib/(constraints|ranking|recipients|policy|learning|profile|evidence|servicing|onboarding|simulate|discovery|research|compliance)/|^lib/household-math" },
       to: { path: "(^|node_modules/)(@anthropic-ai|openai|@azure/openai|ai|@ai-sdk)(/|$)", reachable: true },
     },
     {

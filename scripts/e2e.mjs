@@ -26,7 +26,7 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
-  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery",
+  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery", "/simulate",
   ...readdirSync(join(ROOT, "data/documents")).map((f) => `/documents/${f.replace(/\.json$/, "")}`),
   ...clients.map((c) => `/research/${c.id}`),
   ...clients.map((c) => `/household/${c.id}`),
@@ -273,6 +273,27 @@ try {
     if (/found in a (message|note|contact)/.test(await page.locator("main").innerText())) { onList = true; break; }
   }
   check("discovery: candidates cite their sentence; accepting one puts it on today's list for the session", /Read from a (message|note|contact)/.test(disc) && acceptable > 0 && onList);
+  // Before you act: every option carried to the morning after, graded, with a trace; picking a row changes the detail.
+  await page.goto(`${BASE}/simulate`);
+  const sim = await page.locator("main").innerText();
+  const rows = await page.getByRole("button", { pressed: false }).count();
+  check("consequences: every option graded on the morning after, with rule changes, questions and a trace", /Options carried through/.test(sim) && /(Clean|Review|Blocked)/.test(sim) && /What a supervisor will ask/.test(sim) && /How the agent got there/.test(sim) && /No price movement is assumed/.test(sim) && rows > 0);
+  // Households: a dossier on one household reads five sources, cites each, checks the public record against the file, and files a note a briefing then shows.
+  await page.goto(`${BASE}/clients`);
+  await page.getByRole("button", { name: "Research" }).first().click();
+  const dos = await page.locator("main").innerText();
+  const filed = await page.getByRole("button", { name: "File as a team note" }).count();
+  if (filed) await page.getByRole("button", { name: "File as a team note" }).click();
+  const afterFile = await page.locator("main").innerText();
+  // Client-side navigation, so the session keeps the note; a full load would reset it, as documented.
+  await page.locator("main").getByRole("link", { name: "Briefing", exact: true }).first().click();
+  await page.waitForURL("**/research/**");
+  const briefed = await page.locator("main").innerText();
+  check("dossier: five sources cited, public record marked unverified, the drafted note filed by a person reaches the briefing", /records read from \d+ sources/.test(dos) && /Public record/.test(dos) && /Confidence \d+%/.test(dos) && /Unverified until a person confirms/.test(dos) && /Filed to the record/.test(afterFile) && /Research agent noted/.test(briefed));
+  // Review desks: one agent per team, tuned per advisor, with a refused loosening shown.
+  await page.goto(`${BASE}/compliance`);
+  const desks = await page.locator("main").innerText();
+  check("desks: eight review desks with authorities, an advisor-layer tightening shown with its layer, and a refused loosening named", /Review desks, as they stand for/.test(desks) && /Marketing and advertising review/.test(desks) && /Complaints/.test(desks) && /Sales practice supervision/.test(desks) && /FINRA 4513/.test(desks) && /Refused at the/.test(desks) && /Tune for/.test(desks));
   // Connect data: the sample spreadsheet goes in through the file input, every row is accepted, the agents run over it live, and the book grows.
   await page.goto(`${BASE}/data`);
   await page.locator('input[type="file"]').setInputFiles([join(ROOT, "public/samples/clients.csv"), join(ROOT, "public/samples/messages.csv"), join(ROOT, "public/samples/research-note.md")]);

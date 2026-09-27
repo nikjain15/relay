@@ -11,67 +11,70 @@ export interface NavLink { href: string; label: string; note?: string; icon: Ico
 export interface NavArea { area: string; links: NavLink[] }
 
 /**
- * Six areas, not fourteen groups.
+ * Six areas, agents first.
  *
- * The first build listed every surface at one level, which read as a site map
- * rather than a product: an advisor opening it could not tell where the day
- * starts. These are grouped by the question being asked, the day's work first,
- * and on a phone only the current area is expanded.
+ * The first build listed every surface at one level, which read as a site map.
+ * The second grouped by the advisor's day, which read as a CRM with an agent
+ * bolted on. This one is grouped by what the system is: the agents and what
+ * they produce, then the decisions they leave for a person, then the book they
+ * read, the rules they run under, what they learn, and the data they run on.
+ * On a phone only the current area is expanded.
  */
 export const AREAS: NavArea[] = [
   {
-    area: "Today",
+    area: "Agents",
     links: [
-      { href: "/", label: "Overview", icon: "home" },
-      { href: "/agents", label: "Agents", note: "What ran, what is left for you", icon: "agent" },
-      { href: "/triage", label: "Today's list", note: "What needs a decision", icon: "list" },
-      { href: "/meetings", label: "Meetings", icon: "calendar" },
+      { href: "/", label: "Overview", note: "What ran, what needs you", icon: "home" },
+      { href: "/agents", label: "Agent status", note: "Every agent, its last run", icon: "agent" },
+      { href: "/simulate", label: "Before you act", note: "The morning after, first", icon: "hourglass" },
+      { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
+      { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
+      { href: "/documents", label: "Retrieval", note: "What may be quoted", icon: "library" },
+    ],
+  },
+  {
+    area: "Decisions",
+    links: [
+      { href: "/triage", label: "Today's list", note: "One decision per row", icon: "list" },
+      { href: "/supervision", label: "Supervision queue", note: "Findings and prepared actions", icon: "shield" },
+      { href: "/communications", label: "Note and audience", note: "The counter sets the regime", icon: "email" },
+      { href: "/meetings", label: "Meetings", note: "Review packs, built", icon: "calendar" },
       { href: "/follow-ups", label: "Follow-ups", icon: "check" },
     ],
   },
   {
-    area: "Clients",
+    area: "Book",
     links: [
-      { href: "/clients", label: "My clients", icon: "people" },
-      { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
+      { href: "/clients", label: "Households", icon: "people" },
       { href: "/servicing", label: "Service requests", icon: "clock" },
-      { href: `/evidence/${F.opportunityId}`, label: "Why this client", icon: "eye" },
-      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", icon: "filter" },
+      { href: `/evidence/${F.opportunityId}`, label: "Why this client", note: "The reason path, cited", icon: "eye" },
+      { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", note: "Bounded, each with its reason", icon: "filter" },
+      { href: "/pipeline", label: "Prospects", icon: "plus" },
+      { href: "/onboarding", label: "Paperwork", icon: "esign" },
     ],
   },
   {
-    area: "Communications",
+    area: "Rules",
     links: [
-      { href: "/communications", label: "Note and audience", icon: "email" },
-      { href: "/supervision", label: "Supervision queue", icon: "shield" },
-    ],
-  },
-  {
-    area: "Compliance",
-    links: [
-      { href: "/connectors", label: "Connected channels", note: "What is captured", icon: "social" },
-      { href: "/compliance", label: "Rules and agents", icon: "rules" },
+      { href: "/compliance", label: "Rules and agents", note: "Tighten only", icon: "rules" },
+      { href: "/connectors", label: "Connected sources", note: "What is captured", icon: "social" },
       { href: "/compliance/log", label: "Change log", icon: "log" },
       { href: "/compliance/replay", label: "Replay", note: "Rules as they stood", icon: "replay" },
-      { href: "/documents", label: "Documents", note: "What may be quoted", icon: "library" },
     ],
   },
   {
-    area: "Growth",
+    area: "Learning",
     links: [
-      { href: "/pipeline", label: "New clients", icon: "plus" },
-      { href: "/onboarding", label: "Paperwork", icon: "esign" },
-      { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
+      { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
+      { href: "/profiles", label: "Preferences", icon: "settings" },
       { href: "/measurement", label: "Measurement", icon: "chart" },
     ],
   },
   {
-    area: "Settings",
+    area: "Data",
     links: [
-      { href: "/profiles", label: "Preferences", icon: "settings" },
-      { href: "/learning", label: "Suggestions", icon: "agent" },
-      { href: "/personas", label: "Who's who", icon: "crm" },
       { href: "/data", label: "Connect data", note: "Files stay in the browser", icon: "link" },
+      { href: "/personas", label: "Who's who", icon: "crm" },
     ],
   },
 ];

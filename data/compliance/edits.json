@@ -52,6 +52,45 @@
       "from": "25",
       "to": "35",
       "reason": "Book is concentrated by design: pre-liquidity founders hold their own equity."
+    },
+    {
+      "id": "e-005",
+      "at": "2026-09-24T10:15:00Z",
+      "actor": "M. Duarte, Team Supervisor",
+      "target": "agent",
+      "layer": "advisor",
+      "layerId": "adv-b",
+      "agentId": "marketing-review",
+      "field": "cadence",
+      "from": "daily",
+      "to": "on_draft",
+      "reason": "The pooled queue sends templated language to many households a day; a daily batch review is too late for the second send."
+    },
+    {
+      "id": "e-006",
+      "at": "2026-09-25T16:40:00Z",
+      "actor": "Advisor A console",
+      "target": "agent",
+      "layer": "advisor",
+      "layerId": "adv-a",
+      "agentId": "complaints",
+      "field": "enabled",
+      "from": "true",
+      "to": "false",
+      "reason": "We log complaints by hand in the CRM; the agent duplicates the desk."
+    },
+    {
+      "id": "e-007",
+      "at": "2026-09-26T08:30:00Z",
+      "actor": "Advisor C console",
+      "target": "agent",
+      "layer": "advisor",
+      "layerId": "adv-c",
+      "agentId": "sales-practice",
+      "field": "addRule",
+      "from": "",
+      "to": "senior-investor-2165",
+      "reason": "This book skews older. The sales practice desk should see the specified-adult indicators beside suitability, not on a separate queue."
     }
   ]
 }

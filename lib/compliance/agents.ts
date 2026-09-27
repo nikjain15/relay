@@ -25,13 +25,24 @@ export interface AgentDefinition {
   id: string;
   name: string;
   mission: string;
+  /** The review desk this agent is, in the words a legal, risk and compliance function uses. */
+  desk: string;
+  /** The human team it mirrors and what that team reviews. */
+  mirrors: string;
+  /** Authorities applied: rules and regulations by their usual short names. */
+  authorities: string[];
   scope: Scope;
   ruleIds: string[];
   cadence: Cadence;
   enabled: boolean;
   /** When it last ran, on the prototype clock ("day 0, 06:20"). */
   lastRunAt?: string;
+  /** Which layer last set each field, once resolved for an advisor. Absent on the catalog entry. */
+  setBy?: { enabled: string; cadence: string; rules: Record<string, string> };
 }
+
+/** Faster cadences rank higher. A lower layer may move an agent up this order and never down. */
+export const CADENCE_RANK: Record<Cadence, number> = { weekly: 0, daily: 1, on_draft: 2, on_proposal: 2 };
 
 export type Disposition = "pending" | "cleared" | "returned" | "blocked";
 
@@ -77,12 +88,12 @@ export function getAgent(id: string): AgentDefinition | undefined {
   return AGENTS.find((a) => a.id === id);
 }
 
-export function agentsForScope(scope: Scope): AgentDefinition[] {
-  return AGENTS.filter((a) => a.enabled && a.scope === scope);
+export function agentsForScope(scope: Scope, agents: AgentDefinition[] = AGENTS): AgentDefinition[] {
+  return agents.filter((a) => a.enabled && a.scope === scope);
 }
 
-export function agentOwning(ruleId: string): AgentDefinition | undefined {
-  return AGENTS.find((a) => a.enabled && a.ruleIds.includes(ruleId));
+export function agentOwning(ruleId: string, agents: AgentDefinition[] = AGENTS): AgentDefinition | undefined {
+  return agents.find((a) => a.enabled && a.ruleIds.includes(ruleId));
 }
 
 /**
@@ -92,8 +103,8 @@ export function agentOwning(ruleId: string): AgentDefinition | undefined {
  * agent must not quietly retire a rule the firm made mandatory. The console
  * shows this as a warning it cannot dismiss.
  */
-export function uncoveredMandatoryRules(policy: ResolvedPolicy): string[] {
-  const watched = new Set(AGENTS.filter((a) => a.enabled).flatMap((a) => a.ruleIds));
+export function uncoveredMandatoryRules(policy: ResolvedPolicy, agents: AgentDefinition[] = AGENTS): string[] {
+  const watched = new Set(agents.filter((a) => a.enabled).flatMap((a) => a.ruleIds));
   return activeRules(policy)
     .filter((r) => r.mandatory && !watched.has(r.id))
     .map((r) => r.id);
@@ -146,8 +157,8 @@ export function runAgent(agent: AgentDefinition, policy: ResolvedPolicy, input: 
 }
 
 /** Every enabled agent for this fact set's scope. The queue is the union of their cases. */
-export function runScope(policy: ResolvedPolicy, input: FactSet & { availableConnectors: string[] }): AgentRun[] {
-  return agentsForScope(input.scope).map((a) => runAgent(a, policy, input));
+export function runScope(policy: ResolvedPolicy, input: FactSet & { availableConnectors: string[] }, agents: AgentDefinition[] = AGENTS): AgentRun[] {
+  return agentsForScope(input.scope, agents).map((a) => runAgent(a, policy, input));
 }
 
 /** Blocking first, then flags, then the merely uncertain. What a supervisor works top down. */

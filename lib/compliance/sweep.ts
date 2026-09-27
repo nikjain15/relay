@@ -12,7 +12,8 @@
 import type { ConnectionState } from "@/lib/connectors/types";
 import type { ClientFile } from "@/lib/types";
 import { coverageFor } from "@/lib/connectors/coverage";
-import type { Case } from "@/lib/compliance/agents";
+import type { AgentDefinition, Case } from "@/lib/compliance/agents";
+import { AGENTS } from "@/lib/compliance/agents";
 import { queue, runScope } from "@/lib/compliance/agents";
 import type { ResolvedPolicy } from "@/lib/compliance/policy";
 import { accountFacts, coverageFacts, messageFacts } from "@/lib/compliance/facts";
@@ -36,12 +37,12 @@ export function connectedIds(advisorId: string, states: ConnectionState[]): stri
 }
 
 /** `clients` defaults to the shipped book; a session dataset (imported files) is passed in by the screens that hold one. */
-export function sweep(advisorId: string, policy: ResolvedPolicy, states: ConnectionState[], clients: ClientFile[] = CLIENTS): Sweep {
+export function sweep(advisorId: string, policy: ResolvedPolicy, states: ConnectionState[], clients: ClientFile[] = CLIENTS, agents: AgentDefinition[] = AGENTS): Sweep {
   const connected = connectedIds(advisorId, states);
   const report = coverageFor(advisorId, states, CONNECTORS_DATA.attestations);
   const custodianConnected = connected.includes("custodian-feed");
 
-  const runs = runScope(policy, { ...coverageFacts(report), availableConnectors: connected });
+  const runs = runScope(policy, { ...coverageFacts(report), availableConnectors: connected }, agents);
 
   const mine = clients.filter((c) => c.advisorId === advisorId);
   for (const client of mine) {
@@ -56,7 +57,7 @@ export function sweep(advisorId: string, policy: ResolvedPolicy, states: Connect
       unusualDisbursement: inputs?.unusualDisbursement,
       newThirdPartyContact: inputs?.newThirdPartyContact,
     });
-    runs.push(...runScope(policy, { ...facts, availableConnectors: connected }));
+    runs.push(...runScope(policy, { ...facts, availableConnectors: connected }, agents));
   }
 
   // The corpus, not the inbox: every captured message on a healthy source, in
@@ -72,7 +73,7 @@ export function sweep(advisorId: string, policy: ResolvedPolicy, states: Connect
     runs.push(...runScope(policy, {
       ...messageFacts(m, { obaOnFile, complaintLogged: inputs?.complaintLogged ?? false, channelApproved: true }),
       availableConnectors: connected,
-    }));
+    }, agents));
   }
 
   return {

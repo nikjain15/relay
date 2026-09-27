@@ -243,3 +243,29 @@ export function StateDot({ state }: { state: "clear" | "attention" | "blocked" |
     </span>
   );
 }
+
+/**
+ * How an agent got here, in four or five short steps, folded under a finding.
+ * An agent-first screen owes the reader the reasoning on demand, not the
+ * conclusion alone: the facts it read, the rule it applied, what it prepared,
+ * and who decides. Facts are printed as the rule saw them.
+ */
+export function Trace({ steps, summary = "How the agent got here" }: { steps: { icon: IconName; title: string; detail?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive" }[]; summary?: string }) {
+  const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" };
+  return (
+    <details className="mt-1.5 text-[12px]">
+      <summary className="cursor-pointer text-ink-3 underline decoration-line">{summary}</summary>
+      <ol className="mt-2 space-y-1.5 border-l border-line pl-3">
+        {steps.map((s, i) => (
+          <li key={i} className="flex gap-2">
+            <Icon name={s.icon} size={16} className={`mt-px shrink-0 ${accent[s.tone ?? "plain"]}`} />
+            <span className="min-w-0">
+              <span className="text-ink">{i + 1}. {s.title}</span>
+              {s.detail && <span className="block break-words text-ink-2">{s.detail}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}

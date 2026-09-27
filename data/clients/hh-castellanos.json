@@ -246,5 +246,26 @@
     "values": {
       "contact.window": "Mid-morning; E. handles the calendar"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-castellanos-1",
+      "kind": "press",
+      "day": -120,
+      "headline": "Castellanos sells regional logistics firm to a national operator",
+      "excerpt": "The acquirer's release confirms the transaction closed; consideration includes an earn-out.",
+      "source": "Acquirer press release",
+      "ref": "public://press/castellanos-sale",
+      "matches": "archetype"
+    },
+    {
+      "id": "pr-castellanos-2",
+      "kind": "charity",
+      "day": -20,
+      "headline": "Named trustee of a Chicago education foundation",
+      "excerpt": "The foundation's annual report lists a new trustee of that name.",
+      "source": "Charity register",
+      "ref": "public://charity/castellanos-trustee"
+    }
+  ]
 }

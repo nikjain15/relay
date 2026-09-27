@@ -205,5 +205,17 @@
     "values": {
       "contact.window": "After 5pm; on shift until then"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-desrosiers-1",
+      "kind": "press",
+      "day": -60,
+      "headline": "Long-serving school principal to retire at year end",
+      "excerpt": "A district notice names the retirement date.",
+      "source": "School district notice",
+      "ref": "public://press/desrosiers-retirement",
+      "matches": "archetype"
+    }
+  ]
 }

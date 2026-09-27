@@ -163,6 +163,50 @@ inheritance, and "grandchildren's education trust" read as a birth. And one defe
 connect screen: a message file dropped together with its book was matched against the book as the screen
 last rendered it, so every message was rejected; a drop now works through one accumulator, households first.
 
+### 2.5 The dossier agent
+
+The briefing asks what the advisor does not know before the next conversation. The dossier asks what the
+firm actually has on a household and whether it agrees with itself. `lib/research/dossier.ts` reads five
+sources and cites every item to where it came from: the client file (people, holdings, goals, rules);
+the CRM (contacts, team notes, paperwork, open requests); the captured corpus, on connected sources only,
+naming the channel it could not read; the firm's documents, through the same retrieval the evidence
+layer uses, with queries built from the archetype, the flagged opportunities and the unfunded goals; and
+the public record.
+
+The public record is what a person would web-search for: press, filings, directorships, registries,
+court and charity records. The prototype has no outbound path, so it ships as `publicRecord` on the
+client file and the screen says so; in production a read-only search connector fills it. Two disciplines
+hold. A public item is never promoted to fact: it carries a confidence under 1 (0.55, or 0.85 when it
+matches a field on file) and is labelled unverified until a person confirms it. And every item is checked
+against the file: it corroborates a named field, or it is "not on file", with a one-line reading of what
+that means (a directorship is a held-away interest and a possible conflict; a probate record is an
+estate event the file does not carry; a move changes the cross-border tax picture). A household with
+nothing found says "nothing found under this household's names", which the unknowns note is not the
+same as nothing existing.
+
+The agent drafts a CRM note; a person files it, for the session, and the briefing then reads it as a
+team note. Defects found by reading the first output: a note truncated at an initial, "who is the
+Legacy goal for" asked when the goal already said, and a public item marked not on file when the
+archetype already reflected it.
+
+### 2.6 The consequence agent
+
+Every other agent reads what has happened. `lib/simulate/simulate.ts` reads what would happen. It
+applies a proposed action to a copy of the household (new cash into the product; a rebalance drawn from
+the core; a trim drawn from the single name, largest holding first, never below zero; no price movement
+anywhere) and runs the same deterministic engines on the copy that run on the real one: the household
+arithmetic, the constraint engine, every account rule in force through the same fact adapter the sweep
+uses, retrieval for what the proposal can cite, and the recipient counter for the note that would
+follow. The result, per option, is a before and after for each consequence, the rule verdicts that
+change, second-order effects (a trim that unlocks options on another opportunity; a lock-up that leaves
+the Liquidity picture; a realised gain the custodian's lot report will price), the questions a supervisor
+will ask, and what stays a person's to do. A grade, clean, review or blocked, is the first thing read;
+"blocked" needs a failing constraint, a worsening verdict or an evidence refusal.
+
+The screen is a matrix: every option for a proposal, carried through, on one screen, so the person
+choosing sees the second-order effects before the first-order one is taken. In production a model
+might phrase the supervisor's questions; it would never decide what they are or grade an option.
+
 ## 3. Surfaces
 
 | Route | What it shows |
