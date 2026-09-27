@@ -71,6 +71,18 @@ and create a new one from a template; a change that would loosen a compliance de
 one off, waits for a principal's approval. Ranking is an agent too: each advisor sets their own weight per
 kind of signal and list size, inside the firm's bounds, and every score on screen shows its arithmetic.
 
+**Grounded, and checkable.** Every compliance rule carries where it stands in law, with dates (in force,
+guidance, or approved and not yet effective, never stated as current), and links to the primary text it is
+built on; `validate()` fails the build on a rule without them. Each desk page shows every rule's trigger in
+plain words, its settings and bounds, what it prepares, the source it needs and what it raised today. The
+agents that are not desks state their method, and the regulation behind them where there is one.
+
+**Create an agent in front of someone.** Pick a template (cash cover below a floor, no contact for too
+long, one stock above a level, words in what clients write), set the number or the words, and the panel
+runs the draft over the advisor's real book before anything is created, with a count on every quick pick.
+Create it and it joins the same sweep as the desks; its findings name the household and go to Supervision.
+Households, Sources, Agents and Supervision share one search, filter and sort.
+
 The eight compliance agents are **review desks**: one per team a legal, risk and compliance function
 runs, each carrying the team it mirrors, the authorities it applies, its rules and its cadence, all as
 data. Each desk has its own page: its rules, its findings, the sources it needs, a tune panel (an

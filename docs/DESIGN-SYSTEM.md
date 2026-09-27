@@ -101,7 +101,8 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 | `iconBtn`, `chip` | A square button holding one icon (close, menu); a small suggestion (Ask's follow-ups) |
 | `Field`, `input`, `inputSmall`, `textarea` | The one form system: a labelled field, full-width and compact inputs, a text area. Panels re-export these rather than defining their own |
 | `SidePanel` | Edit or create beside the list (`components/side-panel.tsx`): title, body, a footer; Escape closes it |
-| `AgentCard` | One agent, explained the same way everywhere: for, reads, checks, prepares, never, and today (`components/agent-card.tsx`) |
+| `AgentCard`, `Grounded` | One agent, explained the same way everywhere: for, reads, checks, prepares, never, how it decides, what it is built on (each source a link, with any change not yet in force said so), and today (`components/agent-card.tsx`) |
+| `ListControls`, `useList` | The one search, filter and sort for a list an advisor scans: Households, Sources, Agents, Supervision (`components/list-controls.tsx`). Every filter shows its count before it is pressed; the line under it says how many are shown and gives the way back |
 | `stack` | Classes that turn a table into cards below 768px, so a phone never scrolls sideways past a figure |
 | `Row`, `Card`, `CardGrid`, `StatRow`, `Banner`, `More` | The layout primitives of the agent-first rebuild (§7) |
 | `Timeline` | A run of events, most recent first: time, icon, one line, one line of context |
