@@ -7,7 +7,7 @@ import { fmtValue } from "@/lib/profile/format";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
 import { useView } from "@/components/view";
-import { Brief, PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
+import { Brief, PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th, inputSmall } from "@/components/ui";
 
 export function ProfilesView({ advisor, client }: { advisor?: string; client?: string }) {
   // The settings shown are the signed-in advisor's; choosing another advisor here switches the session, as the header does.
@@ -43,9 +43,9 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
             {a.name}
           </button>
         ))}
-        <label className="ml-2 text-xs">
+        <label className="ml-2 text-meta leading-4">
           Client{" "}
-          <select className="rounded border border-line" value={cid} onChange={(e) => setClientId(e.target.value)}>
+          <select className={inputSmall} value={cid} onChange={(e) => setClientId(e.target.value)}>
             {mine.map((x) => (
               <option key={x.id} value={x.id}>{clientName(x.id)}</option>
             ))}
@@ -77,7 +77,7 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
                   <td className={td}>{cell(k, (c?.preferences?.values ?? {}) as Values, learnedC, "client")}</td>
                   <td className={td}>
                     <strong>{fmtValue(k, r.values[k as keyof typeof r.values]) || "Not set"}</strong>
-                    <div className="text-xs text-ink-2">{sourceLabel(r.provenance[k])}</div>
+                    <div className="text-meta leading-4 text-ink-2">{sourceLabel(r.provenance[k])}</div>
                   </td>
                 </tr>
               ))}
@@ -85,12 +85,12 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
           </table>
         </TableScroll>
         {r.ignored.length > 0 && (
-          <p className="mt-2 text-xs text-critical">Ignored: {r.ignored.join("; ")}.</p>
+          <p className="mt-2 text-meta leading-4 text-critical">Ignored: {r.ignored.join("; ")}.</p>
         )}
-        <p className="mt-2 text-xs text-ink-2">Version recorded on every rationale record: <span className="font-mono">{r.version}</span></p>
+        <p className="mt-2 text-meta leading-4 text-ink-2">Version recorded on every rationale record: <span className="font-mono">{r.version}</span></p>
       </Section>
       <Section title="Where each layer lives">
-        <ul className="list-inside list-disc text-xs">
+        <ul className="list-inside list-disc text-meta leading-4">
           <li>Firm: <code>data/profiles/firm.json</code>. The floor for every rule.</li>
           <li>Segment: <code>data/profiles/segments.json</code>. Private wealth, Wealth Advice Center.</li>
           <li>Advisor: the <code>profile</code> block in <code>data/advisors/&lt;id&gt;.json</code>, plus suggestions the advisor accepted.</li>

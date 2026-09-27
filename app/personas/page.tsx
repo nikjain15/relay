@@ -4,6 +4,8 @@ import { HOUSEHOLDS } from "@/lib/fixtures/households";
 import { usd } from "@/lib/format";
 import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 
+export const metadata = { title: "Who's who" };
+
 export default function Personas() {
   return (
     <>
@@ -26,8 +28,8 @@ export default function Personas() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-xs font-semibold text-ink-2">Built from</p>
-              <ul className="text-xs">
+              <p className="mt-2 text-meta leading-4 font-semibold text-ink-2">Built from</p>
+              <ul className="text-meta leading-4">
                 {a.groundedIn.map((s) => (
                   <li key={s.url}>
                     <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
@@ -59,12 +61,12 @@ export default function Personas() {
                     <Link className="underline" href={`/household/${h.id}`}>
                       {h.name}
                     </Link>
-                    <div className="text-xs text-ink-2">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
+                    <div className="text-meta leading-4 text-ink-2">{h.archetype}, {h.persons.length} {h.persons.length === 1 ? "person" : "people"}</div>
                   </td>
                   <td className={td}>{h.tier}</td>
                   <td className={`${td} text-right`}>{usd(h.totalUsd)}</td>
                   <td className={td}>{h.hardPart}</td>
-                  <td className={`${td} text-xs`}>
+                  <td className={`${td} text-meta leading-4`}>
                     {h.groundedIn.map((s) => (
                       <div key={s.url}>
                         <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">

@@ -22,8 +22,10 @@ const config: Config = {
         advisor: { DEFAULT: v("advisor"), soft: v("advisor-soft") },
         client: { DEFAULT: v("client"), soft: v("client-soft") },
       },
-      borderRadius: { DEFAULT: v("radius") },
+      borderRadius: { DEFAULT: v("radius"), lg: v("radius-lg") },
       fontFamily: { sans: [v("font")] },
+      // The type scale, from app/tokens.css. No arbitrary text-[Npx] size and no Tailwind default size in app/ or components/.
+      fontSize: Object.fromEntries(["caption", "meta", "body", "lead", "brief", "heading", "brand", "figure", "stat", "stat-lg", "title", "display"].map((k) => [k, v(`text-${k}`)])),
     },
   },
   plugins: [],

@@ -56,15 +56,15 @@ export default function Architecture() {
             ))}
           </svg>
         </div>
-        <p className="mt-2 text-[12px] text-ink-3">The guard that proves it is a dependency rule over every module and a browser check that a request to another host is blocked.</p>
+        <p className="mt-2 text-meta text-ink-3">The guard that proves it is a dependency rule over every module and a browser check that a request to another host is blocked.</p>
       </Section>
 
       <Section title="The approach, in the order it was applied">
         <ol className="space-y-2">
           {PRINCIPLES.map(([t, m], i) => (
             <li key={t} className="flex gap-3 rounded border border-line px-3 py-2.5">
-              <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-subtle text-[12px] font-semibold text-ink" aria-hidden="true">{i + 1}</span>
-              <span className="min-w-0"><span className="block text-[14px] text-ink">{t}</span><span className="block text-[13px] text-ink-2">{m}</span></span>
+              <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-subtle text-meta font-semibold text-ink" aria-hidden="true">{i + 1}</span>
+              <span className="min-w-0"><span className="block text-lead text-ink">{t}</span><span className="block text-body text-ink-2">{m}</span></span>
             </li>
           ))}
         </ol>
@@ -72,9 +72,9 @@ export default function Architecture() {
 
       <Section title="The stack">
         <CardGrid cols={3}>
-          <Card icon="planning" title="Next.js, TypeScript strict, Tailwind on tokens"><p className="text-[13px] text-ink-2">A static export with no server and no database; the whole product runs from the data folder in the browser.</p></Card>
-          <Card icon="check" title="Vitest, dependency-cruiser, Playwright"><p className="text-[13px] text-ink-2">Unit and invariant tests, architecture rules over every import path, and a browser suite at five widths.</p></Card>
-          <Card icon="block" title="No model client, no network client"><p className="text-[13px] text-ink-2">There is nothing to send with. The content security policy blocks any request to another host, and the browser suite proves it on every run.</p></Card>
+          <Card icon="planning" title="Next.js, TypeScript strict, Tailwind on tokens"><p className="text-body text-ink-2">A static export with no server and no database; the whole product runs from the data folder in the browser.</p></Card>
+          <Card icon="check" title="Vitest, dependency-cruiser, Playwright"><p className="text-body text-ink-2">Unit and invariant tests, architecture rules over every import path, and a browser suite at five widths.</p></Card>
+          <Card icon="block" title="No model client, no network client"><p className="text-body text-ink-2">There is nothing to send with. The content security policy blocks any request to another host, and the browser suite proves it on every run.</p></Card>
         </CardGrid>
         <More summary="Where to read further">
           <ul className="space-y-1">

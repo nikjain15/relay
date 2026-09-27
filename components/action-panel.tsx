@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRelay } from "@/components/state";
 import { Icon, type IconName } from "@/components/icons";
-import { Pill, Trace, Who, btn, btnPrimary, textarea, type Perspective } from "@/components/ui";
+import { Pill, Trace, Who, btn, btnPrimary, textarea, type Perspective, iconBtn } from "@/components/ui";
 import { KIND, type PreparedAction } from "@/lib/compliance/actions";
 
 export const ACTION_ICON: Record<string, IconName> = { draft_note: "email", task: "check", schedule: "calendar", callback: "voice", request_form: "esign", connect_source: "link", hold: "block" };
@@ -60,17 +60,17 @@ export function ActionPanel({ action, trace, onClose }: { action: PreparedAction
         <header className="flex items-start gap-3 border-b border-line px-5 py-4">
           <Icon name={ACTION_ICON[action.kind] ?? "check"} size={20} className="mt-0.5 text-agent" />
           <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-ink-3"><Who who="agent" />{action.agentName} prepared a {kind.label.toLowerCase()}</p>
-            <h2 className="mt-1 text-[16px] font-semibold leading-snug text-ink">{action.title}</h2>
-            <p className="mt-1 text-[12px] text-ink-3">{action.subjectLabel === action.agentName ? "Firm-wide" : action.subjectLabel} · {kind.actor} acts once accepted</p>
+            <p className="text-meta text-ink-3"><Who who="agent" />{action.agentName} prepared a {kind.label.toLowerCase()}</p>
+            <h2 className="mt-1 text-heading font-semibold leading-snug text-ink">{action.title}</h2>
+            <p className="mt-1 text-meta text-ink-3">{action.subjectLabel === action.agentName ? "Firm-wide" : action.subjectLabel} · {kind.actor} acts once accepted</p>
           </div>
-          <button type="button" onClick={onClose} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line text-ink" aria-label="Close"><Icon name="close" size={16} /></button>
+          <button type="button" onClick={onClose} className={iconBtn} aria-label="Close"><Icon name="close" size={16} /></button>
         </header>
 
         <div className="flex-1 px-5 py-4">
-          <p className="mb-1.5 text-[12px] text-ink-3">{action.kind === "draft_note" ? `The draft, to the ${action.to}` : action.kind === "task" ? "The task" : action.kind === "hold" ? "What is held" : "What is prepared"}</p>
-          <div className="whitespace-pre-wrap rounded border border-line bg-subtle px-3 py-2.5 text-[13px] leading-relaxed text-ink">{action.detail}</div>
-          <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">
+          <p className="mb-1.5 text-meta text-ink-3">{action.kind === "draft_note" ? `The draft, to the ${action.to}` : action.kind === "task" ? "The task" : action.kind === "hold" ? "What is held" : "What is prepared"}</p>
+          <div className="whitespace-pre-wrap rounded border border-line bg-subtle px-3 py-2.5 text-body leading-relaxed text-ink">{action.detail}</div>
+          <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-meta">
             {action.kind === "draft_note" && <><dt className="text-ink-3">Audience</dt><dd className="text-ink-2">1 recipient, correspondence. The counter sets the regime before anything moves.</dd></>}
             {action.dueInDays !== undefined && <><dt className="text-ink-3">Due</dt><dd className="text-ink-2">In {action.dueInDays} day{action.dueInDays === 1 ? "" : "s"}</dd></>}
             {action.form && <><dt className="text-ink-3">Form</dt><dd className="text-ink-2">{action.form}</dd></>}
@@ -81,11 +81,11 @@ export function ActionPanel({ action, trace, onClose }: { action: PreparedAction
 
         <footer className="border-t border-line px-5 py-4">
           {decided ? (
-            <div className={`rounded border px-3 py-2.5 text-[13px] ${decided.decision === "accepted" ? "border-positive/40 bg-positive-soft" : "border-line bg-subtle"}`}>
+            <div className={`rounded border px-3 py-2.5 text-body ${decided.decision === "accepted" ? "border-positive/40 bg-positive-soft" : "border-line bg-subtle"}`}>
               <p className="flex items-center gap-1.5 text-ink"><Icon name={decided.decision === "accepted" ? "check" : "block"} size={16} className={decided.decision === "accepted" ? "text-positive" : "text-ink-3"} />
                 {decided.decision === "accepted" ? "Recorded. Nothing was sent." : "Declined. Nothing was sent."}
               </p>
-              <p className="mt-1 text-[12px] text-ink-2">
+              <p className="mt-1 text-meta text-ink-2">
                 {decided.decision === "accepted" ? <>{next.label} <Link href={next.href} className="underline">Open</Link>.</> : <>Reason recorded: &ldquo;{decided.reason}&rdquo;. The <Link href="/learning" className="underline">learning loop</Link> reads it and proposes; it never applies.</>}
               </p>
               {decided.decision === "accepted" && action.kind === "draft_note" && (
@@ -94,7 +94,7 @@ export function ActionPanel({ action, trace, onClose }: { action: PreparedAction
             </div>
           ) : declining ? (
             <div>
-              <label className="block text-[12px] text-ink-3" htmlFor="decline-reason">Why not. One line a supervisor can read later.</label>
+              <label className="block text-meta text-ink-3" htmlFor="decline-reason">Why not. One line a supervisor can read later.</label>
               <textarea id="decline-reason" className={`${textarea} mt-1`} rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Already handled on the call this morning" />
               <p className="mt-2 flex gap-2">
                 <button type="button" className={btnPrimary} disabled={reason.trim().length < 8} onClick={() => decideAction(action.id, "declined", reason.trim())}>Record the decline</button>
@@ -105,7 +105,7 @@ export function ActionPanel({ action, trace, onClose }: { action: PreparedAction
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" className={btnPrimary} onClick={() => decideAction(action.id, "accepted")}>Accept</button>
               <button type="button" className={btn} onClick={() => setDeclining(true)}>Decline with a reason</button>
-              <span className="text-[12px] text-ink-3"><Pill tone="neutral">Nothing sends</Pill> Accepting records it; you act.</span>
+              <span className="text-meta text-ink-3"><Pill tone="neutral">Nothing sends</Pill> Accepting records it; you act.</span>
             </div>
           )}
         </footer>

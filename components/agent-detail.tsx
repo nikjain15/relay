@@ -16,7 +16,7 @@ import { useRelay } from "@/components/state";
 import { explainAgent } from "@/lib/agents/explain";
 import { DeskEditor } from "@/components/agent-editor";
 import { Icon } from "@/components/icons";
-import { Brief, Card, Legend, More, PageTitle, Pill, Row, Section, StateDot, Trace, Who, btn, btnPrimary, textarea } from "@/components/ui";
+import { Brief, Card, Legend, More, PageTitle, Pill, Row, Section, StateDot, Trace, Who, btn, btnPrimary, textarea, inputSmall } from "@/components/ui";
 import { Desks } from "@/components/desks";
 import { ADVISORS_DATA } from "@/lib/data";
 import { AGENTS } from "@/lib/compliance/agents";
@@ -99,21 +99,21 @@ export function AgentDetail({ agentId }: { agentId: string }) {
         const x = explainAgent(agent, policy.rules);
         return (
           <section className="mb-6 rounded border border-line p-4" aria-label="What this desk does">
-            <p className="text-[14px] text-ink">{x.role}</p>
-            <dl className="mt-3 grid gap-x-4 gap-y-1.5 text-[13px] sm:grid-cols-[6rem_1fr]">
+            <p className="text-lead text-ink">{x.role}</p>
+            <dl className="mt-3 grid gap-x-4 gap-y-1.5 text-body sm:grid-cols-[6rem_1fr]">
               <dt className="text-ink-3">Reads</dt><dd className="text-ink-2">{x.reads}</dd>
               <dt className="text-ink-3">Checks</dt><dd className="text-ink-2">{x.checks.join("; ")}</dd>
               <dt className="text-ink-3">Prepares</dt><dd className="text-ink-2">{x.prepares.join("; ")}</dd>
               <dt className="text-ink-3">Runs</dt><dd className="text-ink-2">{x.runs}</dd>
               <dt className="text-ink-3">Never</dt><dd className="text-ink-2">{x.never}</dd>
             </dl>
-            <p className="mt-3 flex flex-wrap gap-2"><button type="button" className={btn} onClick={() => setEditingDesk(true)}>Edit this desk</button><a className="self-center text-[12px] underline" href="#policy">Read a written policy into it</a></p>
+            <p className="mt-3 flex flex-wrap gap-2"><button type="button" className={btn} onClick={() => setEditingDesk(true)}>Edit this desk</button><a className="self-center text-meta underline" href="#policy">Read a written policy into it</a></p>
           </section>
         );
       })()}
       <DeskEditor agent={editingDesk ? agent : null} onClose={() => setEditingDesk(false)} />
 
-      <div className="mb-6 flex flex-wrap items-center gap-2 text-[13px]">
+      <div className="mb-6 flex flex-wrap items-center gap-2 text-body">
         <StateDot state={status.state} />
         <Pill tone={agent.enabled ? "pass" : "neutral"}>{agent.enabled ? "Running" : "Off"}</Pill>
         {agent.authorities.map((x) => <Pill key={x}>{x}</Pill>)}
@@ -136,7 +136,7 @@ export function AgentDetail({ agentId }: { agentId: string }) {
       </Section>
 
       <Section title={mine.length ? `Findings it raised (${mine.length})` : "Findings it raised"}>
-        {mine.length === 0 ? <p className="text-[13px] text-ink-2">None open.</p> : (
+        {mine.length === 0 ? <p className="text-body text-ink-2">None open.</p> : (
           <div className="rounded border border-line px-3 sm:px-4">
             {mine.map((c) => (
               <Row key={c.id} icon={c.reason === "fired" ? "alert" : "question"} tone={c.severity === "block" && c.reason === "fired" ? "critical" : "caution"} who="agent" href="/supervision" title={c.ruleTitle} meta={`${c.subjectLabel} · ${c.finding}`} right={<Pill tone={c.reason === "fired" ? (c.severity === "block" ? "fail" : "accent") : "neutral"}>{c.reason === "fired" ? SEVERITY_LABEL[c.severity] : c.reason === "cannot_evaluate" ? "No source" : "Confirm"}</Pill>} />
@@ -146,7 +146,7 @@ export function AgentDetail({ agentId }: { agentId: string }) {
       </Section>
 
       <Section title={`Tune this desk for ${editing.label}`}>
-        <p className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-ink-2">
+        <p className="mb-3 flex flex-wrap items-center gap-2 text-body text-ink-2">
           Editing as
           {scope.layers.map((l) => <button key={l.id} type="button" className={editing.id === l.id ? btnPrimary : btn} aria-pressed={editing.id === l.id} onClick={() => setEditing(l)}>{l.label}</button>)}
           <span className="text-ink-3">A lower layer can only tighten; a refused change stays in the log.</span>
@@ -156,12 +156,12 @@ export function AgentDetail({ agentId }: { agentId: string }) {
 
       <Section title="Teach this desk a policy">
         <div id="policy" className="scroll-mt-20">
-          <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+          <p className="mb-3 max-w-2xl text-body text-ink-2">
             Paste or drop a written supervisory procedure. The reader turns each sentence that carries an obligation into a candidate rule in the same shape the engine runs, cited to the sentence. You add the ones that say what the firm meant; each is in force on the next sweep and lands in the change log in your name.
           </p>
           <div className="grid gap-3 lg:grid-cols-[3fr_2fr]">
             <div>
-              <textarea className={`${textarea} min-h-[10rem] font-mono text-[12px]`} value={text} onChange={(e) => setText(e.target.value)} placeholder="An account whose client is 65 years of age or older with a new third-party contact must be flagged for review (FINRA Rule 2165)." aria-label="Policy text" />
+              <textarea className={`${textarea} min-h-[10rem] font-mono text-meta`} value={text} onChange={(e) => setText(e.target.value)} placeholder="An account whose client is 65 years of age or older with a new third-party contact must be flagged for review (FINRA Rule 2165)." aria-label="Policy text" />
               <p className="mt-2 flex flex-wrap gap-2">
                 <button type="button" className={btnPrimary} disabled={text.trim().length < 12} onClick={() => read(text, docName)}>Read the policy</button>
                 <button type="button" className={btn} onClick={() => file.current?.click()}>Choose a .md or .txt</button>
@@ -170,14 +170,14 @@ export function AgentDetail({ agentId }: { agentId: string }) {
               </p>
             </div>
             <Card icon="agent" title="What the reader does">
-              <ul className="space-y-1 text-[13px] text-ink-2">
+              <ul className="space-y-1 text-body text-ink-2">
                 <li>Keeps only sentences with an obligation: must, may not, is required.</li>
                 <li>Matches the facts the engines compute, by the words a policy uses for them.</li>
                 <li>Reads the number and the comparator beside each fact.</li>
                 <li>Takes severity from the verb: a prohibition blocks, a review flags.</li>
                 <li>Cites the rule the sentence cites, or the paragraph.</li>
               </ul>
-              <p className="mt-2 text-[12px] text-ink-3">This is the deterministic reader. In production a model reads the sentence more freely; it still only proposes, and what it proposes is still this data.</p>
+              <p className="mt-2 text-meta text-ink-3">This is the deterministic reader. In production a model reads the sentence more freely; it still only proposes, and what it proposes is still this data.</p>
             </Card>
           </div>
 
@@ -196,18 +196,18 @@ export function AgentDetail({ agentId }: { agentId: string }) {
                   const blocked = c.unresolved.length > 0 || !desk;
                   return (
                     <Card key={c.id} icon="rules" title={c.title} sub={<span className="italic">&ldquo;{c.sentence}.&rdquo; Paragraph {c.paragraph}.</span>} tone={done ? "positive" : blocked ? "caution" : "plain"} right={<Pill tone={c.severity === "block" ? "fail" : c.severity === "flag" ? "accent" : "neutral"}>{SEVERITY_LABEL[c.severity]}</Pill>}>
-                      <p className="text-[13px] text-ink-2"><span className="font-medium text-ink">Fires when</span> {explain(c.when, paramMap(c)).replace(/\n\s*/g, " ")}</p>
-                      <p className="mt-1 text-[12px] text-ink-3">{c.authority} · {c.citation} · reads {c.scope} facts · confidence {Math.round(c.confidence * 100)}%{c.overlaps.length ? ` · overlaps ${c.overlaps.join(", ")}` : ""}</p>
-                      {c.unresolved.length > 0 && <ul className="mt-2 space-y-0.5 text-[12px] text-caution">{c.unresolved.map((u, i) => <li key={i}>{u}</li>)}</ul>}
+                      <p className="text-body text-ink-2"><span className="font-medium text-ink">Fires when</span> {explain(c.when, paramMap(c)).replace(/\n\s*/g, " ")}</p>
+                      <p className="mt-1 text-meta text-ink-3">{c.authority} · {c.citation} · reads {c.scope} facts · confidence {Math.round(c.confidence * 100)}%{c.overlaps.length ? ` · overlaps ${c.overlaps.join(", ")}` : ""}</p>
+                      {c.unresolved.length > 0 && <ul className="mt-2 space-y-0.5 text-meta text-caution">{c.unresolved.map((u, i) => <li key={i}>{u}</li>)}</ul>}
                       <Trace steps={c.trace.map((t) => ({ icon: "eye" as const, title: t }))} summary="How it was read" />
                       {done ? (
-                        <p className="mt-3 text-[13px] text-positive"><Icon name="check" size={16} className="mr-1 inline align-text-bottom" />Added to {resolved.agents.find((a) => a.id === done)?.desk}. In force on the next sweep; <Link href="/compliance/log" className="underline">in the change log</Link>.</p>
+                        <p className="mt-3 text-body text-positive"><Icon name="check" size={16} className="mr-1 inline align-text-bottom" />Added to {resolved.agents.find((a) => a.id === done)?.desk}. In force on the next sweep; <Link href="/compliance/log" className="underline">in the change log</Link>.</p>
                       ) : (
                         <div className="mt-3">
-                          <input className="h-8 w-full rounded border border-line-strong bg-surface px-2 text-[13px] text-ink" value={reasons[c.id] ?? ""} onChange={(e) => setReasons((s) => ({ ...s, [c.id]: e.target.value }))} placeholder="Why this rule, in one line (optional; the sentence is cited either way)" aria-label="Reason" />
+                          <input className={`${inputSmall} w-full`} value={reasons[c.id] ?? ""} onChange={(e) => setReasons((s) => ({ ...s, [c.id]: e.target.value }))} placeholder="Why this rule, in one line (optional; the sentence is cited either way)" aria-label="Reason" />
                           <p className="mt-2 flex flex-wrap items-center gap-2">
                             <button type="button" className={btnPrimary} disabled={blocked} onClick={() => add(c)}>{desk ? `Add to ${desk.desk}` : "No desk reads these facts"}</button>
-                            <span className="text-[12px] text-ink-3"><Who who="advisor" />Recorded as {editing.label}.</span>
+                            <span className="text-meta text-ink-3"><Who who="advisor" />Recorded as {editing.label}.</span>
                           </p>
                         </div>
                       )}

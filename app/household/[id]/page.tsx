@@ -92,8 +92,8 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   <tr key={x.name}>
                     <td className={td}>
                       {x.name}
-                      {x.earmarked && <div className="text-xs text-ink-2">Earmarked: {x.earmarked}</div>}
-                      {x.shortTermLotsUsd ? <div className="text-xs text-ink-2">Short-term lots: {usd(x.shortTermLotsUsd)}</div> : null}
+                      {x.earmarked && <div className="text-meta leading-4 text-ink-2">Earmarked: {x.earmarked}</div>}
+                      {x.shortTermLotsUsd ? <div className="text-meta leading-4 text-ink-2">Short-term lots: {usd(x.shortTermLotsUsd)}</div> : null}
                     </td>
                     <td className={`${td} text-right`}>{usd(x.valueUsd)}</td>
                     <td className={`${td} text-right`}>{pct((x.valueUsd / total) * 100)}</td>
@@ -102,7 +102,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               </tbody>
             </table>
           </TableScroll>
-          <p className="mt-1 text-xs text-ink-2">Single-name exposure {pct(singleNamePct(h))} of investable assets.</p>
+          <p className="mt-1 text-meta leading-4 text-ink-2">Single-name exposure {pct(singleNamePct(h))} of investable assets.</p>
         </Section>
         <Section title="IPS constraints and persons">
           <ul className="list-inside list-disc space-y-0.5">
@@ -157,7 +157,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
                   );
                 })}
               </ul>
-              <Link className="text-xs text-accent underline" href="/onboarding">All paperwork</Link>
+              <Link className="text-meta leading-4 text-accent underline" href="/onboarding">All paperwork</Link>
             </Section>
             <Section title="Service requests">
               {f.serviceRequests.length ? (
@@ -171,10 +171,10 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               ) : (
                 <p className="text-ink-2">None open.</p>
               )}
-              <Link className="text-xs text-accent underline" href="/servicing">All service requests</Link>
+              <Link className="text-meta leading-4 text-accent underline" href="/servicing">All service requests</Link>
             </Section>
             <Section title="Documents this client's view is grounded in">
-              <ul className="list-inside list-disc space-y-0.5 text-xs">
+              <ul className="list-inside list-disc space-y-0.5 text-meta leading-4">
                 {f.documents.map((d) => (
                   <li key={d.id}>
                     {d.title} <span className="text-ink-2">({d.kind}, prototype corpus day {d.day})</span>
@@ -186,7 +186,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
         );
       })()}
       <Section title="Composite persona: built from">
-        <ul className="space-y-0.5 text-xs">
+        <ul className="space-y-0.5 text-meta leading-4">
           {h.groundedIn.map((s) => (
             <li key={s.url}>
               <a className="text-accent underline" href={s.url} target="_blank" rel="noreferrer">
@@ -195,7 +195,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
             </li>
           ))}
         </ul>
-        <p className="mt-1 text-xs text-ink-2">
+        <p className="mt-1 text-meta leading-4 text-ink-2">
           Invented name and figures inside published ranges. <Link className="underline" href="/personas">Who&apos;s who</Link>
         </p>
       </Section>

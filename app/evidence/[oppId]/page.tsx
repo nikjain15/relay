@@ -27,7 +27,7 @@ export function generateStaticParams() {
 
 function Score({ p }: { p: RankedPassage }) {
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px]">
+    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-meta">
       <span className="tabular-nums text-ink">Relevance {p.score.toFixed(2)}</span>
       <span className="text-ink-3">=</span>
       {p.reasons.map((r, i) => (
@@ -47,8 +47,8 @@ function PassageRow({ p, weakLabel }: { p: RankedPassage; weakLabel?: string }) 
   const weak = p.matched.length === 0;
   return (
     <li className="border-b border-line py-4 last:border-b-0">
-      <p className="text-[14px] text-ink">{p.text}</p>
-      <p className="mt-1.5 flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+      <p className="text-lead text-ink">{p.text}</p>
+      <p className="mt-1.5 flex flex-wrap items-center gap-2 text-meta text-ink-3">
         <Icon name="quote" size={16} />
         <Link href={`/documents/${p.docId}#${p.passageId}`} className="text-ink underline decoration-line-strong hover:decoration-ink">
           {p.title}, passage {p.passageId}
@@ -94,7 +94,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
         <ol className="space-y-1">
           {o.reasonPath.map((n, i) => (
             <li key={i} className="flex gap-2">
-              <span className="w-24 shrink-0 text-xs text-ink-2">{NODE_LABEL[n.kind] ?? n.kind}</span>
+              <span className="w-24 shrink-0 text-meta leading-4 text-ink-2">{NODE_LABEL[n.kind] ?? n.kind}</span>
               <span>{n.label}</span>
             </li>
           ))}
@@ -104,31 +104,31 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
       {ev.refused ? (
         <Section title="Evidence">
           <div role="alert" className="rounded border border-critical bg-critical-soft p-4">
-            <p className="flex items-center gap-2 text-[15px] font-semibold text-critical">
+            <p className="flex items-center gap-2 text-brief font-semibold text-critical">
               <Icon name="block" size={20} />
               Refused: no supporting evidence.
             </p>
-            <p className="mt-2 text-[14px] text-critical">
+            <p className="mt-2 text-lead text-critical">
               The record cites {ev.refusal.missing.map((m) => <code key={m} className="mx-0.5">{m}</code>)}, which {ev.refusal.missing.length === 1 ? "is" : "are"} not in
               the corpus. Relay will not narrate an explanation it cannot cite, and it will not substitute its own citation for the record&apos;s.
             </p>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <div>
-                <p className="text-[12px] font-medium text-ink">What the corpus has nothing on</p>
+                <p className="text-meta font-medium text-ink">What the corpus has nothing on</p>
                 <p className="mt-1 flex flex-wrap gap-1">
                   {ev.refusal.unmatched.map((t) => (
-                    <span key={t} className="rounded bg-surface px-1.5 py-px text-[12px] text-ink-2">&ldquo;{t}&rdquo;</span>
+                    <span key={t} className="rounded bg-surface px-1.5 py-px text-meta text-ink-2">&ldquo;{t}&rdquo;</span>
                   ))}
                 </p>
-                <p className="mt-2 text-[12px] text-ink-2">
+                <p className="mt-2 text-meta text-ink-2">
                   {ev.refusal.unmatched.length} of {ev.query.terms.length} query terms appear in no current passage, across {ev.searched} passages searched.
                 </p>
               </div>
               <div>
-                <p className="text-[12px] font-medium text-ink">Nearest passages, and why each is not enough</p>
+                <p className="text-meta font-medium text-ink">Nearest passages, and why each is not enough</p>
                 <ul className="mt-1 space-y-2">
                   {ev.refusal.nearest.map((n) => (
-                    <li key={`${n.docId}-${n.passageId}`} className="text-[12px] text-ink-2">
+                    <li key={`${n.docId}-${n.passageId}`} className="text-meta text-ink-2">
                       <Link href={`/documents/${n.docId}#${n.passageId}`} className="text-ink underline decoration-line-strong">{n.title}, passage {n.passageId}</Link>
                       <span className="tabular-nums"> {n.score.toFixed(2)}</span>. {n.why}
                     </li>
@@ -136,7 +136,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
                 </ul>
               </div>
             </div>
-            <p className="mt-4 text-[12px] text-critical">
+            <p className="mt-4 text-meta text-critical">
               This opportunity cannot be proposed on, drafted about or listed as a decision until a citation resolves. The refusal carries to today&apos;s list, the options screen and the review pack.
             </p>
           </div>
@@ -145,12 +145,12 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
         <>
           <Section title="Cited evidence, ranked">
             {ev.missing.length > 0 && (
-              <p role="status" className="mb-3 rounded border border-caution bg-caution-soft p-2 text-[13px] text-caution">
+              <p role="status" className="mb-3 rounded border border-caution bg-caution-soft p-2 text-body text-caution">
                 Also cited but not found, so not relied on: <code>{ev.missing.join(", ")}</code>.
               </p>
             )}
             {ev.excluded.length > 0 && (
-              <p role="status" className="mb-3 rounded border border-caution bg-caution-soft p-2 text-[13px] text-caution">
+              <p role="status" className="mb-3 rounded border border-caution bg-caution-soft p-2 text-body text-caution">
                 Excluded from evidence: {ev.excluded.map((e) => `${e.title} (${e.reason.toLowerCase()})`).join("; ")}.
               </p>
             )}
@@ -177,8 +177,8 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
                   <div className="grid gap-3 md:grid-cols-2">
                     {k.sides.map((s) => (
                       <div key={s.docId} className={`rounded border p-3 ${s.docId === k.leans ? "border-ink" : "border-line"}`}>
-                        <p className="text-[13px] text-ink">{s.value}</p>
-                        <p className="mt-1.5 flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+                        <p className="text-body text-ink">{s.value}</p>
+                        <p className="mt-1.5 flex flex-wrap items-center gap-2 text-meta text-ink-3">
                           <Link href={`/documents/${s.docId}#${s.passageId}`} className="text-ink underline decoration-line-strong">{s.title}</Link>
                           <span>day {s.day}</span>
                           <Pill tone={s.freshness === "stale" ? "fail" : "pass"}>{FRESHNESS_LABEL[s.freshness]}</Pill>
@@ -187,7 +187,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
                       </div>
                     ))}
                   </div>
-                  <p className="mt-3 text-[12px] text-ink-2">Relay shows both and applies neither. The advisor, or the desk that owns the older document, resolves it.</p>
+                  <p className="mt-3 text-meta text-ink-2">Relay shows both and applies neither. The advisor, or the desk that owns the older document, resolves it.</p>
                 </Card>
               ))}
             </Section>
@@ -195,7 +195,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
 
           {ev.related.length > 0 && (
             <Section title="Related passages the record did not cite">
-              <p className="mb-2 text-[13px] text-ink-2">Above the floor on the opportunity&apos;s own words. Shown for the advisor; never used in a note, because the record does not cite them.</p>
+              <p className="mb-2 text-body text-ink-2">Above the floor on the opportunity&apos;s own words. Shown for the advisor; never used in a note, because the record does not cite them.</p>
               <ul className="rounded border border-line px-4">
                 {ev.related.map((p) => (
                   <PassageRow key={`${p.docId}-${p.passageId}`} p={p} />
@@ -226,12 +226,12 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
             <li key={`n${i}`} className="rounded bg-caution-soft px-2 py-1 text-caution"><strong>{n.from}</strong>, {ago(n.day)}: {n.text}</li>
           ))}
         </ul>
-        <p className="mt-2 text-[13px]">
+        <p className="mt-2 text-body">
           <Link className="underline" href={`/research/${h.id}`}>Full briefing, with what could not be established</Link>
         </p>
       </Section>
 
-      <p className="text-xs">
+      <p className="text-meta leading-4">
         <Link className="underline" href={`/household/${h.id}`}>Client picture</Link>
         {(o.action === "fund" || o.action === "trim") && (
           <>
@@ -240,7 +240,7 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
           </>
         )}
         {" · "}
-        <Link className="underline" href="/documents">Document library</Link>
+        <Link className="underline" href="/documents">Documents</Link>
       </p>
     </>
   );

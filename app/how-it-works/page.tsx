@@ -11,7 +11,7 @@ export const metadata = { title: "How it works" };
 export default function HowItWorks() {
   return (
     <>
-      <PageTitle icon="sweep" title="How Relay works" sub="Agents read everything an advisor already has, prepare every step short of the decision, and hand each decision to the advisor. Nothing leaves without a person sending it." />
+      <PageTitle icon="sweep" title="How it works" sub="Agents read everything an advisor already has, prepare every step short of the decision, and hand each decision to the advisor. Nothing leaves without a person sending it." />
       <AboutNav />
       <Takeaways
         items={[
@@ -44,13 +44,13 @@ export default function HowItWorks() {
       <Section title="What makes it trustworthy">
         <CardGrid cols={3}>
           <Card icon="rules" title="Rules and desks are data">
-            <p className="text-[13px] text-ink-2">{BASELINE.length} rules and {AGENTS.length} desks live in files a compliance officer edits at runtime. A written policy can be read straight into a desk. Every change is attributed and replayable; a lower layer can only tighten.</p>
+            <p className="text-body text-ink-2">{BASELINE.length} rules and {AGENTS.length} desks live in files a compliance officer edits at runtime. A written policy can be read straight into a desk. Every change is attributed and replayable; a lower layer can only tighten.</p>
           </Card>
           <Card icon="document" title="Evidence before opinion">
-            <p className="text-[13px] text-ink-2">Every claim carries where it came from. A document that cannot be found is a refusal that names what is missing, never a softened answer.</p>
+            <p className="text-body text-ink-2">Every claim carries where it came from. A document that cannot be found is a refusal that names what is missing, never a softened answer.</p>
           </Card>
           <Card icon="question" title="Honest about what it does not know">
-            <p className="text-[13px] text-ink-2">A rule whose source is not connected says it cannot evaluate. A briefing lists what it could not establish. A public record is unverified until a person confirms it.</p>
+            <p className="text-body text-ink-2">A rule whose source is not connected says it cannot evaluate. A briefing lists what it could not establish. A public record is unverified until a person confirms it.</p>
           </Card>
         </CardGrid>
       </Section>
@@ -58,14 +58,14 @@ export default function HowItWorks() {
       <Section title="Where a model sits">
         <div className="grid gap-4 md:grid-cols-2">
           <Card tone="positive" icon="check" title="A model may compose">
-            <ul className="space-y-1 text-[13px] text-ink-2">
+            <ul className="space-y-1 text-body text-ink-2">
               <li>The wording of a client note, from figures and sources chosen by code</li>
               <li>Reading free text: a request, a policy sentence, a press item, a question</li>
               <li>Phrasing a briefing, a comparison, an answer</li>
             </ul>
           </Card>
           <Card tone="critical" icon="block" title="A model never decides">
-            <ul className="space-y-1 text-[13px] text-ink-2">
+            <ul className="space-y-1 text-body text-ink-2">
               <li>Eligibility, ranking, the recipient count, the supervisory regime</li>
               <li>Any rule verdict, any grade, what corroborates what</li>
               <li>Whether a finding is cleared, or a rule loosened</li>

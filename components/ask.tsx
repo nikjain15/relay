@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
 import { useView } from "@/components/view";
 import { Icon } from "@/components/icons";
-import { Who, btn, btnPrimary } from "@/components/ui";
+import { Who, btn, btnPrimary, iconBtn, chip, input as field } from "@/components/ui";
 import { answer, suggestions, type Answer } from "@/lib/ask/answer";
 
 interface Turn { q: string; a: Answer; ms: number }
@@ -60,26 +60,26 @@ export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
         <header className="flex items-center gap-3 border-b border-line px-5 py-3">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-agent-soft text-agent"><Icon name="agent" size={16} /></span>
           <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-semibold text-ink">Ask</p>
-            <p className="text-[11px] text-ink-3">Answers from the book, the findings, the rules and the sources, each cited. Nothing leaves this browser.</p>
+            <p className="text-lead font-semibold text-ink">Ask</p>
+            <p className="text-caption text-ink-3">Answers from the book, the findings, the rules and the sources, each cited. Nothing leaves this browser.</p>
           </div>
-          <button type="button" onClick={onClose} className="inline-flex h-8 w-8 items-center justify-center rounded border border-line text-ink" aria-label="Close"><Icon name="close" size={16} /></button>
+          <button type="button" onClick={onClose} className={iconBtn} aria-label="Close"><Icon name="close" size={16} /></button>
         </header>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {turns.length === 0 && (
-            <div className="rounded border border-agent/30 bg-agent-soft/40 p-3 text-[13px] text-ink-2">
+            <div className="rounded border border-agent/30 bg-agent-soft/40 p-3 text-body text-ink-2">
               <p><Who who="agent" />Ask about a household by name, about what needs you today, about a desk, a rule, a source or a document. I answer from the records and show which ones.</p>
             </div>
           )}
           <ol className="space-y-4">
             {turns.map((t, i) => (
               <li key={i}>
-                <p className="mb-1.5 text-[13px] text-ink"><Who who="advisor" />{t.q}</p>
+                <p className="mb-1.5 text-body text-ink"><Who who="advisor" />{t.q}</p>
                 <div className="rounded border border-agent/30 bg-agent-soft/40 p-3">
-                  <p className="text-[13px] leading-relaxed text-ink"><Who who="agent" />{t.a.text}</p>
+                  <p className="text-body leading-relaxed text-ink"><Who who="agent" />{t.a.text}</p>
                   {t.a.cites.length > 0 && (
-                    <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-ink-3">
+                    <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-caption text-ink-3">
                       {t.a.cites.map((k, j) => (
                         <li key={j} className="flex items-center gap-1"><Icon name="link" size={16} />{k.href ? <Link href={k.href} className="text-ink-2 underline decoration-line-strong">{k.label}</Link> : <span className="text-ink-2">{k.label}</span>}<code className="break-all">{k.record}</code></li>
                       ))}
@@ -90,7 +90,7 @@ export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
                       {t.a.links.map((l) => <Link key={l.href + l.label} href={l.href} className={btn} onClick={onClose}>{l.label}</Link>)}
                     </p>
                   )}
-                  <p className="mt-2 text-[11px] text-ink-3">From {t.a.via}{t.a.confidence < 1 ? `, confidence ${Math.round(t.a.confidence * 100)}%` : ""}, in {t.ms} ms.</p>
+                  <p className="mt-2 text-caption text-ink-3">From {t.a.via}{t.a.confidence < 1 ? `, confidence ${Math.round(t.a.confidence * 100)}%` : ""}, in {t.ms} ms.</p>
                 </div>
               </li>
             ))}
@@ -100,13 +100,13 @@ export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
 
         <footer className="border-t border-line px-5 py-3">
           <p className="mb-2 flex flex-wrap gap-1.5">
-            {chips.map((s) => <button key={s} type="button" className="rounded border border-line bg-subtle px-2 py-1 text-[12px] text-ink-2 hover:bg-selected" onClick={() => ask(s)}>{s}</button>)}
+            {chips.map((s) => <button key={s} type="button" className={chip} onClick={() => ask(s)}>{s}</button>)}
           </p>
           <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); ask(q); }}>
-            <input ref={input} className="h-9 min-w-0 flex-1 rounded border border-line-strong bg-surface px-3 text-[13px] text-ink" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ask about a household, today, a desk, a rule or a source" aria-label="Your question" />
+            <input ref={input} className={`${field} min-w-0 flex-1 sm:max-w-none`} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ask about a household, today, a desk, a rule or a source" aria-label="Your question" />
             <button type="submit" className={btnPrimary} disabled={!q.trim()}>Ask</button>
           </form>
-          <p className="mt-2 text-[11px] text-ink-3">Deterministic here: intent by words, figures from the engines. In production a model phrases the answer and takes every figure from the same place.</p>
+          <p className="mt-2 text-caption text-ink-3">Deterministic here: intent by words, figures from the engines. In production a model phrases the answer and takes every figure from the same place.</p>
         </footer>
       </aside>
     </div>

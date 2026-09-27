@@ -94,8 +94,8 @@ export function AgentsView() {
       />
 
       <section className="mb-8 rounded border border-line p-4" aria-label="How an agent works here">
-        <p className="mb-3 text-[13px] font-medium text-ink">How every agent here works</p>
-        <ol className="grid gap-3 text-[13px] sm:grid-cols-4">
+        <p className="mb-3 text-body font-medium text-ink">How every agent here works</p>
+        <ol className="grid gap-3 text-body sm:grid-cols-4">
           {[
             ["eye", "Reads", "Only what it is pointed at: your book, captured messages, proposals or documents. It writes nothing back."],
             ["rules", "Checks", "Its rules, which you can read in plain words on every card. Every check is arithmetic or a stated condition."],
@@ -112,7 +112,7 @@ export function AgentsView() {
           <ul className="divide-y divide-line rounded border border-line">
             {requests.filter((r) => r.status === "pending").map((r) => (
               <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 px-4 py-3">
-                <div className="min-w-0 text-[13px]">
+                <div className="min-w-0 text-body">
                   <p className="text-ink">{r.summary}</p>
                   <p className="mt-0.5 text-ink-2">Why: {r.reason}</p>
                 </div>
@@ -123,11 +123,11 @@ export function AgentsView() {
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[12px] text-ink-3">In production only a registered principal sees these buttons. Each decision goes in the change log with who made it.</p>
+          <p className="mt-2 text-meta text-ink-3">In production only a registered principal sees these buttons. Each decision goes in the change log with who made it.</p>
         </Section>
       )}
       {requests.some((r) => r.status !== "pending") && (
-        <p className="-mt-4 mb-8 text-[12px] text-ink-2">
+        <p className="-mt-4 mb-8 text-meta text-ink-2">
           {requests.filter((r) => r.status !== "pending").map((r) => `${r.status === "approved" ? "Approved" : "Refused"}: ${r.summary}`).join(" ")}{" "}
           <Link className="underline" href="/compliance/log">Change log</Link>
         </p>
@@ -155,7 +155,7 @@ export function AgentsView() {
 
       <Section title={`Your agents (${mineCustom.length})`}>
         {mineCustom.length === 0 ? (
-          <p className="text-[13px] text-ink-2">None yet. <button type="button" className="underline" onClick={() => setCreating(true)}>Create one</button> to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or a phrase in what clients write.</p>
+          <p className="text-body text-ink-2">None yet. <button type="button" className="underline" onClick={() => setCreating(true)}>Create one</button> to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or a phrase in what clients write.</p>
         ) : (
           <CardGrid cols={2}>
             {mineCustom.map((c) => {
@@ -212,8 +212,8 @@ export function AgentsView() {
               .sort((a, b) => b[1] - a[1])
               .map(([k, n]) => ({ label: k.replace(/_/g, " "), value: n, href: "/supervision" }))}
           />
-          {pendingActions.length === 0 && <p className="text-[13px] text-ink-2">Nothing waiting.</p>}
-          <p className="mt-3 text-[12px] text-ink-3">
+          {pendingActions.length === 0 && <p className="text-body text-ink-2">Nothing waiting.</p>}
+          <p className="mt-3 text-meta text-ink-3">
             <Icon name="block" size={16} className="mr-1 inline align-text-bottom" />
             None of these is sent, scheduled or written anywhere by an agent. Each waits for a person on{" "}
             <Link href="/supervision" className="underline">Supervision</Link>.

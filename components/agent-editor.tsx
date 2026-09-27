@@ -28,7 +28,7 @@ const CADENCES: Cadence[] = ["on_draft", "on_proposal", "daily", "weekly"];
 function Outcome({ lines }: { lines: string[] }) {
   if (!lines.length) return null;
   return (
-    <div className="mb-4 rounded border border-positive/40 bg-positive-soft px-3 py-2 text-[13px] text-positive" role="status">
+    <div className="mb-4 rounded border border-positive/40 bg-positive-soft px-3 py-2 text-body text-positive" role="status">
       {lines.map((l, i) => <p key={i} className="flex gap-1.5"><Icon name="check" size={16} className="mt-0.5 shrink-0" />{l}</p>)}
     </div>
   );
@@ -86,13 +86,13 @@ export function DeskEditor({ agent, onClose }: { agent: AgentDefinition | null; 
       </Field>
 
       <div className="mb-6">
-        <p className="mb-1 text-[12px] font-medium text-ink">Rules it runs ({rules.length})</p>
+        <p className="mb-1 text-meta font-medium text-ink">Rules it runs ({rules.length})</p>
         <ul className="divide-y divide-line rounded border border-line">
           {rules.map((r) => {
             const mineToRemove = agent.setBy?.rules[r.id] === "advisor";
             return (
-              <li key={r.id} className="flex items-start justify-between gap-2 px-3 py-2 text-[13px]">
-                <span className="min-w-0 text-ink">{r.title}<span className="block text-[11px] text-ink-3">{r.citation}{r.mandatory ? " · firm-mandatory" : ""}</span></span>
+              <li key={r.id} className="flex items-start justify-between gap-2 px-3 py-2 text-body">
+                <span className="min-w-0 text-ink">{r.title}<span className="block text-caption text-ink-3">{r.citation}{r.mandatory ? " · firm-mandatory" : ""}</span></span>
                 <button type="button" className={btn} disabled={!mineToRemove && needsReason} onClick={() => {
                   if (mineToRemove) { edit("removeRule", r.id, r.id, "Removed a rule the advisor had added."); setDone((d) => [...d, `Removed "${r.title}".`]); }
                   else ask("removeRule", r.id, r.id, `Take "${r.title}" off ${agent.name}.`);
@@ -127,13 +127,13 @@ export function DeskEditor({ agent, onClose }: { agent: AgentDefinition | null; 
 
       {pending.length > 0 && (
         <div>
-          <p className="mb-1 text-[12px] font-medium text-ink">Your requests on this desk</p>
-          <ul className="space-y-1 text-[13px]">
+          <p className="mb-1 text-meta font-medium text-ink">Your requests on this desk</p>
+          <ul className="space-y-1 text-body">
             {pending.map((r) => <li key={r.id} className="flex flex-col items-start gap-1 sm:flex-row sm:gap-2"><Pill tone={r.status === "approved" ? "pass" : r.status === "refused" ? "fail" : "accent"}>{r.status === "pending" ? "Waiting on a principal" : r.status}</Pill><span className="text-ink-2">{r.summary}</span></li>)}
           </ul>
         </div>
       )}
-      <p className="mt-6 text-[12px]"><Link className="underline" href={`/agents/${agent.id}`}>Open the desk: its findings, and read a written policy into it</Link></p>
+      <p className="mt-6 text-meta"><Link className="underline" href={`/agents/${agent.id}`}>Open the desk: its findings, and read a written policy into it</Link></p>
     </SidePanel>
   );
 }
@@ -170,7 +170,7 @@ export function CustomEditor({ id, onClose }: { id: string | null; onClose: () =
           {CADENCES.map((k) => <option key={k} value={k}>{CADENCE_WORDS[k]}</option>)}
         </select>
       </Field>
-      <p className="mb-2 text-[12px] text-ink-3">Today it has {found} open finding{found === 1 ? "" : "s"} on your book.</p>
+      <p className="mb-2 text-meta text-ink-3">Today it has {found} open finding{found === 1 ? "" : "s"} on your book.</p>
       <p className="mb-6 flex flex-wrap gap-2">
         <button type="button" className={btnPrimary} onClick={() => {
           const value = p?.type === "number" ? Math.min(p.max ?? Infinity, Math.max(p.min ?? -Infinity, Number(form.value))) : form.value.trim();
@@ -181,7 +181,7 @@ export function CustomEditor({ id, onClose }: { id: string | null; onClose: () =
         {!confirm ? (
           <button type="button" className={btn} onClick={() => setConfirm(true)}>Delete</button>
         ) : (
-          <span className="flex flex-wrap items-center gap-2 text-[12px] text-ink-2">Delete {c.agent.name} and close its findings?
+          <span className="flex flex-wrap items-center gap-2 text-meta text-ink-2">Delete {c.agent.name} and close its findings?
             <button type="button" className={btnPrimary} onClick={() => { deleteAgent(c.agent.id, who); setDone(["Deleted. Its findings closed with it; the deletion is in the change log."]); }}>Delete it</button>
             <button type="button" className={btn} onClick={() => setConfirm(false)}>Keep it</button>
           </span>
@@ -202,8 +202,8 @@ export function RosterEditor({ agent, onClose }: { agent: RosterAgent | null; on
   return (
     <SidePanel open title={`Edit ${agent.name}`} sub={agent.cadence === "morning" ? "Runs every morning on your book." : "Runs when you ask."} onClose={onClose}>
       <Outcome lines={done} />
-      <p className="mb-4 text-[13px] text-ink">{agent.role}</p>
-      {agent.id === "ranking" && <p className="mb-4 text-[13px] text-ink-2">Change how it ranks on <Link className="underline" href="/triage#tune" onClick={onClose}>Today&apos;s list, Tune the ranking</Link>: a weight per kind of signal and your list size.</p>}
+      <p className="mb-4 text-body text-ink">{agent.role}</p>
+      {agent.id === "ranking" && <p className="mb-4 text-body text-ink-2">Change how it ranks on <Link className="underline" href="/triage#tune" onClick={onClose}>Today&apos;s list, Tune the ranking</Link>: a weight per kind of signal and your list size.</p>}
       {agent.canTurnOff ? (
         <p className="mb-4 flex flex-wrap gap-2">
           <button type="button" className={off ? btnPrimary : btn} onClick={() => { setRosterOn(advisorId, agent.id, off); setDone((d) => [...d, off ? `${agent.name} is on again.` : `${agent.name} is off for you. The Overview shows it as off; switch it on here any time.`]); }}>
@@ -211,10 +211,10 @@ export function RosterEditor({ agent, onClose }: { agent: RosterAgent | null; on
           </button>
         </p>
       ) : (
-        <p className="mb-4 text-[13px] text-ink-2">Ask stays on: it is how you reach everything else.</p>
+        <p className="mb-4 text-body text-ink-2">Ask stays on: it is how you reach everything else.</p>
       )}
-      <p className="text-[12px] text-ink-3">It is part of Relay, so it cannot be deleted; switching it off is yours and needs no principal, because it does not supervise anything.</p>
-      <p className="mt-4 text-[12px]"><Link className="underline" href={agent.href} onClick={onClose}>Open what it made</Link></p>
+      <p className="text-meta text-ink-3">It is part of Relay, so it cannot be deleted; switching it off is yours and needs no principal, because it does not supervise anything.</p>
+      <p className="mt-4 text-meta"><Link className="underline" href={agent.href} onClick={onClose}>Open what it made</Link></p>
     </SidePanel>
   );
 }
@@ -245,15 +245,15 @@ export function CreateAgent({ open, onClose, onCreated }: { open: boolean; onClo
           {TEMPLATES.map((x) => (
             <li key={x.id}>
               <button type="button" className="w-full rounded border border-line p-3 text-left hover:bg-subtle" onClick={() => pick(x)}>
-                <span className="block text-[14px] font-medium text-ink">{x.title}</span>
-                <span className="mt-0.5 block text-[12px] text-ink-2">{x.what}</span>
+                <span className="block text-lead font-medium text-ink">{x.title}</span>
+                <span className="mt-0.5 block text-meta text-ink-2">{x.what}</span>
               </button>
             </li>
           ))}
         </ul>
       ) : (
         <>
-          <p className="mb-4 text-[13px] text-ink-2">{t.what}</p>
+          <p className="mb-4 text-body text-ink-2">{t.what}</p>
           <Field label="Name"><input className={input} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
           <Field label="What it is for"><textarea className={textarea} rows={2} value={form.mission} onChange={(e) => setForm({ ...form, mission: e.target.value })} /></Field>
           <Field label={`${t.param.label}${t.param.unit ? ` (${t.param.unit})` : ""}`}>

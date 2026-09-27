@@ -84,7 +84,7 @@ export function SimulateView() {
 
       <Section title={`${client.name}: ${opp.plainTitle ?? opp.title}`}>
         <TableScroll>
-          <table className="w-full min-w-[900px] border-collapse text-[13px]">
+          <table className="w-full min-w-[900px] border-collapse text-body">
             <thead>
               <tr>
                 <th className={th}>Option</th>
@@ -102,7 +102,7 @@ export function SimulateView() {
                     <td className={td}>
                       <button type="button" className="text-left underline decoration-line-strong hover:decoration-ink" onClick={() => setPick(s.candidate.id)} aria-pressed={on}>
                         <span className="block text-ink">{s.product.name}</span>
-                        <span className="block text-[11px] text-ink-3">{SOURCE[s.candidate.source]} · {usd(s.candidate.amountUsd)}</span>
+                        <span className="block text-caption text-ink-3">{SOURCE[s.candidate.source]} · {usd(s.candidate.amountUsd)}</span>
                       </button>
                     </td>
                     <td className={td}><Pill tone={GRADE[s.grade].tone}>{GRADE[s.grade].word}</Pill></td>
@@ -113,7 +113,7 @@ export function SimulateView() {
                           {x ? (
                             <>
                               <span className={`block ${TEXT[x.tone]}`}>{x.after}</span>
-                              <span className="block text-[11px] text-ink-3">{x.change || "unchanged"}</span>
+                              <span className="block text-caption text-ink-3">{x.change || "unchanged"}</span>
                             </>
                           ) : <span className="text-ink-3">n/a</span>}
                         </td>
@@ -131,7 +131,7 @@ export function SimulateView() {
             </tbody>
           </table>
         </TableScroll>
-        <p className="mt-2 text-[12px] text-ink-3">No price movement is assumed anywhere. Every figure is arithmetic over holdings as they stand; the same engines that read the book today read the copy.</p>
+        <p className="mt-2 text-meta text-ink-3">No price movement is assumed anywhere. Every figure is arithmetic over holdings as they stand; the same engines that read the book today read the copy.</p>
       </Section>
 
       {sel && (
@@ -139,13 +139,13 @@ export function SimulateView() {
           <Section title={`If you chose ${sel.product.name}, ${SOURCE[sel.candidate.source].toLowerCase()}`}>
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
-                <p className="mb-2 text-[12px] text-ink-3"><Who who="client" />Consequences for the household, before and after</p>
+                <p className="mb-2 text-meta text-ink-3"><Who who="client" />Consequences for the household, before and after</p>
                 <div className="rounded border border-line px-3 sm:px-4">
                   {sel.consequences.map((c) => (
-                    <Row key={c.key} icon={c.icon} tone={c.tone} title={<span className="tabular-nums">{c.label}: {c.before} <span className="text-ink-3">to</span> <span className={TEXT[c.tone]}>{c.after}</span></span>} meta={c.why} right={c.change ? <span className={`text-[12px] tabular-nums ${TEXT[c.tone]}`}>{c.change}</span> : undefined} />
+                    <Row key={c.key} icon={c.icon} tone={c.tone} title={<span className="tabular-nums">{c.label}: {c.before} <span className="text-ink-3">to</span> <span className={TEXT[c.tone]}>{c.after}</span></span>} meta={c.why} right={c.change ? <span className={`text-meta tabular-nums ${TEXT[c.tone]}`}>{c.change}</span> : undefined} />
                   ))}
                 </div>
-                <p className="mb-2 mt-6 text-[12px] text-ink-3"><Who who="agent" />The morning sweep, run on the copy</p>
+                <p className="mb-2 mt-6 text-meta text-ink-3"><Who who="agent" />The morning sweep, run on the copy</p>
                 <div className="rounded border border-line px-3 sm:px-4">
                   {sel.rules.changes.length === 0 ? (
                     <Row icon="shield" tone="positive" title={`${sel.rules.after.length} account rules, no verdict changes`} meta={`${sel.rules.after.filter((v) => v.outcome !== "clear").length} already open on this household stay as they are.`} />
@@ -157,20 +157,20 @@ export function SimulateView() {
                 </div>
               </div>
               <div>
-                <p className="mb-2 text-[12px] text-ink-3">What it sets in motion</p>
-                <ul className="mb-6 space-y-1.5 text-[13px] text-ink-2">
+                <p className="mb-2 text-meta text-ink-3">What it sets in motion</p>
+                <ul className="mb-6 space-y-1.5 text-body text-ink-2">
                   {sel.followOns.length === 0 && <li>Nothing beyond the trade itself.</li>}
                   {sel.followOns.map((f, i) => <li key={i} className="flex gap-2"><Icon name="trend" size={16} className="mt-0.5 shrink-0 text-ink-3" />{f}</li>)}
                 </ul>
-                <p className="mb-2 text-[12px] text-ink-3"><Who who="agent" />What a supervisor will ask</p>
-                <ul className="mb-6 space-y-1.5 text-[13px] text-ink-2">
+                <p className="mb-2 text-meta text-ink-3"><Who who="agent" />What a supervisor will ask</p>
+                <ul className="mb-6 space-y-1.5 text-body text-ink-2">
                   {sel.supervisorQuestions.map((q, i) => <li key={i} className="flex gap-2"><Icon name="question" size={16} className="mt-0.5 shrink-0 text-ink-3" />{q}</li>)}
                 </ul>
-                <p className="mb-2 text-[12px] text-ink-3"><Who who="advisor" />Still yours</p>
-                <ul className="space-y-1.5 text-[13px] text-ink-2">
+                <p className="mb-2 text-meta text-ink-3"><Who who="advisor" />Still yours</p>
+                <ul className="space-y-1.5 text-body text-ink-2">
                   {sel.humanGate.map((q, i) => <li key={i} className="flex gap-2"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-ink-3" />{q}</li>)}
                 </ul>
-                <p className="mt-4 text-[13px]">
+                <p className="mt-4 text-body">
                   <Link href={`/household/${client.id}/proposal?opp=${opp.id}`} className={btnPrimary}>Open the proposal</Link>
                 </p>
               </div>

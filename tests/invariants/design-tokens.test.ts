@@ -47,4 +47,25 @@ describe("design system", () => {
     expect(Object.keys(app).length).toBeGreaterThan(10);
     for (const [k, v] of Object.entries(app)) expect(light[k], k).toBe(v);
   });
+
+  it("every font size is on the type scale in app/tokens.css: no arbitrary text-[Npx] and no Tailwind default size", () => {
+    const SIZE = /(?<![\w-])(?:[a-z]+:)*text-(?:\[\d+(?:\.\d+)?(?:px|rem|em)\]|xs|sm|base|lg|xl|[2-9]xl)(?![\w-])/;
+    for (const f of [...files("app"), ...files("components")]) expect(SIZE.exec(readFileSync(join(ROOT, f), "utf8"))?.[0], f).toBeUndefined();
+    expect(SIZE.test(`<p className="text-[13px]">`)).toBe(true);
+    expect(SIZE.test(`<p className="md:text-sm">`)).toBe(true);
+    expect(SIZE.test(`<p className="text-body text-ink">`)).toBe(false);
+    const css = tokens(readFileSync(join(ROOT, "app/tokens.css"), "utf8"));
+    const config = readFileSync(join(ROOT, "tailwind.config.ts"), "utf8");
+    const scale = [...(config.match(/fontSize: Object\.fromEntries\(\[([^\]]+)\]/)?.[1] ?? "").matchAll(/"([a-z-]+)"/g)].map((m) => m[1]);
+    expect(scale.length).toBeGreaterThan(5);
+    for (const k of scale) expect(css[`--text-${k}`], k).toBeDefined();
+  });
+
+  it("every corner is a radius token: rounded (2px), rounded-lg (the agent's surfaces) or rounded-full", () => {
+    const RADIUS = /(?<![\w-])(?:[a-z]+:)*rounded-(?:none|sm|md|xl|2xl|3xl|\[[^\]]+\])(?![\w-])/;
+    for (const f of [...files("app"), ...files("components")]) expect(RADIUS.exec(readFileSync(join(ROOT, f), "utf8"))?.[0], f).toBeUndefined();
+    expect(RADIUS.test(`<div className="rounded-xl">`)).toBe(true);
+    const css = tokens(readFileSync(join(ROOT, "app/tokens.css"), "utf8"));
+    expect(css["--radius-lg"]).toBeDefined();
+  });
 });

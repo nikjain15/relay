@@ -58,7 +58,7 @@ export function Communications() {
   if (!o || !h || !ev || !draft) {
     return (
       <>
-        <PageTitle icon="email" title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
+        <PageTitle icon="email" title="Client notes" sub="Composed from an accepted proposal and its cited evidence. You send." />
         <AgentBar
           name="Drafting"
           icon="email"
@@ -96,7 +96,7 @@ export function Communications() {
 
   return (
     <>
-      <PageTitle icon="email" title="Client communications" sub={`${h.name}: ${o.title}`} />
+      <PageTitle icon="email" title="Client notes" sub={`${h.name}: ${o.title}`} />
       <AgentBar
         name="Drafting"
         icon="email"
@@ -114,7 +114,7 @@ export function Communications() {
       <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div>
           {prof && (
-            <p className="mb-3 rounded border border-line px-3 py-2 text-xs">
+            <p className="mb-3 rounded border border-line px-3 py-2 text-meta leading-4">
               <strong>For this client:</strong> {prof.values["contact.channel"]} ({sourceLabel(prof.provenance["contact.channel"])})
               {prof.values["contact.window"] ? `, ${prof.values["contact.window"]}` : ""}; {prof.values["note.length"]} note ({sourceLabel(prof.provenance["note.length"])}).
               {prof.values["contact.callBeforeNote"] && (
@@ -134,7 +134,7 @@ export function Communications() {
             </ul>
           </Section>
           <Section title="Batch: the same note template for other households in the book">
-            <p className="mb-2 text-xs text-ink-2">Each household would get its own figures. Relay counts every recipient of the same template together, the conservative reading of Rule 2210.</p>
+            <p className="mb-2 text-meta leading-4 text-ink-2">Each household would get its own figures. Relay counts every recipient of the same template together, the conservative reading of Rule 2210.</p>
             <div className="mb-2 flex flex-wrap gap-2">
               <button className={btn} onClick={() => setBatch(new Set(BOOK.filter((b) => b.persons === 2).slice(0, 12).map((b) => b.id)))}>
                 Select 12 two-person households
@@ -142,7 +142,7 @@ export function Communications() {
               <button className={btn} onClick={() => setBatch(new Set())}>
                 Clear
               </button>
-              {priorIn + priorOut > 0 && <label className="flex items-center gap-1 text-xs">
+              {priorIn + priorOut > 0 && <label className="flex items-center gap-1 text-meta leading-4">
                 <input type="checkbox" checked={includePrior} onChange={(e) => setIncludePrior(e.target.checked)} />
                 Include another advisor&apos;s sends of this note ({priorIn} persons in the last 30 days, {priorOut} older)
               </label>}
@@ -152,7 +152,7 @@ export function Communications() {
                 <li key={b.id}>
                   <label className="flex items-center gap-1">
                     <input type="checkbox" checked={batch.has(b.id)} onChange={() => toggle(b.id)} />
-                    {b.name} <span className="text-xs text-ink-2">({b.persons} {b.persons === 1 ? "person" : "persons"})</span>
+                    {b.name} <span className="text-meta leading-4 text-ink-2">({b.persons} {b.persons === 1 ? "person" : "persons"})</span>
                   </label>
                 </li>
               ))}
@@ -162,22 +162,22 @@ export function Communications() {
         <aside aria-live="polite">
           <Section title="Recipient counter, FINRA Rule 2210(a)">
             <div className={`rounded border p-3 ${flipped ? "border-critical bg-critical-soft" : "border-positive bg-positive-soft"}`}>
-              <p className="text-3xl font-semibold">{count}</p>
+              <p className="text-display leading-9 font-semibold">{count}</p>
               <p>
                 retail investors, firm-wide, last 30 calendar days ({households} {households === 1 ? "household" : "households"} from this advisor)
               </p>
               <p className="mt-2">
                 <Pill tone={flipped ? "fail" : "pass"}>{regime}</Pill>
               </p>
-              <p className="mt-2 text-xs">
+              <p className="mt-2 text-meta leading-4">
                 {flipped
                   ? "More than 25 retail investors: principal approval before use, retention and filing where applicable."
                   : "25 or fewer retail investors: correspondence, reviewed under Rule 3110(b). Relay routes it to a principal anyway during V2."}
               </p>
-              <p className="mt-2 text-xs text-ink-2">Counts persons, not households, across every advisor using this note. Institutional investors excluded.</p>
+              <p className="mt-2 text-meta leading-4 text-ink-2">Counts persons, not households, across every advisor using this note. Institutional investors excluded.</p>
             </div>
             {callFirstRequired && (
-              <label className="mt-3 flex items-start gap-2 text-xs">
+              <label className="mt-3 flex items-start gap-2 text-meta leading-4">
                 <input type="checkbox" checked={called} onChange={(e) => setCalled(e.target.checked)} />
                 <span>
                   <Pill tone="fail">Call first</Pill> This client&apos;s rule: I have spoken to them about this before any written note. Supervision cannot approve without it.
@@ -207,7 +207,7 @@ export function Communications() {
               {submitted || pending ? "Submitted for supervision" : "Submit for supervision"}
             </button>
             {(submitted || pending) && (
-              <p className="mt-2 text-xs">
+              <p className="mt-2 text-meta leading-4">
                 In the queue. <Link className="underline" href="/supervision">Supervision console</Link> ({queue.length} item{queue.length === 1 ? "" : "s"}).
                 Relay never sends: release is a human act after disposition.
               </p>

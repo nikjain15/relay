@@ -49,22 +49,22 @@ function ConnectorRow({ c, advisorId }: { c: ConnectorDefinition; advisorId: str
     <div className="flex flex-wrap items-start gap-3 border-t border-line py-3 first:border-t-0">
       <Mark text={c.vendor} tone={status === "connected" ? "client" : "plain"} />
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-medium text-ink">{c.name} <span className="font-normal text-ink-3">{c.vendor}</span></p>
-        <p className="mt-0.5 text-[13px] text-ink-2">{c.summary}</p>
-        {status === "degraded" && state?.issue && <p className="mt-1 text-[13px] text-critical">{state.issue}</p>}
+        <p className="text-body font-medium text-ink">{c.name} <span className="font-normal text-ink-3">{c.vendor}</span></p>
+        <p className="mt-0.5 text-body text-ink-2">{c.summary}</p>
+        {status === "degraded" && state?.issue && <p className="mt-1 text-body text-critical">{state.issue}</p>}
         {status === "connected" && (
-          <p className="mt-1 text-[12px] text-ink-3">
+          <p className="mt-1 text-meta text-ink-3">
             {c.retention === "system_of_record" ? "Retained copy" : "Read only, not the retained copy"}
             {state?.recordsIngested ? ` · ${state.recordsIngested.toLocaleString()} records` : ""}{state?.lastIngestAt ? ` · last read ${state.lastIngestAt}` : ""}
           </p>
         )}
-        <p className="mt-1 text-[12px] text-ink-3">
+        <p className="mt-1 text-meta text-ink-3">
           {feeds.length ? <>Unlocks {feeds.length} rule{feeds.length === 1 ? "" : "s"} on {desks.join(", ")}.</> : "Adds records the research and discovery agents read."}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        {status === "connected" && <span className="flex items-center gap-1 text-[12px] text-positive"><Icon name="check" size={16} />Connected</span>}
-        {status === "degraded" && <span className="flex items-center gap-1 text-[12px] text-critical"><Icon name="alert" size={16} />Degraded</span>}
+        {status === "connected" && <span className="flex items-center gap-1 text-meta text-positive"><Icon name="check" size={16} />Connected</span>}
+        {status === "degraded" && <span className="flex items-center gap-1 text-meta text-critical"><Icon name="alert" size={16} />Degraded</span>}
         <button type="button" className={status === "connected" ? btn : btnPrimary} onClick={() => setConnectorStatus(advisorId, c.id, status === "connected" ? "available" : "connected")}>
           {status === "connected" ? "Disconnect" : status === "degraded" ? "Reconnect" : "Connect"}
         </button>
@@ -143,26 +143,26 @@ export function SourcesView() {
             className={`rounded border-2 border-dashed p-6 text-center ${dragOver ? "border-ink bg-selected" : "border-line-strong"}`}
           >
             <Icon name="people" size={24} className="mx-auto text-ink-3" />
-            <p className="mt-2 text-[14px] text-ink">Drop your client list, a message export or documents here, or</p>
+            <p className="mt-2 text-lead text-ink">Drop your client list, a message export or documents here, or</p>
             <div className="mt-3 flex flex-wrap justify-center gap-2">
               <button type="button" className={btnPrimary} onClick={() => input.current?.click()} disabled={busy !== null}>{busy ? `Reading ${busy}` : "Choose files"}</button>
               <button type="button" className={btn} onClick={() => generate(120)}>Generate a book of 120</button>
               <button type="button" className={btn} onClick={() => generate(1000)}>Generate a book of 1,000</button>
             </div>
             <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Choose files" onChange={(e) => { if (e.target.files) void onFiles(e.target.files); e.target.value = ""; }} />
-            <p className="mt-3 text-[12px] text-ink-3">
+            <p className="mt-3 text-meta text-ink-3">
               .csv or .xlsx exported from your CRM, one household a row; messages one a row naming the household; .md or .txt documents.
               Samples: <a className="underline" href={`${ASSET}/samples/clients.csv`} download>clients.csv</a>, <a className="underline" href={`${ASSET}/samples/messages.csv`} download>messages.csv</a>, <a className="underline" href={`${ASSET}/samples/research-note.md`} download>research-note.md</a>. Files stay in this browser.
             </p>
           </div>
           <Card icon="agent" title="What it unlocks">
-            <ul className="space-y-1 text-[13px] text-ink-2">
+            <ul className="space-y-1 text-body text-ink-2">
               <li>Every compliance desk sweeps each household.</li>
               <li>Research briefs each one before you speak.</li>
               <li>Discovery reads every message for what the client said.</li>
               <li>Options and the consequence agent work on the real figures.</li>
             </ul>
-            <p className="mt-2 text-[12px] text-ink-3">{book.clients.length} households in the book now, {book.clients.reduce((n, c) => n + (c.messages?.length ?? 0), 0)} captured messages, {book.documents.length} documents.</p>
+            <p className="mt-2 text-meta text-ink-3">{book.clients.length} households in the book now, {book.clients.reduce((n, c) => n + (c.messages?.length ?? 0), 0)} captured messages, {book.documents.length} documents.</p>
           </Card>
         </div>
         <More summary="The columns a household file may carry">
@@ -175,7 +175,7 @@ export function SourcesView() {
         {dataset.batches.length > 0 && (
           <div className="mt-4">
             <TableScroll>
-              <table className="w-full min-w-[40rem] border-collapse text-[13px]">
+              <table className="w-full min-w-[40rem] border-collapse text-body">
                 <thead><tr><th className={th}>File</th><th className={th}>Kind</th><th className={th}>Rows</th><th className={th}>Accepted</th><th className={th}>Rejected</th><th className={th}>Read in</th></tr></thead>
                 <tbody>
                   {dataset.batches.map((b: ImportBatch) => (
@@ -195,7 +195,7 @@ export function SourcesView() {
               <div className="mt-3 space-y-2">
                 {dataset.batches.filter((b) => b.errors.length || b.warnings.length).map((b) => (
                   <Card key={b.id} tone={b.errors.length ? "critical" : "caution"} title={`${b.fileName}: ${b.errors.length} rejected, ${b.warnings.length} warnings`}>
-                    <ul className="max-h-48 overflow-y-auto text-[12px] text-ink-2">
+                    <ul className="max-h-48 overflow-y-auto text-meta text-ink-2">
                       {b.errors.slice(0, 30).map((e, i) => <li key={`e${i}`}>{e}</li>)}
                       {b.warnings.slice(0, 30).map((w, i) => <li key={`w${i}`} className="text-ink-3">{w}</li>)}
                     </ul>
@@ -203,7 +203,7 @@ export function SourcesView() {
                 ))}
               </div>
             )}
-            <p className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-meta text-ink-3">
               <button type="button" className={btn} onClick={clearDataset}>Disconnect everything</button>
               Session only. Reload and the connected files are gone; the shipped book is unchanged.
             </p>
@@ -212,7 +212,7 @@ export function SourcesView() {
       </Section>
 
       <Section title="2. Your tools and channels">
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">
           Relay reads the CRM, custodian, planning and reporting tools you already run, and the channels you talk to clients on. It replaces none of them. {gaps.length > 0 && <>Gaps first: {gaps.length} {gaps.length === 1 ? "channel is" : "channels are"} in use and not fully on the record.</>}
         </p>
         {gaps.length > 0 && (
@@ -224,8 +224,8 @@ export function SourcesView() {
           {shown.map((ch) => (
             <div key={ch.channel} id={`channel-${ch.channel}`} className="scroll-mt-20">
               <Card icon={CHANNEL_ICON[ch.channel]} title={CHANNEL_LABEL[ch.channel]} sub={ch.finding} tone={ch.status === "gap" || ch.status === "partial" ? "critical" : "plain"} right={<Pill tone={STATUS[ch.status].tone}>{STATUS[ch.status].label}</Pill>}>
-                {ch.advisorNote && <p className="mb-2 border-l-2 border-line-strong pl-3 text-[13px] italic text-ink-2">{ch.advisorNote}</p>}
-                {ch.exposure.length > 0 && <p className="mb-2 text-[12px] text-ink-2"><span className="font-medium text-ink">Exposure:</span> {ch.exposure.join("; ")}</p>}
+                {ch.advisorNote && <p className="mb-2 border-l-2 border-line-strong pl-3 text-body italic text-ink-2">{ch.advisorNote}</p>}
+                {ch.exposure.length > 0 && <p className="mb-2 text-meta text-ink-2"><span className="font-medium text-ink">Exposure:</span> {ch.exposure.join("; ")}</p>}
                 <div>
                   {[...ch.connected, ...ch.degraded, ...ch.available].map((c) => <ConnectorRow key={c.id} c={c} advisorId={advisorId} />)}
                 </div>
@@ -233,7 +233,7 @@ export function SourcesView() {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-[12px]">
+        <p className="mt-3 text-meta">
           <button type="button" className={btn} onClick={() => setShowAll((v) => !v)}>{showAll ? "Show only the channels you use" : `Show every channel and connector (${CATALOG.length} in the catalogue)`}</button>
         </p>
       </Section>
@@ -241,12 +241,12 @@ export function SourcesView() {
       <Section title="3. Documents and policies">
         <div className="grid gap-3 md:grid-cols-2">
           <Card icon="library" title="Research and product documents" sub="What the agents may quote to a client.">
-            <p className="text-[13px] text-ink-2">Drop .md or .txt documents above and they join the corpus retrieval reads. {book.documents.length} documents now; a document past its review date is quoted with a warning, and a withdrawn one never.</p>
-            <p className="mt-2 text-[12px]"><Link href="/documents" className="underline">The library</Link></p>
+            <p className="text-body text-ink-2">Drop .md or .txt documents above and they join the corpus retrieval reads. {book.documents.length} documents now; a document past its review date is quoted with a warning, and a withdrawn one never.</p>
+            <p className="mt-2 text-meta"><Link href="/documents" className="underline">The library</Link></p>
           </Card>
           <Card icon="rules" title="Written supervisory procedures and policies" sub="What the desks enforce.">
-            <p className="text-[13px] text-ink-2">A policy document becomes rules on the desk that applies it. Open a desk, read the policy in, and add each candidate rule with a reason; it is in force on the next sweep.</p>
-            <p className="mt-2 text-[12px]"><Link href={`/agents/${AGENTS[0].id}`} className="underline">Read a policy into a desk</Link></p>
+            <p className="text-body text-ink-2">A policy document becomes rules on the desk that applies it. Open a desk, read the policy in, and add each candidate rule with a reason; it is in force on the next sweep.</p>
+            <p className="mt-2 text-meta"><Link href={`/agents/${AGENTS[0].id}`} className="underline">Read a policy into a desk</Link></p>
           </Card>
         </div>
       </Section>
@@ -260,12 +260,12 @@ export function SourcesView() {
       {imported.length > 0 && (
         <More summary={`The ${imported.length} households connected this session`}>
           <TableScroll>
-            <table className="w-full min-w-[44rem] border-collapse text-[13px]">
+            <table className="w-full min-w-[44rem] border-collapse text-body">
               <thead><tr><th className={th}>Household</th><th className={th}>Advisor</th><th className={th}>Assets</th><th className={th}>Cash cover</th><th className={th}>Flagged on import</th><th className={th}>Messages</th></tr></thead>
               <tbody>
                 {imported.slice(0, 200).map((c) => (
                   <tr key={c.id} id={c.id} className="scroll-mt-20 target:bg-selected">
-                    <td className={td}>{c.name}<span className="block text-[11px] text-ink-3">{c.id}</span></td>
+                    <td className={td}>{c.name}<span className="block text-caption text-ink-3">{c.id}</span></td>
                     <td className={`${td} text-ink-2`}>{ADVISORS_DATA.find((a) => a.id === c.advisorId)?.name ?? c.advisorId}</td>
                     <td className={`${td} tabular-nums`}>{usd(c.totalUsd)}</td>
                     <td className={`${td} tabular-nums`}>{c.goals[0]?.funded} of {c.goals[0]?.target} months</td>
@@ -276,7 +276,7 @@ export function SourcesView() {
               </tbody>
             </table>
           </TableScroll>
-          {imported.length > 200 && <p className="mt-2 text-[12px] text-ink-3">First 200 of {imported.length} shown. All of them are in the book.</p>}
+          {imported.length > 200 && <p className="mt-2 text-meta text-ink-3">First 200 of {imported.length} shown. All of them are in the book.</p>}
         </More>
       )}
     </>

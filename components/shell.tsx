@@ -29,20 +29,41 @@ import { ADVISORS_DATA } from "@/lib/data";
  * that only ever appears when something is wrong teaches people to ignore the
  * space it occupies.
  */
-/** Who the session is signed in as. Every screen that says "you" follows it. */
+/** Who the session is signed in as: one of the prototype's three advisors. Every screen that says "you" follows it. */
 function AdvisorSwitch() {
   const { advisorId, setAdvisorId } = useRelay();
   return (
-    <label className="flex items-center">
-      <span className="sr-only">Signed in as</span>
+    <label className="flex items-center gap-1.5">
+      <span className="hidden text-meta text-ink-3 2xl:inline">Advisor</span>
+      <span className="sr-only">Signed in as advisor</span>
       <select
         value={advisorId}
         onChange={(e) => setAdvisorId(e.target.value)}
-        className="h-8 max-w-[9rem] rounded border border-line bg-surface px-1.5 text-[12px] text-ink sm:max-w-none"
+        className="h-8 max-w-[10.5rem] rounded border border-line bg-surface px-1.5 text-meta text-ink sm:max-w-none"
       >
         {ADVISORS_DATA.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
       </select>
     </label>
+  );
+}
+
+/**
+ * Whose day this is, on every page: the advisor persona the session is signed in as, in one line,
+ * so nobody has to guess who Margaret or Daniel is. The persona is synthetic; Who's who has the detail.
+ */
+function Persona() {
+  const v = useView();
+  const a = v.advisor;
+  return (
+    <p className="mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 rounded border border-line bg-subtle px-3 py-2 text-meta text-ink-2" aria-label="Advisor persona">
+      <Icon name="people" size={16} className="shrink-0 text-advisor" />
+      <span><span className="font-medium text-ink">{a.name}</span>, advisor (synthetic persona)</span>
+      <span aria-hidden="true" className="text-ink-3">·</span>
+      <span>{a.role}</span>
+      <span aria-hidden="true" className="text-ink-3">·</span>
+      <span>{a.book}; {v.clients.length} of those households are in this prototype</span>
+      <Link href="/personas" className="underline decoration-line-strong">Who&apos;s who</Link>
+    </p>
   );
 }
 
@@ -55,11 +76,11 @@ function AgentStatus() {
   return (
     <Link
       href="/agents"
-      className={`flex items-center gap-1.5 rounded border px-2 py-1 text-[12px] ${blocking ? "border-critical/40 bg-critical-soft text-critical" : open.length ? "border-line-strong text-ink" : "border-line text-ink-2"}`}
+      className={`flex items-center gap-1.5 whitespace-nowrap rounded border px-2 py-1 text-meta ${blocking ? "border-critical/40 bg-critical-soft text-critical" : open.length ? "border-line-strong text-ink" : "border-line text-ink-2"}`}
     >
       <Icon name="agent" size={16} />
-      <span className="hidden sm:inline">{open.length === 0 ? "Agents clear" : `${open.length} finding${open.length === 1 ? "" : "s"} · ${prepared} prepared`}</span>
-      <span className="sm:hidden">{open.length === 0 ? "Clear" : open.length}</span>
+      <span className="hidden xl:inline">{open.length === 0 ? "Agents clear" : `${open.length} finding${open.length === 1 ? "" : "s"} · ${prepared} prepared`}</span>
+      <span className="xl:hidden">{open.length === 0 ? "Clear" : `${open.length} findings`}</span>
     </Link>
   );
 }
@@ -72,6 +93,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const drawer = useRef<HTMLDivElement>(null);
 
   useEffect(() => setOpen(false), [path]);
+
   useEffect(() => {
     if (!open) return;
     drawer.current?.focus();
@@ -116,32 +138,32 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className="sr-only">{open ? "Close sections" : "Open sections"}</span>
           <Icon name={open ? "close" : "menu"} size={20} />
         </button>
-        <span className="text-[17px] font-semibold tracking-tight">Relay</span>
-        <span className="hidden text-xs text-ink-3 xl:inline" role="note">
+        <span className="text-brand font-semibold tracking-tight">Relay</span>
+        <span className="hidden whitespace-nowrap text-meta leading-4 text-ink-3 2xl:inline" role="note">
           Advice to action, for advisors
         </span>
 
-        <Legend className="ml-4 hidden lg:flex" />
+        <Legend className="ml-2 hidden shrink-0 lg:flex" />
         <div className="ml-auto flex items-center gap-2">
           {/* Ask reads as a place to type, not a small button: it is the fastest path to anything. */}
           <button
             type="button"
             onClick={() => setAsk(true)}
             aria-label="Ask Relay a question"
-            className="hidden items-center gap-2 rounded border border-agent/40 bg-agent-soft px-3 py-1.5 text-[13px] text-agent hover:bg-selected sm:flex md:w-72 lg:w-80"
+            className="hidden items-center gap-2 rounded border border-agent/40 bg-agent-soft px-3 py-1.5 text-body text-agent hover:bg-selected sm:flex xl:w-60 2xl:w-80"
           >
             <Icon name="agent" size={16} />
-            <span className="md:hidden">Ask</span>
-            <span className="hidden flex-1 text-left md:inline">Ask about a client, today or a rule</span>
-            <kbd className="hidden rounded border border-agent/40 px-1.5 text-[11px] md:inline">/</kbd>
+            <span className="xl:hidden">Ask</span>
+            <span className="hidden flex-1 truncate whitespace-nowrap text-left xl:inline">Ask about a client, today or a rule</span>
+            <kbd className="hidden rounded border border-agent/40 px-1.5 text-caption xl:inline">/</kbd>
           </button>
           <button
             type="button"
             onClick={() => setPalette(true)}
-            className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-[12px] text-ink-2 hover:text-ink"
+            className="flex items-center gap-1.5 rounded border border-line px-2 py-1 text-meta text-ink-2 hover:text-ink"
           >
             <Icon name="search" size={16} />
-            <span className="hidden sm:inline">Jump to</span>
+            <span className="hidden whitespace-nowrap xl:inline">Jump to</span>
           </button>
           <AdvisorSwitch />
           <AgentStatus />
@@ -153,7 +175,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={() => setAsk(true)}
-          className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-agent/40 bg-agent-soft px-4 py-2.5 text-[14px] font-medium text-agent shadow-lg hover:bg-selected sm:hidden"
+          className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-agent/40 bg-agent-soft px-4 py-2.5 text-lead font-medium text-agent shadow-lg hover:bg-selected sm:hidden"
         >
           <Icon name="agent" size={16} />
           Ask Relay
@@ -181,7 +203,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <div className="flex min-h-[calc(100vh-3.5rem)]">
         <Nav />
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 pb-20 pt-6 tabular-nums focus:outline-none sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-          <div className="mx-auto max-w-[1200px]">{children}</div>
+          <div className="mx-auto max-w-[1200px]"><Persona />{children}</div>
         </main>
       </div>
     </>

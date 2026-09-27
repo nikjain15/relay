@@ -30,7 +30,7 @@ function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?:
   const [comment, setComment] = useState("");
   return (
     <div className="mt-3 space-y-2">
-      <label className="block text-[12px] text-ink-2">
+      <label className="block text-meta text-ink-2">
         Comment
         <input className={`${input} mt-1`} value={comment} onChange={(e) => setComment(e.target.value)} />
       </label>
@@ -45,7 +45,7 @@ function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?:
           Block
         </button>
       </div>
-      <p className="text-[11px] text-ink-3">Recorded for this session. In production this is an immutable supervisory record (PRD FR-14).</p>
+      <p className="text-caption text-ink-3">Recorded for this session. In production this is an immutable supervisory record (PRD FR-14).</p>
       <span className="sr-only">{id}</span>
     </div>
   );
@@ -129,7 +129,7 @@ export function SupervisionView() {
           </More>
           {open.length === 0 ? (
             <Card tone="positive" title="Nothing open">
-              <p className="text-[13px] text-ink-2">
+              <p className="text-body text-ink-2">
                 {found.accountsScanned} accounts and every attested channel swept against {policy.rules.filter((r) => r.enabled).length} rules in
                 force. Everything raised has been dispositioned.
               </p>
@@ -145,8 +145,8 @@ export function SupervisionView() {
                   sub={`${c.subjectLabel} · ${c.agentName} · ${c.citation}`}
                   right={<Pill tone={c.reason === "fired" && c.severity === "block" ? "fail" : "accent"}>{REASON_LABEL[c.reason]}</Pill>}
                 >
-                  <p className="text-[13px] text-ink">{c.finding}</p>
-                  <p className="mt-2 text-[13px] text-ink-2">
+                  <p className="text-body text-ink">{c.finding}</p>
+                  <p className="mt-2 text-body text-ink-2">
                     <span className="font-medium text-ink">Suggested:</span> {c.remediation}
                   </p>
                   {Array.isArray(c.evidence.concentrationHistory) && (
@@ -163,7 +163,7 @@ export function SupervisionView() {
                     </div>
                   )}
                   {Object.keys(c.evidence).length > 0 && (
-                    <dl className="mt-3 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 border-t border-line pt-3 text-[12px]">
+                    <dl className="mt-3 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 border-t border-line pt-3 text-meta">
                       {Object.entries(c.evidence).filter(([k]) => k !== "concentrationHistory").map(([k, v]) => (
                         <div key={k} className="col-span-2 flex gap-2">
                           <dt className="text-ink-3">{k}</dt>
@@ -172,23 +172,23 @@ export function SupervisionView() {
                       ))}
                     </dl>
                   )}
-                  <p className="mt-2 text-[12px] text-ink-3">Confidence {Math.round(c.confidence * 100)} percent.</p>
+                  <p className="mt-2 text-meta text-ink-3">Confidence {Math.round(c.confidence * 100)} percent.</p>
                   {(() => {
                     const acts = prepareActions(c, policy.rules.find((r) => r.id === c.ruleId));
                     if (!acts.length) return null;
                     return (
                       <div className="mt-3 border-t border-line pt-3">
-                        <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-ink"><Icon name="agent" size={16} className="text-ink-3" />Prepared by the agent</p>
+                        <p className="mb-1.5 flex items-center gap-1.5 text-meta font-medium text-ink"><Icon name="agent" size={16} className="text-ink-3" />Prepared by the agent</p>
                         <ul className="space-y-1.5">
                           {acts.map((a) => {
                             const d = actionDecisions[a.id];
                             return (
-                              <li key={a.id} className={`rounded border px-2.5 py-2 text-[12px] ${d?.decision === "accepted" ? "border-positive/40 bg-positive-soft" : d?.decision === "declined" ? "border-line text-ink-3" : "border-line bg-surface"}`}>
+                              <li key={a.id} className={`rounded border px-2.5 py-2 text-meta ${d?.decision === "accepted" ? "border-positive/40 bg-positive-soft" : d?.decision === "declined" ? "border-line text-ink-3" : "border-line bg-surface"}`}>
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                   <span className="min-w-0 flex-1">
                                     <Pill tone="neutral">{KIND[a.kind].label}</Pill> <span className="text-ink">{a.title}</span>
                                     <span className="mt-0.5 block text-ink-2">{a.detail}</span>
-                                    <span className="mt-0.5 block text-[11px] text-ink-3">Acts: {a.actor}. Nothing is sent or written by accepting.</span>
+                                    <span className="mt-0.5 block text-caption text-ink-3">Acts: {a.actor}. Nothing is sent or written by accepting.</span>
                                   </span>
                                   {d ? (
                                     <Pill tone={d.decision === "accepted" ? "pass" : "neutral"}>{d.decision}</Pill>
@@ -214,9 +214,9 @@ export function SupervisionView() {
 
           {found.cases.length > open.length && (
             <div className="mt-6">
-              <h3 className="mb-2 text-[14px] font-semibold">Dispositioned this session</h3>
+              <h3 className="mb-2 text-lead font-semibold">Dispositioned this session</h3>
               <TableScroll>
-                <table className="w-full min-w-[34rem] border-collapse text-[13px]">
+                <table className="w-full min-w-[34rem] border-collapse text-body">
                   <thead>
                     <tr>
                       <th className={th}>Finding</th>
@@ -250,7 +250,7 @@ export function SupervisionView() {
         <Section title="Drafts awaiting release">
           {queue.length === 0 ? (
             <Card title="No drafts submitted">
-              <p className="text-[13px] text-ink-2">
+              <p className="text-body text-ink-2">
                 Compose one on{" "}
                 <Link className="underline" href="/communications">
                   Note and audience
@@ -280,9 +280,9 @@ export function SupervisionView() {
                     right={<Pill tone={allPass ? "pass" : "fail"}>{q.regime}</Pill>}
                   >
                     <div className="grid gap-4 lg:grid-cols-2">
-                      <p className="whitespace-pre-wrap rounded border border-line bg-subtle p-3 text-[13px]">{q.draft}</p>
+                      <p className="whitespace-pre-wrap rounded border border-line bg-subtle p-3 text-body">{q.draft}</p>
                       <div>
-                        <ul className="space-y-1.5 text-[13px]">
+                        <ul className="space-y-1.5 text-body">
                           {checks.map((c) => (
                             <li key={c.id} className="flex flex-wrap items-baseline gap-2">
                               <Pill tone={c.pass ? "pass" : "fail"}>{c.pass ? "Pass" : "Fail"}</Pill>
@@ -291,8 +291,8 @@ export function SupervisionView() {
                             </li>
                           ))}
                         </ul>
-                        {q.settingsVersion && <p className="mt-2 text-[12px] text-ink-3">Settings in force: {q.settingsVersion}</p>}
-                        <p className="mt-2 text-[12px]">
+                        {q.settingsVersion && <p className="mt-2 text-meta text-ink-3">Settings in force: {q.settingsVersion}</p>}
+                        <p className="mt-2 text-meta">
                           <Link className="underline" href={`/household/${h.id}/proposal?opp=${o.id}`}>
                             Proposal and rationale record
                           </Link>
@@ -302,13 +302,13 @@ export function SupervisionView() {
                           </Link>
                         </p>
                         {q.disposition ? (
-                          <p className="mt-3 text-[13px]" role="status">
+                          <p className="mt-3 text-body" role="status">
                             Dispositioned: <strong>{q.disposition}</strong>
                             {q.comment ? `, "${q.comment}"` : ""}.
                           </p>
                         ) : (
                           <div className="mt-3 space-y-2">
-                            <label className="block text-[12px] text-ink-2">
+                            <label className="block text-meta text-ink-2">
                               Comment
                               <input
                                 className={`${input} mt-1`}
@@ -345,7 +345,7 @@ export function SupervisionView() {
         </Section>
       )}
 
-      <p className="mt-8 text-[13px] text-ink-2">
+      <p className="mt-8 text-body text-ink-2">
         The rules behind these findings are editable on{" "}
         <Link href="/compliance" className="underline">
           Rules and agents

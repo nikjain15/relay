@@ -4,6 +4,7 @@
 // without leaving the screen it belongs to. Escape or the backdrop closes it.
 import { useEffect, useRef, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icons";
+import { iconBtn } from "@/components/ui";
 
 export function SidePanel({ open, title, sub, icon = "agent", onClose, children, footer }: {
   open: boolean;
@@ -30,10 +31,10 @@ export function SidePanel({ open, title, sub, icon = "agent", onClose, children,
         <header className="flex items-start gap-3 border-b border-line px-5 py-4">
           <Icon name={icon} size={20} className="mt-0.5 text-agent" />
           <div className="min-w-0 flex-1">
-            <h2 className="text-[16px] font-semibold leading-snug text-ink">{title}</h2>
-            {sub && <p className="mt-1 text-[12px] text-ink-3">{sub}</p>}
+            <h2 className="text-heading font-semibold leading-snug text-ink">{title}</h2>
+            {sub && <p className="mt-1 text-meta text-ink-3">{sub}</p>}
           </div>
-          <button type="button" onClick={onClose} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line text-ink" aria-label="Close"><Icon name="close" size={16} /></button>
+          <button type="button" onClick={onClose} className={iconBtn} aria-label="Close"><Icon name="close" size={16} /></button>
         </header>
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer && <footer className="border-t border-line px-5 py-3">{footer}</footer>}
@@ -42,16 +43,5 @@ export function SidePanel({ open, title, sub, icon = "agent", onClose, children,
   );
 }
 
-/** A labelled field row inside a panel. */
-export function Field({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
-  return (
-    <label className="mb-4 block">
-      <span className="mb-1 block text-[12px] font-medium text-ink">{label}</span>
-      {children}
-      {hint && <span className="mt-1 block text-[11px] text-ink-3">{hint}</span>}
-    </label>
-  );
-}
-
-export const input = "h-9 w-full rounded border border-line-strong bg-surface px-2.5 text-[13px] text-ink";
-export const textarea = "w-full rounded border border-line-strong bg-surface px-2.5 py-2 text-[13px] text-ink";
+// Fields in a panel use the product's one form system.
+export { Field, input, textarea } from "@/components/ui";

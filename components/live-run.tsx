@@ -129,7 +129,7 @@ export function LiveRun({ clients, documents, opportunities, onDone }: { clients
           {running ? "Running" : summary ? "Run every agent again" : "Run every agent now"}
         </button>
         {running && <button type="button" className={btn} onClick={() => { cancelled.current = true; }}>Stop</button>}
-        <span className="text-[12px] text-ink-3">{clients.length} households, {clients.reduce((n, c) => n + (c.messages?.length ?? 0), 0)} messages, {opportunities.length} opportunities, {documents.length} documents in the book.</span>
+        <span className="text-meta text-ink-3">{clients.length} households, {clients.reduce((n, c) => n + (c.messages?.length ?? 0), 0)} messages, {opportunities.length} opportunities, {documents.length} documents in the book.</span>
       </div>
       <div className="mb-4 h-1.5 w-full rounded bg-subtle" aria-hidden="true">
         <div className="h-1.5 rounded bg-ink transition-[width] duration-150" style={{ width: `${Math.round(progress * 100)}%` }} />
@@ -153,7 +153,7 @@ export function LiveRun({ clients, documents, opportunities, onDone }: { clients
                 { label: "Refused, no citation", value: summary.refused, tone: "critical" },
               ]}
             />
-            <p className="mt-3 text-[13px]">
+            <p className="mt-3 text-body">
               <Link href="/supervision" className="underline">Findings and prepared actions</Link> · <Link href="/research" className="underline">Briefings</Link> · <Link href="/discovery" className="underline">Discoveries</Link> · <Link href="/triage" className="underline">Today&apos;s list</Link> · <Link href="/agents" className="underline">Agents</Link>
             </p>
           </Card>

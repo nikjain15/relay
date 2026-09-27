@@ -24,10 +24,10 @@ export function AboutNav() {
       {ABOUT.map((p) => {
         const on = path === p.href;
         return (
-          <Link key={p.href} href={p.href} aria-current={on ? "page" : undefined} className={`flex items-center gap-2 rounded border px-3 py-1.5 text-[13px] ${on ? "border-ink bg-selected text-ink" : "border-line text-ink-2 hover:bg-subtle hover:text-ink"}`}>
+          <Link key={p.href} href={p.href} aria-current={on ? "page" : undefined} className={`flex items-center gap-2 rounded border px-3 py-1.5 text-body ${on ? "border-ink bg-selected text-ink" : "border-line text-ink-2 hover:bg-subtle hover:text-ink"}`}>
             <Icon name={p.icon} size={16} />
             <span>{p.label}</span>
-            <span className="hidden text-[11px] text-ink-3 sm:inline">{p.blurb}</span>
+            <span className="hidden text-caption text-ink-3 sm:inline">{p.blurb}</span>
           </Link>
         );
       })}
@@ -41,8 +41,8 @@ export function Takeaways({ items }: { items: ReactNode[] }) {
     <ol className="mb-10 grid gap-3 sm:grid-cols-3" aria-label="In three points">
       {items.map((t, i) => (
         <li key={i} className="rounded-lg border border-line bg-subtle p-4">
-          <span className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[13px] font-semibold text-surface" aria-hidden="true">{i + 1}</span>
-          <p className="text-[14px] leading-relaxed text-ink">{t}</p>
+          <span className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-ink text-body font-semibold text-surface" aria-hidden="true">{i + 1}</span>
+          <p className="text-lead leading-relaxed text-ink">{t}</p>
         </li>
       ))}
     </ol>
@@ -56,10 +56,10 @@ export function Step({ n, icon, title, children, href, who }: { n: number; icon:
     <li className="flex gap-4">
       <span className={`mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone}`} aria-hidden="true"><Icon name={icon} size={20} /></span>
       <div className="min-w-0 flex-1 border-b border-line pb-4">
-        <p className="text-[11px] text-ink-3">Step {n}</p>
-        <p className="text-[15px] font-semibold text-ink">{title}</p>
-        <p className="mt-1 text-[13px] leading-relaxed text-ink-2">{children}</p>
-        {href && <p className="mt-1.5 text-[12px]"><Link href={href} className="underline">See it</Link></p>}
+        <p className="text-caption text-ink-3">Step {n}</p>
+        <p className="text-brief font-semibold text-ink">{title}</p>
+        <p className="mt-1 text-body leading-relaxed text-ink-2">{children}</p>
+        {href && <p className="mt-1.5 text-meta"><Link href={href} className="underline">See it</Link></p>}
       </div>
     </li>
   );
@@ -70,7 +70,7 @@ export function NextPage() {
   const i = ABOUT.findIndex((p) => p.href === path);
   const next = ABOUT[(i + 1) % ABOUT.length];
   return (
-    <p className="mt-12 border-t border-line pt-6 text-[14px]">
+    <p className="mt-12 border-t border-line pt-6 text-lead">
       <span className="text-ink-3">Next: </span>
       <Link href={next.href} className="underline">{next.label}</Link>
       <span className="text-ink-3">, {next.blurb.toLowerCase()}.</span>
