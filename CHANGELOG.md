@@ -3,6 +3,13 @@
 Notable changes, by pull request. Decisions behind each are numbered in the build spec.
 
 ## Unreleased
+- Every compliance rule carries its status in law, with dates, and links to its primary source; validate() fails on a rule without them. FINRA Rule 3290, approved September 15, 2026 to replace Rules 3270 and 3280, is shown as not yet in force.
+- Desk pages show each rule as a card: the trigger in plain words, settings and bounds, what it prepares, the source it needs, status in law, source links and what it raised today. Rule conditions read in words, not field names.
+- Every agent says how it decides and what it is built on; the agents that are not desks name the regulation behind them, or say they are arithmetic.
+- Creating an agent previews what it would flag on the advisor's book as the setting changes, with a count on every quick pick, and lists what it found once created. Findings name the household. Template defaults now find something on the default book.
+- Households: a card per household with what needs the advisor first and the one next step; search, filters and sorts.
+- Sources: the firm's workstation first among CRMs, then the market leaders in each kind; search and filters replace "show every channel".
+- One search, filter and sort control on Households, Sources, Agents and Supervision.
 - The personas are described as cited composites without naming a firm; source links are unchanged.
 - The stress run renders every page inside the advisor view again, and checks the empty state by signing in as an advisor with no households.
 

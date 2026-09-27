@@ -7,6 +7,8 @@
 // retrieval, the rule-change proposer) sit on the same screen because they are
 // the same kind of thing: work done before anyone asked, handed to a person.
 import { useMemo, useState } from "react";
+import type React from "react";
+import { ListControls, useList } from "@/components/list-controls";
 import type { AgentDefinition } from "@/lib/compliance/agents";
 import type { RosterAgent } from "@/lib/agents/roster";
 import { ON_REQUEST } from "@/lib/agents/roster";
@@ -73,6 +75,67 @@ export function AgentsView() {
     ranking: { state: "clear", line: `${v.list.length} on today's list, by ${v.profile.provenance["triage.classWeights"]?.includes("tuned") ? "your tuned" : "the firm's"} weights.` },
   };
 
+  // Every agent on one list, so one search finds a desk by the regulation it
+  // applies and an advisor's own agent by the word it watches for.
+  type Entry = { id: string; group: "desks" | "yours" | "morning" | "asked"; name: string; text: string; needs: boolean; off: boolean; card: React.ReactNode };
+  const entries: Entry[] = [
+    ...statuses.filter((s) => !s.agent.id.startsWith("custom-")).map((s): Entry => {
+      const exp = explainAgent(s.agent, policy.rules);
+      return {
+        id: s.agent.id, group: "desks", name: s.agent.name, needs: s.state !== "clear", off: !s.agent.enabled,
+        text: `${s.agent.name} ${s.agent.desk} ${s.agent.mission} ${s.agent.authorities.join(" ")} ${exp.checks.join(" ")} ${exp.grounded.map((g) => g.label).join(" ")}`,
+        card: <AgentCard name={s.agent.name} icon={s.icon} kind="Compliance desk" exp={exp} state={s.state}
+          today={<>Last run {s.lastRunAt}. Read {s.scanned}. Raised {s.open}{s.blocking ? `, ${s.blocking} blocking` : ""}{s.needsConfirming ? `, ${s.needsConfirming} to confirm` : ""}. Prepared {s.actionsPrepared} action{s.actionsPrepared === 1 ? "" : "s"}.</>}
+          actions={<><Link href={`/agents/${s.agent.id}`} className={btn}>Open: rules and findings</Link><button type="button" className={btn} onClick={() => setDesk(s.agent)}>Edit</button></>} />,
+      };
+    }),
+    ...mineCustom.map((c): Entry => {
+      const st = statuses.find((x) => x.agent.id === c.agent.id);
+      const hits = open.filter((k) => k.agentId === c.agent.id);
+      return {
+        id: c.agent.id, group: "yours", name: c.agent.name, needs: hits.length > 0, off: !c.agent.enabled,
+        text: `${c.agent.name} ${c.agent.mission} ${c.rule.title} ${String(c.rule.params[0]?.value ?? "")}`,
+        card: <AgentCard name={c.agent.name} icon="agent" kind="Your agent" exp={explainAgent(c.agent, policy.rules)} state={c.agent.enabled ? (st?.state ?? "clear") : "off"}
+          today={c.agent.enabled ? <>{hits.length ? <>Raised {hits.length} on your book: {hits.slice(0, 4).map((k) => k.subjectLabel.split(":")[0]).join(", ")}{hits.length > 4 ? ` and ${hits.length - 4} more` : ""}.</> : "Ran over your book; nothing fired."} Prepared {st?.actionsPrepared ?? 0} action{st?.actionsPrepared === 1 ? "" : "s"}.</> : "Switched off."}
+          actions={<>{hits.length > 0 && <Link href="/supervision" className={btn}>See its findings</Link>}<button type="button" className={btn} onClick={() => setCustom(c.agent.id)}>Edit</button></>} />,
+      };
+    }),
+    ...MORNING.map((a): Entry => ({
+      id: a.id, group: "morning", name: a.name, needs: !off.includes(a.id) && rosterToday[a.id]?.state === "attention", off: off.includes(a.id),
+      text: `${a.name} ${a.role} ${a.reads} ${a.checks.join(" ")} ${a.basis.map((b) => b.label).join(" ")}`,
+      card: <AgentCard name={a.name} icon={a.icon as IconName} kind="Runs on your book" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : rosterToday[a.id]?.state ?? "clear"} today={off.includes(a.id) ? "Switched off by you." : rosterToday[a.id]?.line ?? "Ran."}
+        actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />,
+    })),
+    ...ON_REQUEST.map((a): Entry => ({
+      id: a.id, group: "asked", name: a.name, needs: false, off: off.includes(a.id),
+      text: `${a.name} ${a.role} ${a.reads} ${a.checks.join(" ")} ${a.basis.map((b) => b.label).join(" ")}`,
+      card: <AgentCard name={a.name} icon={a.icon as IconName} kind="Runs when you ask" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : "clear"} today={off.includes(a.id) ? "Switched off by you." : "Ready."}
+        actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />,
+    })),
+  ];
+  const GROUPS = [
+    { id: "desks", title: "Compliance desks" },
+    { id: "yours", title: "Your agents" },
+    { id: "morning", title: "Every morning" },
+    { id: "asked", title: "When you ask" },
+  ] as const;
+  const list = useList<Entry>(entries, {
+    text: (e) => e.text,
+    filters: [
+      { id: "needs", label: "Needs you", test: (e) => e.needs },
+      { id: "desks", label: "Compliance desks", test: (e) => e.group === "desks" },
+      { id: "yours", label: "Your agents", test: (e) => e.group === "yours" },
+      { id: "morning", label: "Every morning", test: (e) => e.group === "morning" },
+      { id: "asked", label: "When you ask", test: (e) => e.group === "asked" },
+      { id: "off", label: "Switched off", test: (e) => e.off },
+    ],
+    sorts: [
+      { id: "set", label: "As set up", compare: () => 0 },
+      { id: "needs", label: "Needs you first", compare: (a, b) => Number(b.needs) - Number(a.needs) },
+      { id: "name", label: "Name, A to Z", compare: (a, b) => a.name.localeCompare(b.name) },
+    ],
+  });
+
   return (
     <>
       <PageTitle icon="agent" title="Agents" sub={`${advisor?.name ?? advisorId}. What ran, over what, and what is left for a person. Open any desk to tune it or teach it a policy.`} />
@@ -133,68 +196,20 @@ export function AgentsView() {
         </p>
       )}
 
-      <Section title={`Compliance desks (${statuses.filter((s) => !s.agent.id.startsWith("custom-")).length})`}>
-        <CardGrid cols={2}>
-          {statuses.filter((s) => !s.agent.id.startsWith("custom-")).map((s) => (
-            <AgentCard
-              key={s.agent.id}
-              name={s.agent.name}
-              icon={s.icon}
-              kind="Compliance desk"
-              exp={explainAgent(s.agent, policy.rules)}
-              state={s.state}
-              today={<>Last run {s.lastRunAt}. Read {s.scanned}. Raised {s.open}{s.blocking ? `, ${s.blocking} blocking` : ""}{s.needsConfirming ? `, ${s.needsConfirming} to confirm` : ""}. Prepared {s.actionsPrepared} action{s.actionsPrepared === 1 ? "" : "s"}.</>}
-              actions={<>
-                <Link href={`/agents/${s.agent.id}`} className={btn}>Open</Link>
-                <button type="button" className={btn} onClick={() => setDesk(s.agent)}>Edit</button>
-              </>}
-            />
-          ))}
-        </CardGrid>
-      </Section>
-
-      <Section title={`Your agents (${mineCustom.length})`}>
-        {mineCustom.length === 0 ? (
-          <p className="text-body text-ink-2">None yet. <button type="button" className="underline" onClick={() => setCreating(true)}>Create one</button> to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or a phrase in what clients write.</p>
-        ) : (
-          <CardGrid cols={2}>
-            {mineCustom.map((c) => {
-              const st = statuses.find((x) => x.agent.id === c.agent.id);
-              return (
-                <AgentCard
-                  key={c.agent.id}
-                  name={c.agent.name}
-                  icon="agent"
-                  kind="Your agent"
-                  exp={explainAgent(c.agent, policy.rules)}
-                  state={c.agent.enabled ? (st?.state ?? "clear") : "off"}
-                  today={c.agent.enabled ? <>Raised {st?.open ?? 0} on your book. Prepared {st?.actionsPrepared ?? 0} action{st?.actionsPrepared === 1 ? "" : "s"}.</> : "Switched off."}
-                  actions={<button type="button" className={btn} onClick={() => setCustom(c.agent.id)}>Edit</button>}
-                />
-              );
-            })}
-          </CardGrid>
-        )}
-        <p className="mt-3"><button type="button" className={btnPrimary} onClick={() => setCreating(true)}>Create an agent</button></p>
-      </Section>
-
-      <Section title={`Every morning (${MORNING.length})`}>
-        <CardGrid cols={2}>
-          {MORNING.map((a) => (
-            <AgentCard key={a.id} name={a.name} icon={a.icon as IconName} kind="Runs on your book" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : rosterToday[a.id]?.state ?? "clear"} today={off.includes(a.id) ? "Switched off by you." : rosterToday[a.id]?.line ?? "Ran."}
-              actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />
-          ))}
-        </CardGrid>
-      </Section>
-
-      <Section title={`When you ask (${ON_REQUEST.length})`}>
-        <CardGrid cols={2}>
-          {ON_REQUEST.map((a) => (
-            <AgentCard key={a.id} name={a.name} icon={a.icon as IconName} kind="Runs when you ask" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : "clear"} today={off.includes(a.id) ? "Switched off by you." : "Ready."}
-              actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />
-          ))}
-        </CardGrid>
-      </Section>
+      <ListControls label="Agents" placeholder="Search agents, rules or regulations, for example 2111" noun={["agent", "agents"]} list={list} />
+      {GROUPS.map((g) => {
+        const rows = list.shown.filter((e) => e.group === g.id);
+        if (!rows.length && g.id !== "yours") return null;
+        return (
+          <Section key={g.id} title={`${g.title} (${rows.length})`}>
+            {g.id === "yours" && rows.length === 0 && (
+              <p className="mb-3 text-body text-ink-2">{mineCustom.length ? "None match the search." : "None yet. Create one to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or words in what clients write. You see what it would flag on your book before you create it."}</p>
+            )}
+            <CardGrid cols={2}>{rows.map((e) => <div key={e.id} className="contents">{e.card}</div>)}</CardGrid>
+            {g.id === "yours" && <p className="mt-3"><button type="button" className={btnPrimary} onClick={() => setCreating(true)}>Create an agent</button></p>}
+          </Section>
+        );
+      })}
 
       <DeskEditor agent={desk ? v.agents.find((a) => a.id === desk.id) ?? null : null} onClose={() => setDesk(null)} />
       <CustomEditor id={custom} onClose={() => setCustom(null)} />

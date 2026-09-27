@@ -4,6 +4,7 @@ import type { ClientFile } from "@/lib/types";
 import { POLICY, APP } from "@/lib/data/policy";
 import { validateProfiles } from "@/lib/profile/validate";
 import { evaluateAll } from "@/lib/constraints/evaluate";
+import type { RuleDefinition } from "@/lib/compliance/types";
 import { toHousehold, COMMUNICATIONS, ADVISORS_DATA, CLIENTS, DOCUMENTS, PROSPECTS, SERVICE_REQUESTS, SHELF_DATA, SNAPSHOTS, MESSAGES, HISTORY, ADVISOR_INPUTS, RULES_DATA } from "@/lib/data";
 import { CATALOG } from "@/lib/connectors/catalog";
 import { liquidityMonths } from "@/lib/household-math";
@@ -197,6 +198,12 @@ export function validate(): string[] {
   // Compliance data the deeper agents read. Every reference must resolve, and a
   // stored snapshot may never carry a "today" that could disagree with the file.
   const ruleIds = new Set(RULES_DATA.rules.map((r) => r.id));
+  // Every shipped rule says where it stands in law and links the text it is built on.
+  for (const r of RULES_DATA.rules as RuleDefinition[]) {
+    if (!r.status?.text) err(`rules.json ${r.id}: needs a status saying whether it is in force, guidance or not yet effective`);
+    if (!r.sources?.length || r.sources.some((x) => !/^https:\/\//.test(x.url))) err(`rules.json ${r.id}: needs at least one https source for the text it is built on`);
+    if (r.status && r.status.state !== "in_force" && /^In force/.test(r.status.text)) err(`rules.json ${r.id}: a ${r.status.state} rule cannot be stated as in force`);
+  }
   const connectorIds = new Set(CATALOG.map((c) => c.id));
   for (const s of SNAPSHOTS.series) {
     if (!ids.has(s.clientId)) err(`snapshots: unknown client ${s.clientId}`);

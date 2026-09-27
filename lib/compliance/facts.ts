@@ -161,6 +161,11 @@ function largestConcentration(client: ClientFile): { instrument: string; pct: nu
   return { instrument: top.name, pct: Math.round((top.valueUsd / client.totalUsd) * 1000) / 10 };
 }
 
+/** A household's display name from its id: hh-smith-jones is Smith-Jones. */
+function householdLabel(clientId?: string): string {
+  return clientId ? clientId.replace(/^hh-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join("-") : "No client named";
+}
+
 /**
  * The account itself: concentration, the specified-adult picture, whether an
  * inbound message reads as a grievance that was never logged.
@@ -186,6 +191,7 @@ export function accountFacts(input: {
   const grievance = (input.requests ?? []).find((r) => GRIEVANCE.test(r.text));
   const facts: FactBag = {
     clientId: client.id,
+    household: client.name,
     trustedContactOnFile: input.trustedContactOnFile,
     complaintLogged: input.complaintLogged,
     complaintLanguage: Boolean(grievance),
@@ -242,6 +248,7 @@ export function messageFacts(m: CapturedMessage, input: { obaOnFile: boolean; co
     messageId: m.id,
     advisorId: m.advisorId,
     clientId: m.clientId ?? "",
+    household: householdLabel(m.clientId),
     channel: m.channel,
     direction: m.direction,
     channelApproved: input.channelApproved,
@@ -270,7 +277,7 @@ export function messageFacts(m: CapturedMessage, input: { obaOnFile: boolean; co
     scope: "communication",
     subject: m.id,
     // "Smith: email sent 2 days ago", the way an advisor names a message, not "Captured email, outbound, smith, day -2".
-    subjectLabel: `${m.clientId ? m.clientId.replace(/^hh-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join("-") : "No client named"}: ${m.channel} ${m.direction === "outbound" ? "sent" : "received"} ${m.day === 0 ? "today" : m.day === -1 ? "yesterday" : `${-m.day} days ago`}`,
+    subjectLabel: `${householdLabel(m.clientId)}: ${m.channel} ${m.direction === "outbound" ? "sent" : "received"} ${m.day === 0 ? "today" : m.day === -1 ? "yesterday" : `${-m.day} days ago`}`,
     facts,
     confidence: Object.fromEntries(classified.filter((k) => facts[k] === true).map((k) => [k, INFERRED.textClassification])),
   };

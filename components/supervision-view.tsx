@@ -6,6 +6,7 @@
 // are what the advisor brought you. Agent findings are what nobody brought you:
 // the sweep runs whether or not anyone opened the account. Both end the same way,
 // at a principal, because Relay dispositions nothing it finds.
+import { ListControls, useList } from "@/components/list-controls";
 import { useState } from "react";
 import Link from "next/link";
 import { household } from "@/lib/fixtures/households";
@@ -60,6 +61,23 @@ export function SupervisionView() {
   const v = useView();
   const { policy, found } = v;
   const open = v.openCases;
+  // Worst first by default: a block that fired, then a flag, then what an agent could not decide.
+  const RANK = (c: (typeof open)[number]) => (c.reason === "fired" ? (c.severity === "block" ? 0 : c.severity === "flag" ? 1 : 2) : c.reason === "low_confidence" ? 3 : 4);
+  const findings = useList(open, {
+    text: (c) => `${c.subjectLabel} ${c.ruleTitle} ${c.agentName} ${c.citation} ${c.finding}`,
+    filters: [
+      { id: "block", label: "Blocking", test: (c) => c.reason === "fired" && c.severity === "block" },
+      { id: "fired", label: "Fired", test: (c) => c.reason === "fired" },
+      { id: "confirm", label: "To confirm", test: (c) => c.reason === "low_confidence" },
+      { id: "nosource", label: "No source", test: (c) => c.reason === "cannot_evaluate" },
+      { id: "mine", label: "From your agents", test: (c) => c.agentId.startsWith("custom-") },
+    ],
+    sorts: [
+      { id: "worst", label: "Most serious first", compare: (a, b) => RANK(a) - RANK(b) },
+      { id: "household", label: "Household, A to Z", compare: (a, b) => a.subjectLabel.localeCompare(b.subjectLabel) },
+      { id: "desk", label: "Desk", compare: (a, b) => a.agentName.localeCompare(b.agentName) },
+    ],
+  });
   const blocking = v.blocking;
   const pendingDrafts = queue.filter((q) => !q.disposition);
 
@@ -135,8 +153,10 @@ export function SupervisionView() {
               </p>
             </Card>
           ) : (
+            <>
+            <ListControls label="Findings" placeholder="Search a household, rule or desk" noun={["finding", "findings"]} list={findings} />
             <CardGrid cols={2}>
-              {open.map((c) => (
+              {findings.shown.map((c) => (
                 <Card
                   key={c.id}
                   tone={c.reason !== "fired" ? "caution" : c.severity === "block" ? "critical" : "plain"}
@@ -210,6 +230,7 @@ export function SupervisionView() {
                 </Card>
               ))}
             </CardGrid>
+            </>
           )}
 
           {found.cases.length > open.length && (

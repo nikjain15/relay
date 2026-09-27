@@ -30,7 +30,7 @@ describe("rule DSL", () => {
   it("explains itself and lists the facts it reads, for the console", () => {
     const r = rule("finra-2210-regime");
     expect([...factsUsed(r.when)]).toContain("recipientCount30d");
-    expect(explain(r.when, { threshold: 25 })).toContain("recipientCount30d is more than 25");
+    expect(explain(r.when, { threshold: 25 })).toContain("retail recipients in 30 days is more than 25");
   });
 
   it("fills placeholders in a finding", () => {
