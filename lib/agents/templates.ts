@@ -17,7 +17,7 @@ export interface AgentTemplate {
   what: string;
   scope: Scope;
   /** The one number or phrase the advisor sets. */
-  param: { key: string; label: string; type: "number" | "text"; value: number | string; min?: number; max?: number; unit?: string };
+  param: { key: string; label: string; type: "number" | "text"; value: number | string; min?: number; max?: number; unit?: string; /** Quick picks, each shown with how many households it would flag today. */ suggestions: (number | string)[] };
   defaultName: string;
   cadence: Cadence;
   rule: (id: string, value: number | string) => RuleDefinition;
@@ -33,17 +33,17 @@ export const TEMPLATES: AgentTemplate[] = [
     title: "Cash cover below a floor",
     what: "Flags any household whose cash covers fewer months of spending than you set, and drafts the review task.",
     scope: "account",
-    param: { key: "months", label: "Flag below", type: "number", value: 6, min: 1, max: 60, unit: "months of spending" },
+    param: { key: "months", label: "Flag below", type: "number", value: 12, min: 1, max: 60, unit: "months of spending", suggestions: [6, 12, 24, 36] },
     defaultName: "Cash cover watch",
     cadence: "daily",
     rule: (id, v) => ({
       ...base(id, `Cash cover under ${v} months`, "account"),
       when: { all: [{ fact: "cashCoverMonths", cmp: "lt", param: "months" }] },
       params: [{ key: "months", label: "Months of spending", type: "number", value: Number(v), min: 1, max: 60 }],
-      evidence: ["clientId", "cashCoverMonths", "cashTargetMonths"],
-      finding: "{clientId}: cash covers {cashCoverMonths} months of spending, under the {months}-month floor you set.",
+      evidence: ["household", "cashCoverMonths", "cashTargetMonths"],
+      finding: "{household}: cash covers {cashCoverMonths} months of spending, under the {months}-month floor you set.",
       remediation: "Review cash cover with the family and propose from the approved shelf.",
-      actions: [{ kind: "task", text: "Review cash cover for {clientId}: {cashCoverMonths} months against your {months}-month floor.", owner: "Advisor", dueInDays: 5 }] satisfies ActionTemplate[],
+      actions: [{ kind: "task", text: "Review cash cover for {household}: {cashCoverMonths} months against your {months}-month floor.", owner: "Advisor", dueInDays: 5 }] satisfies ActionTemplate[],
     }),
   },
   {
@@ -51,17 +51,17 @@ export const TEMPLATES: AgentTemplate[] = [
     title: "No contact for too long",
     what: "Flags any household you have not spoken to within the days you set, and drafts the call to schedule.",
     scope: "account",
-    param: { key: "days", label: "Flag after", type: "number", value: 90, min: 7, max: 365, unit: "days without contact" },
+    param: { key: "days", label: "Flag after", type: "number", value: 90, min: 7, max: 365, unit: "days without contact", suggestions: [30, 60, 90, 180] },
     defaultName: "Quiet client watch",
     cadence: "weekly",
     rule: (id, v) => ({
       ...base(id, `No contact in ${v} days`, "account"),
       when: { all: [{ fact: "daysSinceContact", cmp: "gt", param: "days" }] },
       params: [{ key: "days", label: "Days without contact", type: "number", value: Number(v), min: 7, max: 365 }],
-      evidence: ["clientId", "daysSinceContact"],
-      finding: "{clientId}: last contact {daysSinceContact} days ago, past the {days} days you set.",
+      evidence: ["household", "daysSinceContact"],
+      finding: "{household}: last contact {daysSinceContact} days ago, past the {days} days you set.",
       remediation: "Schedule a check-in.",
-      actions: [{ kind: "schedule", title: "Check-in with {clientId}: last contact {daysSinceContact} days ago", withinDays: 10 }] satisfies ActionTemplate[],
+      actions: [{ kind: "schedule", title: "Check-in with {household}: last contact {daysSinceContact} days ago", withinDays: 10 }] satisfies ActionTemplate[],
     }),
   },
   {
@@ -69,7 +69,7 @@ export const TEMPLATES: AgentTemplate[] = [
     title: "One stock above a level",
     what: "Flags any household with more of its wealth in one name than the level you set, from the custodian's positions.",
     scope: "account",
-    param: { key: "pct", label: "Flag above", type: "number", value: 30, min: 5, max: 90, unit: "percent in one name" },
+    param: { key: "pct", label: "Flag above", type: "number", value: 30, min: 5, max: 90, unit: "percent in one name", suggestions: [10, 20, 30, 50] },
     defaultName: "Concentration watch",
     cadence: "daily",
     rule: (id, v) => ({
@@ -77,10 +77,10 @@ export const TEMPLATES: AgentTemplate[] = [
       requires: ["custodian-feed"],
       when: { all: [{ fact: "concentrationPct", cmp: "gt", param: "pct" }] },
       params: [{ key: "pct", label: "Percent in one name", type: "number", value: Number(v), min: 5, max: 90 }],
-      evidence: ["clientId", "instrument", "concentrationPct"],
-      finding: "{clientId}: {concentrationPct}% in {instrument}, above the {pct}% level you set.",
+      evidence: ["household", "instrument", "concentrationPct"],
+      finding: "{household}: {concentrationPct}% in {instrument}, above the {pct}% level you set.",
       remediation: "Discuss a staged reduction from the approved shelf.",
-      actions: [{ kind: "task", text: "Prepare a concentration conversation for {clientId}: {concentrationPct}% in one name.", owner: "Advisor", dueInDays: 10 }] satisfies ActionTemplate[],
+      actions: [{ kind: "task", text: "Prepare a concentration conversation for {household}: {concentrationPct}% in one name.", owner: "Advisor", dueInDays: 10 }] satisfies ActionTemplate[],
     }),
   },
   {
@@ -88,17 +88,17 @@ export const TEMPLATES: AgentTemplate[] = [
     title: "A phrase in what clients write",
     what: "Flags any captured message from a client that contains the words you set, and holds it for your review.",
     scope: "communication",
-    param: { key: "phrase", label: "Watch for", type: "text", value: "move my money" },
+    param: { key: "phrase", label: "Watch for", type: "text", value: "pension", suggestions: ["pension", "crypto", "not what", "unhappy", "deposit"] },
     defaultName: "Phrase watch",
     cadence: "on_draft",
     rule: (id, v) => ({
       ...base(id, `Client wrote "${v}"`, "communication"),
       when: { all: [{ fact: "direction", cmp: "eq", value: "inbound" }, { fact: "excerpt", cmp: "contains", param: "phrase" }] },
       params: [{ key: "phrase", label: "Words to watch for", type: "text", value: String(v) }],
-      evidence: ["clientId", "channel", "excerpt"],
-      finding: "A client wrote \"{phrase}\" on {channel}: \"{excerpt}\"",
+      evidence: ["household", "channel", "excerpt"],
+      finding: "{household} wrote \"{phrase}\" on {channel}: \"{excerpt}\"",
       remediation: "Read the message and reply from your own tools.",
-      actions: [{ kind: "task", text: "Read and answer the {channel} message that mentions \"{phrase}\".", owner: "Advisor", dueInDays: 1 }] satisfies ActionTemplate[],
+      actions: [{ kind: "task", text: "Read and answer {household}'s {channel} message that mentions \"{phrase}\".", owner: "Advisor", dueInDays: 1 }] satisfies ActionTemplate[],
     }),
   },
 ];
