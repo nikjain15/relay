@@ -10,7 +10,7 @@
 // is shown with the attempt rather than swallowed.
 import { useState } from "react";
 import { Icon } from "@/components/icons";
-import { Field, Pill, More, btn, btnPrimary } from "@/components/ui";
+import { Field, Pill, More, Who, btn, btnPrimary } from "@/components/ui";
 import type { AgentDefinition } from "@/lib/compliance/agents";
 import { CADENCE_RANK } from "@/lib/compliance/agents";
 import type { AgentRejection } from "@/lib/compliance/store";
@@ -55,7 +55,7 @@ export function Desks({ agents, rejected, rules, connected, editing, layers, onE
               <div className="flex items-start gap-3">
                 <Icon name="shield" size={20} className="mt-0.5 text-ink-3" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] text-ink">{a.desk}</p>
+                  <p className="text-[14px] text-ink"><Who who="agent" />{a.desk}</p>
                   <p className="text-[12px] text-ink-3">{a.name} · {a.mirrors}</p>
                 </div>
                 <Pill tone={a.enabled ? "pass" : "neutral"}>{a.enabled ? "Running" : "Off"}</Pill>

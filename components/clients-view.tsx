@@ -13,7 +13,7 @@ import { useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
 import { useIngest } from "@/components/ingest";
 import { Icon } from "@/components/icons";
-import { More, PageTitle, Pill, Row, Section, TableScroll, Timeline, btn, btnPrimary, td, th } from "@/components/ui";
+import { Legend, More, PageTitle, Pill, Row, Section, TableScroll, Timeline, Who, btn, btnPrimary, td, th } from "@/components/ui";
 import { ADVISORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 import { liquidityMonths } from "@/lib/household-math";
 import { openItems } from "@/lib/onboarding/status";
@@ -60,6 +60,7 @@ function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; fi
           <details key={s.source} open={s.source === "public" || s.source === "crm"} className="rounded border border-line bg-surface">
             <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-[13px] text-ink">
               <Icon name={s.icon} size={16} className="text-ink-3" />
+              <Who who={s.source === "documents" || s.source === "public" ? "agent" : "client"} />
               <span className="flex-1">{s.title}</span>
               <span className="text-[12px] text-ink-3">{s.items.length}</span>
             </summary>
@@ -88,7 +89,7 @@ function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; fi
           )}
         </div>
         <div>
-          <p className="mb-1 text-[12px] text-ink-3">Drafted for the CRM</p>
+          <p className="mb-1 text-[12px] text-ink-3"><Who who="agent" />Drafted for the CRM, <Who who="advisor" label="you file it" /></p>
           <p className="rounded border border-line bg-surface p-3 text-[13px] text-ink-2">{d.draftNote}</p>
           <p className="mt-2 flex items-center gap-2">
             <button type="button" className={btnPrimary} disabled={filed} onClick={onFile}>{filed ? "Filed to the record" : "File as a team note"}</button>
@@ -129,6 +130,7 @@ export function ClientsView() {
   return (
     <>
       <PageTitle title="Households" sub="The book as the agents read it. Connect your own list; ask for a dossier on any household." />
+      <Legend className="-mt-5 mb-6 lg:hidden" />
 
       <section className="mb-6 rounded border border-line bg-subtle p-4" aria-label="Book agent">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-ink-2">

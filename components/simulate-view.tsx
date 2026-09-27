@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRelay } from "@/components/state";
 import { Icon } from "@/components/icons";
-import { More, PageTitle, Pill, Row, Section, StatRow, TableScroll, Timeline, btn, btnPrimary, td, th } from "@/components/ui";
+import { Legend, More, PageTitle, Pill, Row, Section, StatRow, TableScroll, Timeline, Who, btn, btnPrimary, td, th } from "@/components/ui";
 import { policyFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
 import { connectedIds } from "@/lib/compliance/sweep";
@@ -58,6 +58,7 @@ export function SimulateView() {
   return (
     <>
       <PageTitle title="Before you act" sub="Every option, carried through to the morning after. The agent runs the consequences; you choose." />
+      <Legend className="-mt-5 mb-6 lg:hidden" />
 
       <div className="mb-4 flex flex-wrap gap-1.5" role="group" aria-label="Household">
         {households.map((c) => (
@@ -138,13 +139,13 @@ export function SimulateView() {
           <Section title={`If you chose ${sel.product.name}, ${SOURCE[sel.candidate.source].toLowerCase()}`}>
             <div className="grid gap-6 lg:grid-cols-2">
               <div>
-                <p className="mb-2 text-[12px] text-ink-3">Consequences, before and after</p>
+                <p className="mb-2 text-[12px] text-ink-3"><Who who="client" />Consequences for the household, before and after</p>
                 <div className="rounded border border-line px-3 sm:px-4">
                   {sel.consequences.map((c) => (
                     <Row key={c.key} icon={c.icon} tone={c.tone} title={<span className="tabular-nums">{c.label}: {c.before} <span className="text-ink-3">to</span> <span className={TEXT[c.tone]}>{c.after}</span></span>} meta={c.why} right={c.change ? <span className={`text-[12px] tabular-nums ${TEXT[c.tone]}`}>{c.change}</span> : undefined} />
                   ))}
                 </div>
-                <p className="mb-2 mt-6 text-[12px] text-ink-3">The morning sweep, run on the copy</p>
+                <p className="mb-2 mt-6 text-[12px] text-ink-3"><Who who="agent" />The morning sweep, run on the copy</p>
                 <div className="rounded border border-line px-3 sm:px-4">
                   {sel.rules.changes.length === 0 ? (
                     <Row icon="shield" tone="positive" title={`${sel.rules.after.length} account rules, no verdict changes`} meta={`${sel.rules.after.filter((v) => v.outcome !== "clear").length} already open on this household stay as they are.`} />
@@ -161,11 +162,11 @@ export function SimulateView() {
                   {sel.followOns.length === 0 && <li>Nothing beyond the trade itself.</li>}
                   {sel.followOns.map((f, i) => <li key={i} className="flex gap-2"><Icon name="trend" size={16} className="mt-0.5 shrink-0 text-ink-3" />{f}</li>)}
                 </ul>
-                <p className="mb-2 text-[12px] text-ink-3">What a supervisor will ask</p>
+                <p className="mb-2 text-[12px] text-ink-3"><Who who="agent" />What a supervisor will ask</p>
                 <ul className="mb-6 space-y-1.5 text-[13px] text-ink-2">
                   {sel.supervisorQuestions.map((q, i) => <li key={i} className="flex gap-2"><Icon name="question" size={16} className="mt-0.5 shrink-0 text-ink-3" />{q}</li>)}
                 </ul>
-                <p className="mb-2 text-[12px] text-ink-3">Still yours</p>
+                <p className="mb-2 text-[12px] text-ink-3"><Who who="advisor" />Still yours</p>
                 <ul className="space-y-1.5 text-[13px] text-ink-2">
                   {sel.humanGate.map((q, i) => <li key={i} className="flex gap-2"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-ink-3" />{q}</li>)}
                 </ul>

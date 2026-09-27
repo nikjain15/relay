@@ -51,6 +51,21 @@ navigation), 12px (captions and badges).
 
 **Space:** a 4px grid; pages have 40px padding, sections 40px apart, cards 20px inside.
 
+### 2.1 Perspective colours
+
+Three hues say whose line a row is, and nothing else does.
+
+| Token | Hue | Means |
+|---|---|---|
+| `--agent`, `--agent-soft` | indigo | An agent read it, computed it or prepared it |
+| `--advisor`, `--advisor-soft` | blue | The advisor decides, files, signs or sends it |
+| `--client`, `--client-soft` | teal | The client said it, holds it or will receive it |
+
+Status colours (positive, caution, critical) keep their job: state, never ownership. A perspective
+colour never appears without its word (`Who`), a row carries it as a stripe plus the word, and every
+screen that uses them shows the legend once (in the header at desktop width, under the title on a phone).
+Each hue meets AA on the surface and on its soft background. Charts do not use perspective colours.
+
 ## 3. Components
 
 All in `components/ui.tsx`. Screens compose these; they do not restyle them.

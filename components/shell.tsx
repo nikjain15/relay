@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Nav, NavList } from "@/components/nav";
 import { Icon } from "@/components/icons";
+import { Legend } from "@/components/ui";
 import { Palette } from "@/components/palette";
 import { useRelay } from "@/components/state";
 import { policyFrom, agentsFrom } from "@/lib/compliance/store";
@@ -105,6 +106,7 @@ export function Shell({ children }: { children: ReactNode }) {
           Agents for advisors &middot; synthetic data &middot; no model calls &middot; nothing sent
         </span>
 
+        <Legend className="ml-4 hidden lg:flex" />
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
