@@ -25,7 +25,17 @@ import { liquidityMonths, singleNamePct, singleNameUsd } from "@/lib/household-m
 import { meetingFor, todaysMeetings } from "@/lib/meetings/prep";
 import { openItems } from "@/lib/onboarding/status";
 import { corpusStates } from "@/lib/evidence/corpus";
-import { CONNECTORS_DATA, ADVISORS_DATA } from "@/lib/data";
+import { evaluateAll } from "@/lib/constraints/evaluate";
+import { economics } from "@/lib/proposals/compare";
+import { constraintText } from "@/lib/constraint-text";
+import { score, DEFAULT_WEIGHTS } from "@/lib/ranking/rank";
+import { resolveProfile, sourceLabel, type Overlay } from "@/lib/profile";
+import { rankProspects, prospectScore, PATH_LABEL } from "@/lib/prospecting/rank";
+import { triage } from "@/lib/servicing/classify";
+import { allTasks, dueLabel } from "@/lib/followups";
+import { SHELF } from "@/lib/fixtures/shelf";
+import { POLICY } from "@/lib/data/policy";
+import { CONNECTORS_DATA, ADVISORS_DATA, PROSPECTS, SERVICE_REQUESTS } from "@/lib/data";
 import { usd, pct } from "@/lib/format";
 
 export interface Cite { label: string; record: string; href?: string }
@@ -50,6 +60,8 @@ export interface AskContext {
   policy: ResolvedPolicy;
   agents: AgentDefinition[];
   connections: ConnectionState[];
+  /** Settings the advisor changed this session (the ranking weights, the list size). */
+  overlay?: Overlay;
 }
 
 const rec = (c: ClientFile, field: string): string => `data/clients/${c.id}.json#${field}`;
@@ -71,6 +83,22 @@ export function householdIn(q: string, clients: ClientFile[]): ClientFile | unde
 }
 
 const has = (q: string, re: RegExp) => re.test(q);
+
+const CLASS_WORDS: Record<string, string> = { external_event: "outside event", life_event: "life event", household_threshold: "over a limit", plan_service_event: "plan or service event", market_view: "market view" };
+
+/** The advisor's ranking settings as resolved, so Ask explains the same order Today's list shows. */
+function rankingFor(ctx: AskContext) {
+  const prof = resolveProfile({ advisorId: ctx.advisorId }, ctx.overlay);
+  const weights = { ...DEFAULT_WEIGHTS, ...prof.values["triage.classWeights"] };
+  return { weights, cap: prof.values["triage.dailyCap"], source: sourceLabel(prof.provenance["triage.classWeights"]) };
+}
+
+/** "92 = materiality 92 x outside event 1.00": the whole score, in one line. */
+function scoreLine(o: ClientFile["opportunities"][number], weights: Record<string, number>): string {
+  const w = weights[o.triggerClass] ?? 1;
+  return `${score(o, weights)} = materiality ${o.materiality} x ${CLASS_WORDS[o.triggerClass] ?? o.triggerClass} weight ${w.toFixed(2)}`;
+}
+
 
 /** Singular and plural nouns for a prepared action, so a count reads as English. */
 const ACTION_NOUN: Record<PreparedAction["kind"], [string, string]> = {
@@ -105,6 +133,90 @@ export function answer(question: string, ctx: AskContext): Answer {
 
   const c = householdIn(q, ctx.clients);
   if (c) return aboutHousehold(q, c, ctx);
+
+  // A meeting named by its time: "prep me for my 2pm".
+  const at = q.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/);
+  if (at && has(q, /\b(prep|meeting|call|my \d|at \d|review)\b/) && !has(q, /\b\d+ (days?|months?|years?)\b/)) {
+    const m = todaysMeetings(ctx.advisorId);
+    const hour = Number(at[1]);
+    const hit = m.find((x) => Number(x.time.split(":")[0]) === hour && (!at[2] || x.time.endsWith(`:${at[2]}`)));
+    const cite = { label: "Calendar", record: `data/advisors/${ctx.advisorId}.json#walkthrough.meetings` };
+    if (!hit) return done({ text: `Nothing on your calendar at ${at[0]}. Today: ${m.map((x) => `${x.time} ${x.title}`).join("; ")}.`, cites: [cite], links: [{ label: "Meetings", href: "/meetings" }], via: "today's calendar" });
+    const k = hit.clientId ? ctx.clients.find((x) => x.id === hit.clientId) : undefined;
+    return done({ text: `${hit.time} ${hit.title}${hit.purpose ? `: ${hit.purpose}` : ""}.${k ? ` The review pack is built; ask "What changed for ${surname(k.name)} since we last spoke?" for the short version.` : ""}`, cites: [cite], links: k ? [{ label: "Review pack", href: `/meetings/${k.id}` }, { label: "Briefing", href: `/research/${k.id}` }] : [{ label: "Meetings", href: "/meetings" }], via: "today's calendar", followUps: k ? [`What changed for ${surname(k.name)} since we last spoke?`, `Any findings on ${surname(k.name)}?`] : [] });
+  }
+
+  // How the list is ordered, and why one item is first.
+  if (has(q, /\b(scor\w*|rank\w*|ranking|weights?|why is .* (first|top|at the top)|order of (the|today'?s) list)\b/)) {
+    const r = rankingFor(ctx);
+    if (has(q, /\b(how (do|can) i|change|tune|adjust|personali[sz]e|customi[sz]e)\b/)) {
+      return done({ text: `Open Tune the ranking on Today's list. Move the weight for any kind of signal between 0.3 and 1 and set how many items the list keeps (5 to 20); the list re-ranks as you move them and shows what moved. It applies to your list only, for this session, and never changes which options pass a household's rules. Now: ${Object.entries(r.weights).map(([k, v]) => `${CLASS_WORDS[k] ?? k} ${v}`).join(", ")}, ${r.cap} items (${r.source}).`, links: [{ label: "Tune the ranking", href: "/triage#tune" }], cites: [{ label: "Ranking settings", record: "data/profiles/schema.json#triage.classWeights" }], via: "the settings schema" });
+    }
+    const opps = mine.flatMap((k) => k.opportunities.map((o) => ({ o, k }))).sort((a, b) => score(b.o, r.weights) - score(a.o, r.weights) || a.o.id.localeCompare(b.o.id));
+    return done({
+      text: `Each item scores materiality (0 to 100, set by the agent that raised it) times a weight for its kind of signal; the model never ranks. Your weights (${r.source}): ${Object.entries(r.weights).map(([k, v]) => `${CLASS_WORDS[k] ?? k} ${v}`).join(", ")}; list capped at ${r.cap}. Top three: ${opps.slice(0, 3).map(({ o, k }) => `${k.name}, ${o.plainTitle ?? o.title}: ${scoreLine(o, r.weights)}`).join("; ")}.`,
+      cites: [{ label: "Ranking weights", record: "data/profiles/firm.json#triage.classWeights" }, ...opps.slice(0, 3).map(({ o, k }) => ({ label: `${k.name} materiality`, record: `data/clients/${k.id}.json#opportunities[${k.opportunities.indexOf(o)}].materiality`, href: `/evidence/${o.id}` }))],
+      links: [{ label: "Tune the ranking", href: "/triage#tune" }, { label: "Today's list", href: "/triage" }],
+      via: "the ranking function and your resolved settings",
+      followUps: ["How do I change the ranking?", "What should I do first today?"],
+    });
+  }
+
+  // Required minimum distributions: found in what is on file, not inferred from ages.
+  if (has(q, /\b(rmds?|required (minimum )?(withdrawals?|distributions?))\b/)) {
+    const hits = mine.flatMap((k) => [
+      ...k.opportunities.filter((o) => /required (minimum )?(withdrawal|distribution)|\brmd/i.test(`${o.title} ${o.plainTitle ?? ""}`)).map((o) => ({ k, text: o.plainTitle ?? o.title, record: rec(k, `opportunities[${k.opportunities.indexOf(o)}]`), href: `/evidence/${o.id}` })),
+      ...k.notes.filter((n) => /required (minimum )?(withdrawal|distribution)|\brmd/i.test(n.text)).map((n) => ({ k, text: n.text, record: rec(k, `notes[${k.notes.indexOf(n)}]`), href: undefined as string | undefined })),
+    ]);
+    const cal = todaysMeetings(ctx.advisorId).filter((m) => m.purpose && /required (minimum )?(withdrawal|distribution)|\brmd/i.test(m.purpose));
+    const names = [...new Set([...hits.map((h) => h.k.name), ...cal.map((m) => ctx.clients.find((k) => k.id === m.clientId)?.name).filter(Boolean) as string[]])];
+    return done({ text: names.length ? `On file: ${names.join(", ")}. ${hits.map((h) => `${h.k.name}: ${h.text}`).join("; ")}${cal.length ? `. Today: ${cal.map((m) => `${m.time} ${m.title} (${m.purpose})`).join("; ")}` : ""}. Relay finds this in what is recorded; it does not work out who owes a distribution from ages and account types.` : "Nothing on file mentions a required withdrawal. Relay does not work it out from ages and account types.", cites: hits.map((h) => ({ label: `${h.k.name}`, record: h.record, href: h.href })), links: [{ label: "Today's list", href: "/triage" }], via: "the opportunities, notes and calendar on file", confidence: names.length ? 1 : 0.5 });
+  }
+
+  // A document by name: is it current, and can a note quote it.
+  const namesDesk = ctx.agents.some((a) => q.includes(a.name.toLowerCase()) || q.includes(a.desk.toLowerCase()) || /\bdesk\b/.test(q));
+  const COMMON = ["under", "years", "sizing", "earlier", "edition", "standard", "account", "review", "procedure", "documentation", "client", "communication", "positions", "strategy", "managing", "held"];
+  const docHit = namesDesk ? undefined : [...corpusStates()].sort((a, b) => Number(b.usable) - Number(a.usable)).find((d) => d.doc.title.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 4 && !COMMON.includes(w)).some((w) => q.includes(w)) && has(q, /\b(current|stale|up to date|one-?pager|note|memo|document|doc|quote|cite)\b/));
+  if (docHit) {
+    const d = docHit;
+    return done({ text: `${d.doc.title}: ${d.usable ? (d.freshness === "stale" ? `past its review date by ${-d.daysToReview} days, so a note will not quote it until it is reviewed` : `current, published ${d.ageDays} days ago, review due in ${d.daysToReview} days; a note may quote it`) : `not usable as evidence${d.supersededBy ? `, superseded by ${d.supersededBy.title}` : ""}`}.`, cites: [{ label: d.doc.title, record: `data/documents/${d.doc.id}.json`, href: `/documents/${d.doc.id}` }], links: [{ label: "Open it", href: `/documents/${d.doc.id}` }], via: "the corpus states" });
+  }
+
+  // Cash across the book: who is short of their own target, who holds more than it.
+  if (has(q, /\b(idle|sitting|uninvested|short (of|on) cash|cash (cover|short|position)|liquidity|who needs cash|excess cash)\b/)) {
+    const rows = mine.map((k) => ({ k, m: liquidityMonths(k), g: k.goals.find((x) => x.strategy === "Liquidity" && x.unit === "months") })).filter((x) => x.g);
+    const short = rows.filter((x) => x.m < x.g!.target).sort((a, b) => a.m / a.g!.target - b.m / b.g!.target);
+    const over = rows.filter((x) => x.m > x.g!.target);
+    return done({ text: `Short of their own cash target: ${short.map((x) => `${x.k.name} ${x.m} of ${x.g!.target} months`).join("; ") || "none"}. Above target: ${over.map((x) => `${x.k.name} ${x.m} of ${x.g!.target} months`).join("; ") || "none"}. Cash set aside for a named purpose is not counted.`, cites: rows.map((x) => ({ label: `${x.k.name} liquidity goal`, record: rec(x.k, `goals[${x.k.goals.indexOf(x.g!)}]`), href: `/household/${x.k.id}` })), links: [{ label: "Households", href: "/clients" }, { label: "Today's list", href: "/triage" }], via: "household arithmetic over the holdings" });
+  }
+
+  // Follow-ups: the tasks on file, overdue first.
+  if (has(q, /\b(follow[- ]?ups?|tasks?|to-?dos?|overdue|promis\w*)\b/)) {
+    const t = allTasks().filter((x) => x.advisorId === ctx.advisorId);
+    const late = t.filter((x) => x.dueDay < 0);
+    return done({ text: t.length ? `${t.length} tasks, ${late.length} overdue. ${t.slice(0, 5).map((x) => `${x.clientName}: ${x.text} (${x.owner}, ${dueLabel(x.dueDay)})`).join("; ")}.` : "No tasks on file.", cites: [...new Set(t.slice(0, 5).map((x) => x.clientId))].map((id) => ({ label: `${ctx.clients.find((k) => k.id === id)?.name ?? id} tasks`, record: `data/clients/${id}.json#tasks` })), links: [{ label: "Follow-ups", href: "/follow-ups" }], via: "the tasks on each client file" });
+  }
+
+  // Service requests: the queue for this advisor's clients, by target time.
+  if (has(q, /\b(service (requests?|queue)|requests? (open|waiting|pending)|servicing|callbacks?)\b/)) {
+    const list = triage(SERVICE_REQUESTS.filter((r) => mine.some((k) => k.id === r.clientId)));
+    const late = list.filter((r) => r.overdue);
+    return done({ text: list.length ? `${list.length} open, ${late.length} past target. ${list.slice(0, 4).map((r) => `${ctx.clients.find((k) => k.id === r.clientId)?.name ?? r.clientId}: ${r.kind}${r.callbackRequired ? ", callback to a number on file first" : ""} (${r.overdue ? `${-r.hoursLeft} hours past target` : `${r.hoursLeft} hours left`})`).join("; ")}.` : "No open service requests for your clients.", cites: list.slice(0, 4).map((r) => ({ label: r.id, record: `data/service-requests.json#${r.id}`, href: "/servicing" })), links: [{ label: "Service requests", href: "/servicing" }], via: "the servicing rules in data/policy.json" });
+  }
+
+  // Prospects: ranked by warmth of the path, fit and size, each with its drafted next step.
+  if (has(q, /\b(prospects?|referrals?|pipeline|new (clients?|business)|who should i (call|reach out to))\b/)) {
+    const list = rankProspects(PROSPECTS, ctx.advisorId);
+    return done({ text: list.length ? `${list.length} prospects, warmest first: ${list.slice(0, 3).map((p) => `${p.label} (${PATH_LABEL[p.path].toLowerCase()}, about ${usd(p.estimatedUsd)}, score ${prospectScore(p)})`).join("; ")}. Score is the path's warmth plus fit plus size; each has a drafted next step for you to send.` : "No prospects on file.", cites: list.slice(0, 3).map((p) => ({ label: p.label, record: `data/advisors/${ctx.advisorId}.json#prospects`, href: "/pipeline" })), links: [{ label: "Prospects", href: "/pipeline" }], via: "the prospect ranking in lib/prospecting" });
+  }
+
+  // Leaving: there is no attrition model, so say so and give the signals that are on file.
+  if (has(q, /\b(at risk|leav\w*|attrition|churn|unhappy|complain\w*)\b/)) {
+    const quiet = mine.filter((k) => -Math.max(...k.contactHistory.map((e) => e.day), -9999) > 90);
+    const complaints = mine.filter((k) => k.supervisory?.complaintLogged);
+    return done({ text: `Relay has no attrition model, so it will not guess. What is on file: not spoken to in over 90 days, ${quiet.map((k) => k.name).join(", ") || "none"}; a complaint logged, ${complaints.map((k) => k.name).join(", ") || "none"}.`, cites: [...quiet.map((k) => ({ label: `${k.name} contact history`, record: rec(k, "contactHistory") })), ...complaints.map((k) => ({ label: `${k.name} complaint`, record: rec(k, "supervisory.complaintLogged") }))], links: [{ label: "Households", href: "/clients" }], via: "the contact history and supervisory flags", confidence: 0.6, followUps: quiet.slice(0, 2).map((k) => `What changed for ${surname(k.name)} since we last spoke?`) });
+  }
+
 
   if (has(q, /\bmeeting|calendar|who am i (seeing|meeting)\b/)) {
     const m = todaysMeetings(ctx.advisorId);
@@ -171,7 +283,7 @@ export function answer(question: string, ctx: AskContext): Answer {
   if (has(q, /\b(how many|book|households|clients)\b/)) {
     const total = mine.reduce((s, k) => s + k.totalUsd, 0);
     const quiet = mine.filter((k) => -Math.max(...k.contactHistory.map((e) => e.day), -9999) > 90);
-    return done({ text: `${mine.length} households in ${advisor?.name ?? "your"}'s book on screen, ${usd(total)} in total. ${quiet.length} not spoken to in 90 days${quiet.length ? `: ${quiet.map((k) => k.name).join(", ")}` : ""}.`, links: [{ label: "Households", href: "/clients" }], via: "the book", followUps: quiet.slice(0, 2).map((k) => `When did I last speak to ${surname(k.name)}?`) });
+    return done({ text: `${mine.length} households in ${advisor?.name ?? "your"}'s book on screen, ${usd(total)} in total. ${quiet.length} not spoken to in 90 days${quiet.length ? `: ${quiet.map((k) => k.name).join(", ")}` : ""}.`, links: [{ label: "Households", href: "/clients" }], cites: quiet.map((k) => ({ label: `${k.name} contact history`, record: rec(k, "contactHistory"), href: `/household/${k.id}` })), via: "the book", followUps: quiet.slice(0, 2).map((k) => `When did I last speak to ${surname(k.name)}?`) });
   }
 
   if (has(q, /\b(what can you|help|how do i|what do you)\b/)) {
@@ -191,6 +303,39 @@ function aboutHousehold(q: string, c: ClientFile, ctx: AskContext): Answer {
   const last = [...c.contactHistory].sort((a, b) => b.day - a.day)[0];
   const cases = ctx.cases.filter((k) => k.subject === c.id);
 
+  // Why this household is where it is on the list.
+  if (has(q, /\b(scor\w*|rank\w*|why is .* (first|top|on (the|my) list)|why (this|the) client)\b/)) {
+    const r = rankingFor(ctx);
+    return done({ text: c.opportunities.length ? `${c.name} on today's list: ${c.opportunities.map((o) => `${o.plainTitle ?? o.title}, ${scoreLine(o, r.weights)}`).join("; ")}. Weights are ${r.source.toLowerCase()}.` : `${c.name} has nothing on today's list.`, cites: c.opportunities.map((o, i) => ({ label: o.plainTitle ?? o.title, record: rec(c, `opportunities[${i}].materiality`), href: `/evidence/${o.id}` })), links: [{ label: "Why this client", href: c.opportunities[0] ? `/evidence/${c.opportunities[0].id}` : `/household/${c.id}` }, { label: "Tune the ranking", href: "/triage#tune" }], via: "the ranking function and your resolved settings" });
+  }
+  // The options with the figures an advisor compares: after-tax income, cost over the horizon, access.
+  if (has(q, /\b(options?|proposals?|recommend\w*|what (can|should) (we|i) do|after[- ]tax|income|yield|ladder|treasury|money market|muni\w*)\b/) && c.opportunities.some((o) => o.action === "fund" || o.action === "trim")) {
+    const named = SHELF.find((p) => q.includes(p.name.toLowerCase().split(",")[0]) || q.includes(p.type.replace("_", " ")) || (p.type === "municipal_ladder" && /\bmuni/.test(q)));
+    const opp = c.opportunities.find((o) => (o.action === "fund" || o.action === "trim") && evaluateAll(o, c).some((e) => !named || e.candidate.productId === named.id)) ?? c.opportunities.find((o) => o.action === "fund" || o.action === "trim")!;
+    const evs = evaluateAll(opp, c);
+    const eligible = evs.filter((e) => e.pass).map((e) => ({ e, p: SHELF.find((x) => x.id === e.candidate.productId)!, x: economics(e.candidate, SHELF.find((x) => x.id === e.candidate.productId)!) }));
+    const pick = named ? evs.find((e) => e.candidate.productId === named.id) : undefined;
+    const line = (p: (typeof SHELF)[number], x: ReturnType<typeof economics>) => `${p.name}: ${usd(x.grossIncomeUsd)} a year gross, ${usd(x.afterTaxIncomeUsd)} after tax at ${x.taxPct}%, ${usd(x.costOverHorizonUsd)} cost over ${x.horizonYears} years, access ${x.accessLabel.toLowerCase()}`;
+    const head = `For ${opp.plainTitle ?? opp.title}, on ${usd(evs[0]?.candidate.amountUsd ?? 0)}:`;
+    const text = pick && named
+      ? `${head} ${line(named, economics(pick.candidate, named))}. ${pick.pass ? "Eligible under the family's rules." : `Not eligible: ${pick.failures.map((f) => f.rule).join(", ")}.`}`
+      : eligible.length ? `${head} ${eligible.length} of ${evs.length} options pass the family's rules. ${eligible.map(({ p, x }) => line(p, x)).join("; ")}.` : `${head} no option on the shelf passes the family's rules.`;
+    return done({ text: `${text} Tax rates are the firm's illustrative ones, not the client's.`, links: [{ label: "Options", href: `/household/${c.id}/proposal?opp=${opp.id}` }, { label: "Before you act", href: "/simulate" }], cites: [{ label: opp.plainTitle ?? opp.title, record: rec(c, `opportunities[${c.opportunities.indexOf(opp)}]`), href: `/evidence/${opp.id}` }, { label: "Shelf", record: "data/shelf.json" }, { label: "Tax assumptions", record: "data/policy.json#proposals.taxAssumptions" }], via: "the constraint engine and the options arithmetic" });
+  }
+  if (has(q, /\b(tax\w*|bracket)\b/)) {
+    const t = POLICY.proposals.taxAssumptions;
+    return done({ text: `There is no tax return on file for ${c.name}. Options uses the firm's illustrative marginal rates: federal ${t.federalOrdinaryPct}% ordinary and ${t.federalQualifiedPct}% qualified, state ${t.statePct}%, net investment income tax ${t.niitPct}%. A plan or a tax adviser supplies the family's own.`, cites: [{ label: "Tax assumptions", record: "data/policy.json#proposals.taxAssumptions" }], via: "the firm policy file", confidence: 0.5 });
+  }
+  if (has(q, /\b(promis\w*|owe|tasks?|to-?dos?|follow[- ]?ups?|next steps?)\b/)) {
+    return done({ text: c.tasks.length ? `On file for ${c.name}: ${c.tasks.map((t) => `${t.text} (${t.owner}, ${dueLabel(t.dueDay)})`).join("; ")}.` : `No tasks on file for ${c.name}.`, cites: [{ label: "Tasks", record: rec(c, "tasks") }], links: [{ label: "Follow-ups", href: "/follow-ups" }, ...base.links], via: "the tasks on the client file" });
+  }
+  if (has(q, /\b(risk|tolerance|ips|investment policy|rules?|constraints?|allowed)\b/)) {
+    return done({ text: `${c.name}'s rules: ${c.constraints.map(constraintText).join("; ")}.`, cites: [{ label: "Household rules", record: rec(c, "constraints") }], via: "the investment policy on file" });
+  }
+  if (has(q, /\b(service|requests?)\b/)) {
+    const list = triage(SERVICE_REQUESTS.filter((r) => r.clientId === c.id));
+    return done({ text: list.length ? `${list.length} open for ${c.name}: ${list.map((r) => `${r.kind}${r.callbackRequired ? ", callback first" : ""}, ${r.overdue ? `${-r.hoursLeft} hours past target` : `${r.hoursLeft} hours left`}`).join("; ")}.` : `No open service request for ${c.name}.`, cites: list.map((r) => ({ label: r.id, record: `data/service-requests.json#${r.id}`, href: "/servicing" })), links: [{ label: "Service requests", href: "/servicing" }, ...base.links], via: "the servicing rules" });
+  }
   if (has(q, /\b(cash|liquidity|cover|months|reserve)\b/)) {
     return done({ text: `${c.name}: Liquidity covers ${months} months of ${usd(c.monthlySpendUsd)} a month spending${liq?.unit === "months" ? `, against a ${liq.target}-month target${months < liq.target ? `, so ${liq.target - months} months short` : ", met"}` : ""}.`, cites: [{ label: "Holdings", record: rec(c, "holdings") }, { label: "Liquidity goal", record: rec(c, "goals[0]") }, { label: "Spending", record: rec(c, "monthlySpendUsd") }], via: "household arithmetic over the holdings", followUps: [`What are the options for ${surname(c.name)}?`] });
   }
@@ -226,8 +371,7 @@ function aboutHousehold(q: string, c: ClientFile, ctx: AskContext): Answer {
     return done({ text: `${c.name}'s goals: ${c.goals.map((g) => `${g.strategy} ${g.unit === "months" ? `${g.funded} of ${g.target} months` : `${usd(g.funded)} of ${usd(g.target)}`}`).join("; ")}.`, cites: c.goals.map((g, i) => ({ label: `${g.strategy} goal`, record: rec(c, `goals[${i}]`) })), via: "the goals on file" });
   }
   if (has(q, /\b(options?|proposals?|recommend\w*|what (can|should) (we|i) do|fund|trim)\b/)) {
-    const opp = c.opportunities.find((o) => o.action === "fund" || o.action === "trim");
-    return done({ text: opp ? `For ${opp.plainTitle ?? opp.title}, the approved shelf is checked against ${c.constraints.length} household rules and each option is carried to the morning after. Open Options for the after-tax income, cost and access of each.` : `No fundable or trimmable opportunity is on file for ${c.name}.`, links: opp ? [{ label: "Options", href: `/household/${c.id}/proposal?opp=${opp.id}` }, { label: "Before you act", href: "/simulate" }] : base.links, cites: opp ? [{ label: opp.plainTitle ?? opp.title, record: rec(c, `opportunities[${c.opportunities.indexOf(opp)}]`), href: `/evidence/${opp.id}` }] : [], via: "the constraint engine and the consequence agent" });
+    return done({ text: `No fundable or trimmable opportunity is on file for ${c.name}, so there are no product options to compare.${c.opportunities.length ? ` On the list: ${c.opportunities.map((o) => o.plainTitle ?? o.title).join("; ")}.` : ""}`, via: "the constraint engine" });
   }
   // The one-paragraph picture.
   const sn = singleNameUsd(c) ? pct(singleNamePct(c)) : "none";
