@@ -15,7 +15,9 @@ figures; *Chosen* = invented, deliberately inside the published range.
 
 ---
 
-## Advisor A: senior advisor, founder and executive practice, New York
+The advisors carry invented names so the screens read as a working desk. No real advisor is any of them.
+
+## Advisor A, Margaret Ellison: senior advisor, founder and executive practice, New York
 
 | Detail | Value | Kind | Grounded in |
 |---|---|---|---|
@@ -25,7 +27,7 @@ figures; *Chosen* = invented, deliberately inside the published range.
 | Book | About $820M, 183 households | Chosen | UBS cites about $353M AUM per advisor on its recruiting pages ([UBS](https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html) **check**); reported Q2 2026 figures give about $425M (Derived). $820M is about twice the average, consistent with a senior advisor |
 | Experience | 19 years in the industry, 3 at UBS | Chosen | Plausible for a recruited senior team; UBS's 2025 and 2026 recruiting is public ([AdvisorHub](https://www.advisorhub.com/2027-comp-ubs-keeps-grid-steady-sweetens-retention-program/)) |
 
-## Advisor B: Wealth Advice Center advisor
+## Advisor B, Daniel Okoro: Wealth Advice Center advisor
 
 | Detail | Value | Kind | Grounded in |
 |---|---|---|---|
@@ -33,7 +35,7 @@ figures; *Chosen* = invented, deliberately inside the published range.
 | Client segment | Emerging affluent, under $250K investable | Published | [WAC disclosure](https://www.ubs.com/content/dam/assets/wma/us/disclosures/wac-disclosure.pdf) **check** |
 | Load | About 1,000 households | Derived | 200+ professionals serving 200,000 to 300,000 clients (UBS gives both figures): roughly 1,000 to 1,500 each. **Changed from "about 900"** |
 
-## Advisor C: business-owner and retiree practice, Chicago
+## Advisor C, Thomas Reinholt: business-owner and retiree practice, Chicago
 
 | Detail | Value | Kind | Grounded in |
 |---|---|---|---|

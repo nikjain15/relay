@@ -13,7 +13,7 @@ import { useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
 import { useIngest } from "@/components/ingest";
 import { Icon } from "@/components/icons";
-import { Legend, More, PageTitle, Pill, Row, Section, TableScroll, Timeline, Who, btn, btnPrimary, td, th } from "@/components/ui";
+import { Brief, Legend, More, PageTitle, Pill, Row, Section, TableScroll, Timeline, Who, btn, btnPrimary, td, th } from "@/components/ui";
 import { ADVISORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 import { liquidityMonths } from "@/lib/household-math";
 import { openItems } from "@/lib/onboarding/status";
@@ -129,21 +129,19 @@ export function ClientsView() {
 
   return (
     <>
-      <PageTitle title="Households" sub="The book as the agents read it. Connect your own list; ask for a dossier on any household." />
+      <PageTitle icon="people" title="Households" sub="The book as the agents read it. Connect your own list; ask for a dossier on any household." />
       <Legend className="-mt-5 mb-6 lg:hidden" />
 
-      <section className="mb-6 rounded border border-line bg-subtle p-4" aria-label="Book agent">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-ink-2">
-          <span className="flex items-center gap-1.5 text-ink"><Icon name="agent" size={16} className="text-ink-3" />Book read: {book.clients.length} households{connected ? `, ${connected} connected this session` : ""}</span>
-          <span className={stats.silent ? "text-caution" : ""}>{stats.silent} not spoken to in 90 days</span>
-          <span>{stats.forms} forms open</span>
-          <span>{stats.pub} public-record items on file</span>
-          <span className="flex items-center gap-2">
-            <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Connect a client list" onChange={(e) => { if (e.target.files?.length) void onFiles(e.target.files); e.target.value = ""; }} />
-            <button type="button" className={btnPrimary} disabled={busy !== null} onClick={() => input.current?.click()}>{busy ? `Reading ${busy}` : "Connect your client list"}</button>
-            <Link href="/data" className="underline">Formats and samples</Link>
-          </span>
-        </div>
+      <Brief
+        name="Book"
+        icon="people"
+        at="day 0, 06:30"
+        says={<>I read {book.clients.length} households{connected ? `, ${connected} of them connected from your files this session` : ""}. {stats.silent ? `${stats.silent} ${stats.silent === 1 ? "has" : "have"} not been spoken to in 90 days.` : "Every household has been spoken to in the last 90 days."} {stats.forms} forms are open and {stats.pub} public-record items are on file, unverified until you confirm them. Ask me to research any household and I read the file, the CRM, every captured message, the firm&apos;s documents and the public record, and draft the note you file.</>}
+        points={book.clients.filter((c) => { const last = Math.max(...c.contactHistory.map((e) => e.day), -9999); return -last > 90; }).slice(0, 3).map((c) => ({ text: `${c.name}: last contact ${-Math.max(...c.contactHistory.map((e) => e.day))} days ago.`, who: "client" as const, tone: "caution" as const, href: `#${c.id}` }))}
+        next={{ label: busy ? `Reading ${busy}` : "Connect your client list", onClick: () => input.current?.click() }}
+      />
+      <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Connect a client list" onChange={(e) => { if (e.target.files?.length) void onFiles(e.target.files); e.target.value = ""; }} />
+      <section className="mb-6" aria-label="About connecting">
         <More summary="What connecting does, and what the dossier reads">
           A .csv or .xlsx of households is read in this browser and every row is held to the shipped validator;
           nothing is uploaded, because there is nowhere to upload to. A dossier reads the client file, the CRM
@@ -156,7 +154,7 @@ export function ClientsView() {
       {ADVISORS_DATA.map((a) => {
         const mine = book.clients.filter((c) => c.advisorId === a.id);
         return (
-          <Section key={a.id} title={`${a.walkthrough?.label ?? a.name} (${mine.length} shown of ${a.walkthrough?.households ?? "?"})`}>
+          <Section key={a.id} title={`${a.name} (${mine.length} shown of ${a.walkthrough?.households ?? "?"})`}>
             <TableScroll>
               <table className="w-full min-w-[34rem] border-collapse">
                 <thead>
@@ -207,7 +205,12 @@ export function ClientsView() {
                             <span className="flex flex-col gap-1">
                               <button type="button" className={btn} onClick={() => (r && open === c.id ? setOpen(null) : research(c.id))}>{r && open === c.id ? "Hide dossier" : r ? "Show dossier" : "Research"}</button>
                               {r && <span className="text-[11px] text-ink-3">{r.d.counts.read} read in {r.ms} ms</span>}
-                              <Link href={`/research/${c.id}`} className="text-[11px] underline">Briefing</Link>
+                              <span className="flex flex-wrap gap-x-2 text-[11px]">
+                                <Link href={`/research/${c.id}`} className="underline">Briefing</Link>
+                                {c.opportunities.some((o) => o.action === "fund" || o.action === "trim") && <Link href={`/household/${c.id}/proposal?opp=${c.opportunities.find((o) => o.action === "fund" || o.action === "trim")!.id}`} className="underline">Options</Link>}
+                                {mtg && <Link href={`/meetings/${c.id}`} className="underline">Pack</Link>}
+                                {c.opportunities[0] && <Link href={`/evidence/${c.opportunities[0].id}`} className="underline">Why</Link>}
+                              </span>
                             </span>
                           </td>
                         </tr>

@@ -7,7 +7,7 @@ import { ADVISOR_PROFILES, FIRM, KEYS, SCHEMA, SEGMENTS, resolveProfile, sourceL
 import { fmtValue } from "@/lib/profile/format";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
-import { PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
+import { Brief, PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 
 export function ProfilesView({ advisor, client }: { advisor?: string; client?: string }) {
   const { overlay } = useRelay();
@@ -28,11 +28,16 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
   };
   return (
     <>
-      <PageTitle title="Settings" sub="Every setting, resolved through four layers. Preferences: the most specific layer wins. Rules: the strictest layer wins, and no layer can loosen the firm's." />
+      <PageTitle icon="settings" title="Preferences" sub="Every setting, resolved through four layers. Preferences: the most specific layer wins. Rules: the strictest layer wins, and no layer can loosen the firm's." />
+      <Brief
+        name="Settings"
+        icon="settings"
+        says={<>Every value below is resolved for the advisor or client selected, and each says which layer set it. Change one here and every screen uses it on the next render; the learning loop proposes changes to these and never applies them.</>}
+      />
       <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Advisor">
         {ADVISORS_DATA.map((a) => (
           <button key={a.id} className={a.id === advisorId ? btnPrimary : btn} aria-pressed={a.id === advisorId} onClick={() => setAdvisorId(a.id)}>
-            {a.walkthrough?.label ?? a.name}
+            {a.name}
           </button>
         ))}
         <label className="ml-2 text-xs">

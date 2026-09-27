@@ -15,6 +15,7 @@ import { Nav, NavList } from "@/components/nav";
 import { Icon } from "@/components/icons";
 import { Legend } from "@/components/ui";
 import { Palette } from "@/components/palette";
+import { Ask } from "@/components/ask";
 import { useRelay } from "@/components/state";
 import { policyFrom, agentsFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
@@ -35,12 +36,12 @@ function AgentStatus() {
   const { ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
   const { open, prepared } = useMemo(() => {
     const advisorId = APP.defaultAdvisorId;
-    const policy = policyFrom(ruleEdits, scopeFor(advisorId));
-    const found = sweep(advisorId, policy, connections, book.clients, agentsFrom(ruleEdits, undefined, scopeFor(advisorId)));
+    const policy = policyFrom(ruleEdits, scopeFor(advisorId), undefined, book.rules);
+    const found = sweep(advisorId, policy, connections, book.clients, agentsFrom(ruleEdits, undefined, scopeFor(advisorId), book.rules));
     const open = found.cases.filter((c) => !caseDispositions[c.id]);
     const prepared = prepareAll(open, policy.rules).filter((a) => !actionDecisions[a.id]).length;
     return { open, prepared };
-  }, [ruleEdits, connections, caseDispositions, actionDecisions, book.clients]);
+  }, [ruleEdits, connections, caseDispositions, actionDecisions, book.clients, book.rules]);
   const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired").length;
 
   return (
@@ -58,6 +59,7 @@ function AgentStatus() {
 export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [palette, setPalette] = useState(false);
+  const [ask, setAsk] = useState(false);
   const path = usePathname();
   const drawer = useRef<HTMLDivElement>(null);
 
@@ -79,6 +81,11 @@ export function Shell({ children }: { children: ReactNode }) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setPalette((v) => !v);
+      }
+      const typing = ["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName);
+      if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setAsk(true);
       }
     };
     document.addEventListener("keydown", onKey);
@@ -103,11 +110,19 @@ export function Shell({ children }: { children: ReactNode }) {
         </button>
         <span className="text-[17px] font-semibold tracking-tight">Relay</span>
         <span className="hidden text-xs text-ink-3 xl:inline" role="note">
-          Agents for advisors &middot; synthetic data &middot; no model calls &middot; nothing sent
+          Advice to action, for advisors
         </span>
 
         <Legend className="ml-4 hidden lg:flex" />
         <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setAsk(true)}
+            className="flex items-center gap-1.5 rounded border border-agent/40 bg-agent-soft px-2 py-1 text-[12px] text-agent hover:bg-selected"
+          >
+            <Icon name="agent" size={16} />
+            <span className="hidden sm:inline">Ask</span>
+          </button>
           <button
             type="button"
             onClick={() => setPalette(true)}
@@ -121,6 +136,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </header>
 
       <Palette open={palette} onClose={() => setPalette(false)} />
+      <Ask open={ask} onClose={() => setAsk(false)} />
 
       {open && (
         <div className="fixed inset-0 top-14 z-20 lg:hidden">

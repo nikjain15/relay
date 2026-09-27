@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tests-298%20passing-brightgreen" alt="Tests: 298 passing">
+  <img src="https://img.shields.io/badge/tests-311%20passing-brightgreen" alt="Tests: 311 passing">
   <img src="https://img.shields.io/badge/browser%20checks-60%20passing-brightgreen" alt="Browser checks: 60 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
@@ -48,20 +48,31 @@ composite is in [`docs/PERSONAS.md`](docs/PERSONAS.md).
 | **Retrieval** | The document corpus, on every opportunity | Cited passages with a reason per score, or a refusal that names what is missing |
 | **Rule-change proposer** | Ninety days of findings | Tighten-only rule changes, with the findings behind each |
 | **Discovery** | What clients said, in messages, notes and contact summaries | Candidate opportunities cited to the sentence, with a confidence and the documents each would cite |
-| **Consequences** | Every option for a proposal, applied to a copy of the household | The morning after, graded: Liquidity, concentration, the sweep, the note's regime, what a supervisor will ask |
+| **Options and consequences** | Every shelf product against the household's own rules, applied to a copy of the household | After-tax income, cost over the horizon, access, rate risk, and the morning after, graded |
+| **Policy reader** | A written supervisory procedure | Candidate rules in the engine's own shape, each cited to its sentence, for a person to add to a desk |
+| **Ask** | The book, the findings, the rules, the sources, today's calendar | An answer to a plain question, with the records it read |
 
-Every workflow screen opens with the agent that fed it: what it read, what it left for a person, a
-trace of how, and the step a model would own in production. Three colours say whose line each row is,
-agent, advisor or client, always with the word.
+Every workflow screen opens with the agent speaking first: what it read, in a sentence with the
+figures in it, the few things that matter, one thing to do next, and a trace of how. The morning
+opens as an inbox in the order a person works: decide now, review what the agents prepared (each
+opening beside the list with the draft and the reasoning, and staying on screen as a recorded
+outcome), then what else ran. Three colours say whose line each row is, agent, advisor or client,
+always with the word. Ask, on every screen, answers a plain question from the same records and cites them.
 
 The eight compliance agents are **review desks**: one per team a legal, risk and compliance function
 runs, each carrying the team it mirrors, the authorities it applies, its rules and its cadence, all as
-data. An advisor's layer can switch a desk on, run it more often or give it another rule of its scope,
-never the reverse, and every refusal is shown with the attempt.
+data. Each desk has its own page: its rules, its findings, the sources it needs, a tune panel (an
+advisor's layer can switch a desk on, run it more often or give it another rule of its scope, never the
+reverse, and every refusal is shown with the attempt), and a policy reader that turns a written
+procedure into candidate rules a person adds.
 
-**Connect your own book.** Drop a `.csv` or `.xlsx` of households, a message export or a document on
-`/data`; it is read in the browser with no dependency and no upload, every row is held to the same
-validator as a shipped file, and every agent runs over it live with the milliseconds each step took.
+**Sources.** Relay reads the tools a practice already runs and replaces none of them: a catalogue of
+23 read-only connectors across CRM (Salesforce, Redtail, Wealthbox, Dynamics, HubSpot, a wirehouse
+workstation), custodian (Schwab, Fidelity, Pershing), portfolio (Orion, Tamarac, Black Diamond),
+planning (eMoney, MoneyGuidePro), archive, e-signature and every channel, each saying which rules it
+unlocks. Vendor names are for demonstration of the integration surface and imply no affiliation. Or
+drop a `.csv` or `.xlsx` of households, a message export or a document; it is read in the browser with
+no upload, every row is held to the same validator as a shipped file, and every agent runs over it live.
 
 Every one of them detects, assembles, drafts and prepares on its own. None of them sends, schedules,
 writes to a system of record, clears a finding, or loosens a rule.
@@ -116,13 +127,15 @@ what the eval has caught so far is in [`evals/README.md`](evals/README.md).
 |---|---|
 | `app/` | Next.js routes, one folder per surface |
 | `components/` | React UI: the shell, the drawn icon set, the chart forms, one view per console |
-| `lib/compliance/` | Rule DSL, tighten-only policy resolution, the engine, agents, the sweep, prepared actions, the proposer, replay, the change log |
+| `lib/compliance/` | Rule DSL, tighten-only policy resolution, the engine, agents, the sweep, prepared actions, the proposer, the policy reader, replay, the change log |
 | `lib/evidence/` | Corpus state, lexical search with a reason per score, retrieval and the refusal |
 | `lib/research/` | The research agent's probes and the briefing they assemble; the dossier agent |
 | `lib/simulate/` | The consequence agent: a proposed action applied to a copy of the household and run through every engine |
 | `lib/discovery/` | The discovery agent: extractors over what clients said |
 | `lib/import/` | CSV and XLSX readers, the row mapper, the sample book generator |
-| `lib/connectors/` | Read-only connector catalog and the coverage model |
+| `lib/connectors/` | Read-only connector catalog (23 connectors across 13 channel kinds) and the coverage model |
+| `lib/proposals/` | Option economics: after-tax income, cost over the horizon, access, rate sensitivity |
+| `lib/ask/` | The Ask engine: intent by words, every figure from the engines, every answer cited |
 | `lib/constraints/`, `lib/ranking/`, `lib/recipients/`, `lib/policy/` | The deterministic engines behind proposals, today's list, the audience count and the draft checks |
 | `lib/profile/`, `lib/learning/` | Four-layer personalization and the learning loop that proposes and never decides |
 | `data/` | Every record, one file each, plus firm policy, the rule set and the generated bundle |
@@ -136,7 +149,7 @@ what the eval has caught so far is in [`evals/README.md`](evals/README.md).
 
 ```bash
 npm ci
-npm run check                    # typecheck, lint, import invariants, data check, 298 tests
+npm run check                    # typecheck, lint, import invariants, data check, 311 tests
 npm run eval                     # every agent over the 300-household corpus, against evals/golden.json
 npm run dev                      # http://localhost:3000
 npx next build && npm run e2e    # 60 browser checks at 1440, 1280, 1024, 768 and 390

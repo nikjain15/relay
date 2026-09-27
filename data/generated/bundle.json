@@ -2793,7 +2793,7 @@
   "advisors": [
     {
       "id": "adv-a",
-      "name": "Advisor A",
+      "name": "Margaret Ellison",
       "role": "Senior advisor, founder and executive practice, New York",
       "book": "About $820M across 183 households; four relationships above $50M",
       "facts": [
@@ -3033,7 +3033,7 @@
         }
       ],
       "walkthrough": {
-        "label": "Advisor A, New York",
+        "label": "Margaret Ellison, New York",
         "day": "Tuesday",
         "households": 183,
         "alertsOvernight": 47,
@@ -3071,7 +3071,7 @@
     },
     {
       "id": "adv-b",
-      "name": "Advisor B",
+      "name": "Daniel Okoro",
       "role": "Wealth Advice Center advisor, remote coverage",
       "book": "About 1,000 households, each under $250K investable",
       "facts": [
@@ -3173,7 +3173,7 @@
         }
       ],
       "walkthrough": {
-        "label": "Advisor B, Wealth Advice Center",
+        "label": "Daniel Okoro, Wealth Advice Center, Charlotte",
         "day": "Tuesday",
         "households": "about 1,000",
         "alertsOvernight": 61,
@@ -3210,7 +3210,7 @@
     },
     {
       "id": "adv-c",
-      "name": "Advisor C",
+      "name": "Thomas Reinholt",
       "role": "Senior advisor, business-owner and retiree practice, Chicago",
       "book": "About $610M across 142 households; most between $5M and $25M",
       "facts": [
@@ -3408,7 +3408,7 @@
         }
       ],
       "walkthrough": {
-        "label": "Advisor C, Chicago",
+        "label": "Thomas Reinholt, Chicago",
         "day": "Tuesday",
         "households": 142,
         "alertsOvernight": 38,

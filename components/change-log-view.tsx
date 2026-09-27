@@ -41,6 +41,7 @@ export function ChangeLogView({ advisorId }: { advisorId: string }) {
   return (
     <>
       <PageTitle
+        icon="log"
         title="Change log"
         sub="Append-only. A rule is never edited in place: the console adds an entry and the effective policy is the baseline with these folded onto it, newest last."
       />

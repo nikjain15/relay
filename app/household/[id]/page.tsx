@@ -10,7 +10,8 @@ import { getClientFile } from "@/lib/data";
 import { paperStatus, escalateAfter } from "@/lib/onboarding/status";
 import { ClientPreferences } from "@/components/profile-panel";
 import { classify } from "@/lib/servicing/classify";
-import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { Brief, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { liquidityMonths } from "@/lib/household-math";
 
 export function generateStaticParams() {
   return HOUSEHOLDS.map((h) => ({ id: h.id }));
@@ -29,7 +30,14 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
 
   return (
     <>
-      <PageTitle title={`${h.name} household`} sub={`${h.archetype}. ${h.tier}. ${usd(h.totalUsd)}. ${h.hardPart}.`} />
+      <PageTitle icon="people" title={`${h.name} household`} sub={`${h.archetype}. ${h.tier}. ${usd(h.totalUsd)}. ${h.hardPart}.`} />
+      <Brief
+        name="Book"
+        icon="people"
+        says={<>{h.persons.map((p) => `${p.name}${p.age ? `, ${p.age}` : ""}`).join(" and ")}. Liquidity covers {liquidityMonths(h)} months{h.goals.find((g) => g.strategy === "Liquidity")?.unit === "months" ? ` of ${h.goals.find((g) => g.strategy === "Liquidity")!.target} wanted` : ""}; single name {singleNamePct(h) > 0 ? pct(singleNamePct(h)) : "none"}{h.constraints.some((c) => c.kind === "maxSingleName") ? ` against the family's ${(h.constraints.find((c) => c.kind === "maxSingleName") as { pct: number }).pct}% rule` : ""}. {opps.length ? `${opps.length} opportunit${opps.length === 1 ? "y is" : "ies are"} on the list.` : "Nothing is on the list."}</>}
+        points={opps.slice(0, 3).map((o) => ({ text: o.plainTitle ?? o.title, href: `/evidence/${o.id}`, who: "client" as const }))}
+        next={opps.find((o) => o.action === "fund" || o.action === "trim") ? { label: "Compare the options", href: `/household/${h.id}/proposal?opp=${opps.find((o) => o.action === "fund" || o.action === "trim")!.id}` } : { label: "Read the briefing", href: `/research/${h.id}` }}
+      />
       <Section title="Advice state against Liquidity, Longevity, Legacy">
         <TableScroll>
           <table className="w-full min-w-[34rem] max-w-3xl border-collapse">

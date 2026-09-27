@@ -24,7 +24,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
 
   return (
     <>
-      <PageTitle title={d.title} sub={`${d.kind}, ${d.desk}. Published on corpus day ${d.day}; reviewed every ${d.reviewEveryDays} days.`} />
+      <PageTitle icon="document" title={d.title} sub={`${d.kind}, ${d.desk}. Published on corpus day ${d.day}; reviewed every ${d.reviewEveryDays} days.`} />
 
       <StatRow
         items={[

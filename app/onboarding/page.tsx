@@ -12,6 +12,7 @@ export default function Onboarding() {
   return (
     <>
       <PageTitle
+        icon="esign"
         title="Paperwork"
         sub={`Every form per client. Unsigned for more than ${ESCALATE_AFTER_DAYS} days escalates to the branch supervisor (illustrative procedure)${SEGMENTS.filter((s) => s.values["paperwork.escalateAfterDays"] !== undefined).map((s) => `; ${s.label}: ${String(s.values["paperwork.escalateAfterDays"])} days`).join("")}. A segment or client can only shorten this. Reminders are drafted; people send them.`}
       />

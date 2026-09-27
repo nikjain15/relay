@@ -13,13 +13,27 @@ export function Pill({ children, tone = "neutral" }: { children: ReactNode; tone
   return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-px align-middle text-xs font-medium ${cls}`}>{children}</span>;
 }
 
-export function PageTitle({ title, sub }: { title: string; sub?: string }) {
+export function PageTitle({ title, sub, icon }: { title: string; sub?: ReactNode; icon?: IconName }) {
   return (
-    <header className="mb-8">
-      <h1 className="text-[28px] font-light leading-tight tracking-tight text-ink">{title}</h1>
-      {sub && <p className="mt-2 max-w-3xl text-ink-2">{sub}</p>}
+    <header className="mb-8 flex items-start gap-4">
+      {icon && <span className="mt-1 hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line bg-subtle text-ink sm:inline-flex" aria-hidden="true"><Icon name={icon} size={24} /></span>}
+      <div className="min-w-0">
+        <h1 className="text-[28px] font-light leading-tight tracking-tight text-ink">{title}</h1>
+        {sub && <p className="mt-2 max-w-3xl text-ink-2">{sub}</p>}
+      </div>
     </header>
   );
+}
+
+/**
+ * A monogram for a vendor or a source: two letters in a tinted square. No
+ * logo or wordmark is shipped for any firm; the letters and the name carry
+ * the identity, and the name is always printed beside it.
+ */
+export function Mark({ text, tone = "plain" }: { text: string; tone?: "plain" | "agent" | "advisor" | "client" }) {
+  const letters = text.replace(/\(.*?\)/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "?";
+  const cls = { plain: "bg-subtle text-ink border-line", agent: "bg-agent-soft text-agent border-agent/30", advisor: "bg-advisor-soft text-advisor border-advisor/30", client: "bg-client-soft text-client border-client/30" }[tone];
+  return <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border text-[12px] font-semibold ${cls}`} aria-hidden="true">{letters}</span>;
 }
 
 export function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -307,11 +321,11 @@ export function Trace({ steps, summary = "How the agent got here" }: { steps: { 
 }
 
 /**
- * What the agent behind a screen did before anyone opened it: what it read,
- * what it left, and how, in one strip under the title. Every workflow screen
- * carries one, so no screen makes sense without the agent that fed it.
+ * What the agent behind a screen did before anyone opened it, said in one
+ * breath: what it read, what it left, and how. Renders as a Brief, so every
+ * workflow screen opens the same way: the agent speaks, then the work.
  */
-export function AgentBar({ name, icon = "agent", read, left, steps, note }: {
+export function AgentBar({ name, icon = "agent", read, left, steps, note, next, at }: {
   name: string;
   icon?: IconName;
   /** What it read, as one phrase: "9 open requests on 3 channels". */
@@ -321,16 +335,74 @@ export function AgentBar({ name, icon = "agent", read, left, steps, note }: {
   steps?: { icon: IconName; title: string; detail?: ReactNode; who?: Perspective }[];
   /** The step a model would own in production, said plainly. */
   note?: string;
+  next?: { label: string; href?: string; onClick?: () => void };
+  at?: string;
 }) {
+  const sentence = (x: string) => x.replace(/[.]$/, "");
   return (
-    <section className="mb-6 rounded border border-line bg-subtle p-4" aria-label={`${name} agent`}>
-      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
-        <span className="flex items-center gap-1.5 text-ink"><Icon name={icon} size={16} className="text-agent" /><Who who="agent" label={name} />read {read}</span>
-        {left.map((l, i) => <span key={i} className="text-ink-2">{l}</span>)}
-      </p>
-      {steps && <Trace steps={steps} summary="How it got there" />}
-      {note && <p className="mt-2 text-[11px] text-ink-3">{note}</p>}
-      <Legend className="mt-2 lg:hidden" />
+    <Brief
+      name={name}
+      icon={icon}
+      at={at}
+      says={<>I read {sentence(read)}.{left.length ? ` ${left.map(sentence).map((l, i) => (i === 0 ? l.charAt(0).toUpperCase() + l.slice(1) : l)).join("; ")}.` : ""}</>}
+      steps={steps}
+      note={note}
+      next={next}
+    />
+  );
+}
+
+/**
+ * The agent speaks first. Every workflow screen opens with one: who read
+ * what, in plain words with the figures in the sentence, the few things that
+ * matter today, and the one thing to do next. The tables come after, folded.
+ * This is the difference between a dashboard and a colleague's briefing.
+ */
+export function Brief({ name, icon = "agent", at, says, points = [], next, steps, note }: {
+  name: string;
+  icon?: IconName;
+  /** When it ran, on the prototype clock. */
+  at?: string;
+  /** One to three sentences in the agent's voice. */
+  says: ReactNode;
+  /** What matters, worst first. Each one line, optionally a link. */
+  points?: { text: ReactNode; href?: string; tone?: "plain" | "critical" | "caution" | "positive"; icon?: IconName; who?: Perspective }[];
+  /** The one thing to do next. */
+  next?: { label: string; href?: string; onClick?: () => void };
+  steps?: { icon: IconName; title: string; detail?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive"; who?: Perspective }[];
+  /** The step a model would own in production, said plainly. */
+  note?: string;
+}) {
+  const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" };
+  return (
+    <section className="mb-8 rounded-lg border border-agent/30 bg-agent-soft/40 p-4 sm:p-5" aria-label={`${name} agent`}>
+      <div className="flex gap-3">
+        <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-agent-soft text-agent" aria-hidden="true"><Icon name={icon} size={20} /></span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[12px] text-ink-3"><span className="font-medium text-agent">{name}</span>{at ? ` · ran ${at}` : ""}</p>
+          <p className="mt-1 text-[15px] leading-relaxed text-ink">{says}</p>
+          {points.length > 0 && (
+            <ul className="mt-3 space-y-1.5">
+              {points.map((p, i) => {
+                const body = (
+                  <>
+                    <Icon name={p.icon ?? (p.tone === "critical" ? "alert" : p.tone === "caution" ? "question" : p.tone === "positive" ? "check" : "chevron")} size={16} className={`mt-0.5 shrink-0 ${accent[p.tone ?? "plain"]}`} />
+                    <span className="min-w-0 text-[13px] text-ink-2">{p.who && <Who who={p.who} />}{p.text}</span>
+                  </>
+                );
+                return <li key={i}>{p.href ? <a href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</a> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
+              })}
+            </ul>
+          )}
+          {next && (
+            <p className="mt-3">
+              {next.href ? <a href={next.href} className={btnPrimary}>{next.label}</a> : <button type="button" className={btnPrimary} onClick={next.onClick}>{next.label}</button>}
+            </p>
+          )}
+          {steps && <Trace steps={steps} summary="How I got there" />}
+          {note && <p className="mt-2 text-[11px] text-ink-3">{note}</p>}
+        </div>
+      </div>
     </section>
   );
 }

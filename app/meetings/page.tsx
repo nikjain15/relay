@@ -10,7 +10,7 @@ const KIND: Record<string, string> = { call: "Client call", review: "Client revi
 export default function Meetings() {
   return (
     <>
-      <PageTitle title="Today's meetings" sub={`${APP.todayLabel}. Each client meeting has a review pack built from the client file.`} />
+      <PageTitle icon="calendar" title="Today's meetings" sub={`${APP.todayLabel}. Each client meeting has a review pack built from the client file.`} />
       {(() => {
         const all = ADVISORS_DATA.flatMap((a) => todaysMeetings(a.id));
         const withClient = all.filter((m) => m.clientId);

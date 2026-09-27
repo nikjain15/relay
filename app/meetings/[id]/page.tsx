@@ -22,6 +22,7 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
   return (
     <>
       <PageTitle
+        icon="calendar"
         title={`Review pack: ${clientName(c.id)}`}
         sub={r.meeting ? `${r.meeting.time}, ${r.meeting.title}. ${r.meeting.purpose}.` : "No meeting booked today; this pack is ready for the next one."}
       />

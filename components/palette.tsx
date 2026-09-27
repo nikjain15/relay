@@ -23,7 +23,7 @@ function entries(): Entry[] {
   for (const r of BASELINE) out.push({ href: `/compliance#${r.id}`, label: r.title, group: r.authority, icon: "rules" });
   for (const d of DOCUMENTS) out.push({ href: `/documents/${d.id}`, label: d.title, group: "Document", icon: "quote" });
   for (const c of CLIENTS) out.push({ href: `/research/${c.id}`, label: `${c.name} briefing`, group: "Briefing", icon: "briefing" });
-  out.push({ href: "/data", label: "Connect a spreadsheet or a document", group: "Data", icon: "link" }, { href: "/discovery", label: "Discovered opportunities", group: "Agent", icon: "search" });
+  out.push({ href: "/sources", label: "Connect your book, a tool or a policy", group: "Sources", icon: "link" }, { href: "/discovery", label: "Discovered opportunities", group: "Agent", icon: "search" });
   return out;
 }
 

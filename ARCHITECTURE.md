@@ -9,13 +9,13 @@ document is the overview; the three documents under `docs/` carry the detail.
 ```
   The human gate      accept or decline a prepared action; disposition a finding; file a note; send from your own tools
         ^
-  Agents              eight compliance desks, research, dossier, retrieval, discovery, consequences, the proposer
+  Agents              eight compliance desks, research, dossier, retrieval, discovery, consequences, the proposer, the policy reader, Ask
         ^
-  Engines             constraints, ranking, recipients, the rule engine, retrieval, household arithmetic, the simulator
+  Engines             constraints, ranking, recipients, the rule engine, retrieval, household arithmetic, option economics, the simulator
         ^
-  Data                one file per client, advisor, document, rule, desk; firm policy; an append-only change log
+  Data                one file per client, advisor, document, rule, desk, connector; firm policy; an append-only change log
         ^
-  Sources (read only) CRM, custodian feed, archive of captured channels, e-sign, documents, a dropped spreadsheet
+  Sources (read only) CRM, custodian, portfolio, planning, archive of captured channels, e-sign, documents, a dropped spreadsheet
 ```
 
 Every arrow points up. Nothing points down or out: no module under `app/`, `components/` or `lib/`
@@ -58,6 +58,8 @@ host. Both are enforced by tooling, not convention.
 | `lib/simulate/` | The consequence agent |
 | `lib/import/` | CSV and XLSX readers, the row mapper, the sample book generator |
 | `lib/connectors/` | The read-only connector catalog and the coverage model |
+| `lib/proposals/` | Option economics |
+| `lib/ask/` | The Ask engine |
 | `lib/constraints/`, `lib/ranking/`, `lib/recipients/`, `lib/policy/` | The deterministic engines behind proposals, today's list, the audience count and the draft checks |
 | `lib/profile/`, `lib/learning/` | Four-layer personalization and the learning loop |
 | `data/` | Every record, one file each; firm policy; the rule set; the generated bundle |

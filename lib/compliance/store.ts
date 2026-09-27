@@ -12,7 +12,7 @@
 //      records it in `rejected`; the attempt stays in the log either way.
 //
 // Deterministic. No model client may be imported here.
-import type { FactValue, RuleOverride, Severity } from "@/lib/compliance/types";
+import type { FactValue, RuleDefinition, RuleOverride, Severity } from "@/lib/compliance/types";
 import type { LayerOverrides, ResolvedPolicy, RuleLayer } from "@/lib/compliance/policy";
 import { resolvePolicy, BASELINE } from "@/lib/compliance/policy";
 import type { AgentDefinition } from "@/lib/compliance/agents";
@@ -85,8 +85,10 @@ export function policyFrom(
   edits: RuleEdit[] = SEED_EDITS,
   scope?: { segmentId?: string; advisorId?: string; clientId?: string },
   asOf?: string,
+  /** Rules added for the session, read from a policy document. They run beside the baseline and are edited the same way. */
+  added: RuleDefinition[] = [],
 ): ResolvedPolicy {
-  return resolvePolicy(toLayers(editsAsOf(edits, asOf), scope), BASELINE);
+  return resolvePolicy(toLayers(editsAsOf(edits, asOf), scope), added.length ? [...BASELINE, ...added] : BASELINE);
 }
 
 /** Agent edits fold the same way, over the agent catalog rather than the rules. */
@@ -114,7 +116,8 @@ export interface ResolvedAgents {
  *
  * Without `scope`, only the firm layer applies: the catalog as the firm set it.
  */
-export function resolveAgents(edits: RuleEdit[] = SEED_EDITS, scope?: { segmentId?: string; advisorId?: string }, asOf?: string): ResolvedAgents {
+export function resolveAgents(edits: RuleEdit[] = SEED_EDITS, scope?: { segmentId?: string; advisorId?: string }, asOf?: string, added: RuleDefinition[] = []): ResolvedAgents {
+  const known = added.length ? [...BASELINE, ...added] : BASELINE;
   const agents: AgentDefinition[] = AGENTS.map((a) => ({ ...a, ruleIds: [...a.ruleIds], setBy: { enabled: "firm", cadence: "firm", rules: Object.fromEntries(a.ruleIds.map((r) => [r, "firm"])) } }));
   const rejected: AgentRejection[] = [];
   const wanted = (e: RuleEdit) =>
@@ -139,8 +142,8 @@ export function resolveAgents(edits: RuleEdit[] = SEED_EDITS, scope?: { segmentI
       if (!firm && CADENCE_RANK[to] < CADENCE_RANK[a.cadence]) { refuse(`Would slow ${a.cadence.replace("_", " ")} to ${to.replace("_", " ")}. A lower layer may only run an agent more often.`); continue; }
       a.cadence = to; a.setBy!.cadence = e.layer;
     } else if (e.field === "addRule") {
-      const rule = BASELINE.find((r) => r.id === e.to);
-      if (!rule) { refuse("No such rule in the baseline."); continue; }
+      const rule = known.find((r) => r.id === e.to);
+      if (!rule) { refuse("No such rule in the baseline or the session."); continue; }
       if (rule.scope !== a.scope) { refuse(`The rule reads ${rule.scope} facts; this desk reads ${a.scope} facts.`); continue; }
       if (!a.ruleIds.includes(e.to)) { a.ruleIds.push(e.to); a.setBy!.rules[e.to] = e.layer; }
     } else if (e.field === "removeRule") {
@@ -154,8 +157,8 @@ export function resolveAgents(edits: RuleEdit[] = SEED_EDITS, scope?: { segmentI
 }
 
 /** The agents as the firm set them, or as they stand for one advisor when `scope` is given. */
-export function agentsFrom(edits: RuleEdit[] = SEED_EDITS, asOf?: string, scope?: { segmentId?: string; advisorId?: string }): AgentDefinition[] {
-  return resolveAgents(edits, scope, asOf).agents;
+export function agentsFrom(edits: RuleEdit[] = SEED_EDITS, asOf?: string, scope?: { segmentId?: string; advisorId?: string }, added: RuleDefinition[] = []): AgentDefinition[] {
+  return resolveAgents(edits, scope, asOf, added).agents;
 }
 
 /**

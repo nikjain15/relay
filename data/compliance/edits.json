@@ -43,7 +43,7 @@
     {
       "id": "e-004",
       "at": "2026-09-24T16:12:00Z",
-      "actor": "Advisor A",
+      "actor": "Margaret Ellison",
       "target": "rule",
       "layer": "advisor",
       "layerId": "adv-a",
@@ -69,7 +69,7 @@
     {
       "id": "e-006",
       "at": "2026-09-25T16:40:00Z",
-      "actor": "Advisor A console",
+      "actor": "Margaret Ellison console",
       "target": "agent",
       "layer": "advisor",
       "layerId": "adv-a",
@@ -82,7 +82,7 @@
     {
       "id": "e-007",
       "at": "2026-09-26T08:30:00Z",
-      "actor": "Advisor C console",
+      "actor": "Thomas Reinholt console",
       "target": "agent",
       "layer": "advisor",
       "layerId": "adv-c",

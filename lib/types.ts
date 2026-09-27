@@ -131,6 +131,15 @@ export interface Product {
   plainDescription?: string;
   /** Mid-sentence form, with its article: "a government money market fund". */
   plainPhrase?: string;
+  /** Current distribution yield, percent a year. Illustrative, and stated as such on screen. */
+  yieldPct?: number;
+  /** Interest-rate sensitivity in years. Zero for equity-like products. */
+  durationYears?: number;
+  /** How the income is taxed. Drives the after-tax figure the options screen shows. */
+  taxTreatment?: "taxable" | "state_exempt" | "federal_exempt" | "qualified" | "ordinary" | "deferred";
+  incomeType?: string;
+  minimumUsd?: number;
+  benchmark?: string;
 }
 
 export interface Passage {

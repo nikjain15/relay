@@ -26,7 +26,8 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
-  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/data", "/discovery", "/simulate", "/how-it-works", "/features", "/impact", "/architecture",
+  "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents", "/sources", "/discovery", "/simulate", "/how-it-works", "/features", "/impact", "/architecture",
+  ...json("data/compliance/agents.json").agents.map((a) => `/agents/${a.id}`),
   ...readdirSync(join(ROOT, "data/documents")).map((f) => `/documents/${f.replace(/\.json$/, "")}`),
   ...clients.map((c) => `/research/${c.id}`),
   ...clients.map((c) => `/household/${c.id}`),
@@ -227,7 +228,7 @@ try {
     const rp = !(await page.locator("main").innerText()).includes(`${refusedOpp.plainTitle ?? refusedOpp.title}: `);
     await page.goto(`${BASE}/triage`);
     const owner = clients.find((c) => c.id === refusedOpp.householdId).advisorId;
-    const label = json(`data/advisors/${owner}.json`).walkthrough.label;
+    const label = json(`data/advisors/${owner}.json`).name;
     await page.getByRole("button", { name: label }).click();
     const tr = await page.getByRole("link", { name: "Refused: no supporting evidence" }).count();
     check("refusal carries to evidence, proposals, the review pack and today's list", ev && pr && rp && tr === 1, `${ev} ${pr} ${rp} ${tr}`);
@@ -278,9 +279,50 @@ try {
   for (const path of ["/servicing", "/meetings", "/pipeline", "/onboarding", "/follow-ups", "/communications"]) {
     await page.goto(`${BASE}${path}`);
     const t = await page.locator("main").innerText();
-    if (/read /.test(t) && /How it got there/.test(t) && (/Agent read or prepared/.test(t) || (await page.locator("header").first().innerText()).includes("Agent read or prepared"))) bars++;
+    if (/I read /.test(t) && /How I got there/.test(t) && (/Agent read or prepared/.test(t) || (await page.locator("header").first().innerText()).includes("Agent read or prepared"))) bars++;
   }
-  check("agent bars: six workflow screens open with what the agent read, what it left, a trace and the legend", bars === 6, `${bars} of 6`);
+  check("agent briefs: six workflow screens open with the agent speaking first, a trace and the legend", bars === 6, `${bars} of 6`);
+  // The morning inbox: a prepared action opens beside the list with the draft and the reasoning; accepting records it and stays on screen.
+  await page.goto(`${BASE}/`);
+  const inbox = await page.locator("main").innerText();
+  const reviews = await page.getByRole("button", { name: "Review", exact: true }).count();
+  if (reviews) await page.getByRole("button", { name: "Review", exact: true }).first().click();
+  const dialog = page.getByRole("dialog");
+  const panelText = reviews ? await dialog.innerText() : "";
+  if (reviews) await dialog.getByRole("button", { name: "Accept", exact: true }).click();
+  const afterAccept = reviews ? await dialog.innerText() : "";
+  if (reviews) await page.keyboard.press("Escape");
+  const inboxAfter = await page.locator("main").innerText();
+  check("inbox: decide now, review what the agents prepared, what else ran; accepting in the panel records it without sending and stays on screen", /1\. Decide now/.test(inbox) && /2\. Review what the agents prepared/.test(inbox) && /3\. What else ran/.test(inbox) && reviews > 0 && /How the agent got here/.test(panelText) && /Nothing sends/.test(panelText) && /Recorded\. Nothing was sent\./.test(afterAccept) && /Recorded\. Nothing was sent; you act\./.test(inboxAfter), `${reviews} reviews`);
+  // A desk page: rules, findings, tuning, and a policy read into candidate rules that a person adds; the rule is then in force on the next sweep.
+  await page.goto(`${BASE}/agents/client-protection`);
+  await page.getByRole("button", { name: "Use the sample procedure" }).click();
+  const readText = await page.locator("main").innerText();
+  const addable = await page.getByRole("button", { name: /^Add to / }).count();
+  const enabledAdd = page.getByRole("button", { name: /^Add to / }).filter({ hasNot: page.locator("[disabled]") });
+  const firstAdd = page.locator("button:not([disabled])", { hasText: /^Add to / }).first();
+  await firstAdd.click();
+  const added = await page.locator("main").innerText();
+  await page.locator("main").getByRole("link", { name: "in the change log" }).click();
+  await page.waitForURL("**/compliance/log**");
+  const logText = await page.locator("main").innerText();
+  check("policy reader: a procedure becomes candidate rules cited to their sentences; adding one puts it in force and in the change log", /I read \d+ sentences/.test(readText) && /Paragraph \d/.test(readText) && /Fires when/.test(readText) && addable >= 5 && /Added to /.test(added) && /addRule/.test(logText) && /policy-/.test(logText), `${addable} addable, enabled ${await enabledAdd.count()}`);
+  // Ask, on every page: a question answered from the records, cited, linked.
+  await page.goto(`${BASE}/clients`);
+  await page.getByRole("button", { name: "Ask", exact: true }).click();
+  await page.getByLabel("Your question").fill("How much cash cover does Renner have?");
+  await page.getByRole("button", { name: "Ask", exact: true }).last().click();
+  const askText = await page.getByRole("dialog").innerText();
+  check("ask: a plain question is answered from household arithmetic with the record cited and a link to the household", /Liquidity covers \d+ months/.test(askText) && /data\/clients\/hh-renner\.json#holdings/.test(askText) && /From household arithmetic/.test(askText));
+  await page.keyboard.press("Escape");
+  // Options: the figures an advisor compares, and the morning after per row.
+  await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  const opt = await page.locator("main").innerText();
+  check("options: after-tax income, cost over the horizon, access and the morning after on every row, and the economics of the selected option", /Income after tax, a year/.test(opt) && /Cost, 3 yrs/.test(opt) && /Morning after/.test(opt) && /(Clean|Review|Blocked)/.test(opt) && /The economics for the household/.test(opt) && /Rate risk/.test(opt) && /Rationale record/.test(opt));
+  // Sources: three steps, the connector catalogue with what each unlocks, and a gap named.
+  await page.goto(`${BASE}/sources`);
+  const src = await page.locator("main").innerText();
+  check("sources: your book, your tools and channels with what each connector unlocks, documents and policies; gaps first", /1\. Your book/.test(src) && /2\. Your tools and channels/.test(src) && /3\. Documents and policies/.test(src) && /Unlocks \d+ rule/.test(src) && /Not captured/.test(src) && /for demonstration/.test(src));
   // Before you act: every option carried to the morning after, graded, with a trace; picking a row changes the detail.
   await page.goto(`${BASE}/simulate`);
   const sim = await page.locator("main").innerText();
@@ -303,7 +345,7 @@ try {
   const desks = await page.locator("main").innerText();
   check("desks: eight review desks with authorities, an advisor-layer tightening shown with its layer, and a refused loosening named", /Review desks, as they stand for/.test(desks) && /Marketing and advertising review/.test(desks) && /Complaints/.test(desks) && /Sales practice supervision/.test(desks) && /FINRA 4513/.test(desks) && /Refused at the/.test(desks) && /Tune for/.test(desks));
   // Connect data: the sample spreadsheet goes in through the file input, every row is accepted, the agents run over it live, and the book grows.
-  await page.goto(`${BASE}/data`);
+  await page.goto(`${BASE}/sources`);
   await page.locator('input[type="file"]').setInputFiles([join(ROOT, "public/samples/clients.csv"), join(ROOT, "public/samples/messages.csv"), join(ROOT, "public/samples/research-note.md")]);
   // Files are read one after another; wait for the last one's row before reading the table.
   await page.getByRole("cell", { name: /messages\.csv/ }).waitFor({ timeout: 15000 });

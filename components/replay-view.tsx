@@ -30,7 +30,7 @@ export function ReplayView() {
     .map(([id, n]) => ({ label: BASELINE.find((b) => b.id === id)?.title ?? id, value: n, href: `/compliance#${id}` }))
     .sort((a, b) => b.value - a.value);
 
-  if (!r) return <PageTitle title="Replay" sub="No past findings on file." />;
+  if (!r) return <PageTitle icon="replay" title="Replay" sub="No past findings on file." />;
 
   const f = r.finding;
   const fieldsOf = (rule: typeof r.then.rule): Record<string, string> =>
@@ -42,6 +42,7 @@ export function ReplayView() {
   return (
     <>
       <PageTitle
+        icon="replay"
         title="Replay a past finding"
         sub="Pick a finding. Relay folds the change log onto the baseline up to that moment, re-runs the rule on the facts it read then, and runs the same facts against the rules as they stand now."
       />

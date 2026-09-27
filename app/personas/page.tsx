@@ -8,6 +8,7 @@ export default function Personas() {
   return (
     <>
       <PageTitle
+        icon="crm"
         title="Who's who"
         sub="Cited composites: invented names and exact figures, set inside ranges and situations UBS and public sources describe. No real client or advisor. Full detail in docs/PERSONAS.md."
       />

@@ -14,7 +14,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Banner, Card, CardGrid, Field, More, PageTitle, Pill, Section, StatRow, btn, btnPrimary, input, textarea } from "@/components/ui";
+import { Banner, Brief, Card, CardGrid, Field, More, PageTitle, Pill, Section, btn, btnPrimary, input, textarea } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import type { Severity } from "@/lib/compliance/types";
 import { SEVERITY_ORDER } from "@/lib/compliance/types";
@@ -78,7 +78,7 @@ function RuleCard({
       {missing.length > 0 && (
         <p className="mb-3 text-[13px] text-caution">
           Cannot be evaluated: reads from {missing.join(", ")}, which is not connected.{" "}
-          <Link href="/connectors" className="underline">
+          <Link href="/sources" className="underline">
             Connect it
           </Link>
           .
@@ -150,7 +150,7 @@ function RuleCard({
 }
 
 export function ComplianceView({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, editRule, connections, proposalDecisions, decideProposal } = useRelay();
+  const { ruleEdits, editRule, connections, proposalDecisions, decideProposal, book } = useRelay();
   const [declining, setDeclining] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState("");
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
@@ -163,10 +163,10 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
     [connections, advisorId],
   );
   const policy = useMemo(
-    () => policyFrom(ruleEdits, { segmentId: scope.segmentId, advisorId }),
-    [ruleEdits, advisorId, scope.segmentId],
+    () => policyFrom(ruleEdits, { segmentId: scope.segmentId, advisorId }, undefined, book.rules),
+    [ruleEdits, advisorId, scope.segmentId, book.rules],
   );
-  const resolved = useMemo(() => resolveAgents(ruleEdits, { segmentId: scope.segmentId, advisorId }), [ruleEdits, advisorId, scope.segmentId]);
+  const resolved = useMemo(() => resolveAgents(ruleEdits, { segmentId: scope.segmentId, advisorId }, undefined, book.rules), [ruleEdits, advisorId, scope.segmentId, book.rules]);
   const agents = resolved.agents;
   const uncovered = useMemo(() => uncoveredMandatoryRules(policy, agents), [policy, agents]);
 
@@ -216,20 +216,22 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
   return (
     <>
       <PageTitle
-        title="Rules and agents"
+        icon="rules"
+        title="Rules and desks"
         sub="The rule set is data. A change here is in force on the next evaluation, everywhere, with no release."
       />
-
-      <StatRow
-        items={[
-          { value: inForce.length, label: "Rules in force", icon: "rules" },
-          { value: agents.filter((a) => a.enabled).length, label: "Agents running", icon: "agent" },
-          { value: cases.length, label: "Open cases", icon: "shield", tone: cases.length ? "critical" : "positive" },
-          { value: openProposals.length, label: "Proposed changes waiting on a principal", icon: "flag", tone: openProposals.length ? "critical" : "positive" },
-        ]}
+      <Brief
+        name="Rule proposer"
+        icon="flag"
+        at="day 0, 06:35"
+        says={<>{inForce.length} rules are in force across {agents.filter((a) => a.enabled).length} desks for this advisor{book.rules.length ? `, ${book.rules.length} of them read from a policy document this session` : ""}. I read {proposed.findingsRead} findings from the last {proposed.windowDays} days and {openProposals.length ? <>propose {openProposals.length} change{openProposals.length === 1 ? "" : "s"}, stricter only, for a principal to accept or refuse.</> : "propose nothing today."} {policy.rejected.length ? `${policy.rejected.length} attempted loosening${policy.rejected.length === 1 ? " was" : "s were"} refused and stay on the record.` : ""}</>}
+        points={openProposals.slice(0, 3).map((p) => ({ text: `${p.ruleTitle}: ${p.field} ${p.from} to ${p.to}. ${p.rationale}`, tone: "caution" as const, icon: "flag" as const }))}
+        next={openProposals.length ? { label: "Decide the first proposal", href: "#proposals" } : { label: "Open a desk to tune it or teach it a policy", href: "/agents" }}
+        note="Every layer can tighten and none can loosen. A refused change is itself a supervision signal, so it is kept."
       />
 
       <Section title={openProposals.length ? "Proposed by the agent, waiting on a principal" : "Nothing proposed by the agent"}>
+        <div id="proposals" className="scroll-mt-20" />
         <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
           The proposer reads what the other agents keep finding, over the last {proposed.windowDays} days ({proposed.findingsRead} findings) and the
           current sweep, and drafts a change in the stricter direction only. It applies nothing: accepting one appends an edit to the change log in

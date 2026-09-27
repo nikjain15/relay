@@ -9,7 +9,13 @@
     "description": "Laddered US Treasuries matched to 36 months of spending",
     "plainName": "Short-term US Treasury bonds",
     "plainDescription": "Low risk, available within 2 days",
-    "plainPhrase": "short-term US Treasury bonds"
+    "plainPhrase": "short-term US Treasury bonds",
+    "yieldPct": 4.1,
+    "durationYears": 1.5,
+    "taxTreatment": "state_exempt",
+    "incomeType": "interest",
+    "minimumUsd": 25000,
+    "benchmark": "Bloomberg US Treasury 1-3 Year"
   },
   {
     "id": "prod-mmf",
@@ -21,7 +27,13 @@
     "description": "Same-day liquidity for near-term spending",
     "plainName": "Government money market fund",
     "plainDescription": "Available next day",
-    "plainPhrase": "a government money market fund"
+    "plainPhrase": "a government money market fund",
+    "yieldPct": 4.3,
+    "durationYears": 0.1,
+    "taxTreatment": "taxable",
+    "incomeType": "interest",
+    "minimumUsd": 1000,
+    "benchmark": "ICE BofA US 3-Month Treasury Bill"
   },
   {
     "id": "prod-exchange-fund",
@@ -33,7 +45,13 @@
     "description": "Contributes concentrated stock for a diversified unit interest without a sale",
     "plainName": "7-year locked fund",
     "plainDescription": "Swaps one stock for a diversified fund, locked for 7 years",
-    "plainPhrase": "a 7-year locked fund"
+    "plainPhrase": "a 7-year locked fund",
+    "yieldPct": 1.2,
+    "durationYears": 0,
+    "taxTreatment": "deferred",
+    "incomeType": "deferred",
+    "minimumUsd": 1000000,
+    "benchmark": "Russell 3000"
   },
   {
     "id": "prod-core-model",
@@ -45,7 +63,13 @@
     "description": "The firm's core multi-asset model portfolio",
     "plainName": "Core investment portfolio",
     "plainDescription": "The firm's diversified model portfolio",
-    "plainPhrase": "the core investment portfolio"
+    "plainPhrase": "the core investment portfolio",
+    "yieldPct": 2.4,
+    "durationYears": 5.5,
+    "taxTreatment": "taxable",
+    "incomeType": "mixed",
+    "minimumUsd": 250000,
+    "benchmark": "60/40 blended"
   },
   {
     "id": "prod-structured-note",
@@ -57,7 +81,13 @@
     "description": "Downside buffer on an index, capped upside, issuer credit risk",
     "plainName": "5-year structured note",
     "plainDescription": "Limits losses, caps gains, locked for 5 years",
-    "plainPhrase": "a 5-year structured note"
+    "plainPhrase": "a 5-year structured note",
+    "yieldPct": 7.5,
+    "durationYears": 5,
+    "taxTreatment": "ordinary",
+    "incomeType": "contingent coupon",
+    "minimumUsd": 250000,
+    "benchmark": "S&P 500 with 20% buffer"
   },
   {
     "id": "prod-private-credit",
@@ -69,7 +99,13 @@
     "description": "Quarterly liquidity with gates",
     "plainName": "Private credit fund",
     "plainDescription": "Loans to private companies, withdrawals limited",
-    "plainPhrase": "a private credit fund"
+    "plainPhrase": "a private credit fund",
+    "yieldPct": 9.8,
+    "durationYears": 3,
+    "taxTreatment": "ordinary",
+    "incomeType": "interest",
+    "minimumUsd": 500000,
+    "benchmark": "Cliffwater Direct Lending"
   },
   {
     "id": "prod-muni-ladder",
@@ -81,7 +117,13 @@
     "description": "Tax-exempt income for high-bracket households",
     "plainName": "Municipal bond ladder",
     "plainDescription": "Tax-free income, available within 3 days",
-    "plainPhrase": "a municipal bond ladder"
+    "plainPhrase": "a municipal bond ladder",
+    "yieldPct": 3.2,
+    "durationYears": 3.8,
+    "taxTreatment": "federal_exempt",
+    "incomeType": "interest",
+    "minimumUsd": 100000,
+    "benchmark": "Bloomberg Municipal 1-7 Year"
   },
   {
     "id": "prod-sector-etf",
@@ -93,6 +135,12 @@
     "description": "Concentrated exposure to one sector",
     "plainName": "Single-sector fund",
     "plainDescription": "All in one industry",
-    "plainPhrase": "a single-sector fund"
+    "plainPhrase": "a single-sector fund",
+    "yieldPct": 0.8,
+    "durationYears": 0,
+    "taxTreatment": "qualified",
+    "incomeType": "dividend",
+    "minimumUsd": 0,
+    "benchmark": "Sector index"
   }
 ]

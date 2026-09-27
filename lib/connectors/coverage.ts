@@ -40,7 +40,7 @@ export interface CoverageReport {
 }
 
 const ALL_CHANNELS: ChannelKind[] = [
-  "email", "calendar", "meeting", "voice", "sms", "chat", "social", "crm", "custodian", "archive", "esign", "planning",
+  "email", "calendar", "meeting", "voice", "sms", "chat", "social", "crm", "custodian", "portfolio", "archive", "esign", "planning",
 ];
 
 const GAP_EXPOSURE: Partial<Record<ChannelKind, string[]>> = {

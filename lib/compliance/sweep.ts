@@ -11,6 +11,7 @@
 // Deterministic. No model client may be imported here.
 import type { ConnectionState } from "@/lib/connectors/types";
 import type { ClientFile } from "@/lib/types";
+import { CATALOG } from "@/lib/connectors/catalog";
 import { coverageFor } from "@/lib/connectors/coverage";
 import type { AgentDefinition, Case } from "@/lib/compliance/agents";
 import { AGENTS } from "@/lib/compliance/agents";
@@ -32,8 +33,11 @@ export interface Sweep {
   messagesNotSwept: { id: string; connectorId: string; channel: string }[];
 }
 
+/** Connected connector ids, plus the generic sources each one stands in for (a connected custodian satisfies "custodian-feed"). */
 export function connectedIds(advisorId: string, states: ConnectionState[]): string[] {
-  return states.filter((s) => s.advisorId === advisorId && s.status === "connected").map((s) => s.connectorId);
+  const direct = states.filter((s) => s.advisorId === advisorId && s.status === "connected").map((s) => s.connectorId);
+  const stood = direct.flatMap((id) => CATALOG.find((c) => c.id === id)?.satisfies ?? []);
+  return [...new Set([...direct, ...stood])];
 }
 
 /** `clients` defaults to the shipped book; a session dataset (imported files) is passed in by the screens that hold one. */

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { corpusStates, corpusConflicts, FRESHNESS_LABEL, type Freshness } from "@/lib/evidence/corpus";
 import { ALL_OPPORTUNITIES } from "@/lib/data";
 import { POLICY } from "@/lib/data/policy";
-import { Card, More, PageTitle, Pill, Section, StatRow, TableScroll, td, th } from "@/components/ui";
+import { Brief, Card, More, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 import { Icon, DOC_ICON } from "@/components/icons";
 import { Bars, Meter } from "@/components/charts";
 
@@ -27,15 +27,19 @@ export default function Documents() {
 
   return (
     <>
-      <PageTitle title="Document library" sub={`What may be quoted, and how old it is. Corpus day ${POLICY.retrieval.corpusDay}.`} />
+      <PageTitle icon="library" title="Document library" sub={`What may be quoted, and how old it is. Corpus day ${POLICY.retrieval.corpusDay}.`} />
 
-      <StatRow
-        items={[
-          { value: usable.length, label: `Current documents of ${states.length}`, icon: "library" },
-          { value: stale.length, label: "Past review date", icon: "hourglass", tone: stale.length ? "critical" : "positive" },
-          { value: due.length, label: `Review due within ${POLICY.retrieval.reviewDueWithinDays} days`, icon: "clock", tone: due.length ? "plain" : "positive" },
-          { value: conflicts.length, label: "Open disagreements", icon: "conflict", tone: conflicts.length ? "critical" : "positive" },
+      <Brief
+        name="Retrieval"
+        icon="library"
+        at="day 0, 06:05"
+        says={<>{usable.length} of {states.length} documents may be quoted to a client. {stale.length ? `${stale.length} ${stale.length === 1 ? "is" : "are"} past review date and will be cited with a warning.` : "None is past its review date."} {due.length ? `${due.length} come${due.length === 1 ? "s" : ""} due within ${POLICY.retrieval.reviewDueWithinDays} days.` : ""} {conflicts.length ? `${conflicts.length} current documents disagree, and I show the disagreement rather than pick a side.` : "No two current documents disagree."}</>}
+        points={[
+          ...conflicts.slice(0, 1).map((k) => ({ text: `Disagreement: ${k.topic}. ${k.sides.map((x) => x.title).join(" and ")}.`, tone: "critical" as const, href: "#conflicts" })),
+          ...stale.slice(0, 2).map((d) => ({ text: `${d.doc.title} is ${d.ageDays} days old, review overdue.`, tone: "caution" as const, href: `/documents/${d.doc.id}` })),
         ]}
+        next={stale[0] ? { label: `Open ${stale[0].doc.title}`, href: `/documents/${stale[0].doc.id}` } : undefined}
+        note="Retrieval scores passages by arithmetic over terms, citations and age. A model would summarise a passage; it would not choose which one may be quoted."
       />
 
       <Section title="Freshness">
@@ -52,6 +56,7 @@ export default function Documents() {
 
       {conflicts.length > 0 && (
         <Section title="Two current documents disagree">
+          <div id="conflicts" className="scroll-mt-20" />
           {conflicts.map((k) => (
             <Card key={k.topic} tone="critical" icon="conflict" title={k.topic.replace(/[.-]/g, " ")} sub={k.note}>
               <ul className="space-y-1.5 text-[13px]">

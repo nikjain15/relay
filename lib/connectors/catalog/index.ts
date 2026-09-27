@@ -12,6 +12,19 @@ import { salesforceFsc } from "./salesforce-fsc";
 import { custodianFeed } from "./custodian-feed";
 import { archive } from "./archive";
 import { esign } from "./esign";
+import { redtail } from "./redtail";
+import { wealthbox } from "./wealthbox";
+import { dynamics365 } from "./dynamics-365";
+import { hubspot } from "./hubspot";
+import { ubsWorkstation } from "./ubs-workstation";
+import { schwabAdvisorCenter } from "./schwab-advisor-center";
+import { fidelityWealthscape } from "./fidelity-wealthscape";
+import { pershingNetx360 } from "./pershing-netx360";
+import { orion } from "./orion";
+import { tamarac } from "./tamarac";
+import { blackDiamond } from "./black-diamond";
+import { emoney } from "./emoney";
+import { moneyguidepro } from "./moneyguidepro";
 
 export const CATALOG: ConnectorDefinition[] = [
   microsoft365,
@@ -24,4 +37,17 @@ export const CATALOG: ConnectorDefinition[] = [
   custodianFeed,
   archive,
   esign,
+  redtail,
+  wealthbox,
+  dynamics365,
+  hubspot,
+  ubsWorkstation,
+  schwabAdvisorCenter,
+  fidelityWealthscape,
+  pershingNetx360,
+  orion,
+  tamarac,
+  blackDiamond,
+  emoney,
+  moneyguidepro,
 ];

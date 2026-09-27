@@ -3,6 +3,16 @@
 Notable changes, by pull request. Decisions behind each are numbered in the build spec.
 
 ## Unreleased
+- Every workflow screen opens with the agent speaking first: a Brief with the figures in the sentence, what matters, one next step, and a trace.
+- The overview as a morning inbox: decide now, review what the agents prepared by household, what else ran. A prepared action opens in a panel with the draft, the reasoning and where it goes, and a decision stays on screen as a recorded outcome; declining asks for a reason.
+- A page per review desk: rules, findings, sources, a tune panel, and a policy reader that turns a written procedure into candidate rules cited to their sentences, which a person adds to the desk through the change log.
+- Sources: one page for the book, the tools and channels, and documents and policies; 13 new read-only connectors (CRM, custodian, portfolio, planning) with what each unlocks; a connected custodian or CRM stands in for the generic source a rule names.
+- Options: after-tax income, cost over the horizon, access, rate risk and the morning after on every row; the economics and consequences of the selected option.
+- Ask, on every screen: a plain question answered from the book, the findings, the rules and the sources, each answer cited.
+- Navigation in six areas in the order of the advisor's day; an icon on every page; advisors carry invented full names; the header reads for an advisor.
+- About pages share a sub-navigation and a three-point summary each.
+
+## #11: About pages and root documents
 - How it works, Features, Impact and Architecture pages; root ARCHITECTURE, CONTRIBUTING, SECURITY and CHANGELOG documents.
 
 ## #10: Perspective colours and an agent bar on every workflow screen
