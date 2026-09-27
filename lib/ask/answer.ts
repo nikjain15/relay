@@ -316,7 +316,7 @@ function aboutHousehold(q: string, c: ClientFile, ctx: AskContext): Answer {
     const eligible = evs.filter((e) => e.pass).map((e) => ({ e, p: SHELF.find((x) => x.id === e.candidate.productId)!, x: economics(e.candidate, SHELF.find((x) => x.id === e.candidate.productId)!) }));
     const pick = named ? evs.find((e) => e.candidate.productId === named.id) : undefined;
     const line = (p: (typeof SHELF)[number], x: ReturnType<typeof economics>) => `${p.name}: ${usd(x.grossIncomeUsd)} a year gross, ${usd(x.afterTaxIncomeUsd)} after tax at ${x.taxPct}%, ${usd(x.costOverHorizonUsd)} cost over ${x.horizonYears} years, access ${x.accessLabel.toLowerCase()}`;
-    const head = `For ${opp.plainTitle ?? opp.title}, on ${usd(evs[0]?.candidate.amountUsd ?? 0)}:`;
+    const head = `${(opp.plainTitle ?? opp.title).replace(/\.$/, "")}. On ${usd(evs[0]?.candidate.amountUsd ?? 0)}:`;
     const text = pick && named
       ? `${head} ${line(named, economics(pick.candidate, named))}. ${pick.pass ? "Eligible under the family's rules." : `Not eligible: ${pick.failures.map((f) => f.rule).join(", ")}.`}`
       : eligible.length ? `${head} ${eligible.length} of ${evs.length} options pass the family's rules. ${eligible.map(({ p, x }) => line(p, x)).join("; ")}.` : `${head} no option on the shelf passes the family's rules.`;
