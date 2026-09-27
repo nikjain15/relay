@@ -32,6 +32,7 @@ import { reviewPack } from "@/lib/meetings/prep";
 import { allTasks } from "@/lib/followups";
 import type { ClientFile, TriggerClass } from "@/lib/types";
 import { StateProvider } from "@/components/state";
+import { ViewProvider } from "@/components/view";
 import ClientsPage from "@/app/clients/page";
 import OnboardingPage from "@/app/onboarding/page";
 import JourneyPage from "@/app/page";
@@ -52,7 +53,7 @@ const time = <T,>(what: string, f: () => T, note?: (r: T) => string): T => {
   rows.push({ what, ms: Math.round((performance.now() - t) * 10) / 10, note: note?.(r) });
   return r;
 };
-const render = (el: ReactElement) => renderToString(<StateProvider>{el}</StateProvider>);
+const render = (el: ReactElement) => renderToString(<StateProvider><ViewProvider>{el}</ViewProvider></StateProvider>);
 let seed = 42;
 const rnd = () => ((seed = (seed * 1_103_515_245 + 12_345) % 2 ** 31) / 2 ** 31);
 
@@ -183,8 +184,8 @@ for (const [name, f] of [
   try { render(await f()); } catch (e) { problems.push(`${name}: ${(e as Error).message}`); }
 }
 try {
-  const html = render(<ClientsPage />);
-  if (!html.includes("Advisor with no clients")) problems.push("clients page: the advisor with no clients is missing");
+  // Signed in as the advisor with no households: the page must say so, not show an empty table.
+  const html = renderToString(<StateProvider initialAdvisorId="adv-empty"><ViewProvider><ClientsPage /></ViewProvider></StateProvider>);
   if (!html.includes("No households yet")) problems.push("clients page: an advisor with no households shows an empty table with no message");
 } catch (e) { problems.push(`clients page with an empty advisor: ${(e as Error).message}`); }
 
