@@ -63,6 +63,23 @@ export function render(template: string, facts: FactBag): string {
   });
 }
 
+/** What each fact means, in the words a supervisor would use. A fact not listed is shown by its name, split into words. */
+export const FACT_LABEL: Record<string, string> = {
+  alternativesConsidered: "alternatives considered", basisRecorded: "the basis is recorded", channelApproved: "the channel is approved",
+  citationCount: "the number of cited sources", clientAge: "the client's age", complaintLanguage: "the text reads as a complaint",
+  complaintLogged: "a complaint is logged", completeness: "record completeness", concentrationDriftPts: "the rise in one name over 90 days (points)",
+  concentrationHeadroomPts: "headroom under the family's one-name limit (points)", concentrationPct: "the share of wealth in one name (%)",
+  containsProjection: "it projects performance", containsRecommendation: "it contains a recommendation", containsSensitiveData: "it contains sensitive personal data",
+  containsTestimonial: "it contains a testimonial", costsCompared: "costs are compared", gapChannels: "channels in use and not captured",
+  isRecommendation: "it is a recommendation", machineDrafted: "it was drafted by a model", newThirdPartyContact: "a new third party is in contact",
+  obaOnFile: "an outside activity is disclosed", outsideBusinessLanguage: "it mentions outside business", partialChannels: "channels read but not retained",
+  principalApproved: "a principal approved it", recipientCount30d: "retail recipients in 30 days", reviewed: "it has been reviewed",
+  trustedContactOnFile: "a trusted contact is on file", unsourcedFigures: "figures without a source", unusualDisbursement: "a disbursement is unusual",
+  cashCoverMonths: "months of spending held in cash", daysSinceContact: "days since the last contact", direction: "the message",
+  excerpt: "what the client wrote",
+};
+const words = (k: string) => FACT_LABEL[k] ?? k.replace(/([a-z])([A-Z0-9])/g, "$1 $2").toLowerCase();
+
 /** A human-readable rendering of a condition, for the console. */
 export function explain(condition: Condition, params: Record<string, FactValue>, depth = 0): string {
   const pad = "  ".repeat(depth);
@@ -76,5 +93,9 @@ export function explain(condition: Condition, params: Record<string, FactValue>,
     lt: "is under", lte: "is at most", in: "is one of", contains: "contains",
     matches: "matches", exists: "is present",
   };
-  return `${pad}${condition.fact} ${verb[condition.cmp]}${condition.cmp === "exists" ? "" : ` ${shown}`}`;
+  // A yes-or-no fact reads as a statement: "a principal approved it" is false reads as "not: a principal approved it".
+  if (condition.cmp === "eq" && typeof v === "boolean") return `${pad}${v ? "" : "not: "}${words(condition.fact)}`;
+  if (condition.fact === "direction" && condition.cmp === "eq") return `${pad}the message is ${v === "inbound" ? "from the client" : "to the client"}`;
+  const quoted = condition.cmp === "contains" && typeof v === "string" ? `"${v}"` : shown;
+  return `${pad}${words(condition.fact)} ${verb[condition.cmp]}${condition.cmp === "exists" ? "" : ` ${quoted}`}`;
 }

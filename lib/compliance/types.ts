@@ -73,6 +73,22 @@ export interface RuleDefinition {
   requires: string[];
   /** What the agent prepares when this rule fires: holds, callbacks, forms, tasks, notes, sources. See lib/compliance/actions.ts. */
   actions?: unknown[];
+  /**
+   * Where the rule stands in law today. Every shipped rule carries one; a rule
+   * an advisor or a policy document adds may not, and says so. A proposed or
+   * approved-but-not-effective rule is never stated as current.
+   */
+  status?: RuleStatus;
+  /** The primary sources the rule is built on, first one the text itself. */
+  sources?: { label: string; url: string }[];
+}
+
+export interface RuleStatus {
+  state: "in_force" | "guidance" | "approved_not_effective" | "proposed";
+  /** In plain words, with the dates: "In force since June 30, 2020." */
+  text: string;
+  /** A change on the way, stated as not yet current. */
+  pending?: string;
 }
 
 /** A layer's change to a rule. Enable and tighten only; see policy.ts. */

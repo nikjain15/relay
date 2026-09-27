@@ -61,6 +61,16 @@
           "subject": "Pre-approval requested: {templateId}",
           "body": "This note reaches {recipientCount30d} retail investors within 30 days, which makes it a retail communication under Rule 2210. The draft, its sources and its audience count are attached for approval."
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force; the current rule took effect on February 4, 2013."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 2210, Communications with the Public",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/2210"
+        }
       ]
     },
     {
@@ -137,6 +147,16 @@
           "subject": "A recommendation went out without review",
           "body": "The message on {channel} carried a recommendation and was not reviewed before it went out. Nothing further is needed from the client; the review is being done now, and the next one goes through the queue first."
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since December 1, 2014, when the consolidated supervision rule took effect."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 3110, Supervision",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/3110"
+        }
       ]
     },
     {
@@ -194,6 +214,16 @@
           "owner": "Compliance",
           "dueInDays": 5
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force; Rule 17a-4 as amended in 2022, compliance required from May 3, 2023."
+      },
+      "sources": [
+        {
+          "label": "SEC Rule 17a-4, records to be preserved",
+          "url": "https://www.ecfr.gov/current/title-17/section-240.17a-4"
+        }
       ]
     },
     {
@@ -225,6 +255,16 @@
           "kind": "connect_source",
           "channels": "{partialChannels}",
           "text": "Point each of {partialChannels} at the archive, so the retained copy exists and not only the evidence."
+        }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force; the 2022 amendments to paragraph (f) required compliance from May 3, 2023."
+      },
+      "sources": [
+        {
+          "label": "SEC Rule 17a-4, records to be preserved",
+          "url": "https://www.ecfr.gov/current/title-17/section-240.17a-4"
         }
       ]
     },
@@ -301,6 +341,16 @@
           "owner": "Advisor",
           "dueInDays": 1
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since June 30, 2020, the Regulation Best Interest compliance date."
+      },
+      "sources": [
+        {
+          "label": "SEC Rule 15l-1, Regulation Best Interest",
+          "url": "https://www.ecfr.gov/current/title-17/section-240.15l-1"
+        }
       ]
     },
     {
@@ -353,6 +403,16 @@
           "text": "Rewrite the message without the projection and resend through review",
           "owner": "Advisor",
           "dueInDays": 1
+        }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force; adopted December 2020, compliance required from November 4, 2022."
+      },
+      "sources": [
+        {
+          "label": "SEC Rule 206(4)-1, investment adviser marketing",
+          "url": "https://www.ecfr.gov/current/title-17/section-275.206(4)-1"
         }
       ]
     },
@@ -439,6 +499,20 @@
           "owner": "Advisor",
           "dueInDays": 2
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since February 5, 2018, together with the trusted contact requirement in Rule 4512."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 2165, Financial Exploitation of Specified Adults",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/2165"
+        },
+        {
+          "label": "FINRA Rule 4512, Customer Account Information",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/4512"
+        }
       ]
     },
     {
@@ -495,6 +569,16 @@
           "title": "Call the client about the concern raised",
           "withinDays": 1
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since December 5, 2011."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 4513, Records of Written Customer Complaints",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/4513"
+        }
       ]
     },
     {
@@ -546,6 +630,16 @@
           "title": "Concentration review with the client",
           "withinDays": 14
         }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since July 9, 2012; the quantitative suitability amendment took effect June 30, 2020."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 2111, Suitability",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/2111"
+        }
       ]
     },
     {
@@ -591,6 +685,20 @@
           "text": "Move the exchange to an approved channel and record the incident under Reg S-P",
           "owner": "Compliance",
           "dueInDays": 1
+        }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force as amended in May 2024; compliance required from December 3, 2025 for larger entities and June 3, 2026 for smaller ones."
+      },
+      "sources": [
+        {
+          "label": "Regulation S-P, 17 CFR Part 248, Subpart A",
+          "url": "https://www.ecfr.gov/current/title-17/chapter-II/part-248/subpart-A"
+        },
+        {
+          "label": "FINRA reminder on the Regulation S-P compliance dates",
+          "url": "https://www.finra.org/rules-guidance/guidance/sec-regulation-s-p-compliance-date-reminder-20251114"
         }
       ]
     },
@@ -660,6 +768,20 @@
           "owner": "Advisor",
           "dueInDays": 1
         }
+      ],
+      "status": {
+        "state": "guidance",
+        "text": "Guidance, not a rule: Regulatory Notice 24-09 (June 2024) and the 2026 Annual Regulatory Oversight Report (December 2025) say existing rules, including Rule 3110, apply to generated text."
+      },
+      "sources": [
+        {
+          "label": "FINRA Regulatory Notice 24-09",
+          "url": "https://www.finra.org/rules-guidance/notices/24-09"
+        },
+        {
+          "label": "FINRA 2026 Annual Regulatory Oversight Report",
+          "url": "https://www.finra.org/sites/default/files/2025-12/2026-annual-regulatory-oversight-report.pdf"
+        }
       ]
     },
     {
@@ -708,6 +830,21 @@
           "text": "Confirm whether the activity described on {channel} is an outside business activity under Rule 3270",
           "owner": "Compliance",
           "dueInDays": 5
+        }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "Rules 3270 and 3280 are in force.",
+        "pending": "The SEC approved FINRA Rule 3290 on September 15, 2026 to replace both; it is not in force until FINRA announces an effective date."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 3270, Outside Business Activities",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/3270"
+        },
+        {
+          "label": "FINRA Rule 3280, Private Securities Transactions",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/3280"
         }
       ]
     },
@@ -787,6 +924,16 @@
           "text": "Prepare a staged-reduction illustration for {instrument}",
           "owner": "Wealth strategist",
           "dueInDays": 10
+        }
+      ],
+      "status": {
+        "state": "in_force",
+        "text": "In force since July 9, 2012; the quantitative suitability amendment took effect June 30, 2020."
+      },
+      "sources": [
+        {
+          "label": "FINRA Rule 2111, Suitability",
+          "url": "https://www.finra.org/rules-guidance/rulebooks/finra-rules/2111"
         }
       ]
     }

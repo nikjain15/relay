@@ -8,6 +8,20 @@ import type { AgentExplanation } from "@/lib/agents/explain";
 import { Icon, type IconName } from "@/components/icons";
 import { StateDot } from "@/components/ui";
 
+/** The texts an agent is built on, each a link, with any change on the way stated as not yet in force. */
+export function Grounded({ exp }: { exp: AgentExplanation }) {
+  if (!exp.grounded.length) return <span className="text-ink-3">{exp.groundedNote}</span>;
+  const pending = [...new Set(exp.grounded.map((g) => g.pending).filter(Boolean))];
+  return (
+    <span className="min-w-0">
+      {exp.grounded.map((g, i) => (
+        <span key={g.url + g.label}>{i > 0 && "; "}<a href={g.url} target="_blank" rel="noreferrer" className="underline decoration-line-strong" title={g.status}>{g.label}</a></span>
+      ))}
+      {pending.map((p) => <span key={p} className="mt-1 block text-caution">Not yet in force: {p}</span>)}
+    </span>
+  );
+}
+
 export function AgentCard({ name, icon, kind, exp, state, today, actions }: {
   name: string;
   icon: IconName;
@@ -37,6 +51,8 @@ export function AgentCard({ name, icon, kind, exp, state, today, actions }: {
         <li className="flex gap-2"><span className="w-16 shrink-0 text-ink-3">Checks</span><span>{exp.checks.join("; ")}</span></li>
         <li className="flex gap-2"><span className="w-16 shrink-0 text-ink-3">Prepares</span><span>{exp.prepares.join("; ")}</span></li>
         <li className="flex gap-2"><span className="w-16 shrink-0 text-ink-3">Never</span><span>{exp.never}</span></li>
+        <li className="flex gap-2"><span className="w-16 shrink-0 text-ink-3">How</span><span>{exp.method}</span></li>
+        <li className="flex gap-2"><span className="w-16 shrink-0 text-ink-3">Built on</span><Grounded exp={exp} /></li>
       </ol>
       <p className="mt-3 rounded bg-subtle px-2.5 py-1.5 text-meta text-ink">{today}</p>
       <div className="mt-3 flex flex-wrap gap-2">{actions}</div>

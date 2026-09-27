@@ -15,6 +15,7 @@ import { useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
 import { explainAgent } from "@/lib/agents/explain";
 import { DeskEditor } from "@/components/agent-editor";
+import { Grounded } from "@/components/agent-card";
 import { Icon } from "@/components/icons";
 import { Brief, Card, Legend, More, PageTitle, Pill, Row, Section, StateDot, Trace, Who, btn, btnPrimary, textarea, inputSmall } from "@/components/ui";
 import { Desks } from "@/components/desks";
@@ -106,6 +107,8 @@ export function AgentDetail({ agentId }: { agentId: string }) {
               <dt className="text-ink-3">Prepares</dt><dd className="text-ink-2">{x.prepares.join("; ")}</dd>
               <dt className="text-ink-3">Runs</dt><dd className="text-ink-2">{x.runs}</dd>
               <dt className="text-ink-3">Never</dt><dd className="text-ink-2">{x.never}</dd>
+              <dt className="text-ink-3">How</dt><dd className="text-ink-2">{x.method}</dd>
+              <dt className="text-ink-3">Built on</dt><dd className="text-ink-2"><Grounded exp={x} /></dd>
             </dl>
             <p className="mt-3 flex flex-wrap gap-2"><button type="button" className={btn} onClick={() => setEditingDesk(true)}>Edit this desk</button><a className="self-center text-meta underline" href="#policy">Read a written policy into it</a></p>
           </section>
@@ -121,15 +124,30 @@ export function AgentDetail({ agentId }: { agentId: string }) {
       </div>
 
       <Section title={`Rules this desk watches (${rules.length})`}>
-        <div className="rounded border border-line px-3 sm:px-4">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">Each rule is data: a stated condition over facts computed from the book, the settings a layer may tighten, what the desk prepares when it fires, and the text it is built on with where that text stands in law today.</p>
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rules.map((r) => {
             const gone = r.requires.filter((x) => !connected.includes(x));
             const addedBy = agent.setBy?.rules[r.id];
+            const fired = mine.filter((c) => c.ruleId === r.id).length;
             return (
-              <Row key={r.id} icon={gone.length ? "alert" : "rules"} tone={gone.length ? "caution" : "plain"} who="agent"
-                title={<>{r.title} {book.rules.some((x) => x.id === r.id) && <Pill tone="accent">from a policy document</Pill>}{addedBy && addedBy !== "firm" && <Pill tone="accent">added by {scope.layers.find((l) => l.layer === addedBy)?.label ?? addedBy}</Pill>}</>}
-                meta={<><span className="whitespace-pre-line">{explain(r.when, paramMap(r)).replace(/\n\s*/g, " ")}</span> · {r.authority} · {r.citation}{gone.length ? <span className="text-caution"> · needs {gone.join(", ")}, not connected</span> : ""}</>}
-                right={<span className="flex items-center gap-2"><Pill tone={r.severity === "block" ? "fail" : r.severity === "flag" ? "accent" : "neutral"}>{SEVERITY_LABEL[r.severity]}</Pill><Link href={`/compliance#${r.id}`} className={btn}>Change</Link></span>} />
+              <section key={r.id} id={`rule-${r.id}`} aria-label={r.title} className={`scroll-mt-20 rounded border p-4 ${gone.length ? "border-caution/40" : "border-line"}`}>
+                <header className="flex flex-wrap items-start justify-between gap-2">
+                  <h3 className="min-w-0 text-lead font-semibold text-ink">{r.title}</h3>
+                  <Pill tone={r.severity === "block" ? "fail" : r.severity === "flag" ? "accent" : "neutral"}>{SEVERITY_LABEL[r.severity]}</Pill>
+                </header>
+                <p className="mt-0.5 text-meta text-ink-3">{r.authority} · {r.citation}{r.mandatory ? " · firm-mandatory" : ""}{book.rules.some((x) => x.id === r.id) ? " · from a policy document" : ""}{addedBy && addedBy !== "firm" ? ` · added by ${scope.layers.find((l) => l.layer === addedBy)?.label ?? addedBy}` : ""}</p>
+                <dl className="mt-3 grid gap-x-3 gap-y-1.5 text-body sm:grid-cols-[7rem_1fr]">
+                  <dt className="text-ink-3">Fires when</dt><dd className="text-ink">{explain(r.when, paramMap(r)).replace(/\n\s*/g, " ")}</dd>
+                  {r.params.length > 0 && <><dt className="text-ink-3">Settings</dt><dd className="text-ink-2">{r.params.map((p) => `${p.label}: ${String(p.value)}${p.min !== undefined && p.max !== undefined ? ` (bounds ${p.min} to ${p.max}${p.stricter ? `, stricter is ${p.stricter}` : ""})` : ""}`).join("; ")}{r.params.some((p) => p.note) && <span className="block text-meta text-ink-3">{r.params.map((p) => p.note).filter(Boolean).join(" ")}</span>}</dd></>}
+                  <dt className="text-ink-3">Prepares</dt><dd className="text-ink-2">{explainAgent({ ...agent, ruleIds: [r.id] }, [r]).prepares.join("; ")}</dd>
+                  <dt className="text-ink-3">Needs</dt><dd className={gone.length ? "text-caution" : "text-ink-2"}>{r.requires.length ? r.requires.map((x) => `${CATALOG.find((c) => c.id === x)?.name ?? x}${connected.includes(x) ? "" : " (not connected)"}`).join(", ") : "Nothing beyond the book"}</dd>
+                  <dt className="text-ink-3">In law</dt><dd className="text-ink-2">{r.status?.text ?? "Not a regulation: a rule the firm or an advisor added."}{r.status?.pending && <span className="block text-caution">Not yet in force: {r.status.pending}</span>}</dd>
+                  <dt className="text-ink-3">Source</dt><dd>{r.sources?.length ? r.sources.map((x, i) => <span key={x.url + x.label}>{i > 0 && "; "}<a className="underline decoration-line-strong" href={x.url} target="_blank" rel="noreferrer">{x.label}</a></span>) : <span className="text-ink-3">{book.rules.some((x) => x.id === r.id) ? "The sentence it was read from, in the change log" : "None cited"}</span>}</dd>
+                  <dt className="text-ink-3">Today</dt><dd className="text-ink">{gone.length ? "Cannot evaluate until its source is connected." : fired ? `Raised ${fired} for ${advisor?.name ?? "you"}.` : "Nothing fired."}</dd>
+                </dl>
+                <p className="mt-3"><Link href={`/compliance#${r.id}`} className={btn}>Change this rule</Link></p>
+              </section>
             );
           })}
         </div>

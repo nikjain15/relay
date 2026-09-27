@@ -9,6 +9,7 @@ import type { AgentDefinition } from "@/lib/compliance/agents";
 import type { EffectiveRule } from "@/lib/compliance/policy";
 import type { ActionTemplate } from "@/lib/compliance/actions";
 import type { RosterAgent } from "@/lib/agents/roster";
+import type { RuleDefinition } from "@/lib/compliance/types";
 
 export interface AgentExplanation {
   role: string;
@@ -17,6 +18,12 @@ export interface AgentExplanation {
   prepares: string[];
   runs: string;
   never: string;
+  /** How it decides. */
+  method: string;
+  /** What it is built on: each rule's primary text, with where that rule stands in law. */
+  grounded: { label: string; url: string; status?: string; pending?: string }[];
+  /** Said when there is nothing to cite, so an empty list never reads as an omission. */
+  groundedNote?: string;
 }
 
 const READS: Record<AgentDefinition["scope"], string> = {
@@ -56,6 +63,12 @@ export function explainAgent(a: AgentDefinition, rules: EffectiveRule[]): AgentE
     never: a.id.startsWith("custom-")
       ? "Never sends, never changes an account, never clears its own finding."
       : "Never sends, never clears its own finding, and no advisor can switch it off or loosen it without a principal.",
+    method: a.id.startsWith("custom-")
+      ? "One rule you set, evaluated as a stated condition over the same facts the desks read."
+      : `${mine.length} rule${mine.length === 1 ? "" : "s"}, each a stated condition over facts computed from the book; under a rule's confidence floor, or without the source it needs, it asks a person rather than clears.`,
+    // Every rule the desk carries, on or off: what it is built on does not change when a layer switches a rule off.
+    grounded: groundedIn(rules.filter((r) => a.ruleIds.includes(r.id))),
+    groundedNote: a.id.startsWith("custom-") ? "Your own watch: a firm threshold you chose, not a regulation." : undefined,
   };
 }
 
@@ -68,5 +81,20 @@ export function explainRoster(a: RosterAgent): AgentExplanation {
     prepares: [a.leaves],
     runs: a.cadence === "morning" ? "Every morning, before you open Relay" : "When you ask",
     never: a.never,
+    method: a.method,
+    grounded: a.basis,
+    groundedNote: a.basis.length ? undefined : "Arithmetic or a convenience, not a regulatory duty; the method above is the whole of it.",
   };
+}
+
+/** Each rule's sources once, with where the rule stands, in the order the desk runs them. */
+export function groundedIn(rules: RuleDefinition[]): AgentExplanation["grounded"] {
+  const out: AgentExplanation["grounded"] = [];
+  for (const r of rules) {
+    for (const s of r.sources ?? []) {
+      if (out.some((x) => x.url === s.url && x.label === s.label)) continue;
+      out.push({ ...s, status: r.status?.text, pending: r.status?.pending });
+    }
+  }
+  return out;
 }
