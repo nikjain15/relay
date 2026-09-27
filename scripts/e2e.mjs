@@ -311,7 +311,7 @@ try {
   check("policy reader: a procedure becomes candidate rules cited to their sentences; adding one puts it in force and in the change log", /I read \d+ sentences/.test(readText) && /Paragraph \d/.test(readText) && /Fires when/.test(readText) && addable >= 5 && /Added to /.test(added) && /addRule/.test(logText) && /policy-/.test(logText), `${addable} addable, enabled ${await enabledAdd.count()}`);
   // Ask, on every page: a question answered from the records, cited, linked.
   await page.goto(`${BASE}/clients`);
-  await page.getByRole("button", { name: "Ask", exact: true }).click();
+  await page.getByRole("button", { name: "Ask Relay a question" }).click();
   await page.getByLabel("Your question").fill("How much cash cover does Renner have?");
   await page.getByRole("button", { name: "Ask", exact: true }).last().click();
   const askText = await page.getByRole("dialog").innerText();
