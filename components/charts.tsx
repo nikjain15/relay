@@ -29,14 +29,14 @@ export function Bars({ items, max, ariaLabel }: { items: BarItem[]; max?: number
     <ul className="space-y-1.5" aria-label={ariaLabel}>
       {items.map((it, i) => {
         const w = Math.max(it.value > 0 ? 2 : 0, Math.round((it.value / top) * 100));
-        const label = <span className="truncate text-[13px] text-ink">{it.label}</span>;
+        const label = <span className="truncate text-body text-ink">{it.label}</span>;
         return (
           <li key={i} className="grid grid-cols-[minmax(0,11rem)_1fr_auto] items-center gap-3">
-            {it.href ? <Link href={it.href} className="truncate text-[13px] text-ink underline decoration-line-strong hover:decoration-ink">{it.label}</Link> : label}
+            {it.href ? <Link href={it.href} className="truncate text-body text-ink underline decoration-line-strong hover:decoration-ink">{it.label}</Link> : label}
             <span className="h-1.5 w-full rounded bg-subtle" aria-hidden="true">
               <span className={`block h-1.5 rounded ${BAR[it.tone ?? "plain"]}`} style={{ width: `${w}%` }} />
             </span>
-            <span className={`text-right text-[13px] tabular-nums ${TEXT[it.tone ?? "plain"]}`}>{it.display ?? it.value}</span>
+            <span className={`text-right text-body tabular-nums ${TEXT[it.tone ?? "plain"]}`}>{it.display ?? it.value}</span>
           </li>
         );
       })}
@@ -61,7 +61,7 @@ export function Meter({ segments, ariaLabel }: { segments: Segment[]; ariaLabel:
           <span key={i} className={`h-2 rounded ${BAR[s.tone ?? "plain"]}`} style={{ width: `${(s.value / total) * 100}%` }} />
         ))}
       </div>
-      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[12px]">
+      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-meta">
         {segments.map((s, i) => (
           <li key={i} className="flex items-center gap-1.5">
             <span className={`inline-block h-2 w-2 rounded ${BAR[s.tone ?? "plain"]}`} aria-hidden="true" />
@@ -113,7 +113,7 @@ export function Sparkline({
         <path d={d} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         <circle cx={x(points.length - 1)} cy={y(last)} r={3.5} fill="currentColor" />
       </svg>
-      <figcaption className="mt-0.5 flex flex-wrap gap-x-3 text-[11px] tabular-nums text-ink-3">
+      <figcaption className="mt-0.5 flex flex-wrap gap-x-3 text-caption tabular-nums text-ink-3">
         {points.map((v, i) => (
           <span key={i}>{labels?.[i] ? `${labels[i]} ` : ""}<span className={i === points.length - 1 ? TEXT[tone] : ""}>{format(v)}</span></span>
         ))}

@@ -147,7 +147,7 @@ export function Overview() {
 
       <Section title={`1. Decide now${decisions.length ? ` (${decisions.length})` : ""}`}>
         {decisions.length === 0 ? (
-          <p className="text-[13px] text-ink-2">No blocking finding, no uncaptured channel, no overdue item.</p>
+          <p className="text-body text-ink-2">No blocking finding, no uncaptured channel, no overdue item.</p>
         ) : (
           <div className="rounded border border-line px-3 sm:px-4">
             {decisions.map((d, i) => (
@@ -159,12 +159,12 @@ export function Overview() {
 
       <Section title={`2. Review what the agents prepared${pending.length ? ` (${pending.length})` : ""}`}>
         {pending.length === 0 ? (
-          <p className="text-[13px] text-ink-2">Nothing waiting. {decided.length ? `${decided.length} decided this session.` : ""}</p>
+          <p className="text-body text-ink-2">Nothing waiting. {decided.length ? `${decided.length} decided this session.` : ""}</p>
         ) : (
           <div className="space-y-3">
             {visible.map((g) => (
               <div key={g.subject} className="rounded border border-line px-3 sm:px-4">
-                <p className="flex items-center gap-2 border-b border-line py-2 text-[12px] text-ink-3"><Icon name={mine.some((c) => c.name === g.subject) ? "people" : "agent"} size={16} />{g.subject} · {g.list.length} prepared</p>
+                <p className="flex items-center gap-2 border-b border-line py-2 text-meta text-ink-3"><Icon name={mine.some((c) => c.name === g.subject) ? "people" : "agent"} size={16} />{g.subject} · {g.list.length} prepared</p>
                 {g.list.map((a) => (
                   <Row
                     key={a.id}
@@ -179,7 +179,7 @@ export function Overview() {
               </div>
             ))}
             {groups.length > 4 && (
-              <p className="text-[12px]"><button type="button" className={btn} onClick={() => setShowAll((v) => !v)}>{showAll ? "Show fewer" : `Show ${groups.length - 4} more households`}</button></p>
+              <p className="text-meta"><button type="button" className={btn} onClick={() => setShowAll((v) => !v)}>{showAll ? "Show fewer" : `Show ${groups.length - 4} more households`}</button></p>
             )}
           </div>
         )}
@@ -191,14 +191,14 @@ export function Overview() {
             })}
           </div>
         )}
-        <p className="mt-2 text-[12px] text-ink-3">Every finding with what its agent prepared is on <Link href="/supervision" className="underline">Supervision</Link>.</p>
+        <p className="mt-2 text-meta text-ink-3">Every finding with what its agent prepared is on <Link href="/supervision" className="underline">Supervision</Link>.</p>
       </Section>
 
       <Section title={`3. What else ran, ${clean} of ${statuses.length + others.length} clean`}>
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3" aria-label="Agents">
           {[...statuses.map((s) => ({ id: s.agent.id, name: s.agent.name, icon: s.icon, state: s.state, line: `${s.open} raised · ${s.actionsPrepared} prepared`, href: `/agents/${s.agent.id}` })), ...others].map((a) => (
             <li key={a.id}>
-              <Link href={a.href} className="flex items-center gap-2 rounded border border-line bg-surface px-2.5 py-2 text-[12px] text-ink hover:bg-selected">
+              <Link href={a.href} className="flex items-center gap-2 rounded border border-line bg-surface px-2.5 py-2 text-meta text-ink hover:bg-selected">
                 <Icon name={a.icon} size={16} className="shrink-0 text-agent" />
                 <span className="min-w-0 flex-1"><span className="block">{a.name}</span><span className="block truncate text-ink-3">{a.line}</span></span>
                 <StateDot state={a.state} />

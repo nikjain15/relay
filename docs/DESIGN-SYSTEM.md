@@ -45,9 +45,23 @@ The single source is `app/tokens.css`. Tailwind maps each token to a class (`tex
 | `--caution`, `--caution-soft` | #7a5200, #faf3e1 | Guidance notes and warnings |
 | `--font` | Helvetica Neue, Helvetica, Arial, system | All text; no web font is loaded |
 | `--radius` | 2px | Every corner |
+| `--radius-lg` | 8px | The agent's own surfaces only: a Brief, the Ranking desk, the page icon, the About takeaways |
 
-**Type scale:** 28px light (page title), 15px semibold (section), 14px regular (body), 13px (controls and
-navigation), 12px (captions and badges).
+**Type scale.** Sizes are tokens too, in `app/tokens.css`, and Tailwind maps each to a class. No screen uses
+an arbitrary `text-[13px]` or a Tailwind default size; the token scan fails on either.
+
+| Class | Token | Size | Use |
+|---|---|---|---|
+| `text-caption` | `--text-caption` | 11px | Provenance, footnotes, the step a model would own |
+| `text-meta` | `--text-meta` | 12px | Captions, badges, table headers, secondary lines |
+| `text-body` | `--text-body` | 13px | Controls, navigation, table cells, most running text |
+| `text-lead` | `--text-lead` | 14px | Card titles, the body default |
+| `text-brief` | `--text-brief` | 15px | The agent's sentence in a Brief; section headings |
+| `text-heading` | `--text-heading` | 16px | Panel titles |
+| `text-brand` | `--text-brand` | 17px | The product name in the header |
+| `text-figure`, `text-stat`, `text-stat-lg` | 18, 20, 24px | | Figures a screen leads with |
+| `text-title` | `--text-title` | 28px | Page title, light |
+| `text-display` | `--text-display` | 30px | The one number a screen is about |
 
 **Space:** a 4px grid; pages have 40px padding, sections 40px apart, cards 20px inside.
 
@@ -83,7 +97,12 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 | `Section` | 15px semibold heading and its content, 40px below |
 | `Stat` | A large light number and its label, for the one or two figures a screen leads with |
 | `Pill` | Status badge: neutral, pass, fail, accent. Always words, never only colour |
-| `btn`, `btnPrimary` | 32px buttons: outlined ink, solid ink |
+| `btn`, `btnPrimary` | 32px buttons: outlined ink, solid ink. The label wraps inside the button on a phone |
+| `iconBtn`, `chip` | A square button holding one icon (close, menu); a small suggestion (Ask's follow-ups) |
+| `Field`, `input`, `inputSmall`, `textarea` | The one form system: a labelled field, full-width and compact inputs, a text area. Panels re-export these rather than defining their own |
+| `SidePanel` | Edit or create beside the list (`components/side-panel.tsx`): title, body, a footer; Escape closes it |
+| `AgentCard` | One agent, explained the same way everywhere: for, reads, checks, prepares, never, and today (`components/agent-card.tsx`) |
+| `stack` | Classes that turn a table into cards below 768px, so a phone never scrolls sideways past a figure |
 | `Row`, `Card`, `CardGrid`, `StatRow`, `Banner`, `More` | The layout primitives of the agent-first rebuild (§7) |
 | `Timeline` | A run of events, most recent first: time, icon, one line, one line of context |
 | `StateDot` | One glance: a dot and the word for it (clear, needs you, blocking, off). Never the dot alone |
@@ -109,6 +128,16 @@ element against its real background at 1440, 1280 and 1024 px, and in the mockup
 **Keyboard.** A "Skip to content" link is the first Tab stop on every page and moves focus into `main`.
 
 The token scan also fails on `rgb()`, `hsl()` and Tailwind arbitrary colours such as `text-[#e60000]`.
+
+It also fails on a font size off the scale (`text-[13px]`, `md:text-sm`), and checks that every size class
+Tailwind maps has its token in `app/tokens.css`.
+
+**One name per page.** A page is named once, in the navigation (`components/nav.tsx`). Its heading and its
+tab title (`Name · Relay`) use the same words; `npm run e2e` checks every page.
+
+**Voice.** Sentence case for every label and button; the agent speaks in the first person with the figures in
+the sentence; the advisor is "you"; no exclamation marks and no em-dashes. An action says what happens
+("Ask to switch it off", "Create and run it"), and its outcome stays on screen after the click.
 
 ## 5. Changing the look
 

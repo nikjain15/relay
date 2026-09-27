@@ -26,10 +26,10 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
         title={`Review pack: ${clientName(c.id)}`}
         sub={r.meeting ? `${r.meeting.time}, ${r.meeting.title}. ${r.meeting.purpose}.` : "No meeting booked today; this pack is ready for the next one."}
       />
-      <div className="mb-4 max-w-3xl rounded border border-line p-3 text-xs">
+      <div className="mb-4 max-w-3xl rounded border border-line p-3 text-meta leading-4">
         <ClientPreferences clientId={c.id} />
       </div>
-      <p className="mb-2 text-[13px]">
+      <p className="mb-2 text-body">
         <Link className="underline" href={`/research/${c.id}`}>Briefing: what has changed, what is inferred, and what could not be established</Link>
       </p>
       <p className="mb-4 text-ink-2">
@@ -113,12 +113,12 @@ export default async function ReviewPack({ params }: { params: Promise<{ id: str
           ),
           documents: (
         <Section title="Documents to have to hand">
-          <ul className="list-inside list-disc space-y-0.5 text-xs">
+          <ul className="list-inside list-disc space-y-0.5 text-meta leading-4">
             {r.documents.map((d) => (
               <li key={d.id}>{d.title} <span className="text-ink-2">({d.kind})</span></li>
             ))}
           </ul>
-          <p className="mt-2 text-xs text-ink-2">Everything in this pack comes from the client file. Nothing is generated.</p>
+          <p className="mt-2 text-meta leading-4 text-ink-2">Everything in this pack comes from the client file. Nothing is generated.</p>
         </Section>
           ),
         }}

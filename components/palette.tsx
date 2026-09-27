@@ -89,12 +89,12 @@ export function Palette({ open, onClose }: { open: boolean; onClose: () => void 
             }}
             placeholder="Jump to a screen, a client or a rule"
             aria-label="Jump to a screen, a client or a rule"
-            className="h-11 w-full bg-surface text-[14px] text-ink outline-none"
+            className="h-11 w-full bg-surface text-lead text-ink outline-none"
           />
-          <kbd className="hidden rounded border border-line px-1.5 py-0.5 text-[11px] text-ink-3 sm:block">esc</kbd>
+          <kbd className="hidden rounded border border-line px-1.5 py-0.5 text-caption text-ink-3 sm:block">esc</kbd>
         </div>
         <ul className="max-h-[50vh] overflow-y-auto py-1">
-          {hits.length === 0 && <li className="px-3 py-3 text-[13px] text-ink-2">Nothing matches. This searches surfaces, clients and rules.</li>}
+          {hits.length === 0 && <li className="px-3 py-3 text-body text-ink-2">Nothing matches. This searches surfaces, clients and rules.</li>}
           {hits.map((e, i) => (
             <li key={`${e.href}-${e.label}`}>
               <button
@@ -102,11 +102,11 @@ export function Palette({ open, onClose }: { open: boolean; onClose: () => void 
                 onMouseEnter={() => setSel(i)}
                 onClick={() => go(e)}
                 aria-current={i === sel ? "true" : undefined}
-                className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] ${i === sel ? "bg-selected text-ink" : "text-ink-2"}`}
+                className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-body ${i === sel ? "bg-selected text-ink" : "text-ink-2"}`}
               >
                 <Icon name={e.icon} size={16} />
                 <span className="min-w-0 flex-1 truncate text-ink">{e.label}</span>
-                <span className="shrink-0 text-[11px] text-ink-3">{e.group}</span>
+                <span className="shrink-0 text-caption text-ink-3">{e.group}</span>
               </button>
             </li>
           ))}

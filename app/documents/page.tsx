@@ -11,6 +11,8 @@ import { Brief, Card, More, PageTitle, Pill, Section, TableScroll, td, th } from
 import { Icon, DOC_ICON } from "@/components/icons";
 import { Bars, Meter } from "@/components/charts";
 
+export const metadata = { title: "Documents" };
+
 const TONE: Record<Freshness, "pass" | "accent" | "fail"> = { current: "pass", review_due: "accent", stale: "fail" };
 
 export default function Documents() {
@@ -27,7 +29,7 @@ export default function Documents() {
 
   return (
     <>
-      <PageTitle icon="library" title="Document library" sub={`What may be quoted, and how old it is. Corpus day ${POLICY.retrieval.corpusDay}.`} />
+      <PageTitle icon="library" title="Documents" sub={`What may be quoted, and how old it is. Corpus day ${POLICY.retrieval.corpusDay}.`} />
 
       <Brief
         name="Retrieval"
@@ -59,7 +61,7 @@ export default function Documents() {
           <div id="conflicts" className="scroll-mt-20" />
           {conflicts.map((k) => (
             <Card key={k.topic} tone="critical" icon="conflict" title={k.topic.replace(/[.-]/g, " ")} sub={k.note}>
-              <ul className="space-y-1.5 text-[13px]">
+              <ul className="space-y-1.5 text-body">
                 {k.sides.map((s) => (
                   <li key={s.docId} className="flex flex-wrap items-baseline gap-2">
                     <Pill tone={TONE[s.freshness]}>{FRESHNESS_LABEL[s.freshness]}</Pill>
@@ -69,7 +71,7 @@ export default function Documents() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-[12px] text-ink-2">Every opportunity whose evidence touches this topic shows the disagreement. Nothing picks a side on the advisor&apos;s behalf.</p>
+              <p className="mt-2 text-meta text-ink-2">Every opportunity whose evidence touches this topic shows the disagreement. Nothing picks a side on the advisor&apos;s behalf.</p>
             </Card>
           ))}
         </Section>
@@ -77,7 +79,7 @@ export default function Documents() {
 
       <Section title="Every document, soonest review first">
         <TableScroll>
-          <table className="w-full min-w-[46rem] border-collapse text-[13px]">
+          <table className="w-full min-w-[46rem] border-collapse text-body">
             <thead>
               <tr>
                 <th className={th}>Document</th>
@@ -96,7 +98,7 @@ export default function Documents() {
                   <tr key={s.doc.id}>
                     <td className={td}>
                       <span className="flex items-start gap-2"><Icon name={DOC_ICON[s.doc.kind] ?? "document"} size={16} className="mt-0.5 text-ink-3" /><Link href={`/documents/${s.doc.id}`} className="underline">{s.doc.title}</Link></span>
-                      <span className="block text-[12px] text-ink-3">{s.doc.passages.length} passage{s.doc.passages.length === 1 ? "" : "s"}</span>
+                      <span className="block text-meta text-ink-3">{s.doc.passages.length} passage{s.doc.passages.length === 1 ? "" : "s"}</span>
                     </td>
                     <td className={td}>{s.doc.kind}</td>
                     <td className={td}>{s.doc.desk}</td>
@@ -120,7 +122,7 @@ export default function Documents() {
         </Section>
         <Section title="Current but cited by nothing">
           {uncited.length ? (
-            <ul className="space-y-1 text-[13px]">
+            <ul className="space-y-1 text-body">
               {uncited.map((s) => (
                 <li key={s.doc.id} className="flex items-center gap-2">
                   <Icon name="document" size={16} className="text-ink-3" />
@@ -130,9 +132,9 @@ export default function Documents() {
               ))}
             </ul>
           ) : (
-            <p className="text-[13px] text-ink-2">Every current document is cited by at least one opportunity.</p>
+            <p className="text-body text-ink-2">Every current document is cited by at least one opportunity.</p>
           )}
-          <p className="mt-2 text-[12px] text-ink-3">A document nobody cites is still retrievable as related reading. It can also disagree with one that is cited, which is how the disagreement above was found.</p>
+          <p className="mt-2 text-meta text-ink-3">A document nobody cites is still retrievable as related reading. It can also disagree with one that is cited, which is how the disagreement above was found.</p>
         </Section>
       </div>
 

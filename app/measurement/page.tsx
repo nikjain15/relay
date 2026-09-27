@@ -9,6 +9,8 @@ import { classify } from "@/lib/recipients/count";
 import { runChecks } from "@/lib/policy/checks";
 import { Brief, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 
+export const metadata = { title: "Measurement" };
+
 // Gates computed live over every eligible proposal in the fixtures, with the
 // same functions the test suite asserts on.
 function gates() {
@@ -86,7 +88,7 @@ export default function Measurement() {
               </tbody>
             </table>
           </TableScroll>
-          <p className="mt-2 text-xs text-ink-2">
+          <p className="mt-2 text-meta leading-4 text-ink-2">
             Synthetic numbers for layout only. The real funnel is the first thing to ask for in week one (PRD Appendix B, question 1).
           </p>
         </Section>
@@ -105,7 +107,7 @@ export default function Measurement() {
               </tbody>
             </table>
           </TableScroll>
-          <p className="mt-2 text-xs">
+          <p className="mt-2 text-meta leading-4">
             {g[0].refusals} opportunity refused for insufficient evidence. The same checks run in <code>npm run check</code>, alongside the
             invariant that no code path can reach a client.
           </p>

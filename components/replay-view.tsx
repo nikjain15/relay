@@ -43,7 +43,7 @@ export function ReplayView() {
     <>
       <PageTitle
         icon="replay"
-        title="Replay a past finding"
+        title="Replay"
         sub="Pick a finding. Relay folds the change log onto the baseline up to that moment, re-runs the rule on the facts it read then, and runs the same facts against the rules as they stand now."
       />
 
@@ -58,7 +58,7 @@ export function ReplayView() {
 
       {mismatch.length > 0 && (
         <Card tone="critical" icon="alert" title={`${mismatch.length} finding${mismatch.length === 1 ? " does" : "s do"} not reproduce`}>
-          <p className="text-[13px] text-ink">
+          <p className="text-body text-ink">
             The recorded outcome differs from what the replayed rules produce. That is a finding about the log or the record, and it is shown rather than
             smoothed over: {mismatch.map((m) => m.finding.id).join(", ")}.
           </p>
@@ -67,7 +67,7 @@ export function ReplayView() {
 
       <Section title="Findings, newest first">
         <TableScroll>
-          <table className="w-full min-w-[44rem] border-collapse text-[13px]">
+          <table className="w-full min-w-[44rem] border-collapse text-body">
             <thead>
               <tr>
                 <th className={th}>When</th>
@@ -106,13 +106,13 @@ export function ReplayView() {
       <Section title={`${f.id}: ${r.then.rule?.title ?? f.ruleId}, ${f.subjectLabel}, ${f.at.replace("T", " ").replace("Z", "")}`}>
         <div className="grid gap-4 lg:grid-cols-2">
           <Card icon="replay" title="As the rules stood then" sub={`Change log replayed to ${f.at.replace("T", " ").replace("Z", "")}`}>
-            <p className="text-[13px]">
+            <p className="text-body">
               Verdict then: <Pill tone={r.then.verdict ? OUTCOME_TONE[r.then.verdict.outcome] : "neutral"}>{r.then.verdict?.outcome ?? "rule not in force"}</Pill>{" "}
               <span className="text-ink-2">Recorded: {f.outcome}.</span>{" "}
               {r.reproduces ? <Pill tone="pass">Reproduces</Pill> : <Pill tone="fail">Does not reproduce</Pill>}
             </p>
-            {r.then.verdict && <p className="mt-2 text-[13px] text-ink">{r.then.verdict.finding}</p>}
-            <dl className="mt-3 space-y-1 border-t border-line pt-3 text-[12px]">
+            {r.then.verdict && <p className="mt-2 text-body text-ink">{r.then.verdict.finding}</p>}
+            <dl className="mt-3 space-y-1 border-t border-line pt-3 text-meta">
               {Object.entries(fieldsThen).map(([k, v]) => (
                 <div key={k} className="flex gap-2">
                   <dt className="w-32 shrink-0 text-ink-3">{k}</dt>
@@ -120,17 +120,17 @@ export function ReplayView() {
                 </div>
               ))}
             </dl>
-            <p className="mt-3 text-[12px] text-ink-2">
+            <p className="mt-3 text-meta text-ink-2">
               Disposition: <span className="text-ink">{f.disposition}</span> by {f.dispositionBy}. &ldquo;{f.comment}&rdquo;
             </p>
           </Card>
 
           <Card icon="rules" title="The same facts, against the rules now" sub={r.sameOutcomeNow ? "Same outcome today." : "A different outcome today, and the entries below say why."}>
-            <p className="text-[13px]">
+            <p className="text-body">
               Verdict now: <Pill tone={r.now.verdict ? OUTCOME_TONE[r.now.verdict.outcome] : "neutral"}>{r.now.verdict?.outcome ?? "rule not in force"}</Pill>
             </p>
-            {r.now.verdict && <p className="mt-2 text-[13px] text-ink">{r.now.verdict.finding}</p>}
-            <dl className="mt-3 space-y-1 border-t border-line pt-3 text-[12px]">
+            {r.now.verdict && <p className="mt-2 text-body text-ink">{r.now.verdict.finding}</p>}
+            <dl className="mt-3 space-y-1 border-t border-line pt-3 text-meta">
               {Object.entries(fieldsNow).map(([k, v]) => (
                 <div key={k} className="flex gap-2">
                   <dt className="w-32 shrink-0 text-ink-3">{k}</dt>
@@ -139,7 +139,7 @@ export function ReplayView() {
               ))}
             </dl>
             {r.between.length > 0 ? (
-              <ul className="mt-3 space-y-1.5 border-t border-line pt-3 text-[12px]">
+              <ul className="mt-3 space-y-1.5 border-t border-line pt-3 text-meta">
                 {r.between.map((e) => (
                   <li key={e.id}>
                     <span className="text-ink-3">{e.at.slice(0, 10)}</span> {e.actor}, {e.layer}: {e.field} {e.from} to {e.to}. <span className="text-ink-2">{e.reason}</span>
@@ -147,14 +147,14 @@ export function ReplayView() {
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 border-t border-line pt-3 text-[12px] text-ink-3">No change to this rule since the finding.</p>
+              <p className="mt-3 border-t border-line pt-3 text-meta text-ink-3">No change to this rule since the finding.</p>
             )}
           </Card>
         </div>
 
         <div className="mt-4 rounded border border-line p-4">
-          <p className="mb-2 text-[13px] font-medium text-ink">The facts the rule read, exactly as recorded</p>
-          <dl className="grid gap-x-4 gap-y-1 text-[12px] sm:grid-cols-2">
+          <p className="mb-2 text-body font-medium text-ink">The facts the rule read, exactly as recorded</p>
+          <dl className="grid gap-x-4 gap-y-1 text-meta sm:grid-cols-2">
             {Object.entries(f.facts).map(([k, v]) => (
               <div key={k} className="flex gap-2">
                 <dt className="w-40 shrink-0 text-ink-3">{k}</dt>

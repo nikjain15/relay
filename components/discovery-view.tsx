@@ -40,7 +40,7 @@ export function DiscoveryView() {
         <div id="found" className="scroll-mt-20" />
         {open.length === 0 ? (
           <Card tone="positive" icon="check" title="Every candidate has been decided">
-            <p className="text-[13px] text-ink-2">Connect more data on <Link href="/sources" className="underline">Connect data</Link> and the agent reads it.</p>
+            <p className="text-body text-ink-2">Connect more data on <Link href="/sources" className="underline">Connect data</Link> and the agent reads it.</p>
           </Card>
         ) : (
           <div className="rounded border border-line px-4">
@@ -48,7 +48,7 @@ export function DiscoveryView() {
               <div key={k.id} className="border-b border-line py-4 last:border-b-0">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2 text-[14px] text-ink">
+                    <p className="flex flex-wrap items-center gap-2 text-lead text-ink">
                       <Icon name={CLASS_ICON[k.extractor.triggerClass]} size={20} className="text-ink-3" />
                       <span className="font-medium">{k.extractor.label}</span>
                       <span className="text-ink-2">{k.clientName}</span>
@@ -56,11 +56,11 @@ export function DiscoveryView() {
                       <Pill tone="neutral">{Math.round(k.confidence * 100)} percent</Pill>
                       {k.duplicate && <Pill tone="neutral">Similar item already on the list</Pill>}
                     </p>
-                    <p className="mt-1.5 border-l-2 border-line-strong pl-3 text-[13px] text-ink">&ldquo;{k.source.excerpt}&rdquo;</p>
-                    <p className="mt-1 text-[12px] text-ink-3">
+                    <p className="mt-1.5 border-l-2 border-line-strong pl-3 text-body text-ink">&ldquo;{k.source.excerpt}&rdquo;</p>
+                    <p className="mt-1 text-meta text-ink-3">
                       Read from a {k.source.kind} ({k.source.id}), {k.source.day === 0 ? "today" : `${-k.source.day} days ago`} · {label(k.advisorId)} · {k.extractor.why}
                     </p>
-                    <p className="mt-1 text-[12px] text-ink-2">
+                    <p className="mt-1 text-meta text-ink-2">
                       {k.evidence.length
                         ? <>Would cite: {k.evidence.map((e) => <span key={e.docId} className="mr-2"><Link href={`/documents/${e.docId}`} className="underline">{e.title}</Link> <span className="tabular-nums text-ink-3">{e.score.toFixed(2)}</span></span>)}</>
                         : <span className="text-critical">No document in the corpus supports this kind of conversation. Accepted, it lands on the list refused until one exists.</span>}
@@ -73,7 +73,7 @@ export function DiscoveryView() {
                 </div>
               </div>
             ))}
-            {open.length > 40 && <p className="py-3 text-[12px] text-ink-3">First 40 of {open.length}.</p>}
+            {open.length > 40 && <p className="py-3 text-meta text-ink-3">First 40 of {open.length}.</p>}
           </div>
         )}
       </Section>
@@ -84,7 +84,7 @@ export function DiscoveryView() {
         </Section>
         <Section title="Where they were read">
           <Meter ariaLabel="Candidates by source record" segments={bySource.map((s, i) => ({ ...s, tone: (["plain", "caution", "muted", "positive"] as const)[i] }))} />
-          <p className="mt-2 text-[12px] text-ink-3">A colleague&apos;s note or a contact summary is read at ten points less confidence than the client&apos;s own words.</p>
+          <p className="mt-2 text-meta text-ink-3">A colleague&apos;s note or a contact summary is read at ten points less confidence than the client&apos;s own words.</p>
         </Section>
       </div>
 

@@ -372,7 +372,7 @@ try {
   await page.getByRole("radio", { name: new RegExp(json("data/shelf.json").find((p) => p.id === f.productId).name) }).check();
   await page.getByRole("button", { name: "Accept proposal" }).click();
   await page.getByRole("link", { name: "Draft client note" }).click();
-  const counter = async () => Number(await page.locator("aside p.text-3xl").innerText());
+  const counter = async () => Number(await page.locator("aside p.text-display").innerText());
   const c0 = await counter();
   await page.getByRole("button", { name: /Select 12 two-person households/ }).click();
   const c1 = await counter();
@@ -423,11 +423,27 @@ try {
         ["forms escalated", num(ov, /(\d+) forms? past the escalation deadline/), num(await nav("Paperwork"), /(\d+) escalated to the branch supervisor/)],
         ["findings", num(header, /(\d+) findings?/), num(await nav("Supervision queue"), /(\d+) findings? wait/)],
         ["on today's list", num(ov, /(\d+) opportunities are on/), num(await nav("Today's list"), /kept the top (\d+)/)],
-        ["households", num(ov, /across (\d+) households/), num(await nav("Households"), /'s (\d+) households/)],
+        ["households", num(ov, /records across (\d+) households/), num(await nav("Households"), /'s (\d+) households/)],
       ];
       for (const [k, x, y] of pairs) if (x !== y) bad.push(`${a} ${k}: overview ${x}, screen ${y}`);
     }
     check("one source: for every advisor, the Overview's counts equal the screens they link to", bad.length === 0, bad.join(" | "));
+  }
+
+  // 7c. One name per page: every page's heading and tab title use the navigation's words.
+  {
+    const src = readFileSync(join(ROOT, "components/nav.tsx"), "utf8");
+    const links = [...src.matchAll(/\{ href: "(\/[a-z/-]*)", label: "([^"]+)"/g)].map((m) => [m[1], m[2]]).filter(([h]) => h !== "/");
+    const bad = [];
+    for (const [href, label] of links) {
+      await page.goto(BASE + href);
+      await page.waitForTimeout(250);
+      const h1 = (await page.locator("main h1").first().innerText()).trim();
+      const title = await page.title();
+      if (h1 !== label) bad.push(`${href}: heading "${h1}", navigation "${label}"`);
+      if (title !== `${label} · Relay`) bad.push(`${href}: tab "${title}"`);
+    }
+    check("one name per page: every heading and tab title match the navigation", bad.length === 0, bad.slice(0, 4).join(" | "));
   }
 
   // 8. Copy: no firm branding in product copy.

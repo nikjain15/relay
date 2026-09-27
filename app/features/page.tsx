@@ -32,7 +32,7 @@ export default function Features() {
 
       <Section title={`${AGENTS.length} compliance review desks`}>
         <TableScroll>
-          <table className="w-full min-w-[44rem] border-collapse text-[13px]">
+          <table className="w-full min-w-[44rem] border-collapse text-body">
             <thead><tr><th className={th}>Desk</th><th className={th}>Mirrors</th><th className={th}>Authorities</th><th className={th}>Runs</th></tr></thead>
             <tbody>
               {AGENTS.map((a) => (
@@ -46,12 +46,12 @@ export default function Features() {
             </tbody>
           </table>
         </TableScroll>
-        <p className="mt-2 text-[12px] text-ink-3">Open any desk to see its rules, its findings, tune its cadence for one advisor, or read a written policy into it.</p>
+        <p className="mt-2 text-meta text-ink-3">Open any desk to see its rules, its findings, tune its cadence for one advisor, or read a written policy into it.</p>
       </Section>
 
       <Section title={`${inWords(ROSTER.length)} more agents that read the book for the advisor`}>
         <TableScroll>
-          <table className="w-full min-w-[44rem] border-collapse text-[13px]">
+          <table className="w-full min-w-[44rem] border-collapse text-body">
             <thead><tr><th className={th}>Agent</th><th className={th}>Reads</th><th className={th}>Leaves for a person</th></tr></thead>
             <tbody>
               {OTHER.map((a) => (
@@ -68,20 +68,20 @@ export default function Features() {
 
       <Section title="For the advisor">
         <CardGrid cols={3}>
-          <Card icon="home" title="A morning inbox, not a dashboard"><p className="text-[13px] text-ink-2">Decide now, review what the agents prepared, see what else ran. Every action opens with the draft, the reasoning and where it goes; a decision stays on screen as a recorded outcome.</p></Card>
-          <Card icon="filter" title="Options the way an advisor compares them"><p className="text-[13px] text-ink-2">After-tax income, cost over the horizon, access, rate risk, and the morning after for each, with a rejected option shown with the failing rule named.</p></Card>
-          <Card icon="agent" title="Ask anything, cited"><p className="text-[13px] text-ink-2">A household&apos;s cover, what a client said, what needs you first, what a desk watches. Every answer names the records it read.</p></Card>
-          <Card icon="link" title={`Reads the tools you already run`}><p className="text-[13px] text-ink-2">{CATALOG.length} connectors across CRM, custodian, portfolio, planning, archive, e-signature and every channel. Read only; the advisor keeps working where they work.</p></Card>
-          <Card icon="calendar" title="Every conversation prepared"><p className="text-[13px] text-ink-2">A briefing and a review pack before each meeting, with what could not be established listed rather than guessed.</p></Card>
-          <Card icon="settings" title="Personalized, never loosened"><p className="text-[13px] text-ink-2">Preferences resolve most-specific-wins; rules resolve strictest-wins; the learning loop proposes and never applies.</p></Card>
+          <Card icon="home" title="A morning inbox, not a dashboard"><p className="text-body text-ink-2">Decide now, review what the agents prepared, see what else ran. Every action opens with the draft, the reasoning and where it goes; a decision stays on screen as a recorded outcome.</p></Card>
+          <Card icon="filter" title="Options the way an advisor compares them"><p className="text-body text-ink-2">After-tax income, cost over the horizon, access, rate risk, and the morning after for each, with a rejected option shown with the failing rule named.</p></Card>
+          <Card icon="agent" title="Ask anything, cited"><p className="text-body text-ink-2">A household&apos;s cover, what a client said, what needs you first, what a desk watches. Every answer names the records it read.</p></Card>
+          <Card icon="link" title={`Reads the tools you already run`}><p className="text-body text-ink-2">{CATALOG.length} connectors across CRM, custodian, portfolio, planning, archive, e-signature and every channel. Read only; the advisor keeps working where they work.</p></Card>
+          <Card icon="calendar" title="Every conversation prepared"><p className="text-body text-ink-2">A briefing and a review pack before each meeting, with what could not be established listed rather than guessed.</p></Card>
+          <Card icon="settings" title="Personalized, never loosened"><p className="text-body text-ink-2">Preferences resolve most-specific-wins; rules resolve strictest-wins; the learning loop proposes and never applies.</p></Card>
         </CardGrid>
       </Section>
 
       <Section title="For the supervisor">
         <CardGrid cols={3}>
-          <Card icon="shield" title="Findings that arrive prepared"><p className="text-[13px] text-ink-2">The facts read, the citation, the drafted remediation and the prepared action. Disposition is one decision, defended later by replay.</p></Card>
-          <Card icon="document" title="Policies become rules"><p className="text-[13px] text-ink-2">Paste a written supervisory procedure into a desk; each obligation becomes a candidate rule cited to its sentence; a principal adds the ones the firm meant.</p></Card>
-          <Card icon="log" title="Every change attributed"><p className="text-[13px] text-ink-2">Who, when, which layer, from what to what, and why. An attempt to loosen is refused and stays in the log.</p></Card>
+          <Card icon="shield" title="Findings that arrive prepared"><p className="text-body text-ink-2">The facts read, the citation, the drafted remediation and the prepared action. Disposition is one decision, defended later by replay.</p></Card>
+          <Card icon="document" title="Policies become rules"><p className="text-body text-ink-2">Paste a written supervisory procedure into a desk; each obligation becomes a candidate rule cited to its sentence; a principal adds the ones the firm meant.</p></Card>
+          <Card icon="log" title="Every change attributed"><p className="text-body text-ink-2">Who, when, which layer, from what to what, and why. An attempt to loosen is refused and stays in the log.</p></Card>
         </CardGrid>
       </Section>
 
@@ -95,7 +95,7 @@ export default function Features() {
             ["Evaluated, not asserted", "A 300-household corpus scored by an expected side that imports nothing from the engines, enforced in the check suite."],
           ].map(([t, m]) => (
             <div key={t} className="flex items-start gap-3 border-b border-line px-1 py-3 last:border-b-0">
-              <span className="min-w-0 flex-1"><span className="block text-[14px] text-ink">{t}</span><span className="block text-[12px] text-ink-3">{m}</span></span>
+              <span className="min-w-0 flex-1"><span className="block text-lead text-ink">{t}</span><span className="block text-meta text-ink-3">{m}</span></span>
             </div>
           ))}
         </div>

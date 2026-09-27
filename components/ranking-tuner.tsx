@@ -54,8 +54,8 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
       <div className="flex gap-3">
         <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-agent-soft text-agent" aria-hidden="true"><Icon name="settings" size={20} /></span>
         <div className="min-w-0 flex-1">
-          <p className="text-[12px] text-ink-3"><span className="font-medium text-agent">Ranking</span> · tuned for {advisorName}</p>
-          <p className="mt-1 text-[15px] leading-relaxed text-ink">
+          <p className="text-meta text-ink-3"><span className="font-medium text-agent">Ranking</span> · tuned for {advisorName}</p>
+          <p className="mt-1 text-brief leading-relaxed text-ink">
             I score each item as its materiality (0 to 100, from the agent that raised it) times the weight you give its kind of signal, then keep the top {cap}.
             {" "}Weights now: {sourceLabel(now.provenance["triage.classWeights"]).toLowerCase()}. Move one and the list below re-ranks.
           </p>
@@ -63,7 +63,7 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {CLASSES.map((k) => (
               <label key={k} className="block rounded border border-line bg-surface p-3">
-                <span className="flex items-center justify-between gap-2 text-[13px] text-ink">
+                <span className="flex items-center justify-between gap-2 text-body text-ink">
                   <span className="inline-flex items-center gap-1.5"><Icon name={CLASS_ICON[k]} size={16} className="text-ink-3" />{CLASS_LABEL[k]}</span>
                   <span className="tabular-nums font-medium">{weights[k].toFixed(2)}</span>
                 </span>
@@ -80,7 +80,7 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
               </label>
             ))}
             <label className="block rounded border border-line bg-surface p-3">
-              <span className="flex items-center justify-between gap-2 text-[13px] text-ink">
+              <span className="flex items-center justify-between gap-2 text-body text-ink">
                 <span className="inline-flex items-center gap-1.5"><Icon name="list" size={16} className="text-ink-3" />Items on today&apos;s list</span>
                 <span className="tabular-nums font-medium">{cap}</span>
               </span>
@@ -97,7 +97,7 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
             </label>
           </div>
 
-          <div className="mt-3 text-[13px] text-ink-2" aria-live="polite">
+          <div className="mt-3 text-body text-ink-2" aria-live="polite">
             {isTuned ? (
               moved.length ? (
                 <ul className="space-y-1">
@@ -115,7 +115,7 @@ export function RankingTuner({ advisorId, advisorName, opportunities, dismissed,
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {isTuned && <button type="button" className={btn} onClick={() => resetTuning(advisorId)}>Reset to {sourceLabel(base.provenance["triage.classWeights"]).toLowerCase()}</button>}
           </div>
-          <p className="mt-2 text-[11px] text-ink-3">Deterministic: the weights are yours, the arithmetic is code, and a model never reorders the list. The ranking only orders what you see; it never changes which options pass a household&apos;s rules. Kept in this browser for each advisor until you reset it; in production it is a versioned write to your profile.</p>
+          <p className="mt-2 text-caption text-ink-3">Deterministic: the weights are yours, the arithmetic is code, and a model never reorders the list. The ranking only orders what you see; it never changes which options pass a household&apos;s rules. Kept in this browser for each advisor until you reset it; in production it is a versioned write to your profile.</p>
         </div>
       </div>
     </section>

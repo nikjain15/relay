@@ -37,7 +37,7 @@ function Provenance({ rule, field, layers }: { rule: EffectiveRule; field: "enab
   const layer =
     field === "enabled" ? rule.setBy.enabled : field === "severity" ? rule.setBy.severity : rule.setBy.params[field] ?? "firm";
   const label = layers.find((l) => l.layer === layer)?.label ?? layer;
-  return <span className="text-[11px] text-ink-3">Set by {label.toLowerCase()}</span>;
+  return <span className="text-caption text-ink-3">Set by {label.toLowerCase()}</span>;
 }
 
 function RuleCard({
@@ -76,7 +76,7 @@ function RuleCard({
       }
     >
       {missing.length > 0 && (
-        <p className="mb-3 text-[13px] text-caution">
+        <p className="mb-3 text-body text-caution">
           Cannot be evaluated: reads from {missing.join(", ")}, which is not connected.{" "}
           <Link href="/sources" className="underline">
             Connect it
@@ -84,10 +84,10 @@ function RuleCard({
           .
         </p>
       )}
-      <p className="text-[13px] text-ink-2">
+      <p className="text-body text-ink-2">
         <span className="font-medium text-ink">Fires when</span> {explain(rule.when, params).replace(/\n\s*/g, " ")}
       </p>
-      <p className="mt-2 flex items-center gap-1.5 text-[13px] text-ink-2">
+      <p className="mt-2 flex items-center gap-1.5 text-body text-ink-2">
         <Icon name="agent" size={16} className="text-ink-3" />
         {owner ? owner.name : <span className="text-critical">Watched by no enabled agent</span>}
       </p>
@@ -235,7 +235,7 @@ export function ComplianceView() {
 
       <Section title={openProposals.length ? "Proposed by the agent, waiting on a principal" : "Nothing proposed by the agent"}>
         <div id="proposals" className="scroll-mt-20" />
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">
           The proposer reads what the other agents keep finding, over the last {proposed.windowDays} days ({proposed.findingsRead} findings) and the
           current sweep, and drafts a change in the stricter direction only. It applies nothing: accepting one appends an edit to the change log in
           your name, through the same resolver as any other change.
@@ -244,8 +244,8 @@ export function ComplianceView() {
           <CardGrid cols={2}>
             {openProposals.map((p) => (
               <Card key={p.id} tone="caution" icon="flag" title={p.ruleTitle} sub={`${p.field} ${p.from} to ${p.to}, at the ${p.layer === "firm" ? "firm" : `${p.layer} ${p.layerId}`} layer`} right={<Pill tone="accent">Proposed</Pill>}>
-                <p className="text-[13px] text-ink">{p.rationale}</p>
-                <ul className="mt-2 space-y-0.5 text-[12px] text-ink-3">
+                <p className="text-body text-ink">{p.rationale}</p>
+                <ul className="mt-2 space-y-0.5 text-meta text-ink-3">
                   {p.evidence.map((e) => (
                     <li key={e.id}>{e.label}</li>
                   ))}
@@ -264,7 +264,7 @@ export function ComplianceView() {
                     <button type="button" className={btn} onClick={() => { setDeclining(p.id); setDeclineReason(""); }}>Decline with a reason</button>
                   </div>
                 )}
-                <p className="mt-2 text-[11px] text-ink-3">Learner: {p.learner}. A proposal the resolver would refuse never reaches this screen.</p>
+                <p className="mt-2 text-caption text-ink-3">Learner: {p.learner}. A proposal the resolver would refuse never reaches this screen.</p>
               </Card>
             ))}
           </CardGrid>
@@ -273,8 +273,8 @@ export function ComplianceView() {
           <div className="mt-4 space-y-3">
             {proposed.observations.map((o) => (
               <Card key={o.ruleId} icon="eye" title={`Seen, not proposed: ${o.ruleTitle}`} sub={o.text}>
-                <p className="text-[13px] text-ink-2"><span className="font-medium text-ink">Why the agent will not draft this:</span> {o.refusal}</p>
-                <ul className="mt-2 space-y-0.5 text-[12px] text-ink-3">
+                <p className="text-body text-ink-2"><span className="font-medium text-ink">Why the agent will not draft this:</span> {o.refusal}</p>
+                <ul className="mt-2 space-y-0.5 text-meta text-ink-3">
                   {o.evidence.map((e) => (
                     <li key={e.id}>{e.label}</li>
                   ))}
@@ -284,7 +284,7 @@ export function ComplianceView() {
           </div>
         )}
         {Object.keys(proposalDecisions).length > 0 && (
-          <ul className="mt-3 space-y-0.5 text-[12px] text-ink-3">
+          <ul className="mt-3 space-y-0.5 text-meta text-ink-3">
             {Object.entries(proposalDecisions).map(([id, d]) => (
               <li key={id}>{id}: {d.decision}, &ldquo;{d.reason}&rdquo; (this session)</li>
             ))}
@@ -312,7 +312,7 @@ export function ComplianceView() {
       )}
 
       <Section title="Who is editing">
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">Firm, then segment, then advisor, then client. A lower layer can only tighten.</p>
+        <p className="mb-3 max-w-2xl text-body text-ink-2">Firm, then segment, then advisor, then client. A lower layer can only tighten.</p>
         <div className="flex flex-wrap gap-2">
           {scope.layers.map((l) => (
             <button
@@ -350,26 +350,26 @@ export function ComplianceView() {
               Cancel
             </button>
           </div>
-          <p className="mt-2 text-[12px] text-ink-3">
+          <p className="mt-2 text-meta text-ink-3">
             Recording appends to the change log. If it would loosen the rule it is refused, and the attempt is kept.
           </p>
         </Card>
       )}
 
       <Section title={`Review desks, as they stand for ${scope.layers[scope.layers.length - 1].label}`}>
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">
           One agent per team a legal, risk and compliance function runs. Each detects, classifies and assembles evidence on its own, and dispositions nothing.
         </p>
         <Desks agents={agents} rejected={resolved.rejected} rules={policy.rules} connected={connected} editing={editing} layers={scope.layers} onEdit={(e) => editRule({ actor: `${editing.label} console`, target: "agent", ...e })} />
       </Section>
 
       <Section title="Live sample: record completeness">
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">
           The configuration above, run against this advisor&apos;s actual coverage. Change a rule and this changes with it.
         </p>
         {cases.length === 0 ? (
           <Card tone="positive" title="Nothing needs a person">
-            <p className="text-[13px] text-ink-2">No rule fired and nothing fell under its confidence floor.</p>
+            <p className="text-body text-ink-2">No rule fired and nothing fell under its confidence floor.</p>
           </Card>
         ) : (
           <CardGrid cols={2}>
@@ -381,11 +381,11 @@ export function ComplianceView() {
                 sub={`${c.agentName} · ${c.citation}`}
                 right={<Pill tone={c.severity === "block" ? "fail" : "accent"}>{c.reason === "fired" ? SEVERITY_LABEL[c.severity] : c.reason === "cannot_evaluate" ? "Cannot evaluate" : "Needs confirming"}</Pill>}
               >
-                <p className="text-[13px] text-ink">{c.finding}</p>
-                <p className="mt-2 text-[13px] text-ink-2">
+                <p className="text-body text-ink">{c.finding}</p>
+                <p className="mt-2 text-body text-ink-2">
                   <span className="font-medium text-ink">Suggested:</span> {c.remediation}
                 </p>
-                <p className="mt-2 text-[12px] text-ink-3">
+                <p className="mt-2 text-meta text-ink-3">
                   Confidence {Math.round(c.confidence * 100)} percent. Pending a principal&apos;s disposition; Relay does not clear its own
                   findings.
                 </p>
@@ -413,7 +413,7 @@ export function ComplianceView() {
         </CardGrid>
       </Section>
 
-      <p className="mt-8 text-[13px] text-ink-2">
+      <p className="mt-8 text-body text-ink-2">
         Every change lands in the{" "}
         <Link href="/compliance/log" className="underline">
           change log

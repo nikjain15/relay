@@ -53,7 +53,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
         <Banner tone="caution" title={`Review due in ${s.daysToReview} days`}>Current until then. Retrieval marks it so an advisor quoting it today knows it is about to be re-read.</Banner>
       )}
       {s.supersedes && (
-        <p className="mb-6 text-[13px] text-ink-2">
+        <p className="mb-6 text-body text-ink-2">
           Supersedes <Link href={`/documents/${s.supersedes.id}`} className="underline">{s.supersedes.title}</Link> (day {s.supersedes.day}).
         </p>
       )}
@@ -63,11 +63,11 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
           {d.passages.map((p) => (
             <li key={p.id} id={p.id} className="scroll-mt-20 border-b border-line px-4 py-4 target:bg-selected last:border-b-0">
               <div className="flex gap-3">
-                <span className="w-8 shrink-0 text-[12px] tabular-nums text-ink-3">{p.id}</span>
+                <span className="w-8 shrink-0 text-meta tabular-nums text-ink-3">{p.id}</span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] text-ink">{p.text}</p>
+                  <p className="text-lead text-ink">{p.text}</p>
                   {p.claims?.map((c) => (
-                    <p key={c.topic} className="mt-1.5 flex flex-wrap items-center gap-2 text-[12px] text-ink-3">
+                    <p key={c.topic} className="mt-1.5 flex flex-wrap items-center gap-2 text-meta text-ink-3">
                       <span>Asserts on {c.topic.replace(/[.-]/g, " ")}:</span>
                       <span className="text-ink-2">{c.value}</span>
                       {claimed.has(p.id) && <Pill tone="fail">Disputed</Pill>}
@@ -84,7 +84,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
         <Section title="Disagreements this document is part of">
           {conflicts.map((k) => (
             <Card key={k.topic} tone="critical" icon="conflict" title={k.topic.replace(/[.-]/g, " ")} sub={k.note}>
-              <ul className="space-y-1 text-[13px]">
+              <ul className="space-y-1 text-body">
                 {k.sides.map((x) => (
                   <li key={x.docId} className="flex flex-wrap items-baseline gap-2">
                     <Pill tone={x.freshness === "stale" ? "fail" : "pass"}>{FRESHNESS_LABEL[x.freshness]}</Pill>
@@ -100,7 +100,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
 
       <Section title="Cited by">
         {cites.length ? (
-          <ul className="space-y-1 text-[13px]">
+          <ul className="space-y-1 text-body">
             {cites.map((o) => (
               <li key={o.id}>
                 <Link href={`/evidence/${o.id}`} className="underline">{clientFile(o.householdId)?.name}: {o.title}</Link>
@@ -108,12 +108,12 @@ export default async function DocumentPage({ params }: { params: Promise<{ docId
             ))}
           </ul>
         ) : (
-          <p className="text-[13px] text-ink-2">No opportunity cites this document. It is retrievable as related reading.</p>
+          <p className="text-body text-ink-2">No opportunity cites this document. It is retrievable as related reading.</p>
         )}
       </Section>
 
-      <p className="text-xs">
-        <Link href="/documents" className="underline">Document library</Link>
+      <p className="text-meta leading-4">
+        <Link href="/documents" className="underline">Documents</Link>
       </p>
     </>
   );

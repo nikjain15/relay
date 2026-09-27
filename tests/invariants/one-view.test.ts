@@ -25,7 +25,7 @@ const ALLOWED_CLIENTS = new Set([
   "app/research/[id]/page.tsx", // generateStaticParams
   "app/meetings/[id]/page.tsx", // generateStaticParams
   "app/how-it-works/page.tsx", // describes the shipped sample
-  "app/triage/page.tsx", // whether a static evidence page exists for a row
+  "app/triage/view.tsx", // whether a static evidence page exists for a row
 ]);
 const ALLOWED_SCOPED = new Set(["components/state.tsx", "components/communications.tsx"]);
 

@@ -29,18 +29,18 @@ export const AREAS: NavArea[] = [
       { href: "/triage", label: "Today's list", note: "One decision per row", icon: "list" },
       { href: "/supervision", label: "Supervision queue", note: "Findings and prepared actions", icon: "shield" },
       { href: "/meetings", label: "Meetings", note: "Review packs, built", icon: "calendar" },
-      { href: "/communications", label: "Note and audience", note: "The counter sets the regime", icon: "email" },
+      { href: "/communications", label: "Client notes", note: "The counter sets the regime", icon: "email" },
       { href: "/follow-ups", label: "Follow-ups", icon: "check" },
     ],
   },
   {
     area: "Agents",
     links: [
-      { href: "/agents", label: "Agent status", note: "Every desk, tune it, teach it", icon: "agent" },
+      { href: "/agents", label: "Agents", note: "Every desk, tune it, teach it", icon: "agent" },
       { href: "/simulate", label: "Before you act", note: "The morning after, first", icon: "hourglass" },
       { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
       { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
-      { href: "/documents", label: "Retrieval", note: "What may be quoted", icon: "library" },
+      { href: "/documents", label: "Documents", note: "What may be quoted", icon: "library" },
       { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
     ],
   },
@@ -108,12 +108,12 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const path = usePathname();
   const here = currentArea(path);
   return (
-    <div className="text-[13px]">
+    <div className="text-body">
       {AREAS.map((g) => {
         const isHere = g.area === here;
         return (
           <div key={g.area} className="mb-5 last:mb-0">
-            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-ink-3">{g.area}</p>
+            <p className="mb-1.5 px-3 text-caption font-semibold uppercase tracking-wide text-ink-3">{g.area}</p>
             <ul>
               {g.links.map((l) => {
                 const active = isActive(l.href, path);
@@ -131,7 +131,7 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       <Icon name={l.icon} size={16} className="mt-px" />
                       <span className="min-w-0">
                         {l.label}
-                        {l.note && active && <span className="mt-0.5 block text-[11px] font-normal text-ink-3">{l.note}</span>}
+                        {l.note && active && <span className="mt-0.5 block text-caption font-normal text-ink-3">{l.note}</span>}
                       </span>
                     </Link>
                   </li>

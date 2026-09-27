@@ -26,4 +26,19 @@
   --client-soft: #e4f1ee;
   --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
   --radius: 2px;
+  /* The agent's own surfaces (a Brief, the Ranking desk, the page icon) are the one rounder shape. */
+  --radius-lg: 8px;
+  /* Type scale: every font size in app/ and components/ is one of these (tests/invariants/design-tokens.test.ts). */
+  --text-caption: 11px;
+  --text-meta: 12px;
+  --text-body: 13px;
+  --text-lead: 14px;
+  --text-brief: 15px;
+  --text-heading: 16px;
+  --text-brand: 17px;
+  --text-figure: 18px;
+  --text-stat: 20px;
+  --text-stat-lg: 24px;
+  --text-title: 28px;
+  --text-display: 30px;
 }

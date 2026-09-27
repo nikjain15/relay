@@ -58,7 +58,7 @@ export function ChangeLogView() {
       />
 
       <Section title="Replay">
-        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+        <p className="mb-3 max-w-2xl text-body text-ink-2">
           Pick an entry to see the rule set as it stood immediately after it. This is how a past decision is defended: the rules that produced
           it are reconstructable, not remembered.
         </p>
@@ -77,7 +77,7 @@ export function ChangeLogView() {
       <Section title="Entries, newest first">
         {ordered.length === 0 ? (
           <Card title="No changes yet">
-            <p className="text-[13px] text-ink-2">
+            <p className="text-body text-ink-2">
               The rule set is at its firm baseline. Make a change on the{" "}
               <Link href="/compliance" className="underline">
                 rules page
@@ -87,7 +87,7 @@ export function ChangeLogView() {
           </Card>
         ) : (
           <TableScroll>
-            <table className="w-full min-w-[46rem] border-collapse text-[13px]">
+            <table className="w-full min-w-[46rem] border-collapse text-body">
               <thead>
                 <tr>
                   <th className={th}>When</th>
@@ -133,7 +133,7 @@ export function ChangeLogView() {
             </table>
           </TableScroll>
         )}
-        <p className="mt-3 max-w-2xl text-[12px] text-ink-3">
+        <p className="mt-3 max-w-2xl text-meta text-ink-3">
           Undo removes the entry because this prototype holds the log in session state. In production a reversal is itself an entry, so the log
           stays append-only and a reversal is as attributable as the change it reverses.
         </p>
@@ -141,11 +141,11 @@ export function ChangeLogView() {
 
       {policy.rejected.length > 0 && (
         <Section title="Refused changes, kept on purpose">
-          <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+          <p className="mb-3 max-w-2xl text-body text-ink-2">
             A layer that tried to loosen a rule is itself a supervision signal, so the attempt is recorded and the rule stays where the higher
             layer set it.
           </p>
-          <ul className="space-y-2 text-[13px]">
+          <ul className="space-y-2 text-body">
             {policy.rejected.map((r, i) => (
               <li key={i} className="rounded border border-line px-3 py-2">
                 <span className="font-medium">{subjectOf(r.ruleId)}</span>: {LAYER_LABEL[r.layer] ?? r.layer} tried to set {r.field} to{" "}

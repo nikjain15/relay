@@ -11,7 +11,7 @@ export function Pill({ children, tone = "neutral" }: { children: ReactNode; tone
     fail: "bg-critical-soft text-critical",
     accent: "bg-selected text-ink",
   }[tone];
-  return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-px align-middle text-xs font-medium ${cls}`}>{children}</span>;
+  return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-px align-middle text-meta leading-4 font-medium ${cls}`}>{children}</span>;
 }
 
 export function PageTitle({ title, sub, icon }: { title: string; sub?: ReactNode; icon?: IconName }) {
@@ -19,7 +19,7 @@ export function PageTitle({ title, sub, icon }: { title: string; sub?: ReactNode
     <header className="mb-8 flex items-start gap-4">
       {icon && <span className="mt-1 hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line bg-subtle text-ink sm:inline-flex" aria-hidden="true"><Icon name={icon} size={24} /></span>}
       <div className="min-w-0">
-        <h1 className="text-[28px] font-light leading-tight tracking-tight text-ink">{title}</h1>
+        <h1 className="text-title font-light leading-tight tracking-tight text-ink">{title}</h1>
         {sub && <p className="mt-2 max-w-3xl text-ink-2">{sub}</p>}
       </div>
     </header>
@@ -34,13 +34,13 @@ export function PageTitle({ title, sub, icon }: { title: string; sub?: ReactNode
 export function Mark({ text, tone = "plain" }: { text: string; tone?: "plain" | "agent" | "advisor" | "client" }) {
   const letters = text.replace(/\(.*?\)/g, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "?";
   const cls = { plain: "bg-subtle text-ink border-line", agent: "bg-agent-soft text-agent border-agent/30", advisor: "bg-advisor-soft text-advisor border-advisor/30", client: "bg-client-soft text-client border-client/30" }[tone];
-  return <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border text-[12px] font-semibold ${cls}`} aria-hidden="true">{letters}</span>;
+  return <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border text-meta font-semibold ${cls}`} aria-hidden="true">{letters}</span>;
 }
 
 export function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mb-10">
-      <h2 className="mb-3 text-[15px] font-semibold text-ink">{title}</h2>
+      <h2 className="mb-3 text-brief font-semibold text-ink">{title}</h2>
       {children}
     </section>
   );
@@ -50,17 +50,23 @@ export function Section({ title, children }: { title: string; children: ReactNod
 export function Stat({ value, label }: { value: ReactNode; label: string }) {
   return (
     <span className="inline-flex items-baseline gap-1.5">
-      <strong className="text-2xl font-light text-ink">{value}</strong>
+      <strong className="text-stat-lg leading-8 font-light text-ink">{value}</strong>
       <span className="text-ink-2">{label}</span>
     </span>
   );
 }
 
-export const th = "border-b border-line-strong px-3 py-2 text-left text-xs font-normal text-ink-2";
+export const th = "border-b border-line-strong px-3 py-2 text-left text-meta leading-4 font-normal text-ink-2";
 export const td = "border-b border-line px-3 py-3 align-top";
-const base = "inline-flex min-h-8 items-center rounded px-3 py-1 text-left leading-snug text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+const base = "inline-flex min-h-8 items-center rounded px-3 py-1 text-left leading-snug text-body transition-colors disabled:cursor-not-allowed disabled:opacity-40";
 export const btn = `${base} border border-ink bg-surface text-ink hover:bg-subtle`;
 export const btnPrimary = `${base} border border-ink bg-ink text-surface hover:opacity-85`;
+/** A square button holding one icon: close, menu. */
+export const iconBtn = "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line text-ink hover:bg-subtle";
+/** A small suggestion or shortcut: Ask's follow-up questions, a meeting on Today's list. */
+export const chip = "rounded border border-line bg-subtle px-2 py-1 text-meta text-ink-2 hover:bg-selected";
+/** A compact field for a table row or a toolbar. The full-width field is `input`, below. */
+export const inputSmall = "h-8 rounded border border-line-strong bg-surface px-2 text-body text-ink";
 
 // --- Layout primitives added in the UX rebuild ----------------------------
 //
@@ -98,8 +104,8 @@ export function Card({
           <div className="flex min-w-0 gap-2.5">
             {icon && <Icon name={icon} size={20} className="mt-px shrink-0 text-ink-3" />}
             <div className="min-w-0">
-              {title && <h3 className="text-[14px] font-semibold text-ink">{title}</h3>}
-              {sub && <p className="mt-1 text-[13px] text-ink-2">{sub}</p>}
+              {title && <h3 className="text-lead font-semibold text-ink">{title}</h3>}
+              {sub && <p className="mt-1 text-body text-ink-2">{sub}</p>}
             </div>
           </div>
           {right && <div className="shrink-0">{right}</div>}
@@ -124,9 +130,9 @@ export function StatRow({ items }: { items: { value: ReactNode; label: string; t
         <div key={s.label} className="rounded border border-line px-3 py-3">
           <div className="flex items-baseline gap-1.5">
             {s.icon && <Icon name={s.icon} size={16} className="translate-y-px text-ink-3" />}
-            <p className={`text-xl font-light leading-none ${s.tone === "critical" ? "text-critical" : s.tone === "positive" ? "text-positive" : "text-ink"}`}>{s.value}</p>
+            <p className={`text-stat font-light leading-none ${s.tone === "critical" ? "text-critical" : s.tone === "positive" ? "text-positive" : "text-ink"}`}>{s.value}</p>
           </div>
-          <p className="mt-1.5 text-[11px] text-ink-3">{s.label}</p>
+          <p className="mt-1.5 text-caption text-ink-3">{s.label}</p>
         </div>
       ))}
     </div>
@@ -164,8 +170,8 @@ export function Row({
     <>
       {icon && <Icon name={icon} size={20} className={`mt-px ${accent}`} />}
       <span className="min-w-0 flex-1">
-        <span className="block text-[14px] text-ink">{who && <Who who={who} />}{title}</span>
-        {meta && <span className="mt-0.5 block text-[12px] text-ink-3">{meta}</span>}
+        <span className="block text-lead text-ink">{who && <Who who={who} />}{title}</span>
+        {meta && <span className="mt-0.5 block text-meta text-ink-3">{meta}</span>}
         {children}
       </span>
       {right && <span className="shrink-0 self-center">{right}</span>}
@@ -200,13 +206,13 @@ export const WHO: Record<Perspective, { word: string; text: string; bg: string; 
 /** A small word in its perspective colour, placed before the line it describes. */
 export function Who({ who, label }: { who: Perspective; label?: string }) {
   const w = WHO[who];
-  return <span className={`mr-2 inline-flex items-center gap-1 rounded px-1.5 py-px align-middle text-[11px] font-medium ${w.bg} ${w.text}`}><span className={`inline-block h-1.5 w-1.5 rounded-full ${w.dot}`} aria-hidden="true" />{label ?? w.word}</span>;
+  return <span className={`mr-2 inline-flex items-center gap-1 rounded px-1.5 py-px align-middle text-caption font-medium ${w.bg} ${w.text}`}><span className={`inline-block h-1.5 w-1.5 rounded-full ${w.dot}`} aria-hidden="true" />{label ?? w.word}</span>;
 }
 
 /** The three words and their colours, once per screen where they are used. */
 export function Legend({ className = "" }: { className?: string }) {
   return (
-    <p className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-3 ${className}`} aria-label="Colour legend">
+    <p className={`flex flex-wrap items-center gap-x-3 gap-y-1 whitespace-nowrap text-caption text-ink-3 ${className}`} aria-label="Colour legend">
       <Who who="agent" label="Agent read or prepared" />
       <Who who="advisor" label="You decide or send" />
       <Who who="client" label="Client said or holds" />
@@ -217,7 +223,7 @@ export function Legend({ className = "" }: { className?: string }) {
 /** Long explanation, folded away. A screen states its point and keeps the essay behind this. */
 export function More({ summary, children }: { summary: string; children: ReactNode }) {
   return (
-    <details className="mt-3 text-[13px]">
+    <details className="mt-3 text-body">
       <summary className="cursor-pointer text-ink-2 underline decoration-line-strong">{summary}</summary>
       <div className="mt-2 max-w-2xl text-ink-2">{children}</div>
     </details>
@@ -233,8 +239,8 @@ export function Banner({ tone = "caution", title, children }: { tone?: "critical
   }[tone];
   return (
     <div role="note" className={`mb-6 rounded border ${cls} px-4 py-3`}>
-      <p className="text-[14px] font-semibold text-ink">{title}</p>
-      {children && <div className="mt-1 text-[13px] text-ink-2">{children}</div>}
+      <p className="text-lead font-semibold text-ink">{title}</p>
+      {children && <div className="mt-1 text-body text-ink-2">{children}</div>}
     </div>
   );
 }
@@ -243,15 +249,15 @@ export function Banner({ tone = "caution", title, children }: { tone?: "critical
 export function Field({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
   return (
     <label className="block py-2">
-      <span className="block text-[13px] font-medium text-ink">{label}</span>
-      {hint && <span className="mt-0.5 block text-[12px] text-ink-3">{hint}</span>}
+      <span className="block text-body font-medium text-ink">{label}</span>
+      {hint && <span className="mt-0.5 block text-meta text-ink-3">{hint}</span>}
       <span className="mt-1.5 block">{children}</span>
     </label>
   );
 }
 
-export const input = "h-9 w-full rounded border border-line-strong bg-surface px-2 text-[13px] text-ink sm:max-w-[16rem]";
-export const textarea = "w-full rounded border border-line-strong bg-surface p-2 text-[13px] text-ink";
+export const input = "h-9 w-full rounded border border-line-strong bg-surface px-2 text-body text-ink sm:max-w-[16rem]";
+export const textarea = "w-full rounded border border-line-strong bg-surface p-2 text-body text-ink";
 /** A table that scrolls sideways instead of squeezing, for the few real tables. */
 /**
  * A table that becomes a stack of cards below md, so a phone reads each row
@@ -268,7 +274,7 @@ export const stack = {
   row: "max-md:grid max-md:grid-cols-[auto_1fr] max-md:gap-x-3 max-md:border-b max-md:border-line max-md:py-3",
   cell: "max-md:border-0 max-md:px-0 max-md:py-1",
   wide: "max-md:col-span-2 max-md:border-0 max-md:px-0 max-md:py-1 max-md:text-left",
-  label: "mr-1 text-[11px] text-ink-3 md:hidden",
+  label: "mr-1 text-caption text-ink-3 md:hidden",
 };
 
 export function TableScroll({ children }: { children: ReactNode }) {
@@ -286,9 +292,9 @@ export function Timeline({ items }: { items: { at: string; icon: IconName; title
             <span className={`absolute -left-[31px] top-1 flex h-5 w-5 items-center justify-center rounded-full border border-line bg-surface ${accent[it.tone ?? "plain"]}`} aria-hidden="true">
               <Icon name={it.icon} size={16} />
             </span>
-            <span className="block text-[11px] tabular-nums text-ink-3">{it.at}</span>
-            <span className="block text-[14px] text-ink">{it.title}</span>
-            {it.meta && <span className="block text-[12px] text-ink-2">{it.meta}</span>}
+            <span className="block text-caption tabular-nums text-ink-3">{it.at}</span>
+            <span className="block text-lead text-ink">{it.title}</span>
+            {it.meta && <span className="block text-meta text-ink-2">{it.meta}</span>}
           </>
         );
         return (
@@ -306,7 +312,7 @@ export function StateDot({ state }: { state: "clear" | "attention" | "blocked" |
   const cls = { clear: "bg-positive", attention: "bg-caution", blocked: "bg-critical", off: "bg-line-strong" }[state];
   const word = { clear: "Clear", attention: "Needs you", blocked: "Blocking", off: "Off" }[state];
   return (
-    <span className="inline-flex items-center gap-1.5 text-[12px] text-ink-2">
+    <span className="inline-flex items-center gap-1.5 text-meta text-ink-2">
       <span className={`inline-block h-2 w-2 rounded-full ${cls}`} aria-hidden="true" />
       {word}
     </span>
@@ -322,7 +328,7 @@ export function StateDot({ state }: { state: "clear" | "attention" | "blocked" |
 export function Trace({ steps, summary = "How the agent got here" }: { steps: { icon: IconName; title: string; detail?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive"; who?: Perspective }[]; summary?: string }) {
   const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" };
   return (
-    <details className="mt-1.5 text-[12px]">
+    <details className="mt-1.5 text-meta">
       <summary className="cursor-pointer text-ink-3 underline decoration-line">{summary}</summary>
       <ol className="mt-2 space-y-1.5 border-l border-line pl-3">
         {steps.map((s, i) => (
@@ -398,15 +404,15 @@ export function Brief({ name, icon = "agent", at, says, points = [], next, steps
       <div className="flex gap-3">
         <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-agent-soft text-agent" aria-hidden="true"><Icon name={icon} size={20} /></span>
         <div className="min-w-0 flex-1">
-          <p className="text-[12px] text-ink-3"><span className="font-medium text-agent">{name}</span>{at ? ` · ran ${at}` : ""}</p>
-          <p className="mt-1 text-[15px] leading-relaxed text-ink">{says}</p>
+          <p className="text-meta text-ink-3"><span className="font-medium text-agent">{name}</span>{at ? ` · ran ${at}` : ""}</p>
+          <p className="mt-1 text-brief leading-relaxed text-ink">{says}</p>
           {points.length > 0 && (
             <ul className="mt-3 space-y-1.5">
               {points.map((p, i) => {
                 const body = (
                   <>
                     <Icon name={p.icon ?? (p.tone === "critical" ? "alert" : p.tone === "caution" ? "question" : p.tone === "positive" ? "check" : "chevron")} size={16} className={`mt-0.5 shrink-0 ${accent[p.tone ?? "plain"]}`} />
-                    <span className="min-w-0 text-[13px] text-ink-2">{p.who && <Who who={p.who} />}{p.text}</span>
+                    <span className="min-w-0 text-body text-ink-2">{p.who && <Who who={p.who} />}{p.text}</span>
                   </>
                 );
                 return <li key={i}>{p.href ? <Link href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</Link> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
@@ -419,7 +425,7 @@ export function Brief({ name, icon = "agent", at, says, points = [], next, steps
             </p>
           )}
           {steps && <Trace steps={steps} summary="How I got there" />}
-          {note && <p className="mt-2 text-[11px] text-ink-3">{note}</p>}
+          {note && <p className="mt-2 text-caption text-ink-3">{note}</p>}
         </div>
       </div>
     </section>

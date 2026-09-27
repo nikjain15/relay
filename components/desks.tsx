@@ -10,7 +10,7 @@
 // is shown with the attempt rather than swallowed.
 import { useState } from "react";
 import { Icon } from "@/components/icons";
-import { Field, Pill, More, Who, btn, btnPrimary } from "@/components/ui";
+import { Field, Pill, More, Who, btn, btnPrimary, inputSmall } from "@/components/ui";
 import type { AgentDefinition } from "@/lib/compliance/agents";
 import { CADENCE_RANK } from "@/lib/compliance/agents";
 import type { AgentRejection } from "@/lib/compliance/store";
@@ -19,7 +19,7 @@ import type { EditableLayer } from "@/lib/compliance/scope";
 import type { RuleEdit } from "@/lib/compliance/store";
 
 const CADENCE: Record<AgentDefinition["cadence"], string> = { on_draft: "On every draft and message", on_proposal: "On every proposal", daily: "Daily", weekly: "Weekly" };
-const input = "h-8 w-full rounded border border-line-strong bg-surface px-2 text-[13px] text-ink";
+const input = `${inputSmall} w-full`;
 
 export function Desks({ agents, rejected, rules, connected, editing, layers, onEdit }: {
   agents: AgentDefinition[];
@@ -55,19 +55,19 @@ export function Desks({ agents, rejected, rules, connected, editing, layers, onE
               <div className="flex items-start gap-3">
                 <Icon name="shield" size={20} className="mt-0.5 text-ink-3" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-[14px] text-ink"><Who who="agent" />{a.desk}</p>
-                  <p className="text-[12px] text-ink-3">{a.name} · {a.mirrors}</p>
+                  <p className="text-lead text-ink"><Who who="agent" />{a.desk}</p>
+                  <p className="text-meta text-ink-3">{a.name} · {a.mirrors}</p>
                 </div>
                 <Pill tone={a.enabled ? "pass" : "neutral"}>{a.enabled ? "Running" : "Off"}</Pill>
               </div>
               <p className="mt-2 flex flex-wrap gap-1">
                 {a.authorities.map((x) => <Pill key={x}>{x}</Pill>)}
               </p>
-              <p className="mt-2 text-[13px] text-ink-2">
+              <p className="mt-2 text-body text-ink-2">
                 {CADENCE[a.cadence]}{a.setBy?.cadence !== "firm" && <Pill tone="accent">set by {label(a.setBy!.cadence)}</Pill>}. {owned.length} rule{owned.length === 1 ? "" : "s"}, {evaluable.length} evaluable with what is connected.
                 {tuned && <span className="text-ink-3"> Tuned for this advisor.</span>}
               </p>
-              <ul className="mt-1 space-y-0.5 text-[13px]">
+              <ul className="mt-1 space-y-0.5 text-body">
                 {owned.map((r) => (
                   <li key={r.id} className="flex items-center gap-2">
                     <a href={`#${r.id}`} className="underline">{r.title}</a>
@@ -76,7 +76,7 @@ export function Desks({ agents, rejected, rules, connected, editing, layers, onE
                 ))}
               </ul>
               {refused.length > 0 && (
-                <ul className="mt-2 space-y-1 text-[12px] text-critical">
+                <ul className="mt-2 space-y-1 text-meta text-critical">
                   {refused.map((r, i) => <li key={i} className="flex gap-1.5"><Icon name="block" size={16} className="mt-px shrink-0" /><span>Refused at the {label(r.layer)} layer: {r.field} to {r.attempted.replace("_", " ")}. {r.reason}</span></li>)}
                 </ul>
               )}

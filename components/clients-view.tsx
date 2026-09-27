@@ -23,7 +23,7 @@ import { APP } from "@/lib/data/policy";
 
 function Cites({ cites }: { cites: DossierItem["cites"] }) {
   return (
-    <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-ink-3">
+    <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-caption text-ink-3">
       <Icon name="link" size={16} />
       {cites.map((k, i) => (
         <span key={i}>
@@ -38,7 +38,7 @@ function Cites({ cites }: { cites: DossierItem["cites"] }) {
 function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; filed: boolean }) {
   return (
     <div className="mt-3 rounded border border-line bg-subtle p-4">
-      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-2">
+      <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-body text-ink-2">
         <span className="flex items-center gap-1.5 text-ink"><Icon name="briefing" size={16} className="text-ink-3" />Dossier: {d.clientName}</span>
         <span>{d.counts.read} records read from {d.counts.sources} sources</span>
         <span className={d.counts.notOnFile ? "text-caution" : ""}>{d.counts.notOnFile} not on file</span>
@@ -57,19 +57,19 @@ function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; fi
       <div className="grid gap-4 lg:grid-cols-2">
         {d.sections.map((s) => (
           <details key={s.source} open={s.source === "public" || s.source === "crm"} className="rounded border border-line bg-surface">
-            <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-[13px] text-ink">
+            <summary className="flex cursor-pointer items-center gap-2 px-3 py-2 text-body text-ink">
               <Icon name={s.icon} size={16} className="text-ink-3" />
               <Who who={s.source === "documents" || s.source === "public" ? "agent" : "client"} />
               <span className="flex-1">{s.title}</span>
-              <span className="text-[12px] text-ink-3">{s.items.length}</span>
+              <span className="text-meta text-ink-3">{s.items.length}</span>
             </summary>
-            <p className="px-3 text-[11px] text-ink-3">{s.via}</p>
+            <p className="px-3 text-caption text-ink-3">{s.via}</p>
             <ul className="px-3 pb-2">
-              {s.gap && <li className="py-2 text-[13px] text-ink-2">{s.gap}</li>}
+              {s.gap && <li className="py-2 text-body text-ink-2">{s.gap}</li>}
               {s.items.map((it) => (
-                <li key={it.id} className="border-t border-line py-2 text-[13px] text-ink">
+                <li key={it.id} className="border-t border-line py-2 text-body text-ink">
                   {it.text}
-                  {it.confidence < 1 && <span className="ml-1 text-[11px] text-ink-3">Confidence {Math.round(it.confidence * 100)}%</span>}
+                  {it.confidence < 1 && <span className="ml-1 text-caption text-ink-3">Confidence {Math.round(it.confidence * 100)}%</span>}
                   <Cites cites={it.cites} />
                 </li>
               ))}
@@ -80,24 +80,24 @@ function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; fi
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <div>
-          <p className="mb-1 text-[12px] text-ink-3">Could not establish</p>
-          {d.unknowns.length === 0 ? <p className="text-[13px] text-ink-2">Nothing outstanding.</p> : (
-            <ul className="space-y-1 text-[13px] text-ink-2">
+          <p className="mb-1 text-meta text-ink-3">Could not establish</p>
+          {d.unknowns.length === 0 ? <p className="text-body text-ink-2">Nothing outstanding.</p> : (
+            <ul className="space-y-1 text-body text-ink-2">
               {d.unknowns.map((u, i) => <li key={i} className="flex gap-2"><Icon name="question" size={16} className="mt-0.5 shrink-0 text-ink-3" /><span><span className="text-ink">{u.text}</span> {u.why}</span></li>)}
             </ul>
           )}
         </div>
         <div>
-          <p className="mb-1 text-[12px] text-ink-3"><Who who="agent" />Drafted for the CRM, <Who who="advisor" label="you file it" /></p>
-          <p className="rounded border border-line bg-surface p-3 text-[13px] text-ink-2">{d.draftNote}</p>
+          <p className="mb-1 text-meta text-ink-3"><Who who="agent" />Drafted for the CRM, <Who who="advisor" label="you file it" /></p>
+          <p className="rounded border border-line bg-surface p-3 text-body text-ink-2">{d.draftNote}</p>
           <p className="mt-2 flex items-center gap-2">
             <button type="button" className={btnPrimary} disabled={filed} onClick={onFile}>{filed ? "Filed to the record" : "File as a team note"}</button>
-            <span className="text-[12px] text-ink-3">{filed ? "It now appears in this household's briefing and file for the session." : "A person files it; the agent writes nothing. In production, a CRM write through the connector."}</span>
+            <span className="text-meta text-ink-3">{filed ? "It now appears in this household's briefing and file for the session." : "A person files it; the agent writes nothing. In production, a CRM write through the connector."}</span>
           </p>
         </div>
       </div>
 
-      <details className="mt-3 text-[12px]">
+      <details className="mt-3 text-meta">
         <summary className="cursor-pointer text-ink-3 underline decoration-line">How the agent got there</summary>
         <div className="mt-2"><Timeline items={d.trace.map((t) => ({ at: `step ${t.n}`, icon: t.icon, title: t.title, meta: t.detail }))} /></div>
       </details>
@@ -188,7 +188,7 @@ export function ClientsView() {
                         <tr key={c.id} id={c.id}>
                           <td className={td}>
                             <Link className="font-medium underline" href={`/household/${c.id}`}>{c.name}</Link>
-                            <div className="text-xs text-ink-2">{c.archetype}, {c.persons.length} {c.persons.length === 1 ? "person" : "people"}</div>
+                            <div className="text-meta leading-4 text-ink-2">{c.archetype}, {c.persons.length} {c.persons.length === 1 ? "person" : "people"}</div>
                           </td>
                           <td className={td}>{c.tier}</td>
                           <td className={`${td} text-right`}>{usd(c.totalUsd)}</td>
@@ -206,8 +206,8 @@ export function ClientsView() {
                           <td className={td}>
                             <span className="flex flex-col gap-1">
                               <button type="button" className={btn} onClick={() => (r && open === c.id ? setOpen(null) : research(c.id))}>{r && open === c.id ? "Hide dossier" : r ? "Show dossier" : "Research"}</button>
-                              {r && <span className="text-[11px] text-ink-3">{r.d.counts.read} read in {r.ms} ms</span>}
-                              <span className="flex flex-wrap gap-x-2 text-[11px]">
+                              {r && <span className="text-caption text-ink-3">{r.d.counts.read} read in {r.ms} ms</span>}
+                              <span className="flex flex-wrap gap-x-2 text-caption">
                                 <Link href={`/research/${c.id}`} className="underline">Briefing</Link>
                                 {c.opportunities.some((o) => o.action === "fund" || o.action === "trim") && <Link href={`/household/${c.id}/proposal?opp=${c.opportunities.find((o) => o.action === "fund" || o.action === "trim")!.id}`} className="underline">Options</Link>}
                                 {mtg && <Link href={`/meetings/${c.id}`} className="underline">Pack</Link>}
@@ -232,7 +232,7 @@ export function ClientsView() {
           </Section>
         );
       })}
-      <p className="text-[12px] text-ink-3">The featured household for the demo is {book.clients.find((c) => c.id === APP.featured.clientId)?.name ?? "not in the book"}.</p>
+      <p className="text-meta text-ink-3">The featured household for the demo is {book.clients.find((c) => c.id === APP.featured.clientId)?.name ?? "not in the book"}.</p>
     </>
   );
 }

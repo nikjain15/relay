@@ -1,19 +1,8 @@
-"use client";
+// The page"s name comes from the navigation; the screen itself is ./view.tsx.
+import Profiles from "./view";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { ProfilesView } from "@/components/profiles-view";
+export const metadata = { title: "Preferences" };
 
-// Reads the query string in the browser, so the page exports as static HTML (GitHub Pages, R-22).
-function WithParams() {
-  const sp = useSearchParams();
-  return <ProfilesView advisor={sp.get("advisor") ?? undefined} client={sp.get("client") ?? undefined} />;
-}
-
-export default function Profiles() {
-  return (
-    <Suspense>
-      <WithParams />
-    </Suspense>
-  );
+export default function Page() {
+  return <Profiles />;
 }
