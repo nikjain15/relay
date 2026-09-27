@@ -8,6 +8,10 @@ import { CLIENTS, CONNECTORS_DATA } from "@/lib/data";
 import { CORPUS } from "@/lib/fixtures/corpus";
 import { liquidityMonths } from "@/lib/household-math";
 import { APP } from "@/lib/data/policy";
+import { evaluateAll } from "@/lib/constraints/evaluate";
+import { economics } from "@/lib/proposals/compare";
+import { SHELF } from "@/lib/fixtures/shelf";
+import { score } from "@/lib/ranking/rank";
 
 /** Ask answers from the records and names them; it never answers from nothing. */
 function ctx(advisorId = APP.defaultAdvisorId): AskContext {
@@ -65,5 +69,52 @@ describe("ask", () => {
     const a = answer("what is the meaning of life", c);
     expect(a.confidence).toBe(0);
     for (const s of suggestions(CLIENTS, c.advisorId)) expect(answer(s, c).confidence, s).toBeGreaterThan(0);
+  });
+
+  it("finds a household named with a hyphen or a possessive", () => {
+    const hyphen = CLIENTS.find((k) => k.name.includes("-"))!;
+    expect(householdIn(`what changed for ${hyphen.name} since we last spoke`, CLIENTS)?.id).toBe(hyphen.id);
+    expect(householdIn(`what are ${featured.name}'s goals`, CLIENTS)?.id).toBe(featured.id);
+  });
+
+  it("answers what changed since we last spoke with what changed, not the last contact", () => {
+    const a = answer(`What changed for ${featured.name} since we last spoke?`, c);
+    expect(a.text).toMatch(/^Since /);
+    expect(a.cites.some((k) => k.record.includes("opportunities["))).toBe(true);
+  });
+
+  it("answers every chip it offers", () => {
+    for (const q of ["What did the agents prepare?", "Which findings are blocking?", "Who am I meeting today?"]) expect(answer(q, c).confidence, q).toBeGreaterThan(0);
+  });
+
+  it("gives the options with the figures from the options arithmetic, and the rate it used", () => {
+    const opp = featured.opportunities.find((o) => o.action === "fund")!;
+    const tsy = SHELF.find((p) => p.type === "treasury_ladder")!;
+    const ev = evaluateAll(opp, featured).find((e) => e.candidate.productId === tsy.id)!;
+    const x = economics(ev.candidate, tsy);
+    const a = answer(`What is the after-tax income on the treasury ladder for ${featured.name}?`, c);
+    expect(a.text).toContain(`${x.taxPct}%`);
+    expect(a.cites.some((k) => k.record === "data/policy.json#proposals.taxAssumptions")).toBe(true);
+    expect(a.links[0].href).toBe(`/household/${featured.id}/proposal?opp=${opp.id}`);
+  });
+
+  it("explains the score as materiality times the weight, with the arithmetic", () => {
+    const a = answer("How is the score worked out?", c);
+    const top = CLIENTS.filter((k) => k.advisorId === c.advisorId).flatMap((k) => k.opportunities).sort((x, y) => score(y) - score(x))[0];
+    expect(a.text).toContain(`${score(top)} = materiality ${top.materiality}`);
+    expect(a.links.some((l) => l.href === "/triage#tune")).toBe(true);
+  });
+
+  it("says what it does not know rather than guessing", () => {
+    expect(answer("Who is at risk of leaving?", c).text).toMatch(/no attrition model/);
+    expect(answer(`What is ${featured.name}'s tax bracket?`, c).text).toMatch(/no tax return on file/);
+  });
+
+  it("answers the book-wide questions an advisor asks from the records", () => {
+    for (const q of ["Any follow-ups due?", "Are there service requests open?", "Which prospects should I call?", "Who needs cash?", "Is the treasury one-pager current?", "Prep me for my 2pm"]) {
+      const a = answer(q, c);
+      expect(a.confidence, q).toBeGreaterThan(0);
+      expect(a.cites.length, q).toBeGreaterThan(0);
+    }
   });
 });

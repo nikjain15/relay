@@ -19,6 +19,7 @@ import { POLICY } from "@/lib/data/policy";
 import { CLASS_LABEL, NODE_LABEL, Card, More, PageTitle, Pill, Section, StatRow } from "@/components/ui";
 import { Icon } from "@/components/icons";
 import { Bars } from "@/components/charts";
+import { WhyBrief } from "@/components/why-brief";
 
 export function generateStaticParams() {
   return OPPORTUNITIES.map((o) => ({ oppId: o.id }));
@@ -74,7 +75,8 @@ export default async function Evidence({ params }: { params: Promise<{ oppId: st
 
   return (
     <>
-      <PageTitle icon="eye" title="Why this client" sub={`${h.name}: ${o.title}`} />
+      <PageTitle icon="eye" title="Why this client" sub={`${h.name}: ${o.plainTitle ?? o.title}`} />
+      <WhyBrief opp={o} clientName={h.name} advisorId={c.advisorId} supported={{ passages: ev.refused ? 0 : ev.passages.length, docs: docsCited, refused: ev.refused }} conflicts={ev.conflicts.length} />
 
       <StatRow
         items={[

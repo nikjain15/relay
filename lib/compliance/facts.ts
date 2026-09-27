@@ -263,7 +263,8 @@ export function messageFacts(m: CapturedMessage, input: { obaOnFile: boolean; co
   return {
     scope: "communication",
     subject: m.id,
-    subjectLabel: `Captured ${m.channel}, ${m.direction}${m.clientId ? `, ${m.clientId.replace(/^hh-/, "")}` : ""}, day ${m.day}`,
+    // "Smith: email sent 2 days ago", the way an advisor names a message, not "Captured email, outbound, smith, day -2".
+    subjectLabel: `${m.clientId ? m.clientId.replace(/^hh-/, "").split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join("-") : "No client named"}: ${m.channel} ${m.direction === "outbound" ? "sent" : "received"} ${m.day === 0 ? "today" : m.day === -1 ? "yesterday" : `${-m.day} days ago`}`,
     facts,
     confidence: Object.fromEntries(classified.filter((k) => facts[k] === true).map((k) => [k, INFERRED.textClassification])),
   };

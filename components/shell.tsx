@@ -115,13 +115,17 @@ export function Shell({ children }: { children: ReactNode }) {
 
         <Legend className="ml-4 hidden lg:flex" />
         <div className="ml-auto flex items-center gap-2">
+          {/* Ask reads as a place to type, not a small button: it is the fastest path to anything. */}
           <button
             type="button"
             onClick={() => setAsk(true)}
-            className="flex items-center gap-1.5 rounded border border-agent/40 bg-agent-soft px-2 py-1 text-[12px] text-agent hover:bg-selected"
+            aria-label="Ask Relay a question"
+            className="hidden items-center gap-2 rounded border border-agent/40 bg-agent-soft px-3 py-1.5 text-[13px] text-agent hover:bg-selected sm:flex md:w-72 lg:w-80"
           >
             <Icon name="agent" size={16} />
-            <span className="hidden sm:inline">Ask</span>
+            <span className="md:hidden">Ask</span>
+            <span className="hidden flex-1 text-left md:inline">Ask about a client, today or a rule</span>
+            <kbd className="hidden rounded border border-agent/40 px-1.5 text-[11px] md:inline">/</kbd>
           </button>
           <button
             type="button"
@@ -135,6 +139,17 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
+      {/* On a phone the header has no room for a field, so Ask is a labelled button that stays in reach of the thumb. */}
+      {!ask && (
+        <button
+          type="button"
+          onClick={() => setAsk(true)}
+          className="fixed bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-agent/40 bg-agent-soft px-4 py-2.5 text-[14px] font-medium text-agent shadow-lg hover:bg-selected sm:hidden"
+        >
+          <Icon name="agent" size={16} />
+          Ask Relay
+        </button>
+      )}
       <Palette open={palette} onClose={() => setPalette(false)} />
       <Ask open={ask} onClose={() => setAsk(false)} />
 
@@ -156,7 +171,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       <div className="flex min-h-[calc(100vh-3.5rem)]">
         <Nav />
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 tabular-nums focus:outline-none sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+        <main id="main" tabIndex={-1} className="min-w-0 flex-1 px-4 pb-20 pt-6 tabular-nums focus:outline-none sm:px-6 sm:py-8 lg:px-10 lg:py-10">
           <div className="mx-auto max-w-[1200px]">{children}</div>
         </main>
       </div>

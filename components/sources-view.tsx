@@ -30,6 +30,9 @@ export const CHANNEL_LABEL: Record<ChannelKind, string> = {
   email: "Email and calendar", calendar: "Calendar", meeting: "Video meetings", voice: "Phone calls", sms: "Text messages", chat: "Chat",
   social: "Social", crm: "CRM", custodian: "Custodian", portfolio: "Portfolio and reporting", archive: "Archive", esign: "E-signature", planning: "Financial planning",
 };
+/** Files in public/ are served under the base path on the static site. */
+const ASSET = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const STATUS: Record<ChannelCoverage["status"], { label: string; tone: "pass" | "fail" | "neutral" | "accent" }> = {
   covered: { label: "Captured", tone: "pass" }, partial: { label: "Not retained", tone: "fail" }, gap: { label: "Not captured", tone: "fail" }, unused: { label: "Not used", tone: "neutral" },
 };
@@ -147,7 +150,7 @@ export function SourcesView({ advisorId }: { advisorId: string }) {
             <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Choose files" onChange={(e) => { if (e.target.files) void onFiles(e.target.files); e.target.value = ""; }} />
             <p className="mt-3 text-[12px] text-ink-3">
               .csv or .xlsx exported from your CRM, one household a row; messages one a row naming the household; .md or .txt documents.
-              Samples: <a className="underline" href="samples/clients.csv" download>clients.csv</a>, <a className="underline" href="samples/messages.csv" download>messages.csv</a>, <a className="underline" href="samples/research-note.md" download>research-note.md</a>. Files stay in this browser.
+              Samples: <a className="underline" href={`${ASSET}/samples/clients.csv`} download>clients.csv</a>, <a className="underline" href={`${ASSET}/samples/messages.csv`} download>messages.csv</a>, <a className="underline" href={`${ASSET}/samples/research-note.md`} download>research-note.md</a>. Files stay in this browser.
             </p>
           </div>
           <Card icon="agent" title="What it unlocks">

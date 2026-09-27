@@ -32,12 +32,13 @@ import { scopeFor } from "@/lib/compliance/scope";
 import { sweep, connectedIds } from "@/lib/compliance/sweep";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { rank } from "@/lib/ranking/rank";
+import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { prepareAll, KIND, type PreparedAction } from "@/lib/compliance/actions";
 import { agentStatuses } from "@/lib/compliance/activity";
 import { explain, paramMap } from "@/lib/compliance/dsl";
 
 export function Overview({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, discoveryDecisions, proposalDecisions, book } = useRelay();
+  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, discoveryDecisions, proposalDecisions, book, overlay } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId);
   // The compute figure is real and so differs between the static export and the
@@ -70,20 +71,27 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const connected = useMemo(() => connectedIds(advisorId, connections), [advisorId, connections]);
   const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, openCases, connected), [agents, policy, found, actions, openCases, connected]);
   const blocking = openCases.filter((c) => c.severity === "block" && c.reason === "fired");
-  const meetings = todaysMeetings();
-  const overdue = allTasks().filter((t) => t.dueDay < 0);
-  const service = triage(SERVICE_REQUESTS);
+  // Margaret's morning: her calendar, her tasks, her clients' requests, not the firm's.
+  const meetings = todaysMeetings(advisorId);
+  const overdue = allTasks().filter((t) => t.dueDay < 0 && t.advisorId === advisorId);
+  const service = triage(SERVICE_REQUESTS.filter((r) => mine.some((c) => c.id === r.clientId)));
   const escalated = mine.flatMap(openItems).filter((w) => w.status === "escalated");
-  const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed))), [dismissed, book, mine]);
+  // The same ranking Today's list shows: the advisor's resolved weights and list size, tuned or not.
+  const rankingProfile = resolveProfile({ advisorId }, overlay);
+  const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed)), rankingProfile.values["triage.dailyCap"], rankingProfile.values["triage.classWeights"]), [dismissed, book, mine, rankingProfile.values]);
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
   const staleDocs = corpus.filter((d) => d.usable && d.freshness === "stale").length;
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
   const recordsRead = found.accountsScanned + found.messagesScanned + corpus.filter((d) => d.usable).length + mine.reduce((s, c) => s + c.notes.length + c.contactHistory.length, 0);
 
+  // A gap is a channel nothing reads; a partial one is read but has no retained copy. They are not the same claim.
+  const uncaptured = coverage.gaps.filter((g) => g.status === "gap");
+  const unretained = coverage.gaps.filter((g) => g.status === "partial");
+
   // What only a person can settle, ranked by cost of being wrong.
   const coverageRules = new Set(["off-channel-gap", "sec-17a4-completeness"]);
   const decisions = [
-    ...(!coverage.defensible ? [{ icon: "link" as const, tone: "critical" as const, href: "/sources", title: `${coverage.gaps.length} channel${coverage.gaps.length === 1 ? "" : "s"} you use ${coverage.gaps.length === 1 ? "is" : "are"} not captured`, meta: `${coverage.gaps.map((g) => g.channel).join(", ")}. Business conducted there cannot be produced on request.`, right: "Connect" }] : []),
+    ...(!coverage.defensible ? [{ icon: "link" as const, tone: "critical" as const, href: "/sources", title: uncaptured.length ? `${uncaptured.length} channel${uncaptured.length === 1 ? "" : "s"} you use ${uncaptured.length === 1 ? "is" : "are"} not captured` : `${unretained.length} channel${unretained.length === 1 ? "" : "s"} captured without a retained copy`, meta: `${uncaptured.length ? `${uncaptured.map((g) => g.channel).join(", ")}: business conducted there cannot be produced on request.` : ""}${uncaptured.length && unretained.length ? " " : ""}${unretained.length ? `${unretained.map((g) => g.channel).join(", ").replace(/^./, (x) => x.toUpperCase())} ${unretained.length === 1 ? "is" : "are"} read but not retained.` : ""}`, right: "Connect" }] : []),
     ...blocking.filter((c) => !coverageRules.has(c.ruleId)).map((c) => ({ icon: "shield" as const, tone: "critical" as const, href: "/supervision", title: c.ruleTitle, meta: `${c.subjectLabel} · ${c.citation}`, right: "Disposition" })),
     ...(escalated.length ? [{ icon: "esign" as const, tone: "caution" as const, href: "/onboarding", title: `${escalated.length} form${escalated.length === 1 ? "" : "s"} past the escalation deadline`, meta: escalated.slice(0, 3).map((w) => w.form).join(", "), right: "Chase" }] : []),
     ...(service.filter((r) => r.overdue).length ? [{ icon: "clock" as const, tone: "caution" as const, href: "/servicing", title: `${service.filter((r) => r.overdue).length} service request${service.filter((r) => r.overdue).length === 1 ? "" : "s"} past target`, meta: "Money movement needs a callback to a number on file", right: "Call back" }] : []),
@@ -124,6 +132,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
     { id: "retrieval", name: "Retrieval", icon: "library", state: staleDocs ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} documents, ${staleDocs} past review`, href: "/documents" },
     { id: "proposer", name: "Rule proposer", icon: "flag", state: proposals.length ? "attention" : "clear", line: `${proposals.length} rule changes proposed to a principal`, href: "/compliance" },
     { id: "meetings", name: "Meetings", icon: "calendar", state: "clear", line: `${meetings.length} meetings today, review packs built`, href: "/meetings" },
+    { id: "ranking", name: "Ranking", icon: "settings", state: "clear", line: `${flagged.length} ranked by ${sourceLabel(rankingProfile.provenance["triage.classWeights"]).toLowerCase()} weights; tune them`, href: "/triage#tune" },
   ];
   const clean = statuses.filter((s) => s.state === "clear").length + others.filter((o) => o.state === "clear").length;
   const firstName = (advisor?.name ?? "").split(" ")[0];

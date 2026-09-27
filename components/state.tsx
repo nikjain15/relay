@@ -4,7 +4,7 @@
 // queue. Lives in React state and resets on reload (BUILD-SPEC §1).
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Regime } from "@/lib/recipients/count";
-import type { Overlay } from "@/lib/profile";
+import type { Overlay, SettingKey, Values } from "@/lib/profile";
 import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
 import type { RuleDefinition } from "@/lib/compliance/types";
@@ -62,6 +62,10 @@ interface State {
   acceptSuggestion: (s: Suggestion) => void;
   declineSuggestion: (s: Suggestion) => void;
   undoSuggestion: (s: Suggestion) => void;
+  /** Settings an advisor tuned on screen this session (the ranking desk), by advisor id. */
+  tuned: Record<string, Values>;
+  tune: (advisorId: string, key: SettingKey, value: unknown) => void;
+  resetTuning: (advisorId: string) => void;
   /**
    * The compliance change log. A rule is never mutated: the console appends an
    * edit and every screen resolves its policy from this list, so a change made
@@ -155,6 +159,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [acceptedDiscoveries, setAcceptedDiscoveries] = useState<Opportunity[]>([]);
   const [notesAdded, setNotesAdded] = useState<Record<string, TeamNote[]>>({});
   const [addedRules, setAddedRules] = useState<RuleDefinition[]>([]);
+  const [tuned, setTuned] = useState<Record<string, Values>>({});
   const withNotes = (c: ClientFile): ClientFile => (notesAdded[c.id]?.length ? { ...c, notes: [...c.notes, ...notesAdded[c.id]] } : c);
   const book = {
     // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
@@ -163,7 +168,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
     opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
     rules: addedRules,
   };
-  const overlay: Overlay = {};
+  const overlay: Overlay = { tuned };
   for (const s of learned) {
     const side = (overlay[s.scope] ??= {});
     const vals = (side[s.scopeId] ??= {});
@@ -192,6 +197,9 @@ export function StateProvider({ children }: { children: ReactNode }) {
     acceptSuggestion: (s) => setLearned((l) => [...l.filter((x) => x.id !== s.id), s]),
     declineSuggestion: (s) => setRejected((r) => [...r, { scopeId: s.scopeId, key: s.key, detail: s.detail, day: 0 }]),
     undoSuggestion: (s) => setLearned((l) => l.filter((x) => x.id !== s.id)),
+    tuned,
+    tune: (advisorId, key, value) => setTuned((t) => ({ ...t, [advisorId]: { ...(t[advisorId] ?? {}), [key]: value } })),
+    resetTuning: (advisorId) => setTuned((t) => { const next = { ...t }; delete next[advisorId]; return next; }),
     ruleEdits,
     editRule: (e) =>
       setRuleEdits((l) => [...l, { ...e, id: `e-${String(l.length + 1).padStart(3, "0")}`, at: new Date().toISOString() }]),

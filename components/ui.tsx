@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Icon, type IconName } from "@/components/icons";
 export { CLASS_LABEL, NODE_LABEL } from "@/lib/labels";
@@ -57,7 +58,7 @@ export function Stat({ value, label }: { value: ReactNode; label: string }) {
 
 export const th = "border-b border-line-strong px-3 py-2 text-left text-xs font-normal text-ink-2";
 export const td = "border-b border-line px-3 py-3 align-top";
-const base = "inline-flex h-8 items-center rounded px-3 text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+const base = "inline-flex min-h-8 items-center rounded px-3 py-1 text-left leading-snug text-[13px] transition-colors disabled:cursor-not-allowed disabled:opacity-40";
 export const btn = `${base} border border-ink bg-surface text-ink hover:bg-subtle`;
 export const btnPrimary = `${base} border border-ink bg-ink text-surface hover:opacity-85`;
 
@@ -173,7 +174,7 @@ export function Row({
   return (
     <div className={`border-b border-line last:border-b-0 ${stripe}`}>
       {href ? (
-        <a href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</a>
+        <Link href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</Link>
       ) : (
         <div className="flex items-start gap-3 px-1 py-3">{body}</div>
       )}
@@ -252,6 +253,24 @@ export function Field({ label, hint, children }: { label: string; hint?: ReactNo
 export const input = "h-9 w-full rounded border border-line-strong bg-surface px-2 text-[13px] text-ink sm:max-w-[16rem]";
 export const textarea = "w-full rounded border border-line-strong bg-surface p-2 text-[13px] text-ink";
 /** A table that scrolls sideways instead of squeezing, for the few real tables. */
+/**
+ * A table that becomes a stack of cards below md, so a phone reads each row
+ * top to bottom instead of scrolling sideways past the figures that matter.
+ * Put `stack.table` on the table element, `stack.head` on its head, `stack.body` on
+ * its body, `stack.row` on each row, `stack.cell` on a cell that sits beside the
+ * one before it, and `stack.wide` on a cell that takes the whole card width.
+ * `stack.label` is a caption shown only on the phone, in place of the header.
+ */
+export const stack = {
+  table: "max-md:block max-md:min-w-0",
+  head: "max-md:hidden",
+  body: "max-md:block",
+  row: "max-md:grid max-md:grid-cols-[auto_1fr] max-md:gap-x-3 max-md:border-b max-md:border-line max-md:py-3",
+  cell: "max-md:border-0 max-md:px-0 max-md:py-1",
+  wide: "max-md:col-span-2 max-md:border-0 max-md:px-0 max-md:py-1 max-md:text-left",
+  label: "mr-1 text-[11px] text-ink-3 md:hidden",
+};
+
 export function TableScroll({ children }: { children: ReactNode }) {
   return <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">{children}</div>;
 }
@@ -274,7 +293,7 @@ export function Timeline({ items }: { items: { at: string; icon: IconName; title
         );
         return (
           <li key={i} className="relative pb-4 last:pb-0">
-            {it.href ? <a href={it.href} className="block hover:underline">{body}</a> : body}
+            {it.href ? <Link href={it.href} className="block hover:underline">{body}</Link> : body}
           </li>
         );
       })}
@@ -390,13 +409,13 @@ export function Brief({ name, icon = "agent", at, says, points = [], next, steps
                     <span className="min-w-0 text-[13px] text-ink-2">{p.who && <Who who={p.who} />}{p.text}</span>
                   </>
                 );
-                return <li key={i}>{p.href ? <a href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</a> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
+                return <li key={i}>{p.href ? <Link href={p.href} className="flex gap-2 rounded px-1 py-0.5 hover:bg-surface">{body}</Link> : <span className="flex gap-2 px-1 py-0.5">{body}</span>}</li>;
               })}
             </ul>
           )}
           {next && (
             <p className="mt-3">
-              {next.href ? <a href={next.href} className={btnPrimary}>{next.label}</a> : <button type="button" className={btnPrimary} onClick={next.onClick}>{next.label}</button>}
+              {next.href ? <Link href={next.href} className={btnPrimary}>{next.label}</Link> : <button type="button" className={btnPrimary} onClick={next.onClick}>{next.label}</button>}
             </p>
           )}
           {steps && <Trace steps={steps} summary="How I got there" />}

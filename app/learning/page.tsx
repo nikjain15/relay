@@ -48,7 +48,7 @@ export default function Learning() {
         name="Learning"
         icon="trend"
         says={<>I watched how you and your clients work and found {open.length} pattern{open.length === 1 ? "" : "s"} with enough evidence to propose a settings change{held.length ? `, and ${held.length} more I am holding back until the evidence is stronger` : ""}. {learned.length ? `${learned.length} accepted this session and applied as a new settings version.` : "Nothing is applied until you accept it."}</>}
-        points={open.slice(0, 3).map((s) => ({ text: `${who(s)}: ${s.detail}`, who: "advisor" as const }))}
+        points={open.slice(0, 3).map((s) => { const [what, from, to] = fmtChange(s.key, s.from, s.to, s.detail); return { text: `${who(s)}: ${SCHEMA[s.key].label.toLowerCase()}. ${what}${from} to ${to}.`, who: "advisor" as const }; })}
         note="A suggestion can move a preference. It can never loosen a rule; the guard refuses that and the refusal is listed below."
       />
       <ol className="mb-4 flex max-w-6xl flex-wrap gap-1 text-xs" aria-label="The learning loop">
