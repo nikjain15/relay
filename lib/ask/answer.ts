@@ -18,7 +18,6 @@ import type { Case, AgentDefinition } from "@/lib/compliance/agents";
 import type { PreparedAction } from "@/lib/compliance/actions";
 import type { ResolvedPolicy } from "@/lib/compliance/policy";
 import type { ConnectionState } from "@/lib/connectors/types";
-import { KIND } from "@/lib/compliance/actions";
 import { explain, paramMap } from "@/lib/compliance/dsl";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { CATALOG } from "@/lib/connectors/catalog";
@@ -72,6 +71,12 @@ export function householdIn(q: string, clients: ClientFile[]): ClientFile | unde
 }
 
 const has = (q: string, re: RegExp) => re.test(q);
+
+/** Singular and plural nouns for a prepared action, so a count reads as English. */
+const ACTION_NOUN: Record<PreparedAction["kind"], [string, string]> = {
+  hold: ["hold", "holds"], callback: ["callback", "callbacks"], request_form: ["form request", "form requests"], task: ["task", "tasks"],
+  draft_note: ["drafted note", "drafted notes"], schedule: ["meeting to schedule", "meetings to schedule"], connect_source: ["source to connect", "sources to connect"],
+};
 
 /** Not captured (nothing reads it) and not retained (read, no retained copy) are different claims. */
 function captureLine(gaps: { channel: string; status: string }[]): string {
@@ -127,10 +132,10 @@ export function answer(question: string, ctx: AskContext): Answer {
     return done({ text: ctx.cases.length ? `${ctx.cases.length} open finding${ctx.cases.length === 1 ? "" : "s"}, ${blocking.length} blocking. By desk: ${[...by.entries()].map(([a, n]) => `${a} ${n}`).join(", ")}. ${blocking.length ? `Blocking: ${blocking.map((k) => `${k.ruleTitle} (${k.subjectLabel})`).join("; ")}.` : ""}` : "No open findings.", links: [{ label: "Supervision", href: "/supervision" }], via: "the sweep", cites: blocking.map((k) => ({ label: k.ruleTitle, record: `data/compliance/rules.json#${k.ruleId}`, href: `/compliance#${k.ruleId}` })), followUps: ["What did the agents prepare?", "Which sources are not connected?"] });
   }
 
-  if (has(q, /\b(prepared|drafted|drafts?|actions?|waiting on me|to accept)\b/)) {
-    const by = new Map<string, number>();
-    for (const a of ctx.actions) by.set(KIND[a.kind].label, (by.get(KIND[a.kind].label) ?? 0) + 1);
-    return done({ text: ctx.actions.length ? `${ctx.actions.length} prepared and waiting: ${[...by.entries()].map(([k, n]) => `${n} ${k.toLowerCase()}${n === 1 ? "" : "s"}`).join(", ")}. Accepting sends nothing; you act.` : "Nothing prepared is waiting.", links: [{ label: "Review them", href: "/" }], via: "the prepared actions on every open finding", followUps: ["Which findings are blocking?"] });
+  if (has(q, /\b(prepar\w*|draft\w*|actions?|waiting on me|to accept)\b/)) {
+    const by = new Map<PreparedAction["kind"], number>();
+    for (const a of ctx.actions) by.set(a.kind, (by.get(a.kind) ?? 0) + 1);
+    return done({ text: ctx.actions.length ? `${ctx.actions.length} prepared and waiting: ${[...by.entries()].map(([k, n]) => `${n} ${n === 1 ? ACTION_NOUN[k][0] : ACTION_NOUN[k][1]}`).join(", ")}. Accepting sends nothing; you act.` : "Nothing prepared is waiting.", links: [{ label: "Review them", href: "/" }], via: "the prepared actions on every open finding", followUps: ["Which findings are blocking?"] });
   }
 
   const agent = ctx.agents.find((a) => q.includes(a.name.toLowerCase()) || q.includes(a.desk.toLowerCase()) || a.authorities.some((x) => q.includes(x.toLowerCase())));
@@ -157,7 +162,7 @@ export function answer(question: string, ctx: AskContext): Answer {
     return done({ text: `${connected.length} sources connected: ${connected.join(", ")}. ${captureLine(report.gaps).replace(/^./, (x) => x.toUpperCase())}.${namedLine} Relay reads in place and writes nothing back.`, links: [{ label: "Sources", href: "/sources" }], via: "the coverage report", cites: [{ label: "Connections", record: `data/advisors/${ctx.advisorId}.json#connections`, href: "/sources" }] });
   }
 
-  if (has(q, /\b(document|cite|quote|research note|library|stale|review date)\b/)) {
+  if (has(q, /\b(documents?|cite|quote|research notes?|library|stale|review date|one-?pager)\b/)) {
     const states = corpusStates();
     const stale = states.filter((d) => d.usable && d.freshness === "stale");
     return done({ text: `${states.filter((d) => d.usable).length} documents may be quoted; ${stale.length} past review date${stale.length ? ` (${stale.map((d) => d.doc.title).join("; ")})` : ""}. A note cites only passages from current documents.`, links: [{ label: "The library", href: "/documents" }], via: "the corpus states", cites: stale.map((d) => ({ label: d.doc.title, record: `data/documents/${d.doc.id}.json`, href: `/documents/${d.doc.id}` })) });
@@ -189,18 +194,18 @@ function aboutHousehold(q: string, c: ClientFile, ctx: AskContext): Answer {
   if (has(q, /\b(cash|liquidity|cover|months|reserve)\b/)) {
     return done({ text: `${c.name}: Liquidity covers ${months} months of ${usd(c.monthlySpendUsd)} a month spending${liq?.unit === "months" ? `, against a ${liq.target}-month target${months < liq.target ? `, so ${liq.target - months} months short` : ", met"}` : ""}.`, cites: [{ label: "Holdings", record: rec(c, "holdings") }, { label: "Liquidity goal", record: rec(c, "goals[0]") }, { label: "Spending", record: rec(c, "monthlySpendUsd") }], via: "household arithmetic over the holdings", followUps: [`What are the options for ${surname(c.name)}?`] });
   }
-  if (has(q, /\b(concentrat|single name|single-name|stock|position|holding)\b/)) {
+  if (has(q, /\b(concentrat\w*|single name|single-name|stocks?|positions?|holdings?)\b/)) {
     const sn = singleNameUsd(c) ? singleNamePct(c) : 0;
     const name = c.holdings.find((h) => h.singleName)?.name;
     return done({ text: singleNameUsd(c) ? `${c.name}: ${pct(sn)} of the household in one name${name ? ` (${name})` : ""}${capPct !== undefined ? `, against the family's ${capPct}% rule${sn > capPct ? `, so ${pct(sn - capPct)} over` : ", within it"}` : ""}.` : `${c.name} holds no single-name position.`, cites: [{ label: "Holdings", record: rec(c, "holdings") }, ...(capPct !== undefined ? [{ label: "Concentration rule", record: rec(c, "constraints") }] : [])], via: "household arithmetic over the holdings", followUps: [`What are the options for ${surname(c.name)}?`, `Any findings on ${surname(c.name)}?`] });
   }
-  if (has(q, /\b(last (spoke|spoken|talk|contact|call|met)|when did|since we)\b/)) {
-    return done({ text: last ? `Last contact with ${c.name} was ${days(last.day)} by ${last.channel}: ${last.summary}` : `No contact is logged for ${c.name}.`, cites: last ? [{ label: "Contact history", record: rec(c, `contactHistory[${c.contactHistory.indexOf(last)}]`) }] : [], via: "the contact history", followUps: [`What changed for ${surname(c.name)} since we last spoke?`] });
-  }
-  if (has(q, /\b(changed|since|new|update)\b/)) {
+  if (has(q, /\b(changed|what'?s new|anything new|happened|updates?)\b/)) {
     const notes = [...c.notes].sort((a, b) => b.day - a.day).slice(0, 2);
     const opps = c.opportunities.slice(0, 2);
-    return done({ text: `Since ${last ? days(last.day) : "the file was opened"}: ${[...opps.map((o) => `${o.plainTitle ?? o.title} (observed ${days(o.observedDay)})`), ...notes.map((n) => `${n.from} noted ${days(n.day)}: "${n.text.slice(0, 90)}${n.text.length > 90 ? "..." : ""}"`)].join("; ") || "nothing new on file"}.`, cites: [...opps.map((o, i) => ({ label: o.plainTitle ?? o.title, record: rec(c, `opportunities[${i}]`), href: `/evidence/${o.id}` })), ...notes.map((n) => ({ label: `Note, ${days(n.day)}`, record: rec(c, `notes[${c.notes.indexOf(n)}]`) }))], via: "the research agent's briefing inputs", followUps: [`Any findings on ${surname(c.name)}?`] });
+    return done({ text: `Since ${last ? days(last.day) : "the file was opened"}: ${[...opps.map((o) => `${o.plainTitle ?? o.title} (seen day ${o.observedDay} of the feed)`), ...notes.map((n) => `${n.from} noted ${days(n.day)}: "${n.text.slice(0, 90)}${n.text.length > 90 ? "..." : ""}"`)].join("; ") || "nothing new on file"}.`, cites: [...opps.map((o, i) => ({ label: o.plainTitle ?? o.title, record: rec(c, `opportunities[${i}]`), href: `/evidence/${o.id}` })), ...notes.map((n) => ({ label: `Note, ${days(n.day)}`, record: rec(c, `notes[${c.notes.indexOf(n)}]`) }))], via: "the research agent's briefing inputs", followUps: [`Any findings on ${surname(c.name)}?`] });
+  }
+  if (has(q, /\b(last (spoke|spoken|talk\w*|contact\w*|call\w*|met)|when did|since we)\b/)) {
+    return done({ text: last ? `Last contact with ${c.name} was ${days(last.day)} by ${last.channel}: ${last.summary}` : `No contact is logged for ${c.name}.`, cites: last ? [{ label: "Contact history", record: rec(c, `contactHistory[${c.contactHistory.indexOf(last)}]`) }] : [], via: "the contact history", followUps: [`What changed for ${surname(c.name)} since we last spoke?`] });
   }
   if (has(q, /\b(meeting|today|agenda)\b/)) {
     const m = meetingFor(c.id);
@@ -209,18 +214,18 @@ function aboutHousehold(q: string, c: ClientFile, ctx: AskContext): Answer {
   if (has(q, /\b(finding|flag|compliance|issue|block|raised)/)) {
     return done({ text: cases.length ? `${cases.length} open finding${cases.length === 1 ? "" : "s"} on ${c.name}: ${cases.map((k) => `${k.ruleTitle} (${k.agentName}, ${k.reason === "fired" ? k.severity : k.reason.replace("_", " ")})`).join("; ")}.` : `No open finding on ${c.name}.`, links: [{ label: "Supervision", href: "/supervision" }, ...base.links], cites: cases.map((k) => ({ label: k.ruleTitle, record: `data/compliance/rules.json#${k.ruleId}`, href: `/compliance#${k.ruleId}` })), via: "the sweep", confidence: cases.some((k) => k.confidence < 1) ? Math.min(...cases.map((k) => k.confidence)) : 1 });
   }
-  if (has(q, /\b(form|paperwork|sign|unsigned|document)\b/)) {
+  if (has(q, /\b(forms?|paperwork|sign\w*|unsigned|documents?)\b/)) {
     const items = openItems(c);
     return done({ text: items.length ? `${items.length} open for ${c.name}: ${items.map((w) => `${w.form} (${w.status}, requested ${days(-w.daysOpen)})`).join("; ")}.` : `No open paperwork for ${c.name}.`, links: [{ label: "Paperwork", href: "/onboarding" }, ...base.links], cites: [{ label: "Paperwork", record: rec(c, "paperwork") }], via: "the paperwork status" });
   }
-  if (has(q, /\b(said|say|mention|message|wrote|asked)\b/)) {
+  if (has(q, /\b(said|say\w*|mention\w*|messages?|wrote|asked|emailed|texted)\b/)) {
     const msgs = (c.messages ?? []).filter((m) => m.direction === "inbound").sort((a, b) => b.day - a.day).slice(0, 3);
     return done({ text: msgs.length ? `${c.name} wrote: ${msgs.map((m) => `"${m.text.slice(0, 110)}${m.text.length > 110 ? "..." : ""}" (${m.channel}, ${days(m.day)})`).join("; ")}.` : `No captured inbound message from ${c.name} on a connected source.`, links: [{ label: "Discovery", href: "/discovery" }, ...base.links], cites: msgs.map((m) => ({ label: `${m.channel}, ${days(m.day)}`, record: rec(c, `messages[${(c.messages ?? []).indexOf(m)}]`) })), via: "captured messages on connected sources", followUps: [`What changed for ${surname(c.name)} since we last spoke?`] });
   }
-  if (has(q, /\b(goal|legacy|longevity|retire|plan)\b/)) {
+  if (has(q, /\b(goals?|legacy|longevity|retire\w*|plan)\b/)) {
     return done({ text: `${c.name}'s goals: ${c.goals.map((g) => `${g.strategy} ${g.unit === "months" ? `${g.funded} of ${g.target} months` : `${usd(g.funded)} of ${usd(g.target)}`}`).join("; ")}.`, cites: c.goals.map((g, i) => ({ label: `${g.strategy} goal`, record: rec(c, `goals[${i}]`) })), via: "the goals on file" });
   }
-  if (has(q, /\b(option|proposal|recommend|what (can|should) (we|i) do|fund|trim)\b/)) {
+  if (has(q, /\b(options?|proposals?|recommend\w*|what (can|should) (we|i) do|fund|trim)\b/)) {
     const opp = c.opportunities.find((o) => o.action === "fund" || o.action === "trim");
     return done({ text: opp ? `For ${opp.plainTitle ?? opp.title}, the approved shelf is checked against ${c.constraints.length} household rules and each option is carried to the morning after. Open Options for the after-tax income, cost and access of each.` : `No fundable or trimmable opportunity is on file for ${c.name}.`, links: opp ? [{ label: "Options", href: `/household/${c.id}/proposal?opp=${opp.id}` }, { label: "Before you act", href: "/simulate" }] : base.links, cites: opp ? [{ label: opp.plainTitle ?? opp.title, record: rec(c, `opportunities[${c.opportunities.indexOf(opp)}]`), href: `/evidence/${opp.id}` }] : [], via: "the constraint engine and the consequence agent" });
   }
