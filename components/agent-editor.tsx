@@ -10,7 +10,7 @@
 // refuses; nothing changes until they do. An advisor's own agent is theirs:
 // every change to it, deleting included, takes effect at once. Every outcome
 // stays on screen after the button is pressed.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { AgentDefinition, Cadence } from "@/lib/compliance/agents";
 import { CADENCE_RANK } from "@/lib/compliance/agents";
@@ -222,7 +222,7 @@ export function RosterEditor({ agent, onClose }: { agent: RosterAgent | null; on
 }
 
 /** Make an agent of your own from a template. */
-export function CreateAgent({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
+export function CreateAgent({ open, onClose, onCreated, template }: { open: boolean; onClose: () => void; onCreated: (id: string) => void; /** Open straight on this template. */ template?: string | null }) {
   const { createAgent, customAgents, connections, ruleEdits, book } = useRelay();
   const v = useView();
   const [t, setT] = useState<AgentTemplate | null>(null);
@@ -240,6 +240,11 @@ export function CreateAgent({ open, onClose, onCreated }: { open: boolean; onClo
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [t, v.advisor.id, book, connections, ruleEdits]);
   const result = madeAgent ? runAgent(madeAgent, x) : null;
+  // Opened from a template card: start on that template's form.
+  useEffect(() => {
+    const y = open && template ? TEMPLATES.find((z) => z.id === template) : undefined;
+    if (y) { setT(y); setForm({ name: y.defaultName, mission: y.what, value: String(y.param.value), cadence: y.cadence }); setMade(null); }
+  }, [open, template]);
   const pick = (y: AgentTemplate) => { setT(y); setForm({ name: y.defaultName, mission: y.what, value: String(y.param.value), cadence: y.cadence }); setMade(null); };
   const close = () => { setT(null); setMade(null); onClose(); };
   const draftRule = t ? t.rule("draft", clamp(t, form.value || String(t.param.value))) : null;

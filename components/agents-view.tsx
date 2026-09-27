@@ -6,9 +6,11 @@
 // as a timeline. The other autonomous parts of the system (the research agent,
 // retrieval, the rule-change proposer) sit on the same screen because they are
 // the same kind of thing: work done before anyone asked, handed to a person.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type React from "react";
-import { ListControls, useList } from "@/components/list-controls";
+import { ListControls, matches, useList } from "@/components/list-controls";
+import { TEMPLATES } from "@/lib/agents/templates";
+import { previewTemplate } from "@/lib/agents/preview";
 import type { AgentDefinition } from "@/lib/compliance/agents";
 import type { RosterAgent } from "@/lib/agents/roster";
 import { ON_REQUEST } from "@/lib/agents/roster";
@@ -41,6 +43,9 @@ export function AgentsView() {
   const [custom, setCustom] = useState<string | null>(null);
   const [roster, setRoster] = useState<RosterAgent | null>(null);
   const [creating, setCreating] = useState(false);
+  const [template, setTemplate] = useState<string | null>(null);
+  const create = (id?: string) => { setTemplate(id ?? null); setCreating(true); };
+  const [tab, setTab] = useState<"yours" | "desks" | "morning" | "asked" | "all">("yours");
   const mineCustom = customAgents.filter((c) => c.advisorId === advisorId);
   const requests = agentRequests.filter((r) => r.advisorId === advisorId);
   const off = rosterOff[advisorId] ?? [];
@@ -74,6 +79,9 @@ export function AgentsView() {
     meetings: { state: "clear", line: `${v.meetings.length} meetings today, review packs built.` },
     ranking: { state: "clear", line: `${v.list.length} on today's list, by ${v.profile.provenance["triage.classWeights"]?.includes("tuned") ? "your tuned" : "the firm's"} weights.` },
   };
+
+  // What each template would flag on this book today, shown before anything is created.
+  const templateCounts = useMemo(() => Object.fromEntries(TEMPLATES.map((t) => [t.id, previewTemplate(t, t.param.value, { advisorId, advisorName: advisor?.name ?? advisorId, clients: book.clients, connections, ruleEdits, rules: book.rules }).fired.length])), [advisorId, advisor?.name, book, connections, ruleEdits]);
 
   // Every agent on one list, so one search finds a desk by the regulation it
   // applies and an advisor's own agent by the word it watches for.
@@ -113,20 +121,19 @@ export function AgentsView() {
         actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />,
     })),
   ];
-  const GROUPS = [
-    { id: "desks", title: "Compliance desks" },
+  const TABS = [
     { id: "yours", title: "Your agents" },
+    { id: "desks", title: "Compliance desks" },
     { id: "morning", title: "Every morning" },
     { id: "asked", title: "When you ask" },
+    { id: "all", title: "All" },
   ] as const;
-  const list = useList<Entry>(entries, {
+  // The filters and the count line work inside the open tab; the tabs count what the search matches.
+  const inTab = tab === "all" ? entries : entries.filter((e) => e.group === tab);
+  const list = useList<Entry>(inTab, {
     text: (e) => e.text,
     filters: [
       { id: "needs", label: "Needs you", test: (e) => e.needs },
-      { id: "desks", label: "Compliance desks", test: (e) => e.group === "desks" },
-      { id: "yours", label: "Your agents", test: (e) => e.group === "yours" },
-      { id: "morning", label: "Every morning", test: (e) => e.group === "morning" },
-      { id: "asked", label: "When you ask", test: (e) => e.group === "asked" },
       { id: "off", label: "Switched off", test: (e) => e.off },
     ],
     sorts: [
@@ -135,15 +142,22 @@ export function AgentsView() {
       { id: "name", label: "Name, A to Z", compare: (a, b) => a.name.localeCompare(b.name) },
     ],
   });
+  // A search looks across every agent, so typing moves to All.
+  useEffect(() => { if (list.query.trim()) setTab("all"); }, [list.query]);
+
+  // The next step is the desk that most needs the advisor, named, never "the first one" on the page.
+  const urgent = [...statuses].filter((st) => st.agent.enabled && st.open > 0).sort((a, b) => b.blocking - a.blocking || b.open - a.open)[0];
 
   return (
     <>
-      <PageTitle icon="agent" title="Agents" sub={`${advisor?.name ?? advisorId}. What ran, over what, and what is left for a person. Open any desk to tune it or teach it a policy.`} />
+      <PageTitle icon="agent" title="Agents" sub={`${advisor?.name ?? advisorId}. What ran, over what, and what is left for a person. Open any desk to tune it or teach it a policy.`} action={<button type="button" className={btnPrimary} onClick={() => create()}>Create an agent</button>} />
       <Brief
         name="Agent status"
         says={<>{statuses.filter((s) => s.agent.enabled).length + MORNING.filter((a) => !off.includes(a.id)).length} agents are running for {advisor?.name ?? advisorId}. {open.length} findings are open, {pendingActions.length} prepared actions wait on a person, and {openProposals.length} rule change{openProposals.length === 1 ? "" : "s"} wait on a principal.</>}
         points={statuses.filter((s) => s.state !== "clear").slice(0, 3).map((s) => ({ text: `${s.agent.name}: ${s.open} raised${s.blocking ? `, ${s.blocking} blocking` : ""}`, href: `/agents/${s.agent.id}`, tone: (s.state === "blocked" ? "critical" : "caution") as "critical" | "caution" }))}
-        next={{ label: "Open the first desk", href: `/agents/${statuses[0]?.agent.id ?? ""}` }}
+        next={urgent
+          ? { label: `Open ${urgent.agent.name}: ${urgent.blocking ? `${urgent.blocking} blocking` : `${urgent.open} to review`}`, href: `/agents/${urgent.agent.id}` }
+          : { label: "Create an agent", onClick: () => create() }}
         note="Every card below says what the agent is for, what it reads, what it checks, what it prepares and what it never does. Edit any of them; create your own."
       />
 
@@ -196,25 +210,50 @@ export function AgentsView() {
         </p>
       )}
 
-      <ListControls label="Agents" placeholder="Search agents, rules or regulations, for example 2111" noun={["agent", "agents"]} list={list} />
-      {GROUPS.map((g) => {
-        const rows = list.shown.filter((e) => e.group === g.id);
-        if (!rows.length && g.id !== "yours") return null;
+      <div className="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="Agents by kind">
+        {TABS.map((g) => (
+          <button key={g.id} type="button" role="tab" aria-selected={tab === g.id} className={`${tab === g.id ? btnPrimary : btn} gap-1.5`} onClick={() => setTab(g.id)}>
+            {g.title}<span className="tabular-nums opacity-70">{entries.filter((e) => (g.id === "all" || e.group === g.id) && (!list.query.trim() || matches(e.text, list.query))).length}</span>
+          </button>
+        ))}
+      </div>
+      <ListControls label="Agents" placeholder="Search agents, rules or regulations, for example 2111" noun={["agent", "agents"]} list={list} allLabel="Any state" />
+      {(() => {
+        const rows = list.shown.filter((e) => tab === "all" || e.group === tab);
         return (
-          <Section key={g.id} title={`${g.title} (${rows.length})`}>
-            {g.id === "yours" && rows.length === 0 && (
-              <p className="mb-3 text-body text-ink-2">{mineCustom.length ? "None match the search." : "None yet. Create one to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or words in what clients write. You see what it would flag on your book before you create it."}</p>
+          <section className="mb-10" role="tabpanel" aria-label={TABS.find((g) => g.id === tab)?.title}>
+            {tab === "yours" && (
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded border border-agent/30 bg-agent-soft/40 p-4">
+                <p className="min-w-0 flex-1 text-body text-ink">{mineCustom.length ? `${mineCustom.length} agent${mineCustom.length === 1 ? "" : "s"} you made, running in the same sweep as the desks.` : "Watch something the desks do not. Pick a template, set the number or the words, and see what it would flag on your book before you create it."}</p>
+                <button type="button" className={btnPrimary} onClick={() => create()}>Create an agent</button>
+              </div>
             )}
-            <CardGrid cols={2}>{rows.map((e) => <div key={e.id} className="contents">{e.card}</div>)}</CardGrid>
-            {g.id === "yours" && <p className="mt-3"><button type="button" className={btnPrimary} onClick={() => setCreating(true)}>Create an agent</button></p>}
-          </Section>
+            {tab === "yours" && mineCustom.length === 0 && !list.query.trim() && (
+              <CardGrid cols={2}>
+                {TEMPLATES.map((t) => (
+                  <button key={t.id} type="button" onClick={() => create(t.id)} className="rounded border border-line p-4 text-left hover:bg-subtle">
+                    <span className="flex items-baseline justify-between gap-2"><span className="text-lead font-semibold text-ink">{t.title}</span><span className="shrink-0 text-meta text-ink-3">{templateCounts[t.id]} on your book today</span></span>
+                    <span className="mt-1 block text-body text-ink-2">{t.what}</span>
+                    <span className="mt-2 block text-meta text-agent">Start from this template</span>
+                  </button>
+                ))}
+              </CardGrid>
+            )}
+            {rows.length === 0 && !(tab === "yours" && mineCustom.length === 0 && !list.query.trim()) && <p className="text-body text-ink-2">None match. <button type="button" className="underline" onClick={list.reset}>Show all</button></p>}
+            {tab === "all"
+              ? TABS.filter((g) => g.id !== "all").map((g) => {
+                  const inG = rows.filter((e) => e.group === g.id);
+                  return inG.length ? <div key={g.id} className="mb-8"><h2 className="mb-3 text-brief font-semibold text-ink">{g.title} ({inG.length})</h2><CardGrid cols={2}>{inG.map((e) => <div key={e.id} className="contents">{e.card}</div>)}</CardGrid></div> : null;
+                })
+              : <CardGrid cols={2}>{rows.map((e) => <div key={e.id} className="contents">{e.card}</div>)}</CardGrid>}
+          </section>
         );
-      })}
+      })()}
 
       <DeskEditor agent={desk ? v.agents.find((a) => a.id === desk.id) ?? null : null} onClose={() => setDesk(null)} />
       <CustomEditor id={custom} onClose={() => setCustom(null)} />
       <RosterEditor agent={roster} onClose={() => setRoster(null)} />
-      <CreateAgent open={creating} onClose={() => setCreating(false)} onCreated={() => {}} />
+      <CreateAgent open={creating} template={template} onClose={() => { setCreating(false); setTemplate(null); }} onCreated={() => setTab("yours")} />
 
       <div className="grid gap-8 lg:grid-cols-2">
         <Section title="This morning">

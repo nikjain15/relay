@@ -39,7 +39,9 @@ export function useList<T>(items: T[], opts: { text: (x: T) => string; filters?:
   return { shown, total: items.length, query, setQuery, filter, setFilter, sort, setSort, filters, sorts, counts, reset, searchedCount: searched.length };
 }
 
-export function ListControls<T>({ label, placeholder, noun, list }: {
+export function ListControls<T>({ label, placeholder, noun, list, allLabel = "All" }: {
+  /** The chip that clears the filter; "Any state" where tabs already say "All". */
+  allLabel?: string;
   /** What the list is, for screen readers: "Households". */
   label: string;
   placeholder: string;
@@ -68,7 +70,7 @@ export function ListControls<T>({ label, placeholder, noun, list }: {
       </div>
       {filters.length > 0 && (
         <div className="flex flex-wrap gap-1.5" role="group" aria-label={`Filter ${label.toLowerCase()}`}>
-          <FilterChip on={filter === "all"} onClick={() => setFilter("all")} label="All" count={searchedCount} />
+          <FilterChip on={filter === "all"} onClick={() => setFilter("all")} label={allLabel} count={searchedCount} />
           {filters.map((f) => <FilterChip key={f.id} on={filter === f.id} onClick={() => setFilter(filter === f.id ? "all" : f.id)} label={f.label} count={counts[f.id] ?? 0} />)}
         </div>
       )}
