@@ -14,14 +14,15 @@ export function Pill({ children, tone = "neutral" }: { children: ReactNode; tone
   return <span className={`inline-block whitespace-nowrap rounded px-1.5 py-px align-middle text-meta leading-4 font-medium ${cls}`}>{children}</span>;
 }
 
-export function PageTitle({ title, sub, icon }: { title: string; sub?: ReactNode; icon?: IconName }) {
+export function PageTitle({ title, sub, icon, action }: { title: string; sub?: ReactNode; icon?: IconName; /** The page's own primary action, kept in sight at the top: "Create an agent". */ action?: ReactNode }) {
   return (
-    <header className="mb-8 flex items-start gap-4">
+    <header className="mb-8 flex flex-wrap items-start gap-4">
       {icon && <span className="mt-1 hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line bg-subtle text-ink sm:inline-flex" aria-hidden="true"><Icon name={icon} size={24} /></span>}
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <h1 className="text-title font-light leading-tight tracking-tight text-ink">{title}</h1>
         {sub && <p className="mt-2 max-w-3xl text-ink-2">{sub}</p>}
       </div>
+      {action && <div className="shrink-0 sm:mt-2">{action}</div>}
     </header>
   );
 }
