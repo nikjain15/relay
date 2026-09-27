@@ -54,7 +54,7 @@ describe("navigation", () => {
 
   it("holds the agents first and stays small enough to scan", () => {
     expect(AREAS[0].area).toBe("Agents");
-    expect(AREAS).toHaveLength(6);
+    expect(AREAS).toHaveLength(7);
     for (const a of AREAS) expect(a.links.length, a.area).toBeLessThanOrEqual(6);
   });
 
