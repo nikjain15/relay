@@ -50,6 +50,10 @@ composite is in [`docs/PERSONAS.md`](docs/PERSONAS.md).
 | **Discovery** | What clients said, in messages, notes and contact summaries | Candidate opportunities cited to the sentence, with a confidence and the documents each would cite |
 | **Consequences** | Every option for a proposal, applied to a copy of the household | The morning after, graded: Liquidity, concentration, the sweep, the note's regime, what a supervisor will ask |
 
+Every workflow screen opens with the agent that fed it: what it read, what it left for a person, a
+trace of how, and the step a model would own in production. Three colours say whose line each row is,
+agent, advisor or client, always with the word.
+
 The eight compliance agents are **review desks**: one per team a legal, risk and compliance function
 runs, each carrying the team it mirrors, the authorities it applies, its rules and its cadence, all as
 data. An advisor's layer can switch a desk on, run it more often or give it another rule of its scope,

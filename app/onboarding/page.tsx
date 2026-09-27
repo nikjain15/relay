@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CLIENTS } from "@/lib/data";
 import { paperStatus, reminderDraft, escalateAfter, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
 import { SEGMENTS } from "@/lib/profile";
-import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
 
 export default function Onboarding() {
   const rows = CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, after: escalateAfter(c.id), ...paperStatus(w, 0, escalateAfter(c.id)) })));
@@ -14,6 +14,19 @@ export default function Onboarding() {
       <PageTitle
         title="Paperwork"
         sub={`Every form per client. Unsigned for more than ${ESCALATE_AFTER_DAYS} days escalates to the branch supervisor (illustrative procedure)${SEGMENTS.filter((s) => s.values["paperwork.escalateAfterDays"] !== undefined).map((s) => `; ${s.label}: ${String(s.values["paperwork.escalateAfterDays"])} days`).join("")}. A segment or client can only shorten this. Reminders are drafted; people send them.`}
+      />
+      <AgentBar
+        name="Paperwork"
+        icon="esign"
+        read={`${rows.length} forms across ${CLIENTS.length} client files, against each household's escalation threshold`}
+        left={[`${open.filter((r) => r.status === "escalated").length} escalated to the branch supervisor`, `${open.filter((r) => r.status === "due").length} reminders drafted`, `${rows.length - open.length} signed and closed`]}
+        steps={[
+          { icon: "esign", who: "client", title: "Read every form on every file", detail: "Requested day, signed day, and any note the team left." },
+          { icon: "settings", who: "agent", title: "Resolved the escalation threshold per household", detail: `Firm ${ESCALATE_AFTER_DAYS} days; a segment or a client can only shorten it.` },
+          { icon: "alert", who: "agent", title: "Escalated what has been open longer than that", detail: "To the branch supervisor, with the form and the days open." },
+          { icon: "email", who: "agent", title: "Drafted a reminder for each open form", detail: "In the client's preferred channel, where the file records one." },
+          { icon: "people", who: "advisor", title: "Left the sending, and the chasing, to a person", detail: "A reminder leaves only when someone sends it." },
+        ]}
       />
       <p className="mb-3">
         <Pill tone="fail">{open.filter((r) => r.status === "escalated").length} escalated</Pill>{" "}
@@ -49,6 +62,7 @@ export default function Onboarding() {
                   </td>
                   <td className={`${td} text-right`}>{daysOpen}</td>
                   <td className={`${td} max-w-md text-xs`}>
+                    {status !== "signed" && <Who who="agent" label="Drafted" />}
                     {status === "signed"
                       ? "Signed."
                       : status === "escalated"

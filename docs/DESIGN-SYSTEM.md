@@ -72,6 +72,9 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 
 | Component | What it is |
 |---|---|
+| `AgentBar` | Under the title of every workflow screen: which agent fed it, what it read, what it left for a person, a folded trace of how, and the step a model would own in production |
+| `Trace` | How an agent got here, in four or five steps, each with the perspective that did it; folded under a finding or a bar |
+| `Who`, `Legend` | The perspective word in its colour, and the three words once per screen |
 | `PageTitle` | 28px light title and one line of purpose |
 | `Section` | 15px semibold heading and its content, 40px below |
 | `Stat` | A large light number and its label, for the one or two figures a screen leads with |

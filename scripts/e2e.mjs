@@ -273,6 +273,14 @@ try {
     if (/found in a (message|note|contact)/.test(await page.locator("main").innerText())) { onList = true; break; }
   }
   check("discovery: candidates cite their sentence; accepting one puts it on today's list for the session", /Read from a (message|note|contact)/.test(disc) && acceptable > 0 && onList);
+  // Every workflow screen opens with the agent that fed it, its trace, and the perspective legend.
+  let bars = 0;
+  for (const path of ["/servicing", "/meetings", "/pipeline", "/onboarding", "/follow-ups", "/communications"]) {
+    await page.goto(`${BASE}${path}`);
+    const t = await page.locator("main").innerText();
+    if (/read /.test(t) && /How it got there/.test(t) && (/Agent read or prepared/.test(t) || (await page.locator("header").innerText()).includes("Agent read or prepared"))) bars++;
+  }
+  check("agent bars: six workflow screens open with what the agent read, what it left, a trace and the legend", bars === 6, `${bars} of 6`);
   // Before you act: every option carried to the morning after, graded, with a trace; picking a row changes the detail.
   await page.goto(`${BASE}/simulate`);
   const sim = await page.locator("main").innerText();

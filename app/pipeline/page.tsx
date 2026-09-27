@@ -1,7 +1,7 @@
 import { ADVISORS_DATA, PROSPECTS } from "@/lib/data";
 import { rankProspects, prospectScore, introDraft, PATH_LABEL } from "@/lib/prospecting/rank";
 import { usd } from "@/lib/format";
-import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
 
 export default function Pipeline() {
   return (
@@ -9,6 +9,20 @@ export default function Pipeline() {
       <PageTitle
         title="Finding new clients"
         sub="Prospects ranked by how warm the path in is, how well they fit the practice, and size. Relay drafts the ask; the advisor sends it."
+      />
+      <AgentBar
+        name="Prospecting"
+        icon="plus"
+        read={`${PROSPECTS.length} prospects across ${ADVISORS_DATA.filter((a) => rankProspects(PROSPECTS, a.id).length).length} books, each with its signal and the path in`}
+        left={[`${PROSPECTS.length} ranked by path, fit and size`, `${PROSPECTS.filter((p) => p.path !== "signal").length} warm paths found`, `${PROSPECTS.length} introduction asks drafted`, `${PROSPECTS.filter((p) => p.path === "signal").length} left cold, with no draft`]}
+        steps={[
+          { icon: "search", who: "agent", title: "Read each prospect's signal and provenance", detail: "Every prospect names the public source its situation is built from." },
+          { icon: "social", who: "agent", title: "Scored the path in", detail: "An existing client or a referral 3, an event 2, a signal alone 1." },
+          { icon: "filter", who: "agent", title: "Added fit to the practice and size", detail: "0 to 2 each, from the advisor's stated practice and the estimate." },
+          { icon: "email", who: "agent", title: "Drafted the ask where a warm path exists", detail: "Through the person who knows them; a cold prospect gets no draft." },
+          { icon: "people", who: "advisor", title: "Left the sending to the advisor", detail: "Relay never contacts a prospect." },
+        ]}
+        note="In production a model would tailor the ask's wording to the referrer; the ranking stays arithmetic."
       />
       {ADVISORS_DATA.map((a) => {
         const list = rankProspects(PROSPECTS, a.id);
@@ -40,14 +54,14 @@ export default function Pipeline() {
                           {p.lastTouchDays === null ? "No contact yet" : `Last touch ${p.lastTouchDays} days ago`}
                         </div>
                       </td>
-                      <td className={td}>{p.signal}</td>
+                      <td className={td}><Who who="client" label="Prospect" />{p.signal}</td>
                       <td className={td}>
                         <Pill tone={p.path === "signal" ? "neutral" : "accent"}>{PATH_LABEL[p.path]}</Pill>
                         <div className="mt-0.5 text-xs text-ink-2">{p.pathDetail}</div>
                       </td>
                       <td className={`${td} text-right`}>{usd(p.estimatedUsd)}</td>
                       <td className={`${td} max-w-sm text-xs`}>
-                        {introDraft(p)}
+                        <Who who={p.path === "signal" ? "advisor" : "agent"} />{introDraft(p)}
                         <div className="mt-1 text-xs text-ink-2">
                           Built from:{" "}
                           {p.groundedIn.map((s, k) => (

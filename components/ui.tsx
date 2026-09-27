@@ -305,3 +305,32 @@ export function Trace({ steps, summary = "How the agent got here" }: { steps: { 
     </details>
   );
 }
+
+/**
+ * What the agent behind a screen did before anyone opened it: what it read,
+ * what it left, and how, in one strip under the title. Every workflow screen
+ * carries one, so no screen makes sense without the agent that fed it.
+ */
+export function AgentBar({ name, icon = "agent", read, left, steps, note }: {
+  name: string;
+  icon?: IconName;
+  /** What it read, as one phrase: "9 open requests on 3 channels". */
+  read: string;
+  /** What it left for a person, as short phrases. */
+  left: string[];
+  steps?: { icon: IconName; title: string; detail?: ReactNode; who?: Perspective }[];
+  /** The step a model would own in production, said plainly. */
+  note?: string;
+}) {
+  return (
+    <section className="mb-6 rounded border border-line bg-subtle p-4" aria-label={`${name} agent`}>
+      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
+        <span className="flex items-center gap-1.5 text-ink"><Icon name={icon} size={16} className="text-agent" /><Who who="agent" label={name} />read {read}</span>
+        {left.map((l, i) => <span key={i} className="text-ink-2">{l}</span>)}
+      </p>
+      {steps && <Trace steps={steps} summary="How it got there" />}
+      {note && <p className="mt-2 text-[11px] text-ink-3">{note}</p>}
+      <Legend className="mt-2 lg:hidden" />
+    </section>
+  );
+}
