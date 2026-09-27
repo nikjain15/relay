@@ -15,7 +15,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRelay } from "@/components/state";
-import { Banner, More, PageTitle, Pill, Row, Section, StateDot, Timeline, Trace, btn, btnPrimary } from "@/components/ui";
+import { Banner, Legend, More, PageTitle, Pill, Row, Section, StateDot, Timeline, Trace, btn, btnPrimary } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { Bars, Meter } from "@/components/charts";
 import { briefAll } from "@/lib/research/brief";
@@ -119,17 +119,18 @@ export function Overview({ advisorId }: { advisorId: string }) {
     if (!c || !rule) return [];
     const facts = Object.entries(c.evidence).filter(([, v]) => v !== undefined && v !== "").slice(0, 6).map(([k, v]) => `${k} = ${Array.isArray(v) ? v.join(", ") : String(v)}`).join("; ");
     return [
-      { icon: "eye" as const, title: `Read ${c.subjectLabel}`, detail: facts || "No facts recorded." },
-      { icon: "rules" as const, title: `Applied ${rule.title}`, detail: <span className="whitespace-pre-line">{explain(rule.when, paramMap(rule))}</span> },
+      { icon: "eye" as const, who: (mine.some((k) => k.id === c.subject) ? "client" : "agent") as "client" | "agent", title: `Read ${c.subjectLabel}`, detail: facts || "No facts recorded." },
+      { icon: "rules" as const, who: "agent" as const, title: `Applied ${rule.title}`, detail: <span className="whitespace-pre-line">{explain(rule.when, paramMap(rule))}</span> },
       { icon: (c.reason === "fired" ? "alert" : "question") as IconName, title: c.reason === "fired" ? `Fired at ${c.severity}, confidence ${Math.round(c.confidence * 100)}%` : c.reason === "cannot_evaluate" ? "Could not evaluate: a source is not connected" : `Not sure enough to clear: confidence ${Math.round(c.confidence * 100)}% under the floor`, detail: c.finding, tone: (c.reason === "fired" ? "critical" : "caution") as "critical" | "caution" },
-      { icon: ACTION_ICON[a.kind] ?? "check", title: `Prepared: ${KIND[a.kind].label}`, detail: a.detail.length > 220 ? `${a.detail.slice(0, 220)}...` : a.detail },
-      { icon: "people" as const, title: `Waits for ${KIND[a.kind].actor.toLowerCase()}`, detail: `${a.actor} acts once it is accepted. Relay sends and writes nothing.`, tone: "positive" as const },
+      { icon: ACTION_ICON[a.kind] ?? "check", who: "agent" as const, title: `Prepared: ${KIND[a.kind].label}`, detail: a.detail.length > 220 ? `${a.detail.slice(0, 220)}...` : a.detail },
+      { icon: "people" as const, who: "advisor" as const, title: `Waits for ${KIND[a.kind].actor.toLowerCase()}`, detail: `${a.actor} acts once it is accepted. Relay sends and writes nothing.`, tone: "positive" as const },
     ];
   };
 
   return (
     <>
       <PageTitle title="Overview" sub={`${APP.todayLabel} morning. What ran while you were away, and what only you can decide.`} />
+      <Legend className="-mt-5 mb-6 lg:hidden" />
 
       <section className="mb-8 rounded border border-line bg-subtle p-4 sm:p-5" aria-label="Overnight run">
         <p className="flex items-start gap-2 text-[14px] text-ink">
@@ -188,7 +189,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
         ) : (
           <div className="rounded border border-line px-3 sm:px-4">
             {decisions.map((d, i) => (
-              <Row key={`${d.title}-${i}`} icon={d.icon} tone={d.tone} href={d.href} title={d.title} meta={d.meta} right={<Pill tone={d.tone === "critical" ? "fail" : "accent"}>{d.right}</Pill>} />
+              <Row key={`${d.title}-${i}`} icon={d.icon} tone={d.tone} who="advisor" href={d.href} title={d.title} meta={d.meta} right={<Pill tone={d.tone === "critical" ? "fail" : "accent"}>{d.right}</Pill>} />
             ))}
           </div>
         )}
@@ -202,6 +203,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
                 key={a.id}
                 icon={ACTION_ICON[a.kind] ?? "check"}
                 tone={a.kind === "hold" ? "critical" : "plain"}
+                who="agent"
                 title={a.title}
                 meta={`${a.subjectLabel === a.agentName ? a.agentName : `${a.subjectLabel} · ${a.agentName}`} · ${KIND[a.kind].label}`}
                 right={

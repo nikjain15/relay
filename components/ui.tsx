@@ -128,6 +128,7 @@ export function Row({
   title,
   meta,
   tone = "plain",
+  who,
   right,
   href,
   children,
@@ -136,16 +137,19 @@ export function Row({
   title: ReactNode;
   meta?: ReactNode;
   tone?: "plain" | "critical" | "caution" | "positive";
+  /** Whose line this is: what an agent did, what the advisor must do, what the client said or holds. A stripe and a word. */
+  who?: Perspective;
   right?: ReactNode;
   href?: string;
   children?: ReactNode;
 }) {
   const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" }[tone];
+  const stripe = who ? { agent: "border-l-2 border-l-agent pl-2", advisor: "border-l-2 border-l-advisor pl-2", client: "border-l-2 border-l-client pl-2" }[who] : "";
   const body = (
     <>
       {icon && <Icon name={icon} size={20} className={`mt-px ${accent}`} />}
       <span className="min-w-0 flex-1">
-        <span className="block text-[14px] text-ink">{title}</span>
+        <span className="block text-[14px] text-ink">{who && <Who who={who} />}{title}</span>
         {meta && <span className="mt-0.5 block text-[12px] text-ink-3">{meta}</span>}
         {children}
       </span>
@@ -153,13 +157,45 @@ export function Row({
     </>
   );
   return (
-    <div className="border-b border-line last:border-b-0">
+    <div className={`border-b border-line last:border-b-0 ${stripe}`}>
       {href ? (
         <a href={href} className="flex items-start gap-3 px-1 py-3 hover:bg-subtle">{body}</a>
       ) : (
         <div className="flex items-start gap-3 px-1 py-3">{body}</div>
       )}
     </div>
+  );
+}
+
+// --- Perspective ----------------------------------------------------------
+//
+// Three colours say whose line a row is, and nothing else does: what an agent
+// read or prepared, what the advisor must decide or send, what the client said,
+// holds or will receive. Status colours (positive, caution, critical) stay for
+// state. Every use carries the word, never the colour alone.
+
+export type Perspective = "agent" | "advisor" | "client";
+
+export const WHO: Record<Perspective, { word: string; text: string; bg: string; dot: string; border: string }> = {
+  agent: { word: "Agent", text: "text-agent", bg: "bg-agent-soft", dot: "bg-agent", border: "border-agent" },
+  advisor: { word: "You", text: "text-advisor", bg: "bg-advisor-soft", dot: "bg-advisor", border: "border-advisor" },
+  client: { word: "Client", text: "text-client", bg: "bg-client-soft", dot: "bg-client", border: "border-client" },
+};
+
+/** A small word in its perspective colour, placed before the line it describes. */
+export function Who({ who, label }: { who: Perspective; label?: string }) {
+  const w = WHO[who];
+  return <span className={`mr-2 inline-flex items-center gap-1 rounded px-1.5 py-px align-middle text-[11px] font-medium ${w.bg} ${w.text}`}><span className={`inline-block h-1.5 w-1.5 rounded-full ${w.dot}`} aria-hidden="true" />{label ?? w.word}</span>;
+}
+
+/** The three words and their colours, once per screen where they are used. */
+export function Legend({ className = "" }: { className?: string }) {
+  return (
+    <p className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-3 ${className}`} aria-label="Colour legend">
+      <Who who="agent" label="Agent read or prepared" />
+      <Who who="advisor" label="You decide or send" />
+      <Who who="client" label="Client said or holds" />
+    </p>
   );
 }
 
@@ -250,7 +286,7 @@ export function StateDot({ state }: { state: "clear" | "attention" | "blocked" |
  * conclusion alone: the facts it read, the rule it applied, what it prepared,
  * and who decides. Facts are printed as the rule saw them.
  */
-export function Trace({ steps, summary = "How the agent got here" }: { steps: { icon: IconName; title: string; detail?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive" }[]; summary?: string }) {
+export function Trace({ steps, summary = "How the agent got here" }: { steps: { icon: IconName; title: string; detail?: ReactNode; tone?: "plain" | "critical" | "caution" | "positive"; who?: Perspective }[]; summary?: string }) {
   const accent = { plain: "text-ink-3", critical: "text-critical", caution: "text-caution", positive: "text-positive" };
   return (
     <details className="mt-1.5 text-[12px]">
@@ -258,14 +294,43 @@ export function Trace({ steps, summary = "How the agent got here" }: { steps: { 
       <ol className="mt-2 space-y-1.5 border-l border-line pl-3">
         {steps.map((s, i) => (
           <li key={i} className="flex gap-2">
-            <Icon name={s.icon} size={16} className={`mt-px shrink-0 ${accent[s.tone ?? "plain"]}`} />
+            <Icon name={s.icon} size={16} className={`mt-px shrink-0 ${s.who ? WHO[s.who].text : accent[s.tone ?? "plain"]}`} />
             <span className="min-w-0">
-              <span className="text-ink">{i + 1}. {s.title}</span>
+              <span className="text-ink">{i + 1}. {s.who && <Who who={s.who} />}{s.title}</span>
               {s.detail && <span className="block break-words text-ink-2">{s.detail}</span>}
             </span>
           </li>
         ))}
       </ol>
     </details>
+  );
+}
+
+/**
+ * What the agent behind a screen did before anyone opened it: what it read,
+ * what it left, and how, in one strip under the title. Every workflow screen
+ * carries one, so no screen makes sense without the agent that fed it.
+ */
+export function AgentBar({ name, icon = "agent", read, left, steps, note }: {
+  name: string;
+  icon?: IconName;
+  /** What it read, as one phrase: "9 open requests on 3 channels". */
+  read: string;
+  /** What it left for a person, as short phrases. */
+  left: string[];
+  steps?: { icon: IconName; title: string; detail?: ReactNode; who?: Perspective }[];
+  /** The step a model would own in production, said plainly. */
+  note?: string;
+}) {
+  return (
+    <section className="mb-6 rounded border border-line bg-subtle p-4" aria-label={`${name} agent`}>
+      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
+        <span className="flex items-center gap-1.5 text-ink"><Icon name={icon} size={16} className="text-agent" /><Who who="agent" label={name} />read {read}</span>
+        {left.map((l, i) => <span key={i} className="text-ink-2">{l}</span>)}
+      </p>
+      {steps && <Trace steps={steps} summary="How it got there" />}
+      {note && <p className="mt-2 text-[11px] text-ink-3">{note}</p>}
+      <Legend className="mt-2 lg:hidden" />
+    </section>
   );
 }

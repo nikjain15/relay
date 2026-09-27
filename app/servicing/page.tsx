@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { CLIENTS, SERVICE_REQUESTS } from "@/lib/data";
 import { triage } from "@/lib/servicing/classify";
-import { PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
+import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
+import { POLICY } from "@/lib/data/policy";
 import { Icon } from "@/components/icons";
 
 export default function Servicing() {
@@ -11,6 +12,20 @@ export default function Servicing() {
       <PageTitle
         title="Service requests"
         sub="Each request classified by rule and routed with a response-time target. Measured on time to resolution, never on volume. Replies are drafted; people send them."
+      />
+      <AgentBar
+        name="Service"
+        icon="clock"
+        read={`${list.length} open requests on ${new Set(list.map((r) => r.channel)).size} channels`}
+        left={[`${list.filter((r) => r.callbackRequired).length} need a callback before any money moves`, `${list.filter((r) => r.overdue).length} past target`, `${list.filter((r) => !r.callbackRequired).length} replies drafted for the team`]}
+        steps={[
+          { icon: "email", who: "client", title: "Read each request as the client wrote it", detail: "The text, the channel and when it arrived." },
+          { icon: "rules", who: "agent", title: `Classified it against ${POLICY.servicing.rules.length} routing rules`, detail: "First matching rule wins; money movement is first and always requires a callback to a number on file." },
+          { icon: "clock", who: "agent", title: "Routed it with a response target", detail: "Hours left are counted from arrival, so the queue is ordered by what runs out first." },
+          { icon: "document", who: "agent", title: "Drafted the reply where no callback is required", detail: "From the request and the client file; never from a model at runtime." },
+          { icon: "people", who: "advisor", title: "Left the send, and every callback, to a person", detail: "Nothing here moves money or leaves the building." },
+        ]}
+        note="In production a model reads the request's free text more capably; the routing rule and the callback requirement stay deterministic."
       />
       <p className="mb-3">
         <Pill tone="fail">{list.filter((r) => r.callbackRequired).length} need a callback before release</Pill>{" "}
@@ -41,7 +56,7 @@ export default function Servicing() {
                       </Link>
                       <div className="text-xs text-ink-2">{r.channel}</div>
                     </td>
-                    <td className={`${td} max-w-sm`}>&ldquo;{r.text}&rdquo;</td>
+                    <td className={`${td} max-w-sm`}><Who who="client" />&ldquo;{r.text}&rdquo;</td>
                     <td className={td}>
                       <span className="inline-flex items-center gap-1.5"><Icon name={r.callbackRequired ? "voice" : "clock"} size={16} className={r.callbackRequired ? "text-critical" : "text-ink-3"} /><Pill tone={r.callbackRequired ? "fail" : "accent"}>{r.kind}</Pill></span>
                     </td>
@@ -54,6 +69,7 @@ export default function Servicing() {
                       )}
                     </td>
                     <td className={`${td} max-w-xs text-xs`}>
+                      <Who who="advisor" />
                       {r.callbackRequired
                         ? "Call the client back on a number already on file to confirm before any money moves. An email instruction alone is never enough."
                         : "Reply drafted for the team to review and send."}

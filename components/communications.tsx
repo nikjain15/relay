@@ -16,7 +16,7 @@ import { useRelay } from "@/components/state";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { clientFile } from "@/lib/data";
 import { APP } from "@/lib/data/policy";
-import { PageTitle, Pill, Section, btn, btnPrimary } from "@/components/ui";
+import { AgentBar, PageTitle, Pill, Section, Who, btn, btnPrimary } from "@/components/ui";
 
 const F = APP.featured;
 
@@ -59,6 +59,18 @@ export function Communications() {
     return (
       <>
         <PageTitle title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
+        <AgentBar
+          name="Drafting"
+          icon="email"
+          read="no accepted proposal yet, so nothing to compose from"
+          left={["a note is drafted only from an option you accepted and the passages the evidence layer cited", "the audience is counted before anything moves"]}
+          steps={[
+            { icon: "filter", who: "advisor", title: "Waits for an option you accept", detail: "On a proposal screen, or the featured one below." },
+            { icon: "library", who: "agent", title: "Then reads only the cited passages", detail: "A figure not in the proposal or a cited passage cannot appear." },
+            { icon: "people", who: "agent", title: "Then counts every retail recipient of the template, firm-wide, over 30 days", detail: "The count decides the supervisory regime." },
+            { icon: "shield", who: "advisor", title: "You send, after review", detail: "The supervision queue holds it until a principal approves it." },
+          ]}
+        />
         <p className="mb-3">No accepted proposal yet. Accept one from a proposal screen, or load the demo proposal.</p>
         {(() => {
           const o = opportunity(F.opportunityId);
@@ -85,6 +97,20 @@ export function Communications() {
   return (
     <>
       <PageTitle title="Client communications" sub={`${h.name}: ${o.title}`} />
+      <AgentBar
+        name="Drafting"
+        icon="email"
+        read={`the accepted proposal for ${h.name}, the rationale record and ${evidence && !evidence.refused ? evidence.passages.length : 0} cited passages`}
+        left={["one note drafted from those sources only", `the audience counted: ${count} retail recipients in 30 days, ${regime}`, "talking points for the call first"]}
+        steps={[
+          { icon: "filter", who: "advisor", title: "Read the option you accepted", detail: "Product, source of funds and amount, as recorded." },
+          { icon: "library", who: "agent", title: "Read the passages the evidence layer cited", detail: "Only those; a figure not in the proposal or a cited passage cannot appear." },
+          { icon: "email", who: "agent", title: "Composed the note from a template", detail: "Plain language, the disclosure line, the sources named." },
+          { icon: "people", who: "agent", title: "Counted every retail recipient of this template, firm-wide, over 30 days", detail: "Persons, not households; the count decides the supervisory regime." },
+          { icon: "shield", who: "advisor", title: "Left the send to you, after review", detail: "The supervision queue holds it until a principal approves it." },
+        ]}
+        note="In production a model composes the language. It never chooses the figures, the sources or the regime."
+      />
       <div className="grid gap-6 xl:grid-cols-[1fr_22rem]">
         <div>
           {prof && (
@@ -97,6 +123,7 @@ export function Communications() {
             </p>
           )}
           <Section title="Draft, composed from the accepted proposal and cited evidence only">
+            <p className="mb-1"><Who who="agent" label="Agent drafted" /><Who who="advisor" label="You send" /><Who who="client" label={`${h.name} receives`} /></p>
             <pre className="whitespace-pre-wrap rounded border border-line bg-subtle p-3 font-sans">{draft.text}</pre>
           </Section>
           <Section title="Talking points for your call first">
