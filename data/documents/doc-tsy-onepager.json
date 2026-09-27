@@ -1,0 +1,15 @@
+{
+  "id": "doc-tsy-onepager",
+  "title": "Treasury ladder, 0 to 3 years",
+  "kind": "product one-pager",
+  "desk": "Product desk",
+  "day": 1,
+  "reviewEveryDays": 365,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Laddered US Treasuries mature on a schedule matched to planned withdrawals. Market value can move before maturity; held to maturity, principal is returned at par."
+    }
+  ]
+}

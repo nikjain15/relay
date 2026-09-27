@@ -113,6 +113,22 @@
       "requestedDay": -16
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": false,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [
+    {
+      "id": "msg-005",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "inbound",
+      "day": -4,
+      "text": "Can we find time next week to talk through the pension transfer? Evenings UK time work best."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-brandvold-held-away",

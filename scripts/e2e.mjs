@@ -8,14 +8,15 @@
 import { chromium } from "playwright-core";
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const BASE = `http://localhost:${PORT}`;
 const MOCK = `http://localhost:${PORT + 1}`;
-const EXE = process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
+// A local Chromium if one is pre-installed, else the one playwright-core installed.
+const EXE = process.env.CHROMIUM_PATH || (existsSync("/opt/pw-browsers/chromium") ? "/opt/pw-browsers/chromium" : chromium.executablePath());
 const WIDTHS = [1440, 1280, 1024, 768, 390];
 const json = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
 
@@ -25,7 +26,9 @@ const app = json("data/app.json");
 const PAGES = [
   "/", "/clients", "/pipeline", "/onboarding", "/triage", "/communications", "/supervision", "/meetings",
   "/follow-ups", "/servicing", "/measurement", "/profiles", "/learning", "/personas",
-  "/connectors", "/compliance", "/compliance/log",
+  "/connectors", "/compliance", "/compliance/log", "/compliance/replay", "/documents", "/research", "/agents",
+  ...readdirSync(join(ROOT, "data/documents")).map((f) => `/documents/${f.replace(/\.json$/, "")}`),
+  ...clients.map((c) => `/research/${c.id}`),
   ...clients.map((c) => `/household/${c.id}`),
   ...clients.map((c) => `/meetings/${c.id}`),
   ...opps.map((o) => `/evidence/${o.id}`),
@@ -224,11 +227,41 @@ try {
     const rp = !(await page.locator("main").innerText()).includes(`${refusedOpp.plainTitle ?? refusedOpp.title}: `);
     await page.goto(`${BASE}/triage`);
     const owner = clients.find((c) => c.id === refusedOpp.householdId).advisorId;
-    const label = json("data/advisors.json").find((a) => a.id === owner).walkthrough.label;
+    const label = json(`data/advisors/${owner}.json`).walkthrough.label;
     await page.getByRole("button", { name: label }).click();
     const tr = await page.getByRole("link", { name: "Refused: no supporting evidence" }).count();
     check("refusal carries to evidence, proposals, the review pack and today's list", ev && pr && rp && tr === 1, `${ev} ${pr} ${rp} ${tr}`);
   }
+
+  // 6b. Retrieval, briefing, replay: the new agent surfaces say what they must.
+  if (refusedOpp) {
+    await page.goto(`${BASE}/evidence/${refusedOpp.id}`);
+    const t = await page.locator("main").innerText();
+    check("retrieval: the refusal names the missing citation, the unmatched terms and the nearest miss with why", /Refused: no supporting evidence/.test(t) && t.includes(refusedOpp.evidenceDocIds[0]) && /Nearest passages, and why each is not enough/.test(t) && /under the .* floor|does not cite it/.test(t));
+  }
+  await page.goto(`${BASE}/evidence/${f.opportunityId}`);
+  const evText = await page.locator("main").innerText();
+  check("retrieval: every cited passage shows a relevance that decomposes into reasons", /Relevance \d\.\d\d\s*=/.test(evText) && /Cited by the opportunity record/.test(evText));
+  await page.goto(`${BASE}/documents`);
+  const lib = await page.locator("main").innerText();
+  check("documents: the library shows a disagreement, a superseded document and a document past its review date", /Two current documents disagree/.test(lib) && /Superseded by/.test(lib) && /Past review date/.test(lib));
+  await page.goto(`${BASE}/research/${f.clientId}`);
+  const br = await page.locator("main").innerText();
+  check("briefing: observed, inferred with a confidence, and what could not be established, each cited to a record", /What the file observes/.test(br) && /Inferred, \d+ percent/.test(br) && /What Relay could not establish/.test(br) && /data\/clients\//.test(br));
+  await page.goto(`${BASE}/compliance/replay`);
+  const rp = await page.locator("main").innerText();
+  check("replay: a past finding is re-run against the rules as they stood and as they are now", /As the rules stood then/.test(rp) && /The same facts, against the rules now/.test(rp) && /Verdict then:/.test(rp));
+  await page.goto(`${BASE}/agents`);
+  const ag = await page.locator("main").innerText();
+  check("agents: every agent shows a state in words, what it read and what it prepared", /Last run/.test(ag) && /Prepared/.test(ag) && /(Clear|Needs you|Blocking)/.test(ag) && /This morning/.test(ag));
+  await page.goto(`${BASE}/supervision`);
+  const before = await page.getByRole("button", { name: "Accept" }).count();
+  if (before) await page.getByRole("button", { name: "Accept" }).first().click();
+  const afterText = await page.locator("main").innerText();
+  check("prepared actions: a finding carries what the agent prepared, and accepting records it without sending", before > 0 && /Prepared by the agent/.test(afterText) && /accepted/.test(afterText) && /Nothing is sent or written by accepting/.test(afterText));
+  await page.goto(`${BASE}/compliance`);
+  const cp = await page.locator("main").innerText();
+  check("proposer: a rule change waits on a principal, and a loosening is seen but not proposed", /Proposed by the agent, waiting on a principal/.test(cp) && /Seen, not proposed/.test(cp) && /stricter direction/.test(cp));
 
   // 7. Communications: the recipient counter 2, 26, 32, 8, and reload behaviour.
   await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);

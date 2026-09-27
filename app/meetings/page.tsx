@@ -25,7 +25,10 @@ export default function Meetings() {
                   </span>
                   <span>
                     {m.clientId ? (
-                      <Link className="text-accent underline" href={`/meetings/${m.clientId}`}>Review pack for {clientName(m.clientId)}</Link>
+                      <>
+                        <Link className="text-accent underline" href={`/meetings/${m.clientId}`}>Review pack for {clientName(m.clientId)}</Link>
+                        <Link className="block text-xs text-accent underline" href={`/research/${m.clientId}`}>Briefing: what you do not yet know</Link>
+                      </>
                     ) : m.prospectId ? (
                       <Link className="text-accent underline" href="/pipeline">Prospect notes</Link>
                     ) : m.kind === "internal" ? (

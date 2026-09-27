@@ -1,0 +1,21 @@
+{
+  "id": "doc-concentration-desk-memo",
+  "title": "Concentrated positions under a trading plan",
+  "kind": "research note",
+  "desk": "Founder practice desk",
+  "day": -45,
+  "reviewEveryDays": 90,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Where a trading plan is in place, a single position above the household threshold may be carried. The plan is the mitigation, and no further action is required until it completes.",
+      "claims": [
+        {
+          "topic": "concentration.plan-suffices",
+          "value": "yes: the plan is the mitigation and no further action is required"
+        }
+      ]
+    }
+  ]
+}

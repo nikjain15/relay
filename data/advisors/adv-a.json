@@ -1,0 +1,278 @@
+{
+  "id": "adv-a",
+  "name": "Advisor A",
+  "role": "Senior advisor, founder and executive practice, New York",
+  "book": "About $820M across 183 households; four relationships above $50M",
+  "facts": [
+    {
+      "detail": "Practice built around founders, liquidity events and concentrated stock",
+      "kind": "Published"
+    },
+    {
+      "detail": "Team: advisor, junior advisor, client service associate, shared wealth strategist",
+      "kind": "Published"
+    },
+    {
+      "detail": "Book about twice UBS's reported average per advisor (about $353M to $425M)",
+      "kind": "Derived"
+    },
+    {
+      "detail": "19 years in the industry, 3 at UBS",
+      "kind": "Chosen"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "Founders Group, UBS New York (public team page)",
+      "url": "https://advisors.ubs.com/founders/"
+    },
+    {
+      "label": "Flatiron Partners, UBS New York (public team page)",
+      "url": "https://advisors.ubs.com/flatiron/"
+    },
+    {
+      "label": "Madison Park Partners team page: titles and team shape",
+      "url": "https://advisors.ubs.com/mpp/Meet-the-team.htm"
+    },
+    {
+      "label": "UBS on assets per advisor",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html"
+    }
+  ],
+  "profile": {
+    "segmentId": "private-wealth",
+    "version": 1,
+    "learning": true,
+    "values": {}
+  },
+  "obaOnFile": false,
+  "connections": [
+    {
+      "connectorId": "microsoft-365",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 18420
+    },
+    {
+      "connectorId": "zoom",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 312
+    },
+    {
+      "connectorId": "salesforce-fsc",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:20",
+      "recordsIngested": 4106
+    },
+    {
+      "connectorId": "custodian-feed",
+      "status": "connected",
+      "lastIngestAt": "day 0, 04:00",
+      "recordsIngested": 9877
+    },
+    {
+      "connectorId": "archive",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 23109
+    },
+    {
+      "connectorId": "esign",
+      "status": "connected",
+      "lastIngestAt": "day -1, 17:40",
+      "recordsIngested": 288
+    },
+    {
+      "connectorId": "compliant-texting",
+      "status": "degraded",
+      "issue": "Token expired 2 days ago. Texts since then are not being captured.",
+      "lastIngestAt": "day -2, 09:02",
+      "recordsIngested": 1540
+    },
+    {
+      "connectorId": "teams-chat",
+      "status": "available"
+    },
+    {
+      "connectorId": "whatsapp",
+      "status": "available"
+    },
+    {
+      "connectorId": "linkedin",
+      "status": "available"
+    }
+  ],
+  "attestations": [
+    {
+      "channel": "email",
+      "used": true
+    },
+    {
+      "channel": "calendar",
+      "used": true
+    },
+    {
+      "channel": "meeting",
+      "used": true
+    },
+    {
+      "channel": "sms",
+      "used": true,
+      "note": "I text a handful of long-standing clients about scheduling."
+    },
+    {
+      "channel": "chat",
+      "used": true,
+      "note": "Two clients message me on WhatsApp. I have asked them to email instead."
+    },
+    {
+      "channel": "social",
+      "used": true,
+      "note": "I post on LinkedIn about once a month."
+    },
+    {
+      "channel": "crm",
+      "used": true
+    },
+    {
+      "channel": "custodian",
+      "used": true
+    },
+    {
+      "channel": "archive",
+      "used": true
+    },
+    {
+      "channel": "esign",
+      "used": true
+    },
+    {
+      "channel": "voice",
+      "used": true,
+      "note": "Most client contact is by phone from my desk line."
+    }
+  ],
+  "prospects": [
+    {
+      "id": "pr-series-d-founder",
+      "label": "Co-founder of a Series D software company",
+      "path": "referral",
+      "pathDetail": "M. Renner's co-founder; the Renners offered an introduction",
+      "signal": "Late-stage funding round; a sale or IPO likely in 12 to 24 months",
+      "estimatedUsd": 40000000,
+      "fit": 2,
+      "lastTouchDays": null,
+      "groundedIn": [
+        {
+          "label": "Late-stage business funding as a signal UBS's AI flags",
+          "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/ai-for-financial-advisors.html"
+        },
+        {
+          "label": "UBS New York founder practices (Founders Group)",
+          "url": "https://advisors.ubs.com/founders/"
+        }
+      ]
+    },
+    {
+      "id": "pr-okafor-next-gen",
+      "label": "T. Okafor-Lind, trust beneficiary turning 25",
+      "path": "existing",
+      "pathDetail": "Beneficiary of the Okafor-Lind trust, not yet engaged with the team",
+      "signal": "Trust payout rule starts this month; next generation not engaged",
+      "estimatedUsd": 9000000,
+      "fit": 2,
+      "lastTouchDays": 60,
+      "groundedIn": [
+        {
+          "label": "UBS families and foundations practice: next-generation education",
+          "url": "https://advisors.ubs.com/ffig/"
+        }
+      ]
+    },
+    {
+      "id": "pr-public-cfo",
+      "label": "CFO at a public company",
+      "path": "referral",
+      "pathDetail": "Referred by the Thornburys' accountant",
+      "signal": "About $6M held at another firm; stock grants vesting",
+      "estimatedUsd": 6000000,
+      "fit": 2,
+      "lastTouchDays": null,
+      "groundedIn": [
+        {
+          "label": "Assets held at other firms as a UBS AI signal (Financial Planning)",
+          "url": "https://www.financial-planning.com/news/ubs-turns-to-ai-to-gain-wallet-share-find-new-clients"
+        }
+      ]
+    },
+    {
+      "id": "pr-retiring-surgeon",
+      "label": "Surgeon retiring next year",
+      "path": "event",
+      "pathDetail": "Attended the team's retirement income seminar",
+      "signal": "401(k) of about $2.4M eligible to roll over",
+      "estimatedUsd": 3000000,
+      "fit": 1,
+      "lastTouchDays": 12,
+      "groundedIn": [
+        {
+          "label": "SEC staff bulletin on account and rollover recommendations",
+          "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
+        }
+      ]
+    },
+    {
+      "id": "pr-dentist-practice-sale",
+      "label": "Dentist selling a group practice",
+      "path": "signal",
+      "pathDetail": "No connection yet",
+      "signal": "Practice sale announced",
+      "estimatedUsd": 4500000,
+      "fit": 1,
+      "lastTouchDays": null,
+      "groundedIn": [
+        {
+          "label": "Business sale as a liquidity event (UBS Entrepreneurs Group)",
+          "url": "https://advisors.ubs.com/entrepreneursgroup/"
+        }
+      ]
+    }
+  ],
+  "walkthrough": {
+    "label": "Advisor A, New York",
+    "day": "Tuesday",
+    "households": 183,
+    "alertsOvernight": 47,
+    "summary": "Senior advisor, 19 years in the industry. Four-person team: advisor, junior advisor, client service associate, shared wealth strategist. About $820M across 183 families, specialising in founders, executives and business owners.",
+    "meetings": [
+      {
+        "time": "9:30",
+        "title": "Renner quarterly call",
+        "kind": "call",
+        "clientId": "hh-renner",
+        "purpose": "Quarterly check-in; the property sale is new since last time"
+      },
+      {
+        "time": "11:00",
+        "title": "Referral intro",
+        "kind": "prospect",
+        "prospectId": "pr-series-d-founder",
+        "purpose": "First conversation, introduced by the Renners"
+      },
+      {
+        "time": "2:00",
+        "title": "Alcott annual review",
+        "kind": "review",
+        "clientId": "hh-alcott",
+        "purpose": "Annual review; required withdrawals start next year"
+      },
+      {
+        "time": "4:30",
+        "title": "Team huddle",
+        "kind": "internal",
+        "purpose": "Escalated paperwork and today's service queue"
+      }
+    ]
+  }
+}

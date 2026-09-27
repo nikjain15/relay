@@ -85,7 +85,7 @@ export function ProfilesView({ advisor, client }: { advisor?: string; client?: s
         <ul className="list-inside list-disc text-xs">
           <li>Firm: <code>data/profiles/firm.json</code>. The floor for every rule.</li>
           <li>Segment: <code>data/profiles/segments.json</code>. Private wealth, Wealth Advice Center.</li>
-          <li>Advisor: <code>data/profiles/advisors/&lt;id&gt;.json</code>, plus suggestions the advisor accepted.</li>
+          <li>Advisor: the <code>profile</code> block in <code>data/advisors/&lt;id&gt;.json</code>, plus suggestions the advisor accepted.</li>
           <li>Client: the <code>preferences</code> block in <code>data/clients/&lt;id&gt;.json</code>, plus accepted suggestions.</li>
           <li>Bounds and who may set what: <code>data/profiles/schema.json</code>, enforced by <code>npm run check</code>.</li>
         </ul>

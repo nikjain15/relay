@@ -1,0 +1,19 @@
+{
+  "id": "doc-review-procedure",
+  "title": "Account review and documentation procedure",
+  "kind": "procedure extract",
+  "desk": "Compliance",
+  "day": 1,
+  "reviewEveryDays": 365,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Unsigned account documents older than 14 days are escalated to the branch supervisor."
+    },
+    {
+      "id": "p2",
+      "text": "Client information is refreshed on a 36-month cycle or on a material life event."
+    }
+  ]
+}

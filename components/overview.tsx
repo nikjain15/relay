@@ -14,8 +14,11 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useRelay } from "@/components/state";
-import { Banner, Card, More, PageTitle, Pill, Row, Section, StatRow } from "@/components/ui";
+import { Banner, Card, More, PageTitle, Pill, Row, Section, StatRow, StateDot, Timeline } from "@/components/ui";
 import { Icon } from "@/components/icons";
+import { Bars, Meter } from "@/components/charts";
+import { briefAll } from "@/lib/research/brief";
+import { corpusStates } from "@/lib/evidence/corpus";
 import { CLIENTS, PROSPECTS, SERVICE_REQUESTS, CONNECTORS_DATA } from "@/lib/data";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { openItems } from "@/lib/onboarding/status";
@@ -28,9 +31,13 @@ import { scopeFor } from "@/lib/compliance/scope";
 import { sweep } from "@/lib/compliance/sweep";
 import { coverageFor } from "@/lib/connectors/coverage";
 import { rank } from "@/lib/ranking/rank";
+import { connectedIds } from "@/lib/compliance/sweep";
+import { prepareAll, KIND } from "@/lib/compliance/actions";
+import { agentStatuses, activity } from "@/lib/compliance/activity";
+import { btn, btnPrimary } from "@/components/ui";
 
 export function Overview({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, dismissed } = useRelay();
+  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, decideAction } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
   const found = useMemo(() => sweep(advisorId, policy, connections), [advisorId, policy, connections]);
@@ -38,6 +45,10 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const agents = useMemo(() => agentsFrom(ruleEdits).filter((a) => a.enabled), [ruleEdits]);
 
   const openCases = found.cases.filter((c) => !caseDispositions[c.id]);
+  const actions = useMemo(() => prepareAll(openCases, policy.rules), [openCases, policy]);
+  const pending = actions.filter((a) => !actionDecisions[a.id]);
+  const connected = useMemo(() => connectedIds(advisorId, connections), [advisorId, connections]);
+  const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, openCases, connected), [agents, policy, found, actions, openCases, connected]);
   const blocking = openCases.filter((c) => c.severity === "block" && c.reason === "fired");
   const meetings = todaysMeetings();
   const overdue = allTasks().filter((t) => t.dueDay < 0);
@@ -46,6 +57,11 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const escalated = paperwork.filter((w) => w.status === "escalated");
   const flagged = useMemo(() => rank(OPPORTUNITIES, new Set(Object.keys(dismissed))), [dismissed]);
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
+  const byAgent = Object.entries(openCases.reduce<Record<string, number>>((acc, c) => ((acc[c.agentName] = (acc[c.agentName] ?? 0) + 1), acc), {})).sort((a, b) => b[1] - a[1]);
+  const briefings = useMemo(() => briefAll(connections).filter((b) => CLIENTS.find((c) => c.id === b.clientId)?.advisorId === advisorId), [connections, advisorId]);
+  const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
+  const corpus = corpusStates();
+  const staleDocs = corpus.filter((d) => d.usable && d.freshness === "stale").length;
 
   // What only a person can settle, ranked by cost of being wrong rather than by module.
   // The banner below already states the coverage gap, so the findings that restate
@@ -97,26 +113,35 @@ export function Overview({ advisorId }: { advisorId: string }) {
 
   return (
     <>
-      <PageTitle
-        title="Overview"
-        sub={`${APP.todayLabel} morning. What ran while you were away, and what only you can decide.`}
-      />
+      <PageTitle title="Overview" sub={`${APP.todayLabel} morning. What ran while you were away, and what only you can decide.`} />
 
       <StatRow
         items={[
-          { value: flagged.length, label: "Flagged for you today", icon: "list" },
-          { value: meetings.length, label: "Meetings", icon: "calendar" },
-          { value: openCases.length, label: "Agent findings open", icon: "shield", tone: blocking.length ? "critical" : openCases.length ? "plain" : "positive" },
           { value: decisions.length, label: "Need a decision", icon: "agent", tone: decisions.length ? "critical" : "positive" },
+          { value: pending.length, label: "Actions prepared for you", icon: "check", tone: pending.length ? "plain" : "positive" },
+          { value: flagged.length, label: "Flagged for you today", icon: "list" },
+          { value: meetings.length, label: "Meetings, briefed", icon: "calendar" },
         ]}
       />
+
+      <Section title="Agents">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          {statuses.map((s) => (
+            <Link key={s.agent.id} href="/agents" className="rounded border border-line px-3 py-2.5 hover:bg-subtle">
+              <span className="flex items-center gap-2 text-[13px] text-ink"><Icon name={s.icon} size={16} className="text-ink-3" />{s.agent.name}</span>
+              <span className="mt-1 block"><StateDot state={s.state} /></span>
+              <span className="mt-0.5 block text-[11px] text-ink-3">{s.open} raised · {s.actionsPrepared} prepared · {s.lastRunAt.replace("day 0, ", "")}</span>
+            </Link>
+          ))}
+        </div>
+      </Section>
 
       <Section title="Overnight">
         <div className="rounded border border-line p-4 sm:p-5">
           <p className="flex items-start gap-2 text-[14px] text-ink">
             <Icon name="sweep" size={20} className="mt-0.5 text-ink-3" />
             <span>
-              {agents.length} agents swept {found.accountsScanned} accounts and {channelsWatched} channels against{" "}
+              {agents.length} agents swept {found.accountsScanned} accounts, {found.messagesScanned} captured messages and {channelsWatched} channels against{" "}
               {policy.rules.filter((r) => r.enabled).length} rules in force.
             </span>
           </p>
@@ -125,6 +150,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
               ? "Nothing is waiting on a person."
               : `${openCases.length} finding${openCases.length === 1 ? "" : "s"} raised, ${blocking.length} blocking. Every one is drafted with its citation and the facts the rule read; none of them clears itself.`}
             {found.blockedBy.length > 0 && ` ${found.blockedBy.length} source${found.blockedBy.length === 1 ? "" : "s"} missing, so some rules could not be evaluated at all.`}
+            {found.messagesNotSwept.length > 0 && ` ${found.messagesNotSwept.length} captured message${found.messagesNotSwept.length === 1 ? "" : "s"} sat on a degraded source and ${found.messagesNotSwept.length === 1 ? "was" : "were"} not read.`}
           </p>
           <More summary="What the agents are, and what they are not allowed to do">
             Five bundles of rules, each with a cadence: communications surveillance on every draft, record
@@ -133,6 +159,68 @@ export function Overview({ advisorId }: { advisorId: string }) {
             disposition is not, and a rule whose source is not connected reports that it cannot be evaluated
             rather than reporting a clear.
           </More>
+        </div>
+      </Section>
+
+      {pending.length > 0 && (
+        <Section title="Prepared for you, worst first">
+          <div className="rounded border border-line px-3 sm:px-4">
+            {pending.slice(0, 6).map((a) => (
+              <Row
+                key={a.id}
+                icon={a.kind === "draft_note" ? "email" : a.kind === "task" ? "check" : a.kind === "schedule" ? "calendar" : a.kind === "callback" ? "voice" : a.kind === "request_form" ? "esign" : a.kind === "connect_source" ? "link" : "block"}
+                tone={a.kind === "hold" ? "critical" : "plain"}
+                title={a.title}
+                meta={`${a.subjectLabel === a.agentName ? a.agentName : `${a.subjectLabel} · ${a.agentName}`} · ${KIND[a.kind].label}`}
+                right={
+                  <span className="flex gap-1.5">
+                    <button type="button" className={btnPrimary} onClick={() => decideAction(a.id, "accepted")}>Accept</button>
+                    <button type="button" className={btn} onClick={() => decideAction(a.id, "declined")}>Decline</button>
+                  </span>
+                }
+              />
+            ))}
+          </div>
+          <p className="mt-2 text-[12px] text-ink-3">
+            {pending.length > 6 ? `${pending.length - 6} more on ` : "All of them, with the finding behind each, on "}
+            <Link href="/supervision" className="underline">Supervision</Link>. Accepting sends nothing; you do.
+          </p>
+        </Section>
+      )}
+
+      <Section title="This morning">
+        <Timeline items={activity(statuses).slice(0, 5)} />
+      </Section>
+
+      <Section title="By the numbers">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <p className="mb-2 text-[12px] text-ink-3">Open findings by agent</p>
+            {byAgent.length ? <Bars ariaLabel="Open findings by agent" items={byAgent.map(([agent, n]) => ({ label: agent, value: n, href: "/supervision" }))} /> : <p className="text-[13px] text-ink-2">None open.</p>}
+          </div>
+          <div>
+            <p className="mb-2 text-[12px] text-ink-3">Channels the advisor uses</p>
+            <Meter
+              ariaLabel="Attested channels by coverage"
+              segments={[
+                { label: "Captured", value: coverage.channels.filter((c) => c.attested && c.status === "covered").length, tone: "positive" },
+                { label: "No retained copy", value: coverage.channels.filter((c) => c.attested && c.status === "partial").length, tone: "caution" },
+                { label: "Not captured", value: coverage.gaps.length, tone: "critical" },
+              ]}
+            />
+            <p className="mt-2 text-[12px] text-ink-2">{found.messagesScanned} captured messages swept{found.messagesNotSwept.length ? `, ${found.messagesNotSwept.length} not swept` : ""}.</p>
+          </div>
+          <div>
+            <p className="mb-2 text-[12px] text-ink-3">Briefings and evidence</p>
+            <Bars
+              ariaLabel="Briefing and corpus figures"
+              items={[
+                { label: "Things not established across briefings", value: unknowns, href: "/research", tone: unknowns ? "critical" : "plain" },
+                { label: "Documents past review date", value: staleDocs, href: "/documents", tone: staleDocs ? "critical" : "plain" },
+                { label: "Current documents", value: corpus.filter((d) => d.usable).length, href: "/documents" },
+              ]}
+            />
+          </div>
         </div>
       </Section>
 
@@ -182,6 +270,8 @@ export function Overview({ advisorId }: { advisorId: string }) {
             meta="Ranked and capped, each with the reason path behind it" right={<Icon name="chevron" size={16} className="text-ink-3" />} />
           <Row icon="calendar" href="/meetings" title={`${meetings.length} meetings, with review packs ready`}
             meta="What changed, the gaps, the decisions and the open items" right={<Icon name="chevron" size={16} className="text-ink-3" />} />
+          <Row icon="briefing" href="/research" title={`${briefings.length} briefings assembled, ${unknowns} things not established`}
+            meta="Cited to a field, observed kept apart from inferred, the unknowns named" right={<Icon name="chevron" size={16} className="text-ink-3" />} />
           <Row icon="email" href="/communications" title="Draft a client note"
             meta="The recipient counter decides the supervisory regime before anything moves" right={<Icon name="chevron" size={16} className="text-ink-3" />} />
           <Row icon="people" href="/clients" title={`${CLIENTS.length} clients in the book`}

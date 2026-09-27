@@ -12,7 +12,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AREAS } from "@/components/nav";
 import { Icon, type IconName } from "@/components/icons";
-import { CLIENTS } from "@/lib/data";
+import { CLIENTS, DOCUMENTS } from "@/lib/data";
 import { BASELINE } from "@/lib/compliance/policy";
 
 interface Entry { href: string; label: string; group: string; icon: IconName }
@@ -21,6 +21,8 @@ function entries(): Entry[] {
   const out: Entry[] = AREAS.flatMap((a) => a.links.map((l) => ({ href: l.href, label: l.label, group: a.area, icon: l.icon })));
   for (const c of CLIENTS) out.push({ href: `/household/${c.id}`, label: c.name, group: "Client", icon: "document" });
   for (const r of BASELINE) out.push({ href: `/compliance#${r.id}`, label: r.title, group: r.authority, icon: "rules" });
+  for (const d of DOCUMENTS) out.push({ href: `/documents/${d.id}`, label: d.title, group: "Document", icon: "quote" });
+  for (const c of CLIENTS) out.push({ href: `/research/${c.id}`, label: `${c.name} briefing`, group: "Briefing", icon: "briefing" });
   return out;
 }
 

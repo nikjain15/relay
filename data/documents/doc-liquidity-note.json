@@ -1,0 +1,26 @@
+{
+  "id": "doc-liquidity-note",
+  "title": "Sizing a Liquidity strategy",
+  "kind": "research note",
+  "desk": "Research desk",
+  "day": 2,
+  "reviewEveryDays": 90,
+  "status": "current",
+  "supersedes": "doc-liquidity-note-v1",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "A Liquidity strategy is sized to cover two to five years of planned spending, held in instruments that do not require selling risk assets during a drawdown.",
+      "claims": [
+        {
+          "topic": "liquidity.horizon",
+          "value": "two to five years of planned spending"
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "text": "Where a Liquidity strategy is unfunded, new cash inflows are the lowest-cost source of funding because no position has to be sold."
+    }
+  ]
+}

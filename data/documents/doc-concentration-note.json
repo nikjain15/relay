@@ -1,0 +1,29 @@
+{
+  "id": "doc-concentration-note",
+  "title": "Managing single-name concentration",
+  "kind": "research note",
+  "desk": "Research desk",
+  "day": 3,
+  "reviewEveryDays": 90,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Concentration above a household's policy threshold can be reduced through staged sales under an existing trading plan, an exchange fund, or hedging, each with different tax and liquidity costs."
+    },
+    {
+      "id": "p2",
+      "text": "Staged sales that realise short-term gains carry a higher tax cost than sales of lots held longer than one year."
+    },
+    {
+      "id": "p3",
+      "text": "A trading plan on its own does not restore a household to its policy threshold. It schedules sales, and the position stays above policy until they complete.",
+      "claims": [
+        {
+          "topic": "concentration.plan-suffices",
+          "value": "no: a trading plan schedules sales and the breach stands until they complete"
+        }
+      ]
+    }
+  ]
+}

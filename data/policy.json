@@ -89,5 +89,14 @@
       "targetHours": 24,
       "callbackRequired": false
     }
+  },
+  "retrieval": {
+    "_note": "Deterministic retrieval. corpusDay is today on the corpus clock (documents carry a publication day on the same clock). floor is the relevance below which a passage is not shown as evidence; topK caps what one screen shows; citedBoost is added when the opportunity record cites the document; stalePenalty multiplies a document past its review date. In production a model rewrites the query and reranks; the floor, the citation and the refusal stay in code.",
+    "corpusDay": 60,
+    "floor": 0.2,
+    "topK": 6,
+    "citedBoost": 0.25,
+    "stalePenalty": 0.5,
+    "reviewDueWithinDays": 14
   }
 }

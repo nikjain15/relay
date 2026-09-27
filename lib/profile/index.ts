@@ -6,9 +6,7 @@
 import schema from "@/data/profiles/schema.json";
 import firm from "@/data/profiles/firm.json";
 import segments from "@/data/profiles/segments.json";
-import advA from "@/data/profiles/advisors/adv-a.json";
-import advB from "@/data/profiles/advisors/adv-b.json";
-import { CLIENTS } from "@/lib/data";
+import { ADVISORS_DATA, CLIENTS } from "@/lib/data";
 import type { TriggerClass } from "@/lib/types";
 
 export type Layer = "firm" | "segment" | "advisor" | "client";
@@ -44,7 +42,8 @@ export const SCHEMA = schema.settings as unknown as Record<SettingKey, SettingSp
 export const KEYS = Object.keys(SCHEMA) as SettingKey[];
 export const FIRM = firm as unknown as { version: number; values: Values };
 export const SEGMENTS = segments as unknown as Segment[];
-export const ADVISOR_PROFILES = [advA, advB] as unknown as AdvisorProfile[];
+/** One settings profile per advisor, read from the `profile` block of data/advisors/<id>.json. */
+export const ADVISOR_PROFILES: AdvisorProfile[] = ADVISORS_DATA.map((a) => ({ advisorId: a.id, ...(a.profile ?? { segmentId: "private-wealth", version: 1, learning: true, values: {} }) }));
 
 interface Source { layer: Layer; id: string; version: number; values: Values; learned?: boolean }
 

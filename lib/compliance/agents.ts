@@ -29,6 +29,8 @@ export interface AgentDefinition {
   ruleIds: string[];
   cadence: Cadence;
   enabled: boolean;
+  /** When it last ran, on the prototype clock ("day 0, 06:20"). */
+  lastRunAt?: string;
 }
 
 export type Disposition = "pending" | "cleared" | "returned" | "blocked";

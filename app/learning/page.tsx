@@ -43,7 +43,7 @@ export default function Learning() {
   );
   return (
     <>
-      <PageTitle title="Suggestions" sub="What Relay learned from how advisors and clients work. It proposes; you decide. It never changes a rule, and never changes which options are allowed." />
+      <PageTitle title="Suggestions" sub="Learned from how you work. It proposes; you decide. Never a rule." />
       <ol className="mb-4 flex max-w-6xl flex-wrap gap-1 text-xs" aria-label="The learning loop">
         {LOOP.map((x, i) => (
           <li key={x} className="rounded border border-line px-2 py-0.5">{i + 1}. {x}</li>

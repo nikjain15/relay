@@ -99,6 +99,30 @@
       "signedDay": -3
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [
+    {
+      "id": "msg-003",
+      "connectorId": "compliant-texting",
+      "channel": "sms",
+      "direction": "inbound",
+      "day": -3,
+      "text": "Honestly this is not what I was told when I opened the account. I'm unhappy with how the fees were explained."
+    },
+    {
+      "id": "msg-006",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -6,
+      "text": "Attached is the address change form. Sign where marked and send it back whenever convenient."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-pell-liquidity",

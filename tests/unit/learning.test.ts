@@ -7,7 +7,7 @@ describe("the learning loop", () => {
 
   it("proposes from the behavior log, each with evidence and a measure", () => {
     const s = suggest();
-    expect(ids(s)).toEqual(["adv-a:order", "adv-a:sort", "adv-a:weight:market_view", "adv-b:cap", "adv-b:weight:plan_service_event", "hh-alcott:channel", "hh-pell:channel", "hh-thornbury:length"]);
+    expect(ids(s)).toEqual(["adv-a:order", "adv-a:sort", "adv-a:weight:market_view", "adv-b:cap", "adv-b:weight:plan_service_event", "adv-c:cap", "adv-c:weight:market_view", "hh-alcott:channel", "hh-pell:channel", "hh-thornbury:length"]);
     for (const x of s) {
       expect(x.because.length).toBeGreaterThan(10);
       expect(x.measure.length).toBeGreaterThan(10);

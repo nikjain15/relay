@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { BASELINE, resolvePolicy, activeRules } from "@/lib/compliance/policy";
 import { runPolicy, evaluateRule } from "@/lib/compliance/engine";
+import { policyFrom, SEED_EDITS } from "@/lib/compliance/store";
 import { evaluate, explain, factsUsed, render } from "@/lib/compliance/dsl";
 import type { RuleDefinition } from "@/lib/compliance/types";
 
@@ -163,7 +164,8 @@ describe("engine", () => {
   });
 
   it("separates blocking from flagged and reports overall confidence", () => {
-    const p = resolvePolicy([]);
+    // The seeded log raises the marketing rule from flag to block (e-001); the baseline alone carries it as a flag.
+    const p = policyFrom(SEED_EDITS);
     const f = runPolicy(p, {
       scope: "communication",
       availableConnectors: ALL_CONNECTORS,

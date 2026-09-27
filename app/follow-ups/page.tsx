@@ -7,10 +7,21 @@ import { allTasks, dueLabel } from "@/lib/followups";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
 import { PageTitle, Pill, Section, TableScroll, btn, td, th } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { policyFrom } from "@/lib/compliance/store";
+import { scopeFor } from "@/lib/compliance/scope";
+import { sweep } from "@/lib/compliance/sweep";
+import { prepareAll, KIND } from "@/lib/compliance/actions";
+import { APP } from "@/lib/data/policy";
 
 export default function FollowUps() {
-  const { queue, markSent, log, addLog } = useRelay();
+  const { queue, markSent, log, addLog, ruleEdits, connections, caseDispositions, actionDecisions } = useRelay();
   const [done, setDone] = useState<Record<string, boolean>>({});
+  const accepted = (() => {
+    const policy = policyFrom(ruleEdits, scopeFor(APP.defaultAdvisorId));
+    const open = sweep(APP.defaultAdvisorId, policy, connections).cases.filter((c) => !caseDispositions[c.id]);
+    return prepareAll(open, policy.rules).filter((a) => actionDecisions[a.id]?.decision === "accepted");
+  })();
   const approved = queue.filter((q) => q.disposition === "approved");
   const tasks = allTasks();
   return (
@@ -36,6 +47,26 @@ export default function FollowUps() {
                   )}
                   <button className={btn} onClick={() => addLog({ clientId: q.householdId, what: "Call logged before the note" })}>Log a call</button>
                 </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
+      <Section title="Accepted from the agents">
+        {accepted.length === 0 ? (
+          <p className="text-ink-2">
+            Nothing accepted yet. Each finding on <Link className="underline" href="/supervision">Supervision</Link> carries the actions its agent prepared; accepting one puts it here.
+          </p>
+        ) : (
+          <ul className="grid max-w-4xl gap-2">
+            {accepted.map((a) => (
+              <li key={a.id} className="flex items-start gap-3 rounded border border-line p-3">
+                <Icon name={a.kind === "draft_note" ? "email" : a.kind === "task" ? "check" : a.kind === "schedule" ? "calendar" : a.kind === "callback" ? "voice" : a.kind === "request_form" ? "esign" : a.kind === "connect_source" ? "link" : "block"} size={20} className="mt-px text-ink-3" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[14px]"><Pill tone="neutral">{KIND[a.kind].label}</Pill> {a.title}</span>
+                  <span className="mt-0.5 block text-[12px] text-ink-2">{a.subjectLabel} · {a.agentName} · {a.actor}{a.dueInDays !== undefined ? ` · due in ${a.dueInDays} day${a.dueInDays === 1 ? "" : "s"}` : ""}</span>
+                  {a.kind === "draft_note" && <span className="mt-1.5 block whitespace-pre-wrap rounded bg-subtle p-2 text-[12px] text-ink">{a.detail}</span>}
+                </span>
               </li>
             ))}
           </ul>

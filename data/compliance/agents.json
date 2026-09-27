@@ -1,50 +1,73 @@
 {
-  "version": 1,
+  "version": 2,
   "agents": [
     {
       "id": "communications-surveillance",
       "name": "Communications surveillance",
-      "mission": "Read every outbound draft and inbound client message, decide the supervisory regime, and hold anything that cannot go out as written.",
+      "mission": "Read every outbound draft, every captured message in both directions and every inbound client message, decide the supervisory regime, hold anything that cannot go out as written, and raise a grievance nobody logged.",
       "scope": "communication",
-      "ruleIds": ["finra-2210-regime", "finra-3110-correspondence", "sec-marketing-206-4-1", "genai-supervision-24-09", "reg-s-p-safeguards"],
+      "ruleIds": [
+        "finra-2210-regime",
+        "finra-3110-correspondence",
+        "sec-marketing-206-4-1",
+        "genai-supervision-24-09",
+        "reg-s-p-safeguards",
+        "complaint-identification-4513"
+      ],
       "cadence": "on_draft",
-      "enabled": true
+      "enabled": true,
+      "lastRunAt": "day 0, 06:25"
     },
     {
       "id": "record-completeness",
       "name": "Record completeness",
       "mission": "Compare what the advisor says they use against what is actually captured, and name the exposure on every gap.",
       "scope": "coverage",
-      "ruleIds": ["off-channel-gap", "sec-17a4-completeness"],
+      "ruleIds": [
+        "off-channel-gap",
+        "sec-17a4-completeness"
+      ],
       "cadence": "daily",
-      "enabled": true
+      "enabled": true,
+      "lastRunAt": "day 0, 06:10"
     },
     {
       "id": "recommendation-evidence",
       "name": "Recommendation evidence",
       "mission": "Before a recommendation is released, check the care-obligation record is complete: basis, alternatives, costs, why this client.",
       "scope": "proposal",
-      "ruleIds": ["reg-bi-care-evidence"],
+      "ruleIds": [
+        "reg-bi-care-evidence"
+      ],
       "cadence": "on_proposal",
-      "enabled": true
+      "enabled": true,
+      "lastRunAt": "on every proposal"
     },
     {
       "id": "client-protection",
       "name": "Client protection",
-      "mission": "Watch for exploitation indicators on specified adults, grievances that were never logged, and concentration past the household ceiling.",
+      "mission": "Watch for exploitation indicators on specified adults, concentration past the household ceiling, and concentration drifting toward it.",
       "scope": "account",
-      "ruleIds": ["senior-investor-2165", "complaint-identification-4513", "finra-2111-suitability"],
+      "ruleIds": [
+        "senior-investor-2165",
+        "finra-2111-suitability",
+        "finra-2111-drift"
+      ],
       "cadence": "daily",
-      "enabled": true
+      "enabled": true,
+      "lastRunAt": "day 0, 06:20"
     },
     {
       "id": "conduct",
       "name": "Conduct",
-      "mission": "Outside business activities and private securities transactions, where the firm has switched the rule on.",
-      "scope": "account",
-      "ruleIds": ["outside-business-3270"],
+      "mission": "Outside business activities and private securities transactions, read from the captured corpus, where the firm has switched the rule on.",
+      "scope": "communication",
+      "ruleIds": [
+        "outside-business-3270"
+      ],
       "cadence": "weekly",
-      "enabled": true
+      "enabled": true,
+      "lastRunAt": "day -2, 06:30"
     }
   ]
 }

@@ -18,6 +18,8 @@ import { policyFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
 import { sweep } from "@/lib/compliance/sweep";
 import type { Case } from "@/lib/compliance/agents";
+import { Sparkline } from "@/components/charts";
+import { prepareActions, KIND } from "@/lib/compliance/actions";
 
 const REASON_LABEL: Record<Case["reason"], string> = {
   fired: "Finding",
@@ -52,7 +54,7 @@ function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?:
 }
 
 export function SupervisionView({ advisorId }: { advisorId: string }) {
-  const { queue, dispose, ruleEdits, connections, caseDispositions, disposeCase } = useRelay();
+  const { queue, dispose, ruleEdits, connections, caseDispositions, disposeCase, actionDecisions, decideAction } = useRelay();
   const [tab, setTab] = useState<"findings" | "drafts">("findings");
   const [comment, setComment] = useState<Record<string, string>>({});
 
@@ -68,7 +70,7 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
     <>
       <PageTitle
         title="Supervision console"
-        sub="Everything the agents found on their own, plus every draft waiting for release. Relay drafts the finding; the disposition is yours."
+        sub="What the agents found, what they prepared, and every draft waiting for release. The disposition is yours."
       />
 
       <StatRow
@@ -76,9 +78,17 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
           { value: open.length, label: "Open findings", icon: "shield", tone: open.length ? "critical" : "positive" },
           { value: blocking.length, label: "Blocking", icon: "block", tone: blocking.length ? "critical" : "positive" },
           { value: pendingDrafts.length, label: "Drafts awaiting release", icon: "email" },
-          { value: found.accountsScanned, label: "Accounts swept", icon: "sweep" },
+          { value: `${found.accountsScanned} + ${found.messagesScanned}`, label: `Accounts and captured messages swept${found.channelsScanned.length ? `, ${found.channelsScanned.join(", ")}` : ""}`, icon: "sweep" },
         ]}
       />
+
+      {found.messagesNotSwept.length > 0 && (
+        <Banner tone="caution" title={`${found.messagesNotSwept.length} captured message${found.messagesNotSwept.length === 1 ? "" : "s"} not swept`}>
+          {found.messagesNotSwept.map((m) => `${m.id} (${m.channel}, ${m.connectorId})`).join(", ")}: the source is connected but not healthy, so what it holds since the failure is not
+          being read. Not swept is reported as not swept, never as clear.{" "}
+          <Link href="/connectors" className="underline">Connected channels</Link>.
+        </Banner>
+      )}
 
       {found.blockedBy.length > 0 && (
         <Banner tone="caution" title="Some rules could not be evaluated">
@@ -105,7 +115,8 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
       {tab === "findings" && (
         <Section title="What the agents found, without being asked">
           <More summary="What is autonomous here, and what is not">
-            Detection, classification, evidence assembly, the drafted finding, the drafted remediation, the citation and
+            The sweep reads every account and every captured message on a healthy source, in both directions, not only
+            the drafts an advisor submits. Detection, classification, evidence assembly, the drafted finding, the drafted remediation, the citation and
             the order of this queue are all autonomous. The disposition is not. Anything that fired reaches a person, so
             does anything whose confidence sits below its rule&apos;s floor, and so does anything a rule could not
             evaluate because its source is missing, which is reported rather than passed.
@@ -132,9 +143,22 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
                   <p className="mt-2 text-[13px] text-ink-2">
                     <span className="font-medium text-ink">Suggested:</span> {c.remediation}
                   </p>
+                  {Array.isArray(c.evidence.concentrationHistory) && (
+                    <div className="mt-3 border-t border-line pt-3">
+                      <Sparkline
+                        ariaLabel="Largest single name as a share of investable assets, over 90 days"
+                        points={c.evidence.concentrationHistory.map((h) => Number(String(h).replace(/^.*: /, "").replace("%", "")))}
+                        labels={c.evidence.concentrationHistory.map((h) => String(h).replace(/:.*$/, "").replace("day ", "d"))}
+                        ceiling={typeof c.evidence.concentrationCeilingPct === "number" ? c.evidence.concentrationCeilingPct : undefined}
+                        ceilingLabel="household ceiling"
+                        format={(n) => `${n}%`}
+                        tone="caution"
+                      />
+                    </div>
+                  )}
                   {Object.keys(c.evidence).length > 0 && (
                     <dl className="mt-3 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 border-t border-line pt-3 text-[12px]">
-                      {Object.entries(c.evidence).map(([k, v]) => (
+                      {Object.entries(c.evidence).filter(([k]) => k !== "concentrationHistory").map(([k, v]) => (
                         <div key={k} className="col-span-2 flex gap-2">
                           <dt className="text-ink-3">{k}</dt>
                           <dd className="text-ink-2">{Array.isArray(v) ? v.join(", ") : String(v)}</dd>
@@ -143,6 +167,39 @@ export function SupervisionView({ advisorId }: { advisorId: string }) {
                     </dl>
                   )}
                   <p className="mt-2 text-[12px] text-ink-3">Confidence {Math.round(c.confidence * 100)} percent.</p>
+                  {(() => {
+                    const acts = prepareActions(c, policy.rules.find((r) => r.id === c.ruleId));
+                    if (!acts.length) return null;
+                    return (
+                      <div className="mt-3 border-t border-line pt-3">
+                        <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-ink"><Icon name="agent" size={16} className="text-ink-3" />Prepared by the agent</p>
+                        <ul className="space-y-1.5">
+                          {acts.map((a) => {
+                            const d = actionDecisions[a.id];
+                            return (
+                              <li key={a.id} className={`rounded border px-2.5 py-2 text-[12px] ${d?.decision === "accepted" ? "border-positive/40 bg-positive-soft" : d?.decision === "declined" ? "border-line text-ink-3" : "border-line bg-surface"}`}>
+                                <div className="flex flex-wrap items-start justify-between gap-2">
+                                  <span className="min-w-0 flex-1">
+                                    <Pill tone="neutral">{KIND[a.kind].label}</Pill> <span className="text-ink">{a.title}</span>
+                                    <span className="mt-0.5 block text-ink-2">{a.detail}</span>
+                                    <span className="mt-0.5 block text-[11px] text-ink-3">Acts: {a.actor}. Nothing is sent or written by accepting.</span>
+                                  </span>
+                                  {d ? (
+                                    <Pill tone={d.decision === "accepted" ? "pass" : "neutral"}>{d.decision}</Pill>
+                                  ) : (
+                                    <span className="flex gap-1.5">
+                                      <button type="button" className={btnPrimary} onClick={() => decideAction(a.id, "accepted")}>Accept</button>
+                                      <button type="button" className={btn} onClick={() => decideAction(a.id, "declined")}>Decline</button>
+                                    </span>
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    );
+                  })()}
                   <Disposer id={c.id} onAct={(d, note) => disposeCase(c.id, d, note)} />
                 </Card>
               ))}

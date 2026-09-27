@@ -1,0 +1,236 @@
+{
+  "id": "adv-c",
+  "name": "Advisor C",
+  "role": "Senior advisor, business-owner and retiree practice, Chicago",
+  "book": "About $610M across 142 households; most between $5M and $25M",
+  "facts": [
+    {
+      "detail": "Practice built around owners of closely held businesses before and after a sale, and the retirees they become",
+      "kind": "Published"
+    },
+    {
+      "detail": "Team: advisor, associate advisor, client service associate, shared planning specialist",
+      "kind": "Published"
+    },
+    {
+      "detail": "Book about 1.5 times UBS's reported average per advisor",
+      "kind": "Derived"
+    },
+    {
+      "detail": "24 years in the industry, 11 at UBS; a disclosed seat on a community foundation's investment committee",
+      "kind": "Chosen"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "UBS Entrepreneurs Group (business owners, sale, concentration)",
+      "url": "https://advisors.ubs.com/entrepreneursgroup/"
+    },
+    {
+      "label": "UBS on assets per advisor",
+      "url": "https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html"
+    },
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    }
+  ],
+  "profile": {
+    "segmentId": "private-wealth",
+    "version": 1,
+    "learning": true,
+    "values": {
+      "review.sectionOrder": [
+        "decisions",
+        "gaps",
+        "changed",
+        "open",
+        "talking",
+        "documents"
+      ]
+    }
+  },
+  "obaOnFile": true,
+  "connections": [
+    {
+      "connectorId": "microsoft-365",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 12880
+    },
+    {
+      "connectorId": "zoom",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 204
+    },
+    {
+      "connectorId": "salesforce-fsc",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:20",
+      "recordsIngested": 3312
+    },
+    {
+      "connectorId": "custodian-feed",
+      "status": "connected",
+      "lastIngestAt": "day 0, 04:00",
+      "recordsIngested": 7420
+    },
+    {
+      "connectorId": "archive",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 16540
+    },
+    {
+      "connectorId": "esign",
+      "status": "connected",
+      "lastIngestAt": "day -1, 18:05",
+      "recordsIngested": 196
+    },
+    {
+      "connectorId": "compliant-texting",
+      "status": "connected",
+      "lastIngestAt": "day 0, 06:15",
+      "recordsIngested": 2210
+    },
+    {
+      "connectorId": "teams-chat",
+      "status": "available"
+    },
+    {
+      "connectorId": "linkedin",
+      "status": "available"
+    }
+  ],
+  "attestations": [
+    {
+      "channel": "email",
+      "used": true
+    },
+    {
+      "channel": "calendar",
+      "used": true
+    },
+    {
+      "channel": "meeting",
+      "used": true
+    },
+    {
+      "channel": "voice",
+      "used": true,
+      "note": "Desk line and mobile. The mobile is not on the recorded line."
+    },
+    {
+      "channel": "sms",
+      "used": true
+    },
+    {
+      "channel": "crm",
+      "used": true
+    },
+    {
+      "channel": "custodian",
+      "used": true
+    },
+    {
+      "channel": "archive",
+      "used": true
+    },
+    {
+      "channel": "esign",
+      "used": true
+    },
+    {
+      "channel": "social",
+      "used": true,
+      "note": "LinkedIn, a post every few weeks about business succession."
+    }
+  ],
+  "prospects": [
+    {
+      "id": "pr-castellanos-partner",
+      "label": "The buyer of the Castellanos practice",
+      "path": "referral",
+      "pathDetail": "Introduced by the Castellanos family after the sale closed",
+      "signal": "Newly leveraged owner; will need a cash-flow plan around the acquisition debt",
+      "estimatedUsd": 4500000,
+      "fit": 2,
+      "lastTouchDays": 12,
+      "groundedIn": [
+        {
+          "label": "UBS Entrepreneurs Group (business owners, sale, concentration)",
+          "url": "https://advisors.ubs.com/entrepreneursgroup/"
+        }
+      ]
+    },
+    {
+      "id": "pr-desrosiers-sibling",
+      "label": "P. Desrosiers's sibling, an engineer near retirement",
+      "path": "existing",
+      "pathDetail": "Mentioned on the last call; no introduction yet",
+      "signal": "Retirement within two years; likely a rollover decision",
+      "estimatedUsd": 1800000,
+      "fit": 1,
+      "lastTouchDays": null,
+      "groundedIn": [
+        {
+          "label": "SEC staff bulletin on account recommendations (rollovers)",
+          "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
+        }
+      ]
+    },
+    {
+      "id": "pr-foundation-board",
+      "label": "A family foundation seeking an investment committee advisor",
+      "path": "signal",
+      "pathDetail": "Public board notice; no relationship",
+      "signal": "Investment policy review announced",
+      "estimatedUsd": 25000000,
+      "fit": 1,
+      "lastTouchDays": null,
+      "groundedIn": [
+        {
+          "label": "UBS Entrepreneurs Group (business owners, sale, concentration)",
+          "url": "https://advisors.ubs.com/entrepreneursgroup/"
+        }
+      ]
+    }
+  ],
+  "walkthrough": {
+    "label": "Advisor C, Chicago",
+    "day": "Tuesday",
+    "households": 142,
+    "alertsOvernight": 38,
+    "summary": "Senior advisor, 24 years in the industry. Works with owners of closely held businesses through a sale and into retirement. About $610M across 142 households.",
+    "meetings": [
+      {
+        "time": "10:00",
+        "title": "Castellanos post-sale plan",
+        "kind": "review",
+        "clientId": "hh-castellanos",
+        "purpose": "First review since the practice sale closed; cash is well above target"
+      },
+      {
+        "time": "11:30",
+        "title": "Referral: the practice buyer",
+        "kind": "prospect",
+        "prospectId": "pr-castellanos-partner",
+        "purpose": "First conversation, introduced by the Castellanos family"
+      },
+      {
+        "time": "2:30",
+        "title": "Marchetti-Oyelaran estate call",
+        "kind": "call",
+        "clientId": "hh-marchetti-oyelaran",
+        "purpose": "The new power of attorney; who the firm may speak to"
+      },
+      {
+        "time": "4:00",
+        "title": "Compliance check-in",
+        "kind": "internal",
+        "purpose": "Open findings and the proposed rule changes"
+      }
+    ]
+  }
+}

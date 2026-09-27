@@ -71,6 +71,8 @@ export interface RuleDefinition {
   confidenceFloor: number;
   /** Connector ids whose records this rule needs. Drives the "cannot evaluate" state. */
   requires: string[];
+  /** What the agent prepares when this rule fires: holds, callbacks, forms, tasks, notes, sources. See lib/compliance/actions.ts. */
+  actions?: unknown[];
 }
 
 /** A layer's change to a rule. Enable and tighten only; see policy.ts. */

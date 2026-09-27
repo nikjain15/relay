@@ -1,0 +1,209 @@
+{
+  "id": "hh-desrosiers",
+  "name": "Desrosiers",
+  "archetype": "Eighteen months from retirement",
+  "tier": "$500K to $5M",
+  "advisorId": "adv-c",
+  "totalUsd": 3400000,
+  "monthlySpendUsd": 11000,
+  "hardPart": "Retires in 18 months; a $900K 401(k) is held at the employer's plan; the Longevity number depends on a pension election not yet made",
+  "persons": [
+    {
+      "id": "p-des-1",
+      "name": "P. Desrosiers",
+      "role": "primary",
+      "age": 57
+    }
+  ],
+  "holdings": [
+    {
+      "name": "Diversified core model",
+      "productId": "prod-core-model",
+      "valueUsd": 2860000,
+      "singleName": false
+    },
+    {
+      "name": "Cash",
+      "productId": "prod-mmf",
+      "valueUsd": 220000,
+      "singleName": false
+    },
+    {
+      "name": "Treasury ladder",
+      "productId": "prod-tsy-ladder",
+      "valueUsd": 320000,
+      "singleName": false
+    }
+  ],
+  "goals": [
+    {
+      "strategy": "Liquidity",
+      "funded": 49,
+      "target": 36,
+      "unit": "months",
+      "assumption": "36 months of spending at $11K a month"
+    },
+    {
+      "strategy": "Longevity",
+      "funded": 2860000,
+      "target": 4200000,
+      "unit": "USD",
+      "assumption": "Retirement at 59 with the 401(k) counted once it is on the platform"
+    },
+    {
+      "strategy": "Legacy",
+      "funded": 0,
+      "target": 0,
+      "unit": "USD",
+      "assumption": "No legacy goal stated"
+    }
+  ],
+  "constraints": [
+    {
+      "kind": "maxSingleName",
+      "pct": 10
+    },
+    {
+      "kind": "minLiquidityMonths",
+      "months": 24
+    },
+    {
+      "kind": "maxRiskLevel",
+      "level": 3
+    }
+  ],
+  "contactHistory": [
+    {
+      "day": -28,
+      "channel": "Video",
+      "summary": "Retirement date set; discussed the pension options and the 401(k) held at the employer"
+    }
+  ],
+  "notes": [
+    {
+      "from": "Associate advisor",
+      "day": -10,
+      "text": "Pension election packet arrived; P. would like us to model lump sum against annuity before the deadline in 60 days."
+    }
+  ],
+  "tasks": [
+    {
+      "text": "Model lump sum against annuity",
+      "owner": "Planning specialist",
+      "dueDay": 7
+    },
+    {
+      "text": "Chase the client information refresh",
+      "owner": "Client service associate",
+      "dueDay": -6
+    }
+  ],
+  "paperwork": [
+    {
+      "form": "Client information refresh",
+      "requestedDay": -20
+    },
+    {
+      "form": "Rollover recommendation record",
+      "requestedDay": -9
+    }
+  ],
+  "supervisory": {
+    "trustedContactOnFile": true,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": false
+  },
+  "messages": [
+    {
+      "id": "msg-c06",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "inbound",
+      "day": -9,
+      "text": "Sent the pension packet over. Which option would you take if it were you?"
+    },
+    {
+      "id": "msg-c07",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -8,
+      "text": "I'd rather show you both on paper than answer that from the hip. We'll have the model in two weeks and walk through it together."
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-desrosiers-held-away",
+      "householdId": "hh-desrosiers",
+      "triggerClass": "plan_service_event",
+      "title": "$900K 401(k) held away at the employer's plan; rollover decision within 18 months",
+      "materiality": 66,
+      "observedDay": 28,
+      "action": "review",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "ServiceEvent",
+          "label": "Retirement date set, 18 months out"
+        },
+        {
+          "kind": "Household",
+          "label": "Desrosiers household"
+        },
+        {
+          "kind": "Goal",
+          "label": "Longevity funded $2.86M of $4.2M"
+        },
+        {
+          "kind": "Holding",
+          "label": "401(k) held away at another firm, about $900K"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "A $900K retirement account is still at the old employer"
+    },
+    {
+      "id": "opp-desrosiers-kyc",
+      "householdId": "hh-desrosiers",
+      "triggerClass": "plan_service_event",
+      "title": "Client information refresh open 20 days",
+      "materiality": 40,
+      "observedDay": 20,
+      "action": "review",
+      "strategy": "Longevity",
+      "reasonPath": [
+        {
+          "kind": "ServiceEvent",
+          "label": "Client information refresh requested, day 20"
+        },
+        {
+          "kind": "Household",
+          "label": "Desrosiers household"
+        }
+      ],
+      "evidenceDocIds": [
+        "doc-review-procedure"
+      ],
+      "plainTitle": "The client information refresh is three weeks late"
+    }
+  ],
+  "groundedIn": [
+    {
+      "label": "SEC staff bulletin on account recommendations (rollovers)",
+      "url": "https://www.sec.gov/about/divisions-offices/division-trading-markets/broker-dealers/staff-bulletin-standards-conduct-broker-dealers-investment-advisers-account-recommendations-retail"
+    },
+    {
+      "label": "$5M+ coverage tier, Dec 2024 restructuring",
+      "url": "https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554"
+    }
+  ],
+  "preferences": {
+    "version": 1,
+    "values": {
+      "contact.window": "After 5pm; on shift until then"
+    }
+  }
+}

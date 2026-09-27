@@ -119,6 +119,23 @@
       "signedDay": -390
     }
   ],
+  "supervisory": {
+    "trustedContactOnFile": false,
+    "complaintLogged": false,
+    "unusualDisbursement": false,
+    "newThirdPartyContact": true,
+    "note": "Beneficiary change to a younger family member, requested by phone, on an account whose oldest holder is 79."
+  },
+  "messages": [
+    {
+      "id": "msg-007",
+      "connectorId": "microsoft-365",
+      "channel": "email",
+      "direction": "outbound",
+      "day": -8,
+      "text": "Thank you for the trustee meeting. I have noted the distribution provision and will send the paperwork for both beneficiaries."
+    }
+  ],
   "opportunities": [
     {
       "id": "opp-okafor-life",

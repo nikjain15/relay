@@ -1,0 +1,15 @@
+{
+  "id": "doc-exchange-fund",
+  "title": "Exchange fund, 7-year lockup",
+  "kind": "term sheet",
+  "desk": "Product desk",
+  "day": 1,
+  "reviewEveryDays": 180,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Contributors receive units in a diversified partnership. A seven-year holding period applies before a diversified basket may be distributed."
+    }
+  ]
+}

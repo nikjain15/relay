@@ -22,7 +22,8 @@ export type IconName =
   | "crm" | "custodian" | "archive" | "esign" | "planning"
   | "agent" | "shield" | "alert" | "block" | "check" | "clock" | "eye" | "search"
   | "home" | "list" | "people" | "document" | "chart" | "settings" | "rules" | "log"
-  | "chevron" | "plus" | "filter" | "menu" | "close" | "sweep";
+  | "chevron" | "plus" | "filter" | "menu" | "close" | "sweep"
+  | "library" | "quote" | "conflict" | "hourglass" | "trend" | "replay" | "briefing" | "question" | "flag" | "link";
 
 const P: Record<IconName, ReactNode> = {
   // Channels. Each one reads as the thing an advisor calls it.
@@ -60,6 +61,19 @@ const P: Record<IconName, ReactNode> = {
   settings: <><circle cx="12" cy="12" r="3" /><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M4.2 16.5l2.6-1.5M17.2 9l2.6-1.5" /></>,
   rules: <><path d="M5 4.5h14v15H5z" /><path d="M8.5 9h7M8.5 12.5h7M8.5 16h4" /></>,
   log: <><path d="M7 3.5h13v17H7z" /><path d="M4 6.5v11" /><path d="M10.5 9h6M10.5 13h6" /></>,
+
+  // Evidence and research. Drawn on the same grid; each says what the row is
+  // about faster than a word would, and always beside the word.
+  library: <><path d="M4 4.5h4v15H4zM9.5 4.5h4v15h-4z" /><path d="M15 6l4-1 3.5 13.5-4 1z" /></>,
+  quote: <><path d="M5 14.5v-4a3 3 0 0 1 3-3h1" /><path d="M5 14.5h4v4H5z" /><path d="M14 14.5v-4a3 3 0 0 1 3-3h1" /><path d="M14 14.5h4v4h-4z" /></>,
+  conflict: <><path d="M4 8h10.5" /><path d="M11.5 5l3 3-3 3" /><path d="M20 16H9.5" /><path d="M12.5 13l-3 3 3 3" /></>,
+  hourglass: <><path d="M7 3.5h10M7 20.5h10" /><path d="M8 3.5v3l4 5.5 4-5.5v-3M8 20.5v-3l4-5.5 4 5.5v3" /></>,
+  trend: <><path d="M3.5 17.5l5.5-6 4 3.5 7.5-8" /><path d="M16 7h4.5v4.5" /></>,
+  replay: <><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" /><path d="M4 4v4h4" /><path d="M12 8.5V12l2.5 1.5" /></>,
+  briefing: <><path d="M5 4.5h14v15H5z" /><path d="M8.5 9h7M8.5 12.5h7M8.5 16h3.5" /><circle cx="17" cy="17" r="3.5" /><path d="M19.5 19.5l2 2" /></>,
+  question: <><circle cx="12" cy="12" r="8.5" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7" /><path d="M12 16.8v.2" /></>,
+  flag: <><path d="M5.5 21V4" /><path d="M5.5 4.5h12l-2.5 4 2.5 4h-12" /></>,
+  link: <><path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1" /><path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1" /></>,
 
   // Controls.
   chevron: <path d="M9 6l6 6-6 6" />,
@@ -105,6 +119,16 @@ export const CHANNEL_ICON: Record<string, IconName> = {
   email: "email", calendar: "calendar", meeting: "meeting", voice: "voice", sms: "sms",
   chat: "chat", social: "social", crm: "crm", custodian: "custodian", archive: "archive",
   esign: "esign", planning: "planning",
+};
+
+/** Trigger classes map to icons in one place, so a row says what kind of thing it is before its words do. */
+export const CLASS_ICON: Record<string, IconName> = {
+  life_event: "people", external_event: "trend", household_threshold: "alert", plan_service_event: "clock", market_view: "chart",
+};
+
+/** Document kinds, for the library and every citation row. */
+export const DOC_ICON: Record<string, IconName> = {
+  "research note": "document", "product one-pager": "quote", "term sheet": "rules", "model fact sheet": "chart", "procedure extract": "shield", "disclosure": "flag",
 };
 
 /** Every icon, for the design-system page and for the invariant test. */

@@ -1,0 +1,15 @@
+{
+  "id": "doc-crossborder-note",
+  "title": "Non-US pooled funds held by US taxpayers",
+  "kind": "research note",
+  "desk": "Cross-border desk",
+  "day": 4,
+  "reviewEveryDays": 60,
+  "status": "current",
+  "passages": [
+    {
+      "id": "p1",
+      "text": "Holdings in non-US pooled funds may be classified as PFICs for US taxpayers, with punitive default tax treatment unless an election is made."
+    }
+  ]
+}

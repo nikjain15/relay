@@ -26,6 +26,8 @@ import { agentOwning, runScope, queue, uncoveredMandatoryRules } from "@/lib/com
 import { coverageFor } from "@/lib/connectors/coverage";
 import { coverageFacts } from "@/lib/compliance/facts";
 import { CONNECTORS_DATA } from "@/lib/data";
+import { propose } from "@/lib/compliance/propose";
+import { sweep } from "@/lib/compliance/sweep";
 
 const SEVERITY_LABEL: Record<Severity, string> = { note: "Note", flag: "Flag for review", block: "Block" };
 /** A rule's icon says what it watches, which is faster to scan than its authority. */
@@ -147,7 +149,9 @@ function RuleCard({
 }
 
 export function ComplianceView({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, editRule, connections } = useRelay();
+  const { ruleEdits, editRule, connections, proposalDecisions, decideProposal } = useRelay();
+  const [declining, setDeclining] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const [editing, setEditing] = useState<EditableLayer>(scope.layers[0]);
   const [pending, setPending] = useState<{ ruleId: string; field: string; from: string; to: string } | null>(null);
@@ -170,6 +174,24 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
     const report = coverageFor(advisorId, connections, CONNECTORS_DATA.attestations);
     return queue(runScope(policy, { ...coverageFacts(report), availableConnectors: connected }));
   }, [advisorId, connections, policy, connected]);
+
+  // The proposer reads the standing sweep and the past 90 days of findings.
+  const proposed = useMemo(() => propose(policy, sweep(advisorId, policy, connections).cases, ruleEdits), [policy, advisorId, connections, ruleEdits]);
+  const openProposals = proposed.proposals.filter((p) => !proposalDecisions[p.id]);
+  const accept = (p: (typeof proposed.proposals)[number]) => {
+    editRule({
+      actor: "Compliance Principal, accepting an agent proposal",
+      target: "rule",
+      layer: p.layer,
+      layerId: p.layerId,
+      ruleId: p.ruleId,
+      field: p.field,
+      from: p.from,
+      to: p.to,
+      reason: `Proposed by the rule-change agent (${p.learner}): ${p.rationale} Evidence: ${p.evidence.map((e) => e.id).join(", ")}.`,
+    });
+    decideProposal(p.id, "accepted", "Accepted as proposed.");
+  };
 
   const inForce = policy.rules.filter((r) => r.enabled);
   const commit = () => {
@@ -201,9 +223,67 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
           { value: inForce.length, label: "Rules in force", icon: "rules" },
           { value: agents.filter((a) => a.enabled).length, label: "Agents running", icon: "agent" },
           { value: cases.length, label: "Open cases", icon: "shield", tone: cases.length ? "critical" : "positive" },
-          { value: policy.rejected.length, label: "Refused changes", icon: "block", tone: policy.rejected.length ? "critical" : "plain" },
+          { value: openProposals.length, label: "Proposed changes waiting on a principal", icon: "flag", tone: openProposals.length ? "critical" : "positive" },
         ]}
       />
+
+      <Section title={openProposals.length ? "Proposed by the agent, waiting on a principal" : "Nothing proposed by the agent"}>
+        <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
+          The proposer reads what the other agents keep finding, over the last {proposed.windowDays} days ({proposed.findingsRead} findings) and the
+          current sweep, and drafts a change in the stricter direction only. It applies nothing: accepting one appends an edit to the change log in
+          your name, through the same resolver as any other change.
+        </p>
+        {openProposals.length > 0 && (
+          <CardGrid cols={2}>
+            {openProposals.map((p) => (
+              <Card key={p.id} tone="caution" icon="flag" title={p.ruleTitle} sub={`${p.field} ${p.from} to ${p.to}, at the ${p.layer === "firm" ? "firm" : `${p.layer} ${p.layerId}`} layer`} right={<Pill tone="accent">Proposed</Pill>}>
+                <p className="text-[13px] text-ink">{p.rationale}</p>
+                <ul className="mt-2 space-y-0.5 text-[12px] text-ink-3">
+                  {p.evidence.map((e) => (
+                    <li key={e.id}>{e.label}</li>
+                  ))}
+                </ul>
+                {declining === p.id ? (
+                  <div className="mt-3">
+                    <textarea className={textarea} rows={2} value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder="Why not. One sentence a supervisor can read later." />
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button type="button" className={btnPrimary} disabled={declineReason.trim().length < 8} onClick={() => { decideProposal(p.id, "declined", declineReason.trim()); setDeclining(null); setDeclineReason(""); }}>Record the refusal</button>
+                      <button type="button" className={btn} onClick={() => setDeclining(null)}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button type="button" className={btnPrimary} onClick={() => accept(p)}>Accept, in my name</button>
+                    <button type="button" className={btn} onClick={() => { setDeclining(p.id); setDeclineReason(""); }}>Decline with a reason</button>
+                  </div>
+                )}
+                <p className="mt-2 text-[11px] text-ink-3">Learner: {p.learner}. A proposal the resolver would refuse never reaches this screen.</p>
+              </Card>
+            ))}
+          </CardGrid>
+        )}
+        {proposed.observations.length > 0 && (
+          <div className="mt-4 space-y-3">
+            {proposed.observations.map((o) => (
+              <Card key={o.ruleId} icon="eye" title={`Seen, not proposed: ${o.ruleTitle}`} sub={o.text}>
+                <p className="text-[13px] text-ink-2"><span className="font-medium text-ink">Why the agent will not draft this:</span> {o.refusal}</p>
+                <ul className="mt-2 space-y-0.5 text-[12px] text-ink-3">
+                  {o.evidence.map((e) => (
+                    <li key={e.id}>{e.label}</li>
+                  ))}
+                </ul>
+              </Card>
+            ))}
+          </div>
+        )}
+        {Object.keys(proposalDecisions).length > 0 && (
+          <ul className="mt-3 space-y-0.5 text-[12px] text-ink-3">
+            {Object.entries(proposalDecisions).map(([id, d]) => (
+              <li key={id}>{id}: {d.decision}, &ldquo;{d.reason}&rdquo; (this session)</li>
+            ))}
+          </ul>
+        )}
+      </Section>
 
       {uncovered.length > 0 && (
         <Banner tone="critical" title="A mandatory rule is not watched by any enabled agent">

@@ -23,17 +23,18 @@ export const AREAS: NavArea[] = [
     area: "Today",
     links: [
       { href: "/", label: "Overview", icon: "home" },
+      { href: "/agents", label: "Agents", note: "What ran, what is left for you", icon: "agent" },
       { href: "/triage", label: "Today's list", note: "What needs a decision", icon: "list" },
       { href: "/meetings", label: "Meetings", icon: "calendar" },
       { href: "/follow-ups", label: "Follow-ups", icon: "check" },
-      { href: "/servicing", label: "Service requests", icon: "clock" },
     ],
   },
   {
     area: "Clients",
     links: [
       { href: "/clients", label: "My clients", icon: "people" },
-      { href: `/household/${F.clientId}`, label: "Client picture", icon: "document" },
+      { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
+      { href: "/servicing", label: "Service requests", icon: "clock" },
       { href: `/evidence/${F.opportunityId}`, label: "Why this client", icon: "eye" },
       { href: `/household/${F.clientId}/proposal?opp=${F.opportunityId}`, label: "Options", icon: "filter" },
     ],
@@ -51,6 +52,8 @@ export const AREAS: NavArea[] = [
       { href: "/connectors", label: "Connected channels", note: "What is captured", icon: "social" },
       { href: "/compliance", label: "Rules and agents", icon: "rules" },
       { href: "/compliance/log", label: "Change log", icon: "log" },
+      { href: "/compliance/replay", label: "Replay", note: "Rules as they stood", icon: "replay" },
+      { href: "/documents", label: "Documents", note: "What may be quoted", icon: "library" },
     ],
   },
   {
@@ -80,6 +83,8 @@ export function isActive(href: string, path: string): boolean {
     return base.endsWith("/proposal") ? path.endsWith("/proposal") : !path.endsWith("/proposal");
   }
   if (base.startsWith("/evidence/")) return path.startsWith("/evidence/");
+  if (base === "/research") return path.startsWith("/research");
+  if (base === "/documents") return path.startsWith("/documents");
   if (base === "/meetings") return path.startsWith("/meetings");
   return path === base;
 }
