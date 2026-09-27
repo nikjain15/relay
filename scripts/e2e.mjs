@@ -319,8 +319,10 @@ try {
   await page.keyboard.press("Escape");
   // Options: the figures an advisor compares, and the morning after per row.
   await page.goto(`${BASE}/household/${f.clientId}/proposal?opp=${f.opportunityId}`);
+  // The options render on the client after the query string is read; wait for them rather than race the render.
+  await page.getByText("The economics for the household").first().waitFor({ timeout: 20_000 }).catch(() => {});
   const opt = await page.locator("main").innerText();
-  check("options: after-tax income, cost over the horizon, access and the morning after on every row, and the economics of the selected option", /Income after tax, a year/.test(opt) && /Cost, 3 yrs/.test(opt) && /Morning after/.test(opt) && /(Clean|Review|Blocked)/.test(opt) && /The economics for the household/.test(opt) && /Rate risk/.test(opt) && /Rationale record/.test(opt));
+  check("options: after-tax income, cost over the horizon, access and the morning after on every row, and the economics of the selected option", /Income after tax, a year/.test(opt) && /Cost, 3 yrs/.test(opt) && /Morning after/.test(opt) && /(Clean|Review|Blocked)/.test(opt) && /The economics for the household/.test(opt) && /Rate risk/.test(opt) && /Rationale record/.test(opt), [/Income after tax, a year/, /Cost, 3 yrs/, /Morning after/, /The economics for the household/, /Rate risk/, /Rationale record/].filter((r) => !r.test(opt)).join(" ") + " :: " + opt.slice(0, 300).replace(/\n/g, " "));
   // Sources: three steps, the connector catalogue with what each unlocks, and a gap named.
   await page.goto(`${BASE}/sources`);
   const src = await page.locator("main").innerText();
@@ -445,6 +447,43 @@ try {
     }
     check("one name per page: every heading and tab title match the navigation", bad.length === 0, bad.slice(0, 4).join(" | "));
   }
+
+  // 7b. Agents a reviewer can question: every desk says how it decides and what it is built on,
+  // each rule says where it stands in law, and a new agent is previewed on the book, created and run.
+  await page.goto(BASE + "/agents/communications-surveillance");
+  const desk = await page.locator("main").innerText();
+  check("agents: a desk shows each rule's trigger, status in law and source", /Fires when/.test(desk) && /In law/.test(desk) && /In force/.test(desk) && (await page.locator('main a[href^="https://www.finra.org/"]').count()) > 0);
+  check("agents: rule conditions read in words, not field names", !/recipientCount30d|principalApproved/.test(desk));
+  await page.goto(BASE + "/agents/conduct");
+  check("agents: a rule replaced but not yet in force is stated as not in force", /Not yet in force: The SEC approved FINRA Rule 3290/.test(await page.locator("main").innerText()));
+  await page.goto(BASE + "/agents");
+  await page.getByRole("searchbox", { name: /Search agents/ }).fill("2111");
+  const found2111 = await page.locator("main section[aria-label]").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+  check("agents: search finds a desk by the regulation it applies", found2111.includes("Sales practice") && !found2111.includes("Complaints"), found2111.join(", "));
+  await page.getByRole("searchbox", { name: /Search agents/ }).fill("");
+  await page.getByRole("button", { name: "Create an agent" }).first().click();
+  await page.getByRole("button", { name: /Cash cover below a floor/ }).click();
+  const preview = await page.getByRole("dialog").innerText();
+  check("agents: creating one previews what it would flag on the book first", /Preview on your book/.test(preview) && /Would flag \d+ of \d+ households/.test(preview), preview.slice(0, 120));
+  await page.getByRole("button", { name: "Create and run it" }).click();
+  const made = await page.getByRole("dialog").innerText();
+  const n = Number(/: (\d+) findings?\./.exec(made)?.[1] ?? -1);
+  check("agents: a created agent runs over the existing book and lists what it found", n > 0 && /cash covers \d+ months/i.test(made), made.slice(0, 160));
+  await page.keyboard.press("Escape");
+  check("agents: the new agent is listed under Your agents with its findings", /Your agents \(1\)/.test(await page.locator("main").innerText()));
+
+  // 7c. Lists an advisor scans: search, filter and sort, and the firm's workstation first among CRMs.
+  await page.goto(BASE + "/clients");
+  await page.getByRole("searchbox", { name: /Search households/ }).fill("founder");
+  const hh = await page.locator("main li[id^='hh-']").count();
+  check("households: search narrows the list", hh >= 1 && hh < 7, `${hh} shown`);
+  await page.getByRole("searchbox", { name: /Search households/ }).fill("");
+  await page.getByRole("button", { name: /^Meeting today/ }).click();
+  const mt = await page.locator("main li[id^='hh-']").count();
+  check("households: a filter shows only what it names, with its count", mt >= 1 && mt < 7, `${mt} shown`);
+  await page.goto(BASE + "/sources");
+  const firstCrm = await page.locator("#channel-crm p.font-medium").first().innerText();
+  check("sources: the firm's workstation is the first CRM, then the market leaders", /^UBS advisor workstation/.test(firstCrm), firstCrm);
 
   // 8. Copy: no firm branding in product copy.
   await page.goto(BASE + "/triage");

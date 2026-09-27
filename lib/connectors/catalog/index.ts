@@ -26,28 +26,42 @@ import { blackDiamond } from "./black-diamond";
 import { emoney } from "./emoney";
 import { moneyguidepro } from "./moneyguidepro";
 
+// Within each kind the order is the order a connector is shown in: the firm's
+// own workstation first, then the market leaders, largest first, then the
+// generic source a rule names. Sources renders them in exactly this order.
 export const CATALOG: ConnectorDefinition[] = [
+  // CRM
+  ubsWorkstation,
+  salesforceFsc,
+  redtail,
+  wealthbox,
+  dynamics365,
+  hubspot,
+  // Custodian
+  schwabAdvisorCenter,
+  fidelityWealthscape,
+  pershingNetx360,
+  custodianFeed,
+  // Portfolio and reporting
+  orion,
+  tamarac,
+  blackDiamond,
+  // Planning
+  emoney,
+  moneyguidepro,
+  // Channels
   microsoft365,
   zoom,
   compliantTexting,
   teamsChat,
   whatsapp,
   linkedin,
-  salesforceFsc,
-  custodianFeed,
   archive,
   esign,
-  redtail,
-  wealthbox,
-  dynamics365,
-  hubspot,
-  ubsWorkstation,
-  schwabAdvisorCenter,
-  fidelityWealthscape,
-  pershingNetx360,
-  orion,
-  tamarac,
-  blackDiamond,
-  emoney,
-  moneyguidepro,
 ];
+
+/** Where a connector sits in the catalogue's order; Sources sorts by it. */
+export const catalogRank = (id: string): number => {
+  const i = CATALOG.findIndex((c) => c.id === id);
+  return i < 0 ? CATALOG.length : i;
+};

@@ -15,7 +15,8 @@ import { Banner, Brief, Card, Legend, Mark, More, PageTitle, Pill, Section, Tabl
 import { CHANNEL_ICON, Icon } from "@/components/icons";
 import { LiveRun } from "@/components/live-run";
 import { useIngest } from "@/components/ingest";
-import { CATALOG } from "@/lib/connectors/catalog";
+import { CATALOG, catalogRank } from "@/lib/connectors/catalog";
+import { ListControls, matches, useList } from "@/components/list-controls";
 import { coverageFor, type ChannelCoverage } from "@/lib/connectors/coverage";
 import type { ChannelKind, ConnectorDefinition } from "@/lib/connectors/types";
 import { rulesFedBy } from "@/lib/compliance/sources";
@@ -62,7 +63,7 @@ function ConnectorRow({ c, advisorId }: { c: ConnectorDefinition; advisorId: str
           {feeds.length ? <>Unlocks {feeds.length} rule{feeds.length === 1 ? "" : "s"} on {desks.join(", ")}.</> : "Adds records the research and discovery agents read."}
         </p>
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2 max-sm:w-full max-sm:pl-11">
         {status === "connected" && <span className="flex items-center gap-1 text-meta text-positive"><Icon name="check" size={16} />Connected</span>}
         {status === "degraded" && <span className="flex items-center gap-1 text-meta text-critical"><Icon name="alert" size={16} />Degraded</span>}
         <button type="button" className={status === "connected" ? btn : btnPrimary} onClick={() => setConnectorStatus(advisorId, c.id, status === "connected" ? "available" : "connected")}>
@@ -78,7 +79,6 @@ export function SourcesView() {
   const advisorId = useRelay().advisorId;
   const { dataset, addBatch, clearDataset, book, connections } = useRelay();
   const [dragOver, setDragOver] = useState(false);
-  const [showAll, setShowAll] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const { onFiles, busy, ctx } = useIngest();
   const advisor = ADVISORS_DATA.find((a) => a.id === advisorId);
@@ -87,7 +87,26 @@ export function SourcesView() {
   const connectedCount = connections.filter((c) => c.advisorId === advisorId && c.status === "connected").length;
   const byChannel = useMemo(() => ORDER.map((k) => report.channels.find((c) => c.channel === k)!).filter(Boolean), [report]);
   const inUse = byChannel.filter((c) => c.attested || c.status === "covered");
-  const shown = showAll ? byChannel : inUse;
+  type Ch = (typeof byChannel)[number];
+  const connectorsOf = (ch: Ch) => [...ch.connected, ...ch.degraded, ...ch.available].sort((a, b) => catalogRank(a.id) - catalogRank(b.id));
+  const DESK: ChannelKind[] = ["crm", "custodian", "portfolio", "planning"];
+  const list = useList<Ch>(byChannel, {
+    text: (ch) => `${CHANNEL_LABEL[ch.channel]} ${connectorsOf(ch).map((c) => `${c.name} ${c.vendor}`).join(" ")}`,
+    initialFilter: "inuse",
+    filters: [
+      { id: "inuse", label: "You use", test: (ch) => ch.attested || ch.status === "covered" },
+      { id: "gaps", label: "Gaps", test: (ch) => ch.status === "gap" || ch.status === "partial" },
+      { id: "tools", label: "Desk tools", test: (ch) => DESK.includes(ch.channel) },
+      { id: "channels", label: "Client channels", test: (ch) => !DESK.includes(ch.channel) },
+    ],
+  });
+  // A search for a vendor shows that vendor's row, not the whole channel it sits in.
+  const rowsOf = (ch: Ch) => {
+    const all = connectorsOf(ch);
+    if (!list.query.trim() || matches(CHANNEL_LABEL[ch.channel], list.query)) return all;
+    const hit = all.filter((c) => matches(`${c.name} ${c.vendor} ${c.summary}`, list.query));
+    return hit.length ? hit : all;
+  };
 
   const generate = useCallback((n: number) => {
     const t0 = performance.now();
@@ -220,22 +239,21 @@ export function SourcesView() {
             Completeness reads {Math.round(report.completeness * 100)} percent, which looks passable. It is not: business conducted on an uncaptured channel cannot be produced on request.
           </Banner>
         )}
+        <ListControls label="Tools and channels" placeholder="Search a tool or vendor, for example Salesforce" noun={["channel", "channels"]} list={list} />
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {shown.map((ch) => (
+          {list.shown.map((ch) => (
             <div key={ch.channel} id={`channel-${ch.channel}`} className="scroll-mt-20">
               <Card icon={CHANNEL_ICON[ch.channel]} title={CHANNEL_LABEL[ch.channel]} sub={ch.finding} tone={ch.status === "gap" || ch.status === "partial" ? "critical" : "plain"} right={<Pill tone={STATUS[ch.status].tone}>{STATUS[ch.status].label}</Pill>}>
                 {ch.advisorNote && <p className="mb-2 border-l-2 border-line-strong pl-3 text-body italic text-ink-2">{ch.advisorNote}</p>}
                 {ch.exposure.length > 0 && <p className="mb-2 text-meta text-ink-2"><span className="font-medium text-ink">Exposure:</span> {ch.exposure.join("; ")}</p>}
                 <div>
-                  {[...ch.connected, ...ch.degraded, ...ch.available].map((c) => <ConnectorRow key={c.id} c={c} advisorId={advisorId} />)}
+                  {rowsOf(ch).map((c) => <ConnectorRow key={c.id} c={c} advisorId={advisorId} />)}
                 </div>
               </Card>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-meta">
-          <button type="button" className={btn} onClick={() => setShowAll((v) => !v)}>{showAll ? "Show only the channels you use" : `Show every channel and connector (${CATALOG.length} in the catalogue)`}</button>
-        </p>
+        <p className="mt-3 text-meta text-ink-3">{CATALOG.length} connectors in the catalogue. Within each kind: the firm&apos;s own workstation first, then the market leaders.</p>
       </Section>
 
       <Section title="3. Documents and policies">
