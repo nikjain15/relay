@@ -20,7 +20,6 @@ import { Bars, Meter } from "@/components/charts";
 import { briefAll } from "@/lib/research/brief";
 import { corpusStates } from "@/lib/evidence/corpus";
 import { CLIENTS, PROSPECTS, SERVICE_REQUESTS, CONNECTORS_DATA } from "@/lib/data";
-import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { openItems } from "@/lib/onboarding/status";
 import { triage } from "@/lib/servicing/classify";
 import { todaysMeetings } from "@/lib/meetings/prep";
@@ -37,10 +36,10 @@ import { agentStatuses, activity } from "@/lib/compliance/activity";
 import { btn, btnPrimary } from "@/components/ui";
 
 export function Overview({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, decideAction } = useRelay();
+  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, decideAction, book } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
-  const found = useMemo(() => sweep(advisorId, policy, connections), [advisorId, policy, connections]);
+  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
   const coverage = useMemo(() => coverageFor(advisorId, connections, CONNECTORS_DATA.attestations), [advisorId, connections]);
   const agents = useMemo(() => agentsFrom(ruleEdits).filter((a) => a.enabled), [ruleEdits]);
 
@@ -55,10 +54,10 @@ export function Overview({ advisorId }: { advisorId: string }) {
   const service = triage(SERVICE_REQUESTS);
   const paperwork = CLIENTS.flatMap(openItems);
   const escalated = paperwork.filter((w) => w.status === "escalated");
-  const flagged = useMemo(() => rank(OPPORTUNITIES, new Set(Object.keys(dismissed))), [dismissed]);
+  const flagged = useMemo(() => rank(book.opportunities.filter((o) => book.clients.find((c) => c.id === o.householdId)?.advisorId === advisorId), new Set(Object.keys(dismissed))), [dismissed, book, advisorId]);
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
   const byAgent = Object.entries(openCases.reduce<Record<string, number>>((acc, c) => ((acc[c.agentName] = (acc[c.agentName] ?? 0) + 1), acc), {})).sort((a, b) => b[1] - a[1]);
-  const briefings = useMemo(() => briefAll(connections).filter((b) => CLIENTS.find((c) => c.id === b.clientId)?.advisorId === advisorId), [connections, advisorId]);
+  const briefings = useMemo(() => briefAll(connections, book.clients).filter((b) => book.clients.find((c) => c.id === b.clientId)?.advisorId === advisorId), [connections, advisorId, book.clients]);
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
   const corpus = corpusStates();
   const staleDocs = corpus.filter((d) => d.usable && d.freshness === "stale").length;

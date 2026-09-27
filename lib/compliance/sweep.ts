@@ -10,6 +10,7 @@
 //
 // Deterministic. No model client may be imported here.
 import type { ConnectionState } from "@/lib/connectors/types";
+import type { ClientFile } from "@/lib/types";
 import { coverageFor } from "@/lib/connectors/coverage";
 import type { Case } from "@/lib/compliance/agents";
 import { queue, runScope } from "@/lib/compliance/agents";
@@ -34,21 +35,22 @@ export function connectedIds(advisorId: string, states: ConnectionState[]): stri
   return states.filter((s) => s.advisorId === advisorId && s.status === "connected").map((s) => s.connectorId);
 }
 
-export function sweep(advisorId: string, policy: ResolvedPolicy, states: ConnectionState[]): Sweep {
+/** `clients` defaults to the shipped book; a session dataset (imported files) is passed in by the screens that hold one. */
+export function sweep(advisorId: string, policy: ResolvedPolicy, states: ConnectionState[], clients: ClientFile[] = CLIENTS): Sweep {
   const connected = connectedIds(advisorId, states);
   const report = coverageFor(advisorId, states, CONNECTORS_DATA.attestations);
   const custodianConnected = connected.includes("custodian-feed");
 
   const runs = runScope(policy, { ...coverageFacts(report), availableConnectors: connected });
 
-  const mine = CLIENTS.filter((c) => c.advisorId === advisorId);
+  const mine = clients.filter((c) => c.advisorId === advisorId);
   for (const client of mine) {
-    const inputs = ACCOUNT_INPUTS.accounts.find((a) => a.clientId === client.id);
+    const inputs = client.supervisory ?? ACCOUNT_INPUTS.accounts.find((a) => a.clientId === client.id);
     const facts = accountFacts({
       client,
       requests: SERVICE_REQUESTS.filter((r) => r.clientId === client.id),
       custodianConnected,
-      history: SNAPSHOTS.series.find((x) => x.clientId === client.id)?.concentrationPct,
+      history: client.valuationHistory?.concentrationPct ?? SNAPSHOTS.series.find((x) => x.clientId === client.id)?.concentrationPct,
       trustedContactOnFile: inputs?.trustedContactOnFile ?? false,
       complaintLogged: inputs?.complaintLogged ?? false,
       unusualDisbursement: inputs?.unusualDisbursement,
@@ -61,10 +63,12 @@ export function sweep(advisorId: string, policy: ResolvedPolicy, states: Connect
   // both directions, against the communication rules. A message whose source
   // is degraded is not silently skipped; it is counted as not swept.
   const obaOnFile = ADVISOR_INPUTS.advisors.find((a) => a.advisorId === advisorId)?.obaOnFile ?? false;
-  const messages = MESSAGES.messages.filter((m) => m.advisorId === advisorId);
+  const messages = clients === CLIENTS
+    ? MESSAGES.messages.filter((m) => m.advisorId === advisorId)
+    : mine.flatMap((c) => (c.messages ?? []).map((m) => ({ ...m, advisorId: c.advisorId, clientId: c.id })));
   const swept = messages.filter((m) => connected.includes(m.connectorId));
   for (const m of swept) {
-    const inputs = ACCOUNT_INPUTS.accounts.find((a) => a.clientId === m.clientId);
+    const inputs = mine.find((c) => c.id === m.clientId)?.supervisory;
     runs.push(...runScope(policy, {
       ...messageFacts(m, { obaOnFile, complaintLogged: inputs?.complaintLogged ?? false, channelApproved: true }),
       availableConnectors: connected,

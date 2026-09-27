@@ -65,6 +65,7 @@ All in `components/ui.tsx`. Screens compose these; they do not restyle them.
 | `Row`, `Card`, `CardGrid`, `StatRow`, `Banner`, `More` | The layout primitives of the agent-first rebuild (§7) |
 | `Timeline` | A run of events, most recent first: time, icon, one line, one line of context |
 | `StateDot` | One glance: a dot and the word for it (clear, needs you, blocking, off). Never the dot alone |
+| `LiveRun` | Every agent over the book with a progress bar, a timeline of steps with real timings, and a summary. The only pacing is a yield to the screen between batches |
 | `th`, `td` | Table cells: light headers, hairline rows, 12px vertical padding |
 
 **Layout:** a 56px top bar (product name left, the prototype disclosure right), a 240px navigation rail

@@ -9,10 +9,10 @@
 // (PRD S4.1). Relay does not substitute its own citation for the record's.
 //
 // Deterministic. No model client and no profile may be imported here.
-import type { Opportunity, Passage } from "@/lib/types";
+import type { Doc, Opportunity, Passage } from "@/lib/types";
 import { CORPUS } from "@/lib/fixtures/corpus";
 import { POLICY } from "@/lib/data/policy";
-import { search, surfaceForms, tokenize, type Hit } from "@/lib/evidence/search";
+import { search, surfaceForms, tokenize, buildIndex, type Hit } from "@/lib/evidence/search";
 import { conflictsAmong, docState, type Conflict } from "@/lib/evidence/corpus";
 
 export interface RankedPassage extends Passage {
@@ -60,11 +60,12 @@ export function queryFor(opp: Opportunity): { text: string; terms: string[] } {
   return { text, terms: [...new Set(tokenize(text))].map((t) => surface.get(t) ?? t) };
 }
 
-export function retrieve(opp: Opportunity): EvidenceResult {
+/** `docs` defaults to the shipped corpus; a session dataset (imported documents) is passed in by the screens that hold one. */
+export function retrieve(opp: Opportunity, docs: Doc[] = CORPUS): EvidenceResult {
   const query = queryFor(opp);
-  const missing = opp.evidenceDocIds.filter((id) => !CORPUS.some((d) => d.id === id));
-  const citedDocs = CORPUS.filter((d) => opp.evidenceDocIds.includes(d.id));
-  const result = search(query.text, { cited: opp.evidenceDocIds });
+  const missing = opp.evidenceDocIds.filter((id) => !docs.some((d) => d.id === id));
+  const citedDocs = docs.filter((d) => opp.evidenceDocIds.includes(d.id));
+  const result = search(query.text, { cited: opp.evidenceDocIds, index: docs === CORPUS ? undefined : buildIndex(docs) });
   const { topK } = POLICY.retrieval;
 
   const usableCited = citedDocs.filter((d) => docState(d).usable);
@@ -88,6 +89,6 @@ export function retrieve(opp: Opportunity): EvidenceResult {
   // claim is disputed by another current document is disputed whether or not
   // that document shares the opportunity's words.
   const inView = new Set([...cited, ...related].map((p) => p.docId));
-  const conflicts = conflictsAmong(CORPUS).filter((c) => c.sides.some((s) => inView.has(s.docId)));
+  const conflicts = conflictsAmong(docs).filter((c) => c.sides.some((s) => inView.has(s.docId)));
   return { ...common, refused: false, passages: cited, related, conflicts };
 }

@@ -15,7 +15,8 @@
     "data:check": "vite-node --config vitest.config.ts scripts/build-data.ts -- --check && vite-node --config vitest.config.ts scripts/build-walkthrough.ts -- --check",
     "e2e": "node scripts/e2e.mjs",
     "stress": "vite-node --config vitest.config.ts scripts/stress.tsx",
-    "start": "next start"
+    "start": "next start",
+    "samples:build": "vite-node --config vitest.config.ts scripts/build-samples.ts"
   },
   "dependencies": {
     "next": "15.5.25",

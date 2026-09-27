@@ -4,7 +4,7 @@ import { BASELINE, resolvePolicy } from "@/lib/compliance/policy";
 import { accountFacts, communicationFacts, coverageFacts, proposalFacts, INFERRED } from "@/lib/compliance/facts";
 import { agentsFrom, appendEdit, changeLog, editsAsOf, policyFrom, SEED_EDITS, toLayers, type RuleEdit } from "@/lib/compliance/store";
 import { coverageFor } from "@/lib/connectors/coverage";
-import { sweep, connectedIds } from "@/lib/compliance/sweep";
+import { sweep } from "@/lib/compliance/sweep";
 import { ADVISORS_DATA, CLIENTS, CONNECTORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 
 const ALL = ["microsoft-365", "archive", "custodian-feed", "salesforce-fsc", "zoom", "compliant-texting", "esign"];

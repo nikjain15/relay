@@ -20,14 +20,15 @@ import { agentStatuses, activity } from "@/lib/compliance/activity";
 import { propose } from "@/lib/compliance/propose";
 import { briefAll, PROBE_IDS } from "@/lib/research/brief";
 import { corpusStates, corpusConflicts } from "@/lib/evidence/corpus";
-import { CLIENTS, ADVISORS_DATA } from "@/lib/data";
+import { ADVISORS_DATA } from "@/lib/data";
+import { discover, EXTRACTORS } from "@/lib/discovery/discover";
 
 export function AgentsView({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, actionDecisions, proposalDecisions } = useRelay();
+  const { ruleEdits, connections, caseDispositions, actionDecisions, proposalDecisions, book, discoveryDecisions } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
   const agents = useMemo(() => agentsFrom(ruleEdits), [ruleEdits]);
-  const found = useMemo(() => sweep(advisorId, policy, connections), [advisorId, policy, connections]);
+  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
   const open = found.cases.filter((c) => !caseDispositions[c.id]);
   const actions = useMemo(() => prepareAll(open, policy.rules), [open, policy]);
   const pendingActions = actions.filter((a) => !actionDecisions[a.id]);
@@ -35,7 +36,9 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
   const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, open, connected), [agents, policy, found, actions, open, connected]);
   const proposals = useMemo(() => propose(policy, open, ruleEdits), [policy, open, ruleEdits]);
   const openProposals = proposals.proposals.filter((p) => !proposalDecisions[p.id]);
-  const briefings = useMemo(() => briefAll(connections).filter((b) => CLIENTS.find((c) => c.id === b.clientId)?.advisorId === advisorId), [connections, advisorId]);
+  const briefings = useMemo(() => briefAll(connections, book.clients).filter((b) => book.clients.find((c) => c.id === b.clientId)?.advisorId === advisorId), [connections, advisorId, book.clients]);
+  const discoveries = useMemo(() => discover(book.clients, book.documents).filter((k) => k.advisorId === advisorId), [book, advisorId]);
+  const openDiscoveries = discoveries.filter((k) => !discoveryDecisions[k.id]);
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
   const corpus = corpusStates();
   const stale = corpus.filter((d) => d.usable && d.freshness === "stale").length;
@@ -45,6 +48,7 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
   const feed = activity(statuses, [
     { at: "day 0, 06:30", icon: "briefing", title: `Research agent briefed ${briefings.length} households`, meta: `${unknowns} things it could not establish, each with why.`, tone: unknowns ? "caution" : "positive", href: "/research" },
     { at: "day 0, 06:05", icon: "library", title: `Retrieval reviewed ${corpus.length} documents`, meta: `${stale} past review date, ${conflicts} open disagreement${conflicts === 1 ? "" : "s"}.`, tone: stale || conflicts ? "caution" : "positive", href: "/documents" },
+    { at: "day 0, 06:40", icon: "search", title: `Discovery read ${book.clients.reduce((n, c) => n + (c.messages?.length ?? 0) + c.notes.length + c.contactHistory.length, 0)} records for what clients said`, meta: `${discoveries.length} candidate opportunities, each cited to its sentence; ${openDiscoveries.length} waiting on a person.`, tone: openDiscoveries.length ? "caution" : "positive", href: "/discovery" },
     { at: "day 0, 06:35", icon: "flag", title: `Proposer read ${proposals.findingsRead} findings from ${proposals.windowDays} days`, meta: `${openProposals.length} rule change${openProposals.length === 1 ? "" : "s"} waiting on a principal, ${proposals.observations.length} seen and not proposed.`, tone: openProposals.length ? "caution" : "positive", href: "/compliance" },
   ]);
 
@@ -54,7 +58,7 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
 
       <StatRow
         items={[
-          { value: statuses.filter((s) => s.agent.enabled).length + 3, label: "Agents running", icon: "agent" },
+          { value: statuses.filter((s) => s.agent.enabled).length + 4, label: "Agents running", icon: "agent" },
           { value: open.length, label: "Findings open", icon: "shield", tone: open.some((c) => c.severity === "block" && c.reason === "fired") ? "critical" : open.length ? "plain" : "positive" },
           { value: pendingActions.length, label: "Actions prepared, waiting on you", icon: "check", tone: pendingActions.length ? "plain" : "positive" },
           { value: openProposals.length, label: "Rule changes proposed", icon: "flag", tone: openProposals.length ? "plain" : "positive" },
@@ -80,7 +84,11 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
       </Section>
 
       <Section title="The other agents">
-        <CardGrid cols={3}>
+        <CardGrid cols={4}>
+          <Card icon="search" title="Discovery" sub={`Over every message, note and contact summary. ${EXTRACTORS.length} event kinds.`} right={<StateDot state={openDiscoveries.length ? "attention" : "clear"} />}>
+            <p className="text-[13px] text-ink">{openDiscoveries.length} candidate{openDiscoveries.length === 1 ? "" : "s"} waiting, {discoveries.length - openDiscoveries.length} decided.</p>
+            <p className="mt-2 text-[12px]"><Link href="/discovery" className="underline">Discoveries</Link></p>
+          </Card>
           <Card icon="briefing" title="Research" sub="Before each conversation. Twelve probes." right={<StateDot state={unknowns ? "attention" : "clear"} />}>
             <p className="text-[13px] text-ink">{briefings.length} briefings, {unknowns} things not established.</p>
             <p className="mt-1 text-[12px] text-ink-3">{PROBE_IDS.length} probes: {PROBE_IDS.slice(0, 5).join(", ")}, and more.</p>

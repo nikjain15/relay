@@ -31,15 +31,15 @@ import { APP } from "@/lib/data/policy";
  * space it occupies.
  */
 function AgentStatus() {
-  const { ruleEdits, connections, caseDispositions, actionDecisions } = useRelay();
+  const { ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
   const { open, prepared } = useMemo(() => {
     const advisorId = APP.defaultAdvisorId;
     const policy = policyFrom(ruleEdits, scopeFor(advisorId));
-    const found = sweep(advisorId, policy, connections);
+    const found = sweep(advisorId, policy, connections, book.clients);
     const open = found.cases.filter((c) => !caseDispositions[c.id]);
     const prepared = prepareAll(open, policy.rules).filter((a) => !actionDecisions[a.id]).length;
     return { open, prepared };
-  }, [ruleEdits, connections, caseDispositions, actionDecisions]);
+  }, [ruleEdits, connections, caseDispositions, actionDecisions, book.clients]);
   const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired").length;
 
   return (

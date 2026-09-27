@@ -8,8 +8,8 @@
 
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tests-254%20passing-brightgreen" alt="Tests: 254 passing">
-  <img src="https://img.shields.io/badge/browser%20checks-52%20passing-brightgreen" alt="Browser checks: 52 passing">
+  <img src="https://img.shields.io/badge/tests-271%20passing-brightgreen" alt="Tests: 271 passing">
+  <img src="https://img.shields.io/badge/browser%20checks-56%20passing-brightgreen" alt="Browser checks: 56 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
   <img src="https://img.shields.io/badge/data-synthetic%20only-lightgrey" alt="Data: synthetic only">
@@ -23,7 +23,7 @@
 
 **A working prototype of the step after an insight engine.** A wealth manager's AI can flag twenty
 million client opportunities a year; what it cannot do is turn one into a documented, approved,
-client-facing action. Relay is that path, and the agent layer around it: eight agents that read the
+client-facing action. Relay is that path, and the agent layer around it: nine agents that read the
 advisor's whole book on a cadence, cite every claim, prepare every action short of the human gate,
 and hand each decision to a person.
 
@@ -43,6 +43,11 @@ composite is in [`docs/PERSONAS.md`](docs/PERSONAS.md).
 | **Research** | The client file, the service queue, the firm's record, the channels, the corpus | A briefing: what changed, what is observed, what is inferred, what could not be established |
 | **Retrieval** | The document corpus, on every opportunity | Cited passages with a reason per score, or a refusal that names what is missing |
 | **Rule-change proposer** | Ninety days of findings | Tighten-only rule changes, with the findings behind each |
+| **Discovery** | What clients said, in messages, notes and contact summaries | Candidate opportunities cited to the sentence, with a confidence and the documents each would cite |
+
+**Connect your own book.** Drop a `.csv` or `.xlsx` of households, a message export or a document on
+`/data`; it is read in the browser with no dependency and no upload, every row is held to the same
+validator as a shipped file, and every agent runs over it live with the milliseconds each step took.
 
 Every one of them detects, assembles, drafts and prepares on its own. None of them sends, schedules,
 writes to a system of record, clears a finding, or loosens a rule.
@@ -89,21 +94,24 @@ a one-sided supersession chain, a stored valuation for today, a message on an un
 | `lib/compliance/` | Rule DSL, tighten-only policy resolution, the engine, agents, the sweep, prepared actions, the proposer, replay, the change log |
 | `lib/evidence/` | Corpus state, lexical search with a reason per score, retrieval and the refusal |
 | `lib/research/` | The research agent's probes and the briefing they assemble |
+| `lib/discovery/` | The discovery agent: extractors over what clients said |
+| `lib/import/` | CSV and XLSX readers, the row mapper, the sample book generator |
 | `lib/connectors/` | Read-only connector catalog and the coverage model |
 | `lib/constraints/`, `lib/ranking/`, `lib/recipients/`, `lib/policy/` | The deterministic engines behind proposals, today's list, the audience count and the draft checks |
 | `lib/profile/`, `lib/learning/` | Four-layer personalization and the learning loop that proposes and never decides |
 | `data/` | Every record, one file each, plus firm policy, the rule set and the generated bundle |
 | `tests/` | Unit tests and the invariant suite |
-| `scripts/` | The data bundler, the walkthrough builder, the browser suite and the stress run |
+| `scripts/` | The data bundler, the sample-file builder, the walkthrough builder, the browser suite and the stress run |
+| `public/samples/` | Sample files to connect: a book, a message export, a document |
 | `docs/` | Architecture, build spec, design system, personas, the walkthrough mockup |
 
 ## Run it
 
 ```bash
 npm ci
-npm run check                    # typecheck, lint, import invariants, data check, 254 tests
+npm run check                    # typecheck, lint, import invariants, data check, 271 tests
 npm run dev                      # http://localhost:3000
-npx next build && npm run e2e    # 52 browser checks at 1440, 1280, 1024, 768 and 390
+npx next build && npm run e2e    # 56 browser checks at 1440, 1280, 1024, 768 and 390
 npm run stress                   # 1,000 clients, 50 advisors, 2,000 messages, 20,000 events, in memory
 ```
 

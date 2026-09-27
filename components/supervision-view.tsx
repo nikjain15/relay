@@ -54,13 +54,13 @@ function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?:
 }
 
 export function SupervisionView({ advisorId }: { advisorId: string }) {
-  const { queue, dispose, ruleEdits, connections, caseDispositions, disposeCase, actionDecisions, decideAction } = useRelay();
+  const { queue, dispose, ruleEdits, connections, caseDispositions, disposeCase, actionDecisions, decideAction, book } = useRelay();
   const [tab, setTab] = useState<"findings" | "drafts">("findings");
   const [comment, setComment] = useState<Record<string, string>>({});
 
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
-  const found = useMemo(() => sweep(advisorId, policy, connections), [advisorId, policy, connections]);
+  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
 
   const open = found.cases.filter((c) => !caseDispositions[c.id]);
   const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired");
