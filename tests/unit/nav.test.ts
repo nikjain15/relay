@@ -52,10 +52,10 @@ describe("navigation", () => {
     }
   });
 
-  it("holds the day's work first and stays small enough to scan", () => {
-    expect(AREAS[0].area).toBe("Today");
+  it("holds the agents first and stays small enough to scan", () => {
+    expect(AREAS[0].area).toBe("Agents");
     expect(AREAS).toHaveLength(6);
-    for (const a of AREAS) expect(a.links.length, a.area).toBeLessThanOrEqual(5);
+    for (const a of AREAS) expect(a.links.length, a.area).toBeLessThanOrEqual(6);
   });
 
   it("marks exactly one link active per route", () => {
@@ -71,11 +71,11 @@ describe("navigation", () => {
   });
 
   it("opens on the area the route belongs to", () => {
-    expect(currentArea("/")).toBe("Today");
-    expect(currentArea("/connectors")).toBe("Compliance");
-    expect(currentArea("/compliance/log")).toBe("Compliance");
-    expect(currentArea("/supervision")).toBe("Communications");
+    expect(currentArea("/")).toBe("Agents");
+    expect(currentArea("/connectors")).toBe("Rules");
+    expect(currentArea("/compliance/log")).toBe("Rules");
+    expect(currentArea("/supervision")).toBe("Decisions");
     // An unknown route falls back to the first area rather than nothing.
-    expect(currentArea("/nowhere")).toBe("Today");
+    expect(currentArea("/nowhere")).toBe("Agents");
   });
 });

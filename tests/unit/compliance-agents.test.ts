@@ -102,8 +102,8 @@ describe("agents", () => {
   });
 
   it("route an inferred clear to a human as low confidence, not as a finding", () => {
-    // The complaint rule lives with communications surveillance, which sweeps the captured corpus in both directions.
-    const agent = AGENTS.find((a) => a.id === "communications-surveillance")!;
+    // The complaint rule lives with the complaints desk, which sweeps the captured corpus in both directions.
+    const agent = AGENTS.find((a) => a.id === "complaints")!;
     const run = runAgent(agent, policy, {
       scope: "communication",
       subject: "hh-x",
@@ -184,21 +184,24 @@ describe("the change log is the state", () => {
   it("agent edits fold the same way", () => {
     const edits: RuleEdit[] = [
       { id: "a-1", at: "2026-09-25T10:00:00Z", actor: "T", target: "agent", layer: "firm", layerId: "firm", agentId: "conduct", field: "enabled", from: "true", to: "false", reason: "Cycle closed" },
-      { id: "a-2", at: "2026-09-25T10:05:00Z", actor: "T", target: "agent", layer: "firm", layerId: "firm", agentId: "client-protection", field: "addRule", from: "", to: "reg-s-p-safeguards", reason: "Own the privacy rule here" },
+      { id: "a-2", at: "2026-09-25T10:05:00Z", actor: "T", target: "agent", layer: "firm", layerId: "firm", agentId: "client-protection", field: "addRule", from: "", to: "finra-2111-suitability", reason: "Own the concentration rule here too" },
     ];
     const agents = agentsFrom(edits);
     expect(agents.find((a) => a.id === "conduct")!.enabled).toBe(false);
-    expect(agents.find((a) => a.id === "client-protection")!.ruleIds).toContain("reg-s-p-safeguards");
+    expect(agents.find((a) => a.id === "client-protection")!.ruleIds).toContain("finra-2111-suitability");
     // Folding must not mutate the catalog it reads.
-    expect(AGENTS.find((a) => a.id === "client-protection")!.ruleIds).not.toContain("reg-s-p-safeguards");
+    expect(AGENTS.find((a) => a.id === "client-protection")!.ruleIds).not.toContain("finra-2111-suitability");
   });
 
   it("the console's log view marks the refused entry", () => {
     const rows = changeLog(SEED_EDITS);
     expect(rows).toHaveLength(SEED_EDITS.length);
-    expect(rows[0].edit.id).toBe("e-004");
+    expect(rows[0].edit.id).toBe(SEED_EDITS[SEED_EDITS.length - 1].id);
     expect(rows.find((r) => r.edit.id === "e-004")!.rejected).toBe(true);
     expect(rows.find((r) => r.edit.id === "e-003")!.rejected).toBe(false);
+    // The advisor who tried to switch the complaints desk off is refused, and the log says so.
+    expect(rows.find((r) => r.edit.id === "e-006")!.rejected).toBe(true);
+    expect(rows.find((r) => r.edit.id === "e-005")!.rejected).toBe(false);
   });
 
   it("layers fold in order, firm before segment before advisor", () => {

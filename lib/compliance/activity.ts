@@ -47,6 +47,9 @@ const ICON: Record<string, IconName> = {
   "recommendation-evidence": "document",
   "client-protection": "people",
   "conduct": "flag",
+  "marketing-review": "quote",
+  "complaints": "alert",
+  "sales-practice": "chart",
 };
 
 export function agentStatuses(agents: AgentDefinition[], policy: ResolvedPolicy, found: Sweep, actions: PreparedAction[], open: Case[], connected: string[]): AgentStatus[] {

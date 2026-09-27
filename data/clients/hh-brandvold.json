@@ -174,5 +174,26 @@
     "values": {
       "contact.window": "Evenings UK time, 5 to 7pm"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-brandvold-1",
+      "kind": "press",
+      "day": -18,
+      "headline": "Brandvold appointed regional head, based in Zurich from next quarter",
+      "excerpt": "The employer's announcement names the role and a Zurich base.",
+      "source": "Employer announcement",
+      "ref": "public://press/brandvold-zurich"
+    },
+    {
+      "id": "pr-brandvold-2",
+      "kind": "registry",
+      "day": -400,
+      "headline": "UK pension scheme membership listed",
+      "excerpt": "A scheme register lists a deferred member of that name.",
+      "source": "Pension scheme register",
+      "ref": "public://registry/uk-pension-brandvold",
+      "matches": "opportunities[0]"
+    }
+  ]
 }

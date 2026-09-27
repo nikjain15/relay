@@ -207,5 +207,16 @@
       "contact.channel": "call",
       "contact.window": "Tuesdays, with the trustee's daughter joining"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-okafor-lind-1",
+      "kind": "court",
+      "day": -30,
+      "headline": "Trust amendment recorded",
+      "excerpt": "A restated trust instrument was recorded on day -30; the recording names a successor trustee.",
+      "source": "County recorder",
+      "ref": "public://court/trust-amendment-okafor-lind"
+    }
+  ]
 }

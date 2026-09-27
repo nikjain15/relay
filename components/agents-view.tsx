@@ -27,8 +27,8 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
   const { ruleEdits, connections, caseDispositions, actionDecisions, proposalDecisions, book, discoveryDecisions } = useRelay();
   const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
   const policy = useMemo(() => policyFrom(ruleEdits, scope), [ruleEdits, scope]);
-  const agents = useMemo(() => agentsFrom(ruleEdits), [ruleEdits]);
-  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
+  const agents = useMemo(() => agentsFrom(ruleEdits, undefined, scope), [ruleEdits, scope]);
+  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients, agents), [advisorId, policy, connections, book.clients, agents]);
   const open = found.cases.filter((c) => !caseDispositions[c.id]);
   const actions = useMemo(() => prepareAll(open, policy.rules), [open, policy]);
   const pendingActions = actions.filter((a) => !actionDecisions[a.id]);

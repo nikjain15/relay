@@ -205,5 +205,16 @@
     "values": {
       "contact.window": "Weekday mornings, G. on the line"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-marchetti-oyelaran-1",
+      "kind": "court",
+      "day": -15,
+      "headline": "Probate opened for an estate naming a family member as executor",
+      "excerpt": "A probate filing lists an executor of that surname.",
+      "source": "Probate court index",
+      "ref": "public://court/probate-marchetti"
+    }
+  ]
 }

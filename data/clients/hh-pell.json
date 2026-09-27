@@ -232,5 +232,6 @@
     "values": {
       "contact.window": "After 6pm on weekdays"
     }
-  }
+  },
+  "publicRecord": []
 }

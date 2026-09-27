@@ -185,7 +185,7 @@ for (const [name, f] of [
 try {
   const html = render(<ClientsPage />);
   if (!html.includes("Advisor with no clients")) problems.push("clients page: the advisor with no clients is missing");
-  if (!html.includes("No clients yet")) problems.push("clients page: an advisor with no clients shows an empty table with no message");
+  if (!html.includes("No households yet")) problems.push("clients page: an advisor with no households shows an empty table with no message");
 } catch (e) { problems.push(`clients page with an empty advisor: ${(e as Error).message}`); }
 
 // 6. Malformed data: each must be reported by validate(), never crash it.

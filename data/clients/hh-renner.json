@@ -294,5 +294,36 @@
     "values": {
       "contact.window": "Weekday mornings, before market open"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-renner-1",
+      "kind": "press",
+      "day": -3,
+      "headline": "Sale of a Brooklyn brownstone closes at $4.1M",
+      "excerpt": "Records show the sale closed on day -3; the buyer is an LLC.",
+      "source": "County deed record",
+      "ref": "public://deeds/kings/2026-0919-4432",
+      "matches": "opportunities[0]"
+    },
+    {
+      "id": "pr-renner-2",
+      "kind": "directorship",
+      "day": -40,
+      "headline": "M. Renner named to the advisory board of a venture sponsor",
+      "excerpt": "The sponsor's release lists M. Renner among four new advisory board members.",
+      "source": "Sponsor press release",
+      "ref": "public://press/sponsor-advisory-board"
+    },
+    {
+      "id": "pr-renner-3",
+      "kind": "filing",
+      "day": -12,
+      "headline": "Form 144 notice: proposed sale of 60,000 shares",
+      "excerpt": "A notice of proposed sale under the founder's trading plan, filed day -12.",
+      "source": "Regulatory filing index",
+      "ref": "public://filings/form144/renner-2026-09",
+      "matches": "paperwork[0]"
+    }
+  ]
 }

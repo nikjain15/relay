@@ -205,7 +205,8 @@
         "values": {
           "contact.window": "Afternoons; D.'s assistant books the calls"
         }
-      }
+      },
+      "publicRecord": []
     },
     {
       "id": "hh-alcott",
@@ -461,7 +462,8 @@
         "values": {
           "contact.window": "Afternoons; both spouses on the call"
         }
-      }
+      },
+      "publicRecord": []
     },
     {
       "id": "hh-brandvold",
@@ -639,7 +641,28 @@
         "values": {
           "contact.window": "Evenings UK time, 5 to 7pm"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-brandvold-1",
+          "kind": "press",
+          "day": -18,
+          "headline": "Brandvold appointed regional head, based in Zurich from next quarter",
+          "excerpt": "The employer's announcement names the role and a Zurich base.",
+          "source": "Employer announcement",
+          "ref": "public://press/brandvold-zurich"
+        },
+        {
+          "id": "pr-brandvold-2",
+          "kind": "registry",
+          "day": -400,
+          "headline": "UK pension scheme membership listed",
+          "excerpt": "A scheme register lists a deferred member of that name.",
+          "source": "Pension scheme register",
+          "ref": "public://registry/uk-pension-brandvold",
+          "matches": "opportunities[0]"
+        }
+      ]
     },
     {
       "id": "hh-castellanos",
@@ -889,7 +912,28 @@
         "values": {
           "contact.window": "Mid-morning; E. handles the calendar"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-castellanos-1",
+          "kind": "press",
+          "day": -120,
+          "headline": "Castellanos sells regional logistics firm to a national operator",
+          "excerpt": "The acquirer's release confirms the transaction closed; consideration includes an earn-out.",
+          "source": "Acquirer press release",
+          "ref": "public://press/castellanos-sale",
+          "matches": "archetype"
+        },
+        {
+          "id": "pr-castellanos-2",
+          "kind": "charity",
+          "day": -20,
+          "headline": "Named trustee of a Chicago education foundation",
+          "excerpt": "The foundation's annual report lists a new trustee of that name.",
+          "source": "Charity register",
+          "ref": "public://charity/castellanos-trustee"
+        }
+      ]
     },
     {
       "id": "hh-desrosiers",
@@ -1098,7 +1142,19 @@
         "values": {
           "contact.window": "After 5pm; on shift until then"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-desrosiers-1",
+          "kind": "press",
+          "day": -60,
+          "headline": "Long-serving school principal to retire at year end",
+          "excerpt": "A district notice names the retirement date.",
+          "source": "School district notice",
+          "ref": "public://press/desrosiers-retirement",
+          "matches": "archetype"
+        }
+      ]
     },
     {
       "id": "hh-marchetti-oyelaran",
@@ -1307,7 +1363,18 @@
         "values": {
           "contact.window": "Weekday mornings, G. on the line"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-marchetti-oyelaran-1",
+          "kind": "court",
+          "day": -15,
+          "headline": "Probate opened for an estate naming a family member as executor",
+          "excerpt": "A probate filing lists an executor of that surname.",
+          "source": "Probate court index",
+          "ref": "public://court/probate-marchetti"
+        }
+      ]
     },
     {
       "id": "hh-ng",
@@ -1463,7 +1530,8 @@
         "values": {
           "contact.window": "Evenings by text or video"
         }
-      }
+      },
+      "publicRecord": []
     },
     {
       "id": "hh-okafor-lind",
@@ -1674,7 +1742,18 @@
           "contact.channel": "call",
           "contact.window": "Tuesdays, with the trustee's daughter joining"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-okafor-lind-1",
+          "kind": "court",
+          "day": -30,
+          "headline": "Trust amendment recorded",
+          "excerpt": "A restated trust instrument was recorded on day -30; the recording names a successor trustee.",
+          "source": "County recorder",
+          "ref": "public://court/trust-amendment-okafor-lind"
+        }
+      ]
     },
     {
       "id": "hh-pell",
@@ -1910,7 +1989,8 @@
         "values": {
           "contact.window": "After 6pm on weekdays"
         }
-      }
+      },
+      "publicRecord": []
     },
     {
       "id": "hh-renner",
@@ -2208,7 +2288,38 @@
         "values": {
           "contact.window": "Weekday mornings, before market open"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-renner-1",
+          "kind": "press",
+          "day": -3,
+          "headline": "Sale of a Brooklyn brownstone closes at $4.1M",
+          "excerpt": "Records show the sale closed on day -3; the buyer is an LLC.",
+          "source": "County deed record",
+          "ref": "public://deeds/kings/2026-0919-4432",
+          "matches": "opportunities[0]"
+        },
+        {
+          "id": "pr-renner-2",
+          "kind": "directorship",
+          "day": -40,
+          "headline": "M. Renner named to the advisory board of a venture sponsor",
+          "excerpt": "The sponsor's release lists M. Renner among four new advisory board members.",
+          "source": "Sponsor press release",
+          "ref": "public://press/sponsor-advisory-board"
+        },
+        {
+          "id": "pr-renner-3",
+          "kind": "filing",
+          "day": -12,
+          "headline": "Form 144 notice: proposed sale of 60,000 shares",
+          "excerpt": "A notice of proposed sale under the founder's trading plan, filed day -12.",
+          "source": "Regulatory filing index",
+          "ref": "public://filings/form144/renner-2026-09",
+          "matches": "paperwork[0]"
+        }
+      ]
     },
     {
       "id": "hh-thornbury",
@@ -2473,7 +2584,29 @@
         "values": {
           "contact.window": "Early morning, before the plant opens"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-thornbury-1",
+          "kind": "press",
+          "day": -5,
+          "headline": "Thornbury family company raises a late-stage round",
+          "excerpt": "The company announced a growth round led by a new investor; terms undisclosed.",
+          "source": "Trade press",
+          "ref": "public://press/thornbury-round",
+          "matches": "opportunities[0]"
+        },
+        {
+          "id": "pr-thornbury-2",
+          "kind": "filing",
+          "day": -200,
+          "headline": "Fund capital commitment: $3.6M over three calls",
+          "excerpt": "A limited-partner schedule lists a $3.6M commitment with calls in three tranches.",
+          "source": "Fund document, on file with the custodian",
+          "ref": "public://filings/lp-schedule-thornbury",
+          "matches": "opportunities[0]"
+        }
+      ]
     },
     {
       "id": "hh-vasquez-hale",
@@ -2642,7 +2775,19 @@
         "values": {
           "contact.window": "Lunchtime"
         }
-      }
+      },
+      "publicRecord": [
+        {
+          "id": "pr-vasquez-hale-1",
+          "kind": "press",
+          "day": -25,
+          "headline": "Joins a new employer as senior engineer",
+          "excerpt": "A professional profile shows a new employer from last month.",
+          "source": "Professional profile",
+          "ref": "public://profile/vasquez-hale",
+          "matches": "opportunities[0]"
+        }
+      ]
     }
   ],
   "advisors": [

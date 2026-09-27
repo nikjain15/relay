@@ -185,13 +185,30 @@ change it reverses. The doc says this rather than letting a demo imply otherwise
 An agent is not a second engine. It is a bundle of rules, a scope, a cadence and an owner, so a
 supervisor can reason about "who is watching communications" instead of about twelve loose rules.
 
-| Agent | Watches | Cadence |
-|---|---|---|
-| Communications surveillance | 2210 regime, 3110 review, 206(4)-1 marketing, RN 24-09, Reg S-P, 4513 complaints | On every draft, and over every captured message |
-| Record completeness | Off-channel gaps, 17a-4 retention | Daily |
-| Recommendation evidence | Reg BI care obligation | On every proposal |
-| Client protection | 2165 specified adults, 2111 suitability at a point, 2111 concentration drift over 90 days | Daily |
-| Conduct | 3270 outside business activities, over the captured corpus | Weekly |
+| Desk | Mirrors | Authorities | Watches | Cadence |
+|---|---|---|---|---|
+| Communications review | The electronic communications review team | FINRA 3110, 2210, RN 24-09, Reg S-P | 2210 regime, 3110 review, generated text, privacy on approved channels | On every draft, and over every captured message |
+| Marketing review | The marketing and advertising review desk | SEC 206(4)-1, FINRA 2210 | Performance, projection and testimonial content | Daily at the firm; on every draft where an advisor tightened it |
+| Complaints | The complaints desk | FINRA 4513, 4530 | Grievance language nobody logged | On every message |
+| Books and records | The books and records function | SEC 17a-4, FINRA 4511 | Off-channel gaps, retention | Daily |
+| Reg BI review | The care-obligation reviewer | Reg BI | Basis, alternatives, costs, why this client | On every proposal |
+| Sales practice | The branch supervisor's suitability review | FINRA 2111, 3110 | Concentration at a point and over 90 days | Daily |
+| Vulnerable client protection | The senior investor desk | FINRA 2165, 4512 | Exploitation indicators on specified adults | Daily |
+| Conduct | The registered representative conduct desk | FINRA 3270, 3280 | Outside business activity, over the captured corpus | Weekly |
+
+Each desk is one entry in `data/compliance/agents.json`: the team it mirrors, the authorities, the
+rules, the cadence. Adding a desk is adding an entry; no code names an agent.
+
+**Per advisor, tighten only.** `resolveAgents()` folds agent edits from the change log layer by layer,
+firm, then segment, then advisor, under the same invariant as the rule set: a lower layer may switch a
+desk on, run it more often (weekly, daily, then on every draft or proposal) or give it another rule of
+its scope; it may not switch a desk off, slow it down, take away a rule a higher layer gave it, or add a
+rule of a different scope. Every refusal is recorded with the attempt and shown on the desk. The sweep
+runs the advisor's resolved desks, so a rule one advisor added to a desk fires on that book and no
+other. The seeded log carries one of each: a Wealth Advice Center supervisor moving marketing review to
+every draft, an advisor's refused attempt to switch the complaints desk off, and an advisor with an
+older book adding the specified-adult rule to the sales practice desk. Seen failing: with the
+enabled refusal removed, the desk tests fail.
 
 **What is autonomous:** detection, classification, evidence assembly, the drafted finding, the drafted
 remediation, the citation, and the ranking of the queue.

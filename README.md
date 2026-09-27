@@ -8,8 +8,8 @@
 
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tests-278%20passing-brightgreen" alt="Tests: 278 passing">
-  <img src="https://img.shields.io/badge/browser%20checks-56%20passing-brightgreen" alt="Browser checks: 56 passing">
+  <img src="https://img.shields.io/badge/tests-298%20passing-brightgreen" alt="Tests: 298 passing">
+  <img src="https://img.shields.io/badge/browser%20checks-59%20passing-brightgreen" alt="Browser checks: 59 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
   <img src="https://img.shields.io/badge/data-synthetic%20only-lightgrey" alt="Data: synthetic only">
@@ -23,7 +23,7 @@
 
 **A working prototype of the step after an insight engine.** A wealth manager's AI can flag twenty
 million client opportunities a year; what it cannot do is turn one into a documented, approved,
-client-facing action. Relay is that path, and the agent layer around it: nine agents that read the
+client-facing action. Relay is that path, and the agent layer around it: fourteen agents that read the
 advisor's whole book on a cadence, cite every claim, prepare every action short of the human gate,
 and hand each decision to a person.
 
@@ -35,15 +35,25 @@ composite is in [`docs/PERSONAS.md`](docs/PERSONAS.md).
 
 | Agent | Reads | Leaves for a person |
 |---|---|---|
-| **Communications surveillance** | Every draft and every captured message, both directions | Holds, review queue entries, a drafted correction |
-| **Record completeness** | What the advisor attests to using against what is captured | The sources to connect, each gap with its regulation named |
-| **Recommendation evidence** | Each proposal as it is released | A hold until the care-obligation record is complete |
-| **Client protection** | Every account: specified adults, concentration at a point and over 90 days | Holds, callbacks on the number on file, forms to request, a client note |
+| **Communications review** | Every draft and every captured message, both directions | Holds, review queue entries, a drafted correction |
+| **Marketing review** | Client-facing text, for performance, projection and testimonial content | A hold and a rewrite through review |
+| **Complaints** | Every inbound message, for grievance language nobody logged | The log entry and the callback |
+| **Books and records** | What the advisor attests to using against what is captured | The sources to connect, each gap with its regulation named |
+| **Reg BI review** | Each proposal as it is released | A hold until the care-obligation record is complete |
+| **Sales practice** | Every account against its own profile, at a point and over 90 days | The concentration conversation, prepared before the ceiling |
+| **Vulnerable client protection** | Every specified adult's account, for the indicators the rule names | Holds, callbacks on the number on file, forms to request |
 | **Conduct** | The captured corpus, for outside business activity | A disclosure form to request |
 | **Research** | The client file, the service queue, the firm's record, the channels, the corpus | A briefing: what changed, what is observed, what is inferred, what could not be established |
+| **Dossier** | The client file, the CRM, the captured corpus, the firm's documents, the public record | Every claim cited, the sources checked against each other, and a CRM note a person files |
 | **Retrieval** | The document corpus, on every opportunity | Cited passages with a reason per score, or a refusal that names what is missing |
 | **Rule-change proposer** | Ninety days of findings | Tighten-only rule changes, with the findings behind each |
 | **Discovery** | What clients said, in messages, notes and contact summaries | Candidate opportunities cited to the sentence, with a confidence and the documents each would cite |
+| **Consequences** | Every option for a proposal, applied to a copy of the household | The morning after, graded: Liquidity, concentration, the sweep, the note's regime, what a supervisor will ask |
+
+The eight compliance agents are **review desks**: one per team a legal, risk and compliance function
+runs, each carrying the team it mirrors, the authorities it applies, its rules and its cadence, all as
+data. An advisor's layer can switch a desk on, run it more often or give it another rule of its scope,
+never the reverse, and every refusal is shown with the attempt.
 
 **Connect your own book.** Drop a `.csv` or `.xlsx` of households, a message export or a document on
 `/data`; it is read in the browser with no dependency and no upload, every row is held to the same
@@ -104,7 +114,8 @@ what the eval has caught so far is in [`evals/README.md`](evals/README.md).
 | `components/` | React UI: the shell, the drawn icon set, the chart forms, one view per console |
 | `lib/compliance/` | Rule DSL, tighten-only policy resolution, the engine, agents, the sweep, prepared actions, the proposer, replay, the change log |
 | `lib/evidence/` | Corpus state, lexical search with a reason per score, retrieval and the refusal |
-| `lib/research/` | The research agent's probes and the briefing they assemble |
+| `lib/research/` | The research agent's probes and the briefing they assemble; the dossier agent |
+| `lib/simulate/` | The consequence agent: a proposed action applied to a copy of the household and run through every engine |
 | `lib/discovery/` | The discovery agent: extractors over what clients said |
 | `lib/import/` | CSV and XLSX readers, the row mapper, the sample book generator |
 | `lib/connectors/` | Read-only connector catalog and the coverage model |
@@ -121,10 +132,10 @@ what the eval has caught so far is in [`evals/README.md`](evals/README.md).
 
 ```bash
 npm ci
-npm run check                    # typecheck, lint, import invariants, data check, 278 tests
+npm run check                    # typecheck, lint, import invariants, data check, 298 tests
 npm run eval                     # every agent over the 300-household corpus, against evals/golden.json
 npm run dev                      # http://localhost:3000
-npx next build && npm run e2e    # 56 browser checks at 1440, 1280, 1024, 768 and 390
+npx next build && npm run e2e    # 59 browser checks at 1440, 1280, 1024, 768 and 390
 npm run stress                   # 1,000 clients, 50 advisors, 2,000 messages, 20,000 events, in memory
 ```
 

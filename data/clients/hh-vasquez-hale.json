@@ -165,5 +165,17 @@
     "values": {
       "contact.window": "Lunchtime"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-vasquez-hale-1",
+      "kind": "press",
+      "day": -25,
+      "headline": "Joins a new employer as senior engineer",
+      "excerpt": "A professional profile shows a new employer from last month.",
+      "source": "Professional profile",
+      "ref": "public://profile/vasquez-hale",
+      "matches": "opportunities[0]"
+    }
+  ]
 }

@@ -1,17 +1,59 @@
 {
-  "version": 2,
+  "version": 3,
   "agents": [
     {
       "id": "communications-surveillance",
       "name": "Communications surveillance",
-      "mission": "Read every outbound draft, every captured message in both directions and every inbound client message, decide the supervisory regime, hold anything that cannot go out as written, and raise a grievance nobody logged.",
+      "mission": "Read every outbound draft and every captured message in both directions, decide the supervisory regime, and hold anything that cannot go out as written.",
       "scope": "communication",
       "ruleIds": [
         "finra-2210-regime",
         "finra-3110-correspondence",
-        "sec-marketing-206-4-1",
         "genai-supervision-24-09",
-        "reg-s-p-safeguards",
+        "reg-s-p-safeguards"
+      ],
+      "cadence": "on_draft",
+      "enabled": true,
+      "lastRunAt": "day 0, 06:25",
+      "desk": "Communications review",
+      "mirrors": "The electronic communications review team: correspondence sampling, the retail communication line, privacy on approved channels, generated text under supervision.",
+      "authorities": [
+        "FINRA 3110",
+        "FINRA 2210",
+        "FINRA 24-09",
+        "Reg S-P"
+      ]
+    },
+    {
+      "id": "marketing-review",
+      "name": "Marketing review",
+      "desk": "Marketing and advertising review",
+      "mirrors": "The marketing review desk: performance, projections and testimonials in advisory-capacity material, before it reaches a client.",
+      "authorities": [
+        "SEC 206(4)-1",
+        "FINRA 2210"
+      ],
+      "mission": "Read every client-facing draft and captured outbound message for performance, projection or testimonial content, and hold it until it is compliant as written.",
+      "scope": "communication",
+      "ruleIds": [
+        "sec-marketing-206-4-1"
+      ],
+      "cadence": "daily",
+      "enabled": true,
+      "lastRunAt": "day 0, 06:15"
+    },
+    {
+      "id": "complaints",
+      "name": "Complaints",
+      "desk": "Complaints",
+      "mirrors": "The complaints desk: identify a grievance in what the client wrote, log it, and start the clock the reporting rule runs on.",
+      "authorities": [
+        "FINRA 4513",
+        "FINRA 4530"
+      ],
+      "mission": "Read every inbound message for grievance language that no one logged, and prepare the log entry and the callback.",
+      "scope": "communication",
+      "ruleIds": [
         "complaint-identification-4513"
       ],
       "cadence": "on_draft",
@@ -29,7 +71,14 @@
       ],
       "cadence": "daily",
       "enabled": true,
-      "lastRunAt": "day 0, 06:10"
+      "lastRunAt": "day 0, 06:10",
+      "desk": "Books and records",
+      "mirrors": "The books and records function: is every channel the advisor uses captured, retained and producible on request.",
+      "authorities": [
+        "SEC 17a-4",
+        "FINRA 4511",
+        "FINRA 3110"
+      ]
     },
     {
       "id": "recommendation-evidence",
@@ -41,21 +90,49 @@
       ],
       "cadence": "on_proposal",
       "enabled": true,
-      "lastRunAt": "on every proposal"
+      "lastRunAt": "on every proposal",
+      "desk": "Reg BI review",
+      "mirrors": "The care-obligation reviewer: basis, reasonably available alternatives, costs, and why this client, before a recommendation is released.",
+      "authorities": [
+        "Reg BI"
+      ]
     },
     {
-      "id": "client-protection",
-      "name": "Client protection",
-      "mission": "Watch for exploitation indicators on specified adults, concentration past the household ceiling, and concentration drifting toward it.",
+      "id": "sales-practice",
+      "name": "Sales practice",
+      "desk": "Sales practice supervision",
+      "mirrors": "The branch supervisor's suitability review: concentration against the household's own ceiling, and the trend toward it.",
+      "authorities": [
+        "FINRA 2111",
+        "FINRA 3110"
+      ],
+      "mission": "Read every account against its own stated profile, at a point and over ninety days, and prepare the conversation before the ceiling is crossed.",
       "scope": "account",
       "ruleIds": [
-        "senior-investor-2165",
         "finra-2111-suitability",
         "finra-2111-drift"
       ],
       "cadence": "daily",
       "enabled": true,
       "lastRunAt": "day 0, 06:20"
+    },
+    {
+      "id": "client-protection",
+      "name": "Vulnerable client protection",
+      "mission": "Watch every specified adult's account for the indicators the rule names, and prepare the hold and the callback a person makes.",
+      "scope": "account",
+      "ruleIds": [
+        "senior-investor-2165"
+      ],
+      "cadence": "daily",
+      "enabled": true,
+      "lastRunAt": "day 0, 06:20",
+      "desk": "Senior and vulnerable investors",
+      "mirrors": "The senior investor desk: exploitation indicators on specified adults, trusted contacts, holds on disbursements.",
+      "authorities": [
+        "FINRA 2165",
+        "FINRA 4512"
+      ]
     },
     {
       "id": "conduct",
@@ -67,7 +144,14 @@
       ],
       "cadence": "weekly",
       "enabled": true,
-      "lastRunAt": "day -2, 06:30"
+      "lastRunAt": "day -2, 06:30",
+      "desk": "Registered representative conduct",
+      "mirrors": "The registered representative conduct desk: outside business activities and private securities transactions, from what was actually written.",
+      "authorities": [
+        "FINRA 3270",
+        "FINRA 3280"
+      ]
     }
-  ]
+  ],
+  "_note": "One agent per review desk, mirroring how a legal, risk and compliance function splits the work. Each carries the human team it mirrors, the authorities it applies, the rules it watches and a cadence. Every field is data; an advisor layer may tighten any of them and loosen none."
 }

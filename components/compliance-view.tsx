@@ -20,7 +20,8 @@ import type { Severity } from "@/lib/compliance/types";
 import { SEVERITY_ORDER } from "@/lib/compliance/types";
 import type { EffectiveRule } from "@/lib/compliance/policy";
 import { scopeFor, type EditableLayer } from "@/lib/compliance/scope";
-import { policyFrom, agentsFrom } from "@/lib/compliance/store";
+import { policyFrom, resolveAgents } from "@/lib/compliance/store";
+import { Desks } from "@/components/desks";
 import { explain, paramMap } from "@/lib/compliance/dsl";
 import { agentOwning, runScope, queue, uncoveredMandatoryRules } from "@/lib/compliance/agents";
 import { coverageFor } from "@/lib/connectors/coverage";
@@ -165,18 +166,19 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
     () => policyFrom(ruleEdits, { segmentId: scope.segmentId, advisorId }),
     [ruleEdits, advisorId, scope.segmentId],
   );
-  const agents = useMemo(() => agentsFrom(ruleEdits), [ruleEdits]);
-  const uncovered = useMemo(() => uncoveredMandatoryRules(policy), [policy]);
+  const resolved = useMemo(() => resolveAgents(ruleEdits, { segmentId: scope.segmentId, advisorId }), [ruleEdits, advisorId, scope.segmentId]);
+  const agents = resolved.agents;
+  const uncovered = useMemo(() => uncoveredMandatoryRules(policy, agents), [policy, agents]);
 
   // The live sample: record completeness, run through the agents as configured
   // right now. Changing a rule above changes this without a reload.
   const cases = useMemo(() => {
     const report = coverageFor(advisorId, connections, CONNECTORS_DATA.attestations);
-    return queue(runScope(policy, { ...coverageFacts(report), availableConnectors: connected }));
-  }, [advisorId, connections, policy, connected]);
+    return queue(runScope(policy, { ...coverageFacts(report), availableConnectors: connected }, agents));
+  }, [advisorId, connections, policy, connected, agents]);
 
   // The proposer reads the standing sweep and the past 90 days of findings.
-  const proposed = useMemo(() => propose(policy, sweep(advisorId, policy, connections).cases, ruleEdits), [policy, advisorId, connections, ruleEdits]);
+  const proposed = useMemo(() => propose(policy, sweep(advisorId, policy, connections, undefined, agents).cases, ruleEdits), [policy, advisorId, connections, ruleEdits, agents]);
   const openProposals = proposed.proposals.filter((p) => !proposalDecisions[p.id]);
   const accept = (p: (typeof proposed.proposals)[number]) => {
     editRule({
@@ -349,39 +351,11 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
         </Card>
       )}
 
-      <Section title="Agents">
+      <Section title={`Review desks, as they stand for ${scope.layers[scope.layers.length - 1].label}`}>
         <p className="mb-3 max-w-2xl text-[13px] text-ink-2">
-          Each one detects, classifies and assembles evidence on its own, and dispositions nothing.
+          One agent per team a legal, risk and compliance function runs. Each detects, classifies and assembles evidence on its own, and dispositions nothing.
         </p>
-        <CardGrid cols={2}>
-          {agents.map((a) => {
-            const owned = policy.rules.filter((r) => a.ruleIds.includes(r.id));
-            const evaluable = owned.filter((r) => r.requires.every((x) => connected.includes(x)));
-            return (
-              <Card
-                key={a.id}
-                icon="agent"
-                title={a.name}
-                sub={a.mission}
-                right={<Pill tone={a.enabled ? "pass" : "neutral"}>{a.enabled ? "Running" : "Off"}</Pill>}
-              >
-                <p className="text-[13px] text-ink-2">
-                  {owned.length} {owned.length === 1 ? "rule" : "rules"}, {evaluable.length} evaluable with what is connected. Runs{" "}
-                  {a.cadence.replace("on_", "on every ").replace("_", " ")}.
-                </p>
-                <ul className="mt-2 space-y-1 text-[13px]">
-                  {owned.map((r) => (
-                    <li key={r.id}>
-                      <a href={`#${r.id}`} className="underline">
-                        {r.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            );
-          })}
-        </CardGrid>
+        <Desks agents={agents} rejected={resolved.rejected} rules={policy.rules} connected={connected} editing={editing} layers={scope.layers} onEdit={(e) => editRule({ actor: `${editing.label} console`, target: "agent", ...e })} />
       </Section>
 
       <Section title="Live sample: record completeness">

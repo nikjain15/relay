@@ -261,5 +261,27 @@
     "values": {
       "contact.window": "Early morning, before the plant opens"
     }
-  }
+  },
+  "publicRecord": [
+    {
+      "id": "pr-thornbury-1",
+      "kind": "press",
+      "day": -5,
+      "headline": "Thornbury family company raises a late-stage round",
+      "excerpt": "The company announced a growth round led by a new investor; terms undisclosed.",
+      "source": "Trade press",
+      "ref": "public://press/thornbury-round",
+      "matches": "opportunities[0]"
+    },
+    {
+      "id": "pr-thornbury-2",
+      "kind": "filing",
+      "day": -200,
+      "headline": "Fund capital commitment: $3.6M over three calls",
+      "excerpt": "A limited-partner schedule lists a $3.6M commitment with calls in three tranches.",
+      "source": "Fund document, on file with the custodian",
+      "ref": "public://filings/lp-schedule-thornbury",
+      "matches": "opportunities[0]"
+    }
+  ]
 }

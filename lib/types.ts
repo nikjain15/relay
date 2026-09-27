@@ -320,5 +320,26 @@ export interface ClientFile extends Household {
   valuationHistory?: { concentrationPct: { day: number; pct: number }[] };
   messages: ClientMessage[];
   opportunities: Opportunity[];
+  /**
+   * What a public-record search returned for this household: press, filings,
+   * registries, court and charity records. Shipped as data because the
+   * prototype has no outbound path; in production a read-only search
+   * connector fills it. Never treated as fact: public, unverified, and
+   * possibly about someone else of the same name.
+   */
+  publicRecord?: PublicRecordItem[];
   walkthrough?: Walkthrough;
+}
+
+export interface PublicRecordItem {
+  id: string;
+  kind: "press" | "filing" | "directorship" | "registry" | "court" | "charity";
+  day: number;
+  headline: string;
+  excerpt: string;
+  source: string;
+  /** A locator the connector would resolve; here a public:// pseudo-URL. */
+  ref: string;
+  /** The client-file field this record corroborates, when it does ("opportunities[0]"). */
+  matches?: string;
 }

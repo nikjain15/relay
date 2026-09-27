@@ -9,7 +9,7 @@ import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
 import type { ConnectionState, ConnectionStatus } from "@/lib/connectors/types";
 import { CLIENTS, CONNECTORS_DATA } from "@/lib/data";
-import type { ClientFile, Doc, Opportunity } from "@/lib/types";
+import type { ClientFile, Doc, Opportunity, TeamNote } from "@/lib/types";
 import { CORPUS } from "@/lib/fixtures/corpus";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
 import { toOpportunity, type Candidate } from "@/lib/discovery/discover";
@@ -107,6 +107,9 @@ interface State {
   /** The merged book: shipped records plus the session dataset, with accepted discoveries on today's list. */
   book: { clients: ClientFile[]; documents: Doc[]; opportunities: Opportunity[] };
   /** What the advisor did with each discovery candidate. Accepting puts it on today's list for the session. */
+  /** Notes an agent drafted and a person filed into a client record, for the session. In production a CRM write through the connector. */
+  notesAdded: Record<string, TeamNote[]>;
+  addNote: (clientId: string, note: TeamNote) => void;
   discoveryDecisions: Record<string, { decision: "accepted" | "declined"; at: string }>;
   decideDiscovery: (candidate: Candidate, decision: "accepted" | "declined") => void;
 }
@@ -141,9 +144,11 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [dataset, setDataset] = useState<State["dataset"]>({ clients: [], documents: [], batches: [] });
   const [discoveryDecisions, setDiscoveryDecisions] = useState<State["discoveryDecisions"]>({});
   const [acceptedDiscoveries, setAcceptedDiscoveries] = useState<Opportunity[]>([]);
+  const [notesAdded, setNotesAdded] = useState<Record<string, TeamNote[]>>({});
+  const withNotes = (c: ClientFile): ClientFile => (notesAdded[c.id]?.length ? { ...c, notes: [...c.notes, ...notesAdded[c.id]] } : c);
   const book = {
     // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
-    clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients],
+    clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients].map(withNotes),
     documents: [...CORPUS, ...dataset.documents],
     opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
   };
@@ -195,6 +200,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
       })),
     clearDataset: () => setDataset({ clients: [], documents: [], batches: [] }),
     book,
+    notesAdded,
+    addNote: (clientId, note) => setNotesAdded((s) => ({ ...s, [clientId]: [...(s[clientId] ?? []), note] })),
     discoveryDecisions,
     decideDiscovery: (k, decision) => {
       setDiscoveryDecisions((s) => ({ ...s, [k.id]: { decision, at: new Date().toISOString() } }));

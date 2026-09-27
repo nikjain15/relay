@@ -15,7 +15,7 @@ import { Nav, NavList } from "@/components/nav";
 import { Icon } from "@/components/icons";
 import { Palette } from "@/components/palette";
 import { useRelay } from "@/components/state";
-import { policyFrom } from "@/lib/compliance/store";
+import { policyFrom, agentsFrom } from "@/lib/compliance/store";
 import { scopeFor } from "@/lib/compliance/scope";
 import { sweep } from "@/lib/compliance/sweep";
 import { prepareAll } from "@/lib/compliance/actions";
@@ -35,7 +35,7 @@ function AgentStatus() {
   const { open, prepared } = useMemo(() => {
     const advisorId = APP.defaultAdvisorId;
     const policy = policyFrom(ruleEdits, scopeFor(advisorId));
-    const found = sweep(advisorId, policy, connections, book.clients);
+    const found = sweep(advisorId, policy, connections, book.clients, agentsFrom(ruleEdits, undefined, scopeFor(advisorId)));
     const open = found.cases.filter((c) => !caseDispositions[c.id]);
     const prepared = prepareAll(open, policy.rules).filter((a) => !actionDecisions[a.id]).length;
     return { open, prepared };
@@ -102,7 +102,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </button>
         <span className="text-[17px] font-semibold tracking-tight">Relay</span>
         <span className="hidden text-xs text-ink-3 xl:inline" role="note">
-          Illustrative prototype &middot; synthetic data &middot; no model calls
+          Agents for advisors &middot; synthetic data &middot; no model calls &middot; nothing sent
         </span>
 
         <div className="ml-auto flex items-center gap-2">
