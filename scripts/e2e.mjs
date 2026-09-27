@@ -278,7 +278,7 @@ try {
   for (const path of ["/servicing", "/meetings", "/pipeline", "/onboarding", "/follow-ups", "/communications"]) {
     await page.goto(`${BASE}${path}`);
     const t = await page.locator("main").innerText();
-    if (/read /.test(t) && /How it got there/.test(t) && (/Agent read or prepared/.test(t) || (await page.locator("header").innerText()).includes("Agent read or prepared"))) bars++;
+    if (/read /.test(t) && /How it got there/.test(t) && (/Agent read or prepared/.test(t) || (await page.locator("header").first().innerText()).includes("Agent read or prepared"))) bars++;
   }
   check("agent bars: six workflow screens open with what the agent read, what it left, a trace and the legend", bars === 6, `${bars} of 6`);
   // Before you act: every option carried to the morning after, graded, with a trace; picking a row changes the detail.

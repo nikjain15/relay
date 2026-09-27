@@ -14,7 +14,7 @@ export default function Pipeline() {
         name="Prospecting"
         icon="plus"
         read={`${PROSPECTS.length} prospects across ${ADVISORS_DATA.filter((a) => rankProspects(PROSPECTS, a.id).length).length} books, each with its signal and the path in`}
-        left={[`${PROSPECTS.length} ranked by path, fit and size`, `${PROSPECTS.filter((p) => p.path !== "signal").length} warm paths found`, `${PROSPECTS.length} introduction asks drafted`, `${PROSPECTS.filter((p) => p.path === "signal").length} left cold, with no draft`]}
+        left={[`${PROSPECTS.length} ranked by path, fit and size`, `${PROSPECTS.filter((p) => p.path !== "signal").length} warm paths found`, `${PROSPECTS.filter((p) => p.path !== "signal").length} introduction asks drafted`, `${PROSPECTS.filter((p) => p.path === "signal").length} left cold, with no draft`]}
         steps={[
           { icon: "search", who: "agent", title: "Read each prospect's signal and provenance", detail: "Every prospect names the public source its situation is built from." },
           { icon: "social", who: "agent", title: "Scored the path in", detail: "An existing client or a referral 3, an event 2, a signal alone 1." },

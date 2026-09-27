@@ -59,6 +59,18 @@ export function Communications() {
     return (
       <>
         <PageTitle title="Client communications" sub="Composed from an accepted proposal and its cited evidence. You send." />
+        <AgentBar
+          name="Drafting"
+          icon="email"
+          read="no accepted proposal yet, so nothing to compose from"
+          left={["a note is drafted only from an option you accepted and the passages the evidence layer cited", "the audience is counted before anything moves"]}
+          steps={[
+            { icon: "filter", who: "advisor", title: "Waits for an option you accept", detail: "On a proposal screen, or the featured one below." },
+            { icon: "library", who: "agent", title: "Then reads only the cited passages", detail: "A figure not in the proposal or a cited passage cannot appear." },
+            { icon: "people", who: "agent", title: "Then counts every retail recipient of the template, firm-wide, over 30 days", detail: "The count decides the supervisory regime." },
+            { icon: "shield", who: "advisor", title: "You send, after review", detail: "The supervision queue holds it until a principal approves it." },
+          ]}
+        />
         <p className="mb-3">No accepted proposal yet. Accept one from a proposal screen, or load the demo proposal.</p>
         {(() => {
           const o = opportunity(F.opportunityId);

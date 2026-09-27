@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <img src="https://img.shields.io/badge/tests-298%20passing-brightgreen" alt="Tests: 298 passing">
-  <img src="https://img.shields.io/badge/browser%20checks-59%20passing-brightgreen" alt="Browser checks: 59 passing">
+  <img src="https://img.shields.io/badge/browser%20checks-60%20passing-brightgreen" alt="Browser checks: 60 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
   <img src="https://img.shields.io/badge/data-synthetic%20only-lightgrey" alt="Data: synthetic only">
@@ -139,7 +139,7 @@ npm ci
 npm run check                    # typecheck, lint, import invariants, data check, 298 tests
 npm run eval                     # every agent over the 300-household corpus, against evals/golden.json
 npm run dev                      # http://localhost:3000
-npx next build && npm run e2e    # 59 browser checks at 1440, 1280, 1024, 768 and 390
+npx next build && npm run e2e    # 60 browser checks at 1440, 1280, 1024, 768 and 390
 npm run stress                   # 1,000 clients, 50 advisors, 2,000 messages, 20,000 events, in memory
 ```
 
