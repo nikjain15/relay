@@ -1,0 +1,167 @@
+{
+  "corpus": {
+    "households": 300,
+    "messages": 585,
+    "validationErrors": 0,
+    "coherenceProblems": 0,
+    "opportunities": 406
+  },
+  "arithmetic": {
+    "liquidityMonthsAgree": 300,
+    "totalsAgree": 300
+  },
+  "opportunities": {
+    "expected": 406,
+    "found": 406,
+    "tp": 406,
+    "fp": 0,
+    "fn": 0
+  },
+  "rules": {
+    "complaint-identification-4513": {
+      "expected": 48,
+      "found": 48,
+      "tp": 48,
+      "fp": 0,
+      "fn": 0
+    },
+    "finra-2111-drift": {
+      "expected": 44,
+      "found": 44,
+      "tp": 44,
+      "fp": 0,
+      "fn": 0
+    },
+    "finra-2111-suitability": {
+      "expected": 78,
+      "found": 78,
+      "tp": 78,
+      "fp": 0,
+      "fn": 0
+    },
+    "finra-3110-correspondence": {
+      "expected": 64,
+      "found": 64,
+      "tp": 64,
+      "fp": 0,
+      "fn": 0
+    },
+    "sec-marketing-206-4-1": {
+      "expected": 40,
+      "found": 40,
+      "tp": 40,
+      "fp": 0,
+      "fn": 0
+    },
+    "senior-investor-2165": {
+      "expected": 23,
+      "found": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0
+    }
+  },
+  "cannotEvaluate": {
+    "finra-2111-drift": {
+      "expected": 100,
+      "found": 100,
+      "tp": 100,
+      "fp": 0,
+      "fn": 0
+    },
+    "finra-2111-suitability": {
+      "expected": 100,
+      "found": 100,
+      "tp": 100,
+      "fp": 0,
+      "fn": 0
+    },
+    "senior-investor-2165": {
+      "expected": 100,
+      "found": 100,
+      "tp": 100,
+      "fp": 0,
+      "fn": 0
+    }
+  },
+  "notSwept": {
+    "expected": 50,
+    "found": 50
+  },
+  "discovery": {
+    "education": {
+      "expected": 23,
+      "found": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0
+    },
+    "excess-cash": {
+      "expected": 34,
+      "found": 34,
+      "tp": 34,
+      "fp": 0,
+      "fn": 0
+    },
+    "family-change": {
+      "expected": 32,
+      "found": 32,
+      "tp": 32,
+      "fp": 0,
+      "fn": 0
+    },
+    "inheritance": {
+      "expected": 33,
+      "found": 33,
+      "tp": 33,
+      "fp": 0,
+      "fn": 0
+    },
+    "liquidity-event": {
+      "expected": 34,
+      "found": 34,
+      "tp": 34,
+      "fp": 0,
+      "fn": 0
+    },
+    "property-sale": {
+      "expected": 101,
+      "found": 101,
+      "tp": 101,
+      "fp": 0,
+      "fn": 0
+    },
+    "relocation": {
+      "expected": 27,
+      "found": 27,
+      "tp": 27,
+      "fp": 0,
+      "fn": 0
+    },
+    "retirement": {
+      "expected": 85,
+      "found": 85,
+      "tp": 85,
+      "fp": 0,
+      "fn": 0
+    },
+    "third-party": {
+      "expected": 61,
+      "found": 61,
+      "tp": 61,
+      "fp": 0,
+      "fn": 0
+    }
+  },
+  "briefings": {
+    "households": 300,
+    "unknowns": 711,
+    "inferred": 189,
+    "citationsResolved": true
+  },
+  "retrieval": {
+    "opportunities": 406,
+    "refused": 0,
+    "conflicts": 105
+  }
+}

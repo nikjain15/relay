@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/nikjain15/relay/actions/workflows/ci.yml"><img src="https://github.com/nikjain15/relay/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/tests-271%20passing-brightgreen" alt="Tests: 271 passing">
+  <img src="https://img.shields.io/badge/tests-278%20passing-brightgreen" alt="Tests: 278 passing">
   <img src="https://img.shields.io/badge/browser%20checks-56%20passing-brightgreen" alt="Browser checks: 56 passing">
   <img src="https://img.shields.io/badge/WCAG-2.2%20AA-blue" alt="WCAG 2.2 AA">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-view--only-blue" alt="License: view-only"></a>
@@ -78,6 +78,17 @@ sum, a Liquidity figure that disagrees with the holdings, a citation to a docume
 a one-sided supersession chain, a stored valuation for today, a message on an unknown connector. See
 [`data/README.md`](data/README.md).
 
+## Evals
+
+The 300-household book under `public/samples/` is also the evaluation corpus. `npm run check` runs every
+agent over it and fails on any finding missed or wrongly raised, any number the engines get differently
+from the eval's own arithmetic, and any record that is incoherent as data. The expected side in
+[`evals/expected.ts`](evals/expected.ts) imports nothing from the engines: it reads the CSV files with
+its own reader and works out what each agent should find from the rule parameters, the advisor files
+and the hand-reviewed sentence labels in [`evals/labels.json`](evals/labels.json). The current report,
+per rule and per discovery kind with every disagreement named, is [`evals/REPORT.md`](evals/REPORT.md);
+what the eval has caught so far is in [`evals/README.md`](evals/README.md).
+
 ## Stack
 
 - **Next.js 15 (App Router)**, TypeScript strict, Tailwind with every colour as a design token
@@ -102,14 +113,16 @@ a one-sided supersession chain, a stored valuation for today, a message on an un
 | `data/` | Every record, one file each, plus firm policy, the rule set and the generated bundle |
 | `tests/` | Unit tests and the invariant suite |
 | `scripts/` | The data bundler, the sample-file builder, the walkthrough builder, the browser suite and the stress run |
-| `public/samples/` | Sample files to connect: a book, a message export, a document |
+| `public/samples/` | The 300-household evaluation corpus, also the sample files to connect: a book, a message export, a document |
+| `evals/` | The eval harness: expected side, labels, runner, golden counts and the current report |
 | `docs/` | Architecture, build spec, design system, personas, the walkthrough mockup |
 
 ## Run it
 
 ```bash
 npm ci
-npm run check                    # typecheck, lint, import invariants, data check, 271 tests
+npm run check                    # typecheck, lint, import invariants, data check, 278 tests
+npm run eval                     # every agent over the 300-household corpus, against evals/golden.json
 npm run dev                      # http://localhost:3000
 npx next build && npm run e2e    # 56 browser checks at 1440, 1280, 1024, 768 and 390
 npm run stress                   # 1,000 clients, 50 advisors, 2,000 messages, 20,000 events, in memory
@@ -129,6 +142,7 @@ request; the Pages deploy runs on `main` behind a green check.
 | [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | Principles, tokens, components, icons, charts, and what agent-first means as a rule |
 | [`docs/PERSONAS.md`](docs/PERSONAS.md) | Every composite, with the kind and public source of each detail |
 | [`data/README.md`](data/README.md) | Every data file, what it holds, and what `validate()` checks |
+| [`evals/README.md`](evals/README.md) | The evaluation corpus, how the expected side is built without the engines, what the eval has caught |
 
 ## Licence and scope
 

@@ -49,17 +49,20 @@ export function sampleBook(n: number, seed = 7, advisorIds: string[] = ADVISORS_
   for (let i = 0; i < n; i++) {
     const surname = `${SURNAMES[i % SURNAMES.length]}${i >= SURNAMES.length ? ` ${Math.floor(i / SURNAMES.length) + 1}` : ""}`;
     const scale = rnd() < 0.15 ? 20 : rnd() < 0.5 ? 5 : 1;
-    const spend = Math.round((4 + rnd() * 20) * scale) * 1000;
+    const core = Math.round((0.6 + rnd() * 4) * scale * 1_000_000);
+    // Spending is anchored to the portfolio: 1.5% to 5% of the core a year, so no household
+    // spends a third of its assets annually and none lives on a rounding error.
+    const spend = Math.max(4, Math.round((core * (0.015 + rnd() * 0.035)) / 12 / 1000)) * 1000;
     const cashMonths = Math.floor(rnd() * 40);
     const cash = cashMonths * spend;
-    const core = Math.round((0.6 + rnd() * 4) * scale * 1_000_000);
     const single = rnd() < 0.35 ? Math.round((0.3 + rnd() * 3) * scale * 1_000_000) : 0;
     const limit = single ? pick([10, 20, 25, 30]) : 25;
     const lastContact = Math.floor(rnd() * 260);
     const age1 = 30 + Math.floor(rnd() * 52);
     const two = rnd() < 0.6;
     const advisorId = advisorIds[i % advisorIds.length];
-    const single90 = single ? Math.round(((single / (core + cash + single)) * 100 - 2 - rnd() * 8) * 10) / 10 : "";
+    const minMonths = pick([6, 12, 18, 24]);
+    const single90 = single ? Math.max(0.5, Math.round(((single / (core + cash + single)) * 100 - 2 - rnd() * 8) * 10) / 10) : "";
     clients.push({
       name: surname,
       advisorId,
@@ -71,8 +74,8 @@ export function sampleBook(n: number, seed = 7, advisorIds: string[] = ADVISORS_
       singleName: single ? pick(["Employer stock", "Inherited utility holding", "Founder shares", "Legacy bank holding"]) : "",
       singleNameUsd: single || "",
       maxSingleNamePct: limit,
-      minLiquidityMonths: pick([6, 12, 18, 24]),
-      liquidityTargetMonths: pick([12, 24, 36]),
+      minLiquidityMonths: minMonths,
+      liquidityTargetMonths: Math.max(minMonths, pick([12, 24, 36])),
       longevityTargetUsd: Math.round(core * (1 + rnd() * 0.6)),
       legacyTargetUsd: rnd() < 0.4 ? Math.round(core * 0.3) : "",
       lastContactDaysAgo: lastContact,

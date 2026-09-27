@@ -148,7 +148,7 @@ export function DataView() {
           <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Choose files" onChange={(e) => { if (e.target.files) void onFiles(e.target.files); e.target.value = ""; }} />
           <p className="mt-3 text-[12px] text-ink-3">
             .csv or .xlsx of households (one row each), .csv or .xlsx of messages (one row each, naming the household), .md or .txt documents, or .json records.
-            Samples: <a className="underline" href="samples/clients.csv" download>clients.csv</a>, <a className="underline" href="samples/messages.csv" download>messages.csv</a>, <a className="underline" href="samples/research-note.md" download>research-note.md</a>.
+            Samples: <a className="underline" href="samples/clients.csv" download>clients.csv</a>, <a className="underline" href="samples/messages.csv" download>messages.csv</a>, <a className="underline" href="samples/research-note.md" download>research-note.md</a>. The same 300 households are the evaluation corpus every agent is scored against in CI.
           </p>
         </div>
         <More summary="The columns a household file may carry, and what happens to each">
