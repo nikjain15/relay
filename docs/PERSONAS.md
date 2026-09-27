@@ -1,8 +1,8 @@
 # Relay personas: cited composites
 
 **What these are.** Every advisor and household in Relay is a **composite**: an invented name and
-invented exact figures, set inside ranges and situations that UBS and public sources describe. No real
-client, no real advisor, and no UBS-internal data is used. Real UBS advisor teams appear below only as
+invented exact figures, each set inside a cited range. No real
+client, no real advisor, and no firm-internal data is used. Public team pages appear below only as
 **public evidence** that a practice of this kind exists; none of them is the persona, and no workflow is
 attributed to any named person.
 
@@ -25,7 +25,7 @@ The advisors carry invented names so the screens read as a working desk. No real
 | Team shape | Advisor, junior advisor, client service associate, shared wealth strategist | Published (pattern) | Team pages list titles such as Senior Vice President - Wealth Management, Senior Wealth Strategist and Client Service Associate: [Madison Park Partners](https://advisors.ubs.com/mpp/Meet-the-team.htm), [Founders Group](https://advisors.ubs.com/founders-group/Meet-the-team.htm) **check** |
 | Tier | Above $5M, with four relationships above $50M | Published (structure) | Coverage tiers above $50M, above $5M, $500K to $5M: [InvestmentNews, Dec 2024](https://www.investmentnews.com/wirehouses/ubs-rethinks-us-wealth-division-in-latest-profitability-push/258554) |
 | Book | About $820M, 183 households | Chosen | UBS cites about $353M AUM per advisor on its recruiting pages ([UBS](https://www.ubs.com/us/en/wealth-management/financial-advisor-experience/articles/financial-advisor-in-the-us.html) **check**); reported Q2 2026 figures give about $425M (Derived). $820M is about twice the average, consistent with a senior advisor |
-| Experience | 19 years in the industry, 3 at UBS | Chosen | Plausible for a recruited senior team; UBS's 2025 and 2026 recruiting is public ([AdvisorHub](https://www.advisorhub.com/2027-comp-ubs-keeps-grid-steady-sweetens-retention-program/)) |
+| Experience | 19 years in the industry, 3 at the current firm | Chosen | Plausible for a recruited senior team; UBS's 2025 and 2026 recruiting is public ([AdvisorHub](https://www.advisorhub.com/2027-comp-ubs-keeps-grid-steady-sweetens-retention-program/)) |
 
 ## Advisor B, Daniel Okoro: Wealth Advice Center advisor
 

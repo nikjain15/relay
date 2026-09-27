@@ -220,7 +220,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
   <header class="intro">
     <span class="eyebrow">Relay &middot; low-fidelity mockup</span>
     <h1>The advisor journey, with four client stories</h1>
-    <p>UBS's AI flags more than 20 million client opportunities a year. Relay is what happens next: it helps an advisor turn one into an approved action for a client, with the reasons and the compliance sign-off on record. Start with the daily work below, then see what happens before and after it.</p>
+    <p>A large firm's AI can flag millions of client opportunities a year. Relay is what happens next: it helps an advisor turn one into an approved action for a client, with the reasons and the compliance sign-off on record. Start with the daily work below, then see what happens before and after it.</p>
   </header>
 
   <nav class="journey" aria-label="Advisor journey">
@@ -254,7 +254,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
     <details>
       <summary>Words used on these screens</summary>
       <dl class="gl">
-        <dt>Opportunity</dt><dd>Something UBS's AI flags about a client overnight, for example a large property sale.</dd>
+        <dt>Opportunity</dt><dd>Something the firm's AI flags about a client overnight, for example a large property sale.</dd>
         <dt>Cash cushion</dt><dd>Months of planned spending held in cash-like investments. UBS's Wealth Way framework calls it Liquidity and sizes it at 2 to 5 years.</dd>
         <dt>Approved products</dt><dd>The investments the firm allows advisors to recommend.</dd>
         <dt>Family's rules</dt><dd>Limits agreed with the client, for example "keep at least two years of cash" or "no private credit". Formally, the investment policy statement.</dd>
@@ -263,7 +263,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
         <dt>Callback</dt><dd>Before money moves on an emailed instruction, the team calls the client on a number already on file. A standard control against wire fraud.</dd>
         <dt>Compliance check</dt><dd>A supervising manager reviews what goes to clients before it is sent.</dd>
         <dt>The 25-person rule</dt><dd>Under FINRA Rule 2210, a note that reaches more than 25 individual clients in 30 days needs a manager's approval before it is sent. Relay counts people, not families, across every advisor using the same note.</dd>
-        <dt>Composite</dt><dd>An invented person or family, built from situations UBS and public sources describe. Every source is listed in the Relay repo's PERSONAS.md.</dd>
+        <dt>Composite</dt><dd>An invented person or family, with every figure set inside a cited range. Every source is listed in the Relay repo's PERSONAS.md.</dd>
       </dl>
     </details>
   </section>
@@ -404,7 +404,7 @@ dl.gl dd { margin: 0; color: var(--soft); }
     $("who").innerHTML = `
       <div class="person"><span class="role">The advisor</span><h3>${esc(s.advisor.label)}</h3><p>${esc(s.advisor.summary)}</p><p class="src"><strong>Built from:</strong> ${links(s.advisor.groundedIn)}</p></div>
       <div class="person"><span class="role">The client</span><h3>${esc(s.client.name)}</h3><p>${esc(s.client.summary)}</p><p class="src"><strong>Built from:</strong> ${links(s.client.groundedIn)}</p></div>
-      <p class="who-note">Both are composites: invented names and exact figures, set inside situations UBS describes publicly. No real client or advisor is shown. Every figure on this page loads from the client files in the Relay repo (data/clients).</p>`;
+      <p class="who-note">Both are composites: invented names and exact figures, each set inside a cited range. No real client or advisor is shown. Every figure on this page loads from the client files in the Relay repo (data/clients).</p>`;
   }
 
   function render(i) {
