@@ -7,6 +7,7 @@ import { usd, pct } from "@/lib/format";
 import type { Goal } from "@/lib/types";
 import { constraintText } from "@/lib/constraint-text";
 import { getClientFile } from "@/lib/data";
+import { HouseholdNotes } from "@/components/household-notes";
 import { paperStatus, escalateAfter } from "@/lib/onboarding/status";
 import { ClientPreferences } from "@/components/profile-panel";
 import { classify } from "@/lib/servicing/classify";
@@ -117,7 +118,6 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
       </div>
       {(() => {
         const f = getClientFile(h.id)!;
-        const ago = (d: number) => (d === 0 ? "today" : `${-d} days ago`);
         return (
           <div className="grid max-w-6xl gap-6 md:grid-cols-2">
             <Section title="People">
@@ -134,18 +134,7 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
               <ClientPreferences clientId={h.id} />
             </Section>
             <Section title="Contact history and team notes">
-              <ul className="space-y-1">
-                {f.client.contactHistory.map((e, i) => (
-                  <li key={i}>
-                    <strong>{e.channel}</strong>, {ago(e.day)}: {e.summary}
-                  </li>
-                ))}
-                {f.client.notes.map((n, i) => (
-                  <li key={`n${i}`} className="rounded bg-caution-soft px-2 py-1 text-caution">
-                    <strong>{n.from}</strong>, {ago(n.day)}: {n.text}
-                  </li>
-                ))}
-              </ul>
+              <HouseholdNotes clientId={h.id} />
             </Section>
             <Section title="Open tasks">
               <ul className="list-inside list-disc space-y-0.5">

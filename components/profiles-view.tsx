@@ -1,23 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { ADVISORS_DATA, CLIENTS, clientFile } from "@/lib/data";
-import { APP } from "@/lib/data/policy";
+import { useEffect, useState } from "react";
+import { ADVISORS_DATA, clientFile } from "@/lib/data";
 import { ADVISOR_PROFILES, FIRM, KEYS, SCHEMA, SEGMENTS, resolveProfile, sourceLabel, type Values } from "@/lib/profile";
 import { fmtValue } from "@/lib/profile/format";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { Brief, PageTitle, Pill, Section, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
 
 export function ProfilesView({ advisor, client }: { advisor?: string; client?: string }) {
-  const { overlay } = useRelay();
-  const [advisorId, setAdvisorId] = useState(clientFile(client ?? "")?.advisorId ?? advisor ?? APP.defaultAdvisorId);
-  const mine = CLIENTS.filter((c) => c.advisorId === advisorId);
+  // The settings shown are the signed-in advisor's; choosing another advisor here switches the session, as the header does.
+  const { overlay, advisorId, setAdvisorId } = useRelay();
+  const asked = clientFile(client ?? "")?.advisorId ?? advisor;
+  useEffect(() => { if (asked && ADVISORS_DATA.some((a) => a.id === asked)) setAdvisorId(asked); }, [asked, setAdvisorId]);
+  const v = useView();
+  const mine = v.clients;
   const [clientId, setClientId] = useState(client && mine.some((c) => c.id === client) ? client : mine[0]?.id);
   const cid = mine.some((c) => c.id === clientId) ? clientId : mine[0]?.id;
   const ap = ADVISOR_PROFILES.find((a) => a.advisorId === advisorId)!;
   const seg = SEGMENTS.find((s) => s.id === ap.segmentId)!;
-  const c = CLIENTS.find((x) => x.id === cid);
+  const c = mine.find((x) => x.id === cid);
   const r = resolveProfile({ advisorId, clientId: cid }, overlay);
   const learnedA = overlay.advisor?.[advisorId] ?? {};
   const learnedC = (cid && overlay.client?.[cid]) || {};

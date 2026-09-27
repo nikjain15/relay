@@ -73,7 +73,9 @@ function ConnectorRow({ c, advisorId }: { c: ConnectorDefinition; advisorId: str
   );
 }
 
-export function SourcesView({ advisorId }: { advisorId: string }) {
+export function SourcesView() {
+  // The signed-in advisor, from session state: every screen follows the same one.
+  const advisorId = useRelay().advisorId;
   const { dataset, addBatch, clearDataset, book, connections } = useRelay();
   const [dragOver, setDragOver] = useState(false);
   const [showAll, setShowAll] = useState(false);

@@ -2,9 +2,12 @@
 
 // Session state for the demo: dismissals, accepted proposals, the supervisory
 // queue. Lives in React state and resets on reload (BUILD-SPEC §1).
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Regime } from "@/lib/recipients/count";
 import type { Overlay, SettingKey, Values } from "@/lib/profile";
+import type { CustomAgent } from "@/lib/agents/templates";
+import type { Cadence } from "@/lib/compliance/agents";
+import { APP } from "@/lib/data/policy";
 import { applied, type Rejection, type Suggestion } from "@/lib/learning/learn";
 import { SEED_EDITS, type RuleEdit } from "@/lib/compliance/store";
 import type { RuleDefinition } from "@/lib/compliance/types";
@@ -62,6 +65,21 @@ interface State {
   acceptSuggestion: (s: Suggestion) => void;
   declineSuggestion: (s: Suggestion) => void;
   undoSuggestion: (s: Suggestion) => void;
+  /** Agents advisors made from a template this session. Each runs one rule of its own in the same sweep as the desks. */
+  customAgents: CustomAgent[];
+  createAgent: (a: CustomAgent, actor: string) => void;
+  updateAgent: (id: string, patch: { name?: string; mission?: string; cadence?: Cadence; value?: number | string; enabled?: boolean }, actor: string) => void;
+  deleteAgent: (id: string, actor: string) => void;
+  /** Changes to a desk that would loosen supervision wait here for a principal. */
+  agentRequests: AgentRequest[];
+  requestAgentChange: (r: Omit<AgentRequest, "id" | "at" | "status">) => void;
+  decideAgentRequest: (id: string, approve: boolean, by: string, comment?: string) => void;
+  /** Non-desk agents an advisor turned off for themselves, by advisor id. */
+  rosterOff: Record<string, string[]>;
+  setRosterOn: (advisorId: string, agentId: string, on: boolean) => void;
+  /** The advisor this session is signed in as. Every screen that says "you" reads it. */
+  advisorId: string;
+  setAdvisorId: (id: string) => void;
   /** Settings an advisor tuned on screen this session (the ranking desk), by advisor id. */
   tuned: Record<string, Values>;
   tune: (advisorId: string, key: SettingKey, value: unknown) => void;
@@ -142,6 +160,28 @@ export interface ImportBatch {
 
 const Ctx = createContext<State | null>(null);
 
+export interface AgentRequest {
+  id: string;
+  at: string;
+  advisorId: string;
+  agentId: string;
+  agentName: string;
+  /** "enabled", "deleted", "cadence" or "removeRule". */
+  field: string;
+  from: string;
+  to: string;
+  /** In the advisor's words: why. */
+  reason: string;
+  /** What the change means, in one line a principal reads. */
+  summary: string;
+  status: "pending" | "approved" | "refused";
+  decidedBy?: string;
+  comment?: string;
+}
+
+/** Where the ranking desk keeps each advisor's tuned weights in this browser. */
+const TUNED_KEY = "relay.tuned.v1";
+
 export function StateProvider({ children }: { children: ReactNode }) {
   const [dismissed, setDismissed] = useState<Record<string, string>>({});
   const [accepted, setAccepted] = useState<Record<string, string>>({});
@@ -160,20 +200,49 @@ export function StateProvider({ children }: { children: ReactNode }) {
   const [notesAdded, setNotesAdded] = useState<Record<string, TeamNote[]>>({});
   const [addedRules, setAddedRules] = useState<RuleDefinition[]>([]);
   const [tuned, setTuned] = useState<Record<string, Values>>({});
-  const withNotes = (c: ClientFile): ClientFile => (notesAdded[c.id]?.length ? { ...c, notes: [...c.notes, ...notesAdded[c.id]] } : c);
-  const book = {
-    // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
-    clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients].map(withNotes),
-    documents: [...CORPUS, ...dataset.documents],
-    opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
-    rules: addedRules,
-  };
-  const overlay: Overlay = { tuned };
-  for (const s of learned) {
-    const side = (overlay[s.scope] ??= {});
-    const vals = (side[s.scopeId] ??= {});
-    vals[s.key] = applied(s, vals[s.key]);
-  }
+  const [customAgents, setCustomAgents] = useState<CustomAgent[]>([]);
+  const [agentRequests, setAgentRequests] = useState<AgentRequest[]>([]);
+  const [rosterOff, setRosterOff] = useState<Record<string, string[]>>({});
+  const logAgent = (agentId: string, advisorId: string, field: string, from: string, to: string, actor: string, reason: string, approvedBy?: string) =>
+    setRuleEdits((l) => [...l, { id: `e-${String(l.length + 1).padStart(3, "0")}`, at: new Date().toISOString(), actor, target: "agent", layer: "advisor", layerId: advisorId, agentId, field, from, to, reason, ...(approvedBy ? { approvedBy } : {}) }]);
+  const [advisorId, setAdvisorId] = useState<string>(APP.defaultAdvisorId);
+  // Tuned settings (the ranking desk) are the advisor's own preference, so they are kept in this browser
+  // across reloads, per advisor. Everything else in a session resets on reload, as documented.
+  const [tunedLoaded, setTunedLoaded] = useState(false);
+  // Who is signed in is session state like the rest: a reload starts as the default advisor, so a page
+  // never renders one advisor and then switches to another under you.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(TUNED_KEY);
+      if (saved) setTuned(JSON.parse(saved) as Record<string, Values>);
+    } catch { /* storage unavailable: the tuning lasts for the session */ }
+    setTunedLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (!tunedLoaded) return;
+    try { window.localStorage.setItem(TUNED_KEY, JSON.stringify(tuned)); } catch { /* storage unavailable */ }
+  }, [tuned, tunedLoaded]);
+  // Built once per change, not per render, so every screen's memo over the book holds.
+  const book = useMemo(() => {
+    const withNotes = (c: ClientFile): ClientFile => (notesAdded[c.id]?.length ? { ...c, notes: [...c.notes, ...notesAdded[c.id]] } : c);
+    return {
+      // A connected record with a shipped id (a message file naming a shipped household) replaces the shipped one for the session.
+      clients: [...CLIENTS.filter((c) => !dataset.clients.some((d) => d.id === c.id)), ...dataset.clients].map(withNotes),
+      documents: [...CORPUS, ...dataset.documents],
+      opportunities: [...OPPORTUNITIES, ...dataset.clients.flatMap((c) => c.opportunities), ...acceptedDiscoveries],
+      // Rules read from a policy, and the one rule each advisor's own agent runs.
+      rules: [...addedRules, ...customAgents.map((c) => c.rule)],
+    };
+  }, [dataset, notesAdded, acceptedDiscoveries, addedRules, customAgents]);
+  const overlay: Overlay = useMemo(() => {
+    const o: Overlay = { tuned };
+    for (const s of learned) {
+      const side = (o[s.scope] ??= {});
+      const vals = (side[s.scopeId] ??= {});
+      vals[s.key] = applied(s, vals[s.key]);
+    }
+    return o;
+  }, [learned, tuned]);
   const value: State = {
     dismissed,
     dismiss: (id, reason) => setDismissed((s) => ({ ...s, [id]: reason })),
@@ -197,6 +266,41 @@ export function StateProvider({ children }: { children: ReactNode }) {
     acceptSuggestion: (s) => setLearned((l) => [...l.filter((x) => x.id !== s.id), s]),
     declineSuggestion: (s) => setRejected((r) => [...r, { scopeId: s.scopeId, key: s.key, detail: s.detail, day: 0 }]),
     undoSuggestion: (s) => setLearned((l) => l.filter((x) => x.id !== s.id)),
+    advisorId,
+    setAdvisorId,
+    customAgents,
+    createAgent: (a, actor) => {
+      setCustomAgents((l) => [...l, a]);
+      logAgent(a.agent.id, a.advisorId, "created", "", a.agent.name, actor, `Made from a template: ${a.rule.title}.`);
+    },
+    updateAgent: (id, patch, actor) => {
+      const c = customAgents.find((x) => x.agent.id === id);
+      if (!c) return;
+      const param = c.rule.params[0];
+      const next: CustomAgent = {
+        ...c,
+        agent: { ...c.agent, ...(patch.name !== undefined ? { name: patch.name } : {}), ...(patch.mission !== undefined ? { mission: patch.mission } : {}), ...(patch.cadence ? { cadence: patch.cadence } : {}), ...(patch.enabled !== undefined ? { enabled: patch.enabled } : {}) },
+        rule: patch.value !== undefined && param ? { ...c.rule, params: [{ ...param, value: patch.value }] } : c.rule,
+      };
+      setCustomAgents((l) => l.map((x) => (x.agent.id === id ? next : x)));
+      for (const [k, v] of Object.entries(patch)) if (v !== undefined) logAgent(id, c.advisorId, k === "value" ? param?.key ?? "value" : k, String(k === "value" ? param?.value : (c.agent as unknown as Record<string, unknown>)[k] ?? ""), String(v), actor, "Edited by its owner.");
+    },
+    deleteAgent: (id, actor) => {
+      const c = customAgents.find((x) => x.agent.id === id);
+      if (!c) return;
+      setCustomAgents((l) => l.filter((x) => x.agent.id !== id));
+      logAgent(id, c.advisorId, "deleted", c.agent.name, "true", actor, "Deleted by its owner. Its open findings close with it.");
+    },
+    agentRequests,
+    requestAgentChange: (r) => setAgentRequests((l) => [...l, { ...r, id: `req-${l.length + 1}`, at: new Date().toISOString(), status: "pending" }]),
+    decideAgentRequest: (id, approve, by, comment) => {
+      const r = agentRequests.find((x) => x.id === id);
+      if (!r || r.status !== "pending") return;
+      setAgentRequests((l) => l.map((x) => (x.id === id ? { ...x, status: approve ? "approved" : "refused", decidedBy: by, comment } : x)));
+      if (approve) logAgent(r.agentId, r.advisorId, r.field, r.from, r.to, by, `${r.reason} Requested by the advisor; approved by a principal.`, by);
+    },
+    rosterOff,
+    setRosterOn: (aid, agentId, on) => setRosterOff((m) => ({ ...m, [aid]: on ? (m[aid] ?? []).filter((x) => x !== agentId) : [...new Set([...(m[aid] ?? []), agentId])] })),
     tuned,
     tune: (advisorId, key, value) => setTuned((t) => ({ ...t, [advisorId]: { ...(t[advisorId] ?? {}), [key]: value } })),
     resetTuning: (advisorId) => setTuned((t) => { const next = { ...t }; delete next[advisorId]; return next; }),

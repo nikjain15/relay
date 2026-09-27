@@ -13,6 +13,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
+import { MORNING } from "@/lib/agents/roster";
 import { Brief, Legend, More, PageTitle, Pill, Row, Section, StateDot, btn, btnPrimary } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { ActionPanel, ACTION_ICON, type TraceStep } from "@/components/action-panel";
@@ -21,64 +23,43 @@ import { corpusStates } from "@/lib/evidence/corpus";
 import { discover } from "@/lib/discovery/discover";
 import { propose } from "@/lib/compliance/propose";
 import { simulable } from "@/lib/simulate/simulate";
-import { SERVICE_REQUESTS, CONNECTORS_DATA, ADVISORS_DATA } from "@/lib/data";
-import { openItems } from "@/lib/onboarding/status";
-import { triage } from "@/lib/servicing/classify";
-import { todaysMeetings } from "@/lib/meetings/prep";
-import { allTasks } from "@/lib/followups";
 import { APP } from "@/lib/data/policy";
-import { policyFrom, agentsFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep, connectedIds } from "@/lib/compliance/sweep";
-import { coverageFor } from "@/lib/connectors/coverage";
-import { rank } from "@/lib/ranking/rank";
-import { resolveProfile, sourceLabel } from "@/lib/profile";
-import { prepareAll, KIND, type PreparedAction } from "@/lib/compliance/actions";
+import { connectedIds } from "@/lib/compliance/sweep";
+import { sourceLabel } from "@/lib/profile";
+import { KIND, type PreparedAction } from "@/lib/compliance/actions";
 import { agentStatuses } from "@/lib/compliance/activity";
 import { explain, paramMap } from "@/lib/compliance/dsl";
 
-export function Overview({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, dismissed, actionDecisions, discoveryDecisions, proposalDecisions, book, overlay } = useRelay();
-  const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
-  const advisor = ADVISORS_DATA.find((a) => a.id === advisorId);
+export function Overview() {
+  const { connections, actionDecisions, discoveryDecisions, proposalDecisions, book, ruleEdits, rosterOff } = useRelay();
+  // Everything "yours" comes from the one advisor view every screen reads, so a count here is the count on the screen it links to.
+  const v = useView();
+  const { advisor, policy, found, openCases, actions, pendingActions: pending, coverage, blocking, meetings, overdueTasks: overdue, serviceOverdue, escalated, list: flagged } = v;
+  const advisorId = advisor.id;
+  const mine = v.clients;
+  const agents = useMemo(() => v.agents.filter((a) => a.enabled), [v.agents]);
   // The compute figure is real and so differs between the static export and the
   // browser; it is printed only once the browser has run the engines itself.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const policy = useMemo(() => policyFrom(ruleEdits, scope, undefined, book.rules), [ruleEdits, scope, book.rules]);
-  const mine = useMemo(() => book.clients.filter((c) => c.advisorId === advisorId), [book.clients, advisorId]);
-  const agents = useMemo(() => agentsFrom(ruleEdits, undefined, scope, book.rules).filter((a) => a.enabled), [ruleEdits, scope, book.rules]);
 
-  // The overnight run, timed. Every engine runs here in the browser on the
+  // The rest of the overnight run, timed. These engines run here in the browser on the
   // book as it stands, so the figure is real compute and not a label.
   const run = useMemo(() => {
     const t0 = performance.now();
-    const found = sweep(advisorId, policy, connections, book.clients, agents);
     const briefings = briefAll(connections, book.clients).filter((b) => mine.some((c) => c.id === b.clientId));
     const candidates = discover(book.clients, book.documents).filter((k) => k.advisorId === advisorId && !discoveryDecisions[k.id]);
     const proposals = propose(policy, found.cases, ruleEdits).proposals.filter((p) => !proposalDecisions[p.id]);
     const corpus = corpusStates();
     const simulableOpps = mine.flatMap((c) => simulable(c));
-    return { found, briefings, candidates, proposals, corpus, simulableOpps, ms: Math.max(1, Math.round(performance.now() - t0)) };
-  }, [advisorId, policy, connections, book, mine, discoveryDecisions, proposalDecisions, ruleEdits, agents]);
-  const { found, briefings, candidates, proposals, corpus, simulableOpps } = run;
+    return { briefings, candidates, proposals, corpus, simulableOpps, ms: Math.max(1, Math.round(performance.now() - t0)) };
+  }, [advisorId, policy, found, connections, book, mine, discoveryDecisions, proposalDecisions, ruleEdits]);
+  const { briefings, candidates, proposals, corpus, simulableOpps } = run;
 
-  const coverage = useMemo(() => coverageFor(advisorId, connections, CONNECTORS_DATA.attestations), [advisorId, connections]);
-  const openCases = found.cases.filter((c) => !caseDispositions[c.id]);
-  const actions = useMemo(() => prepareAll(openCases, policy.rules), [openCases, policy]);
-  const pending = actions.filter((a) => !actionDecisions[a.id]);
   const decided = actions.filter((a) => actionDecisions[a.id]);
   const connected = useMemo(() => connectedIds(advisorId, connections), [advisorId, connections]);
   const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, openCases, connected), [agents, policy, found, actions, openCases, connected]);
-  const blocking = openCases.filter((c) => c.severity === "block" && c.reason === "fired");
-  // Margaret's morning: her calendar, her tasks, her clients' requests, not the firm's.
-  const meetings = todaysMeetings(advisorId);
-  const overdue = allTasks().filter((t) => t.dueDay < 0 && t.advisorId === advisorId);
-  const service = triage(SERVICE_REQUESTS.filter((r) => mine.some((c) => c.id === r.clientId)));
-  const escalated = mine.flatMap(openItems).filter((w) => w.status === "escalated");
-  // The same ranking Today's list shows: the advisor's resolved weights and list size, tuned or not.
-  const rankingProfile = resolveProfile({ advisorId }, overlay);
-  const flagged = useMemo(() => rank(book.opportunities.filter((o) => mine.some((c) => c.id === o.householdId)), new Set(Object.keys(dismissed)), rankingProfile.values["triage.dailyCap"], rankingProfile.values["triage.classWeights"]), [dismissed, book, mine, rankingProfile.values]);
+  const rankingProfile = v.profile;
   const unknowns = briefings.reduce((s, b) => s + b.unknowns.length, 0);
   const staleDocs = corpus.filter((d) => d.usable && d.freshness === "stale").length;
   const channelsWatched = coverage.channels.filter((c) => c.attested || c.status === "covered").length;
@@ -94,7 +75,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
     ...(!coverage.defensible ? [{ icon: "link" as const, tone: "critical" as const, href: "/sources", title: uncaptured.length ? `${uncaptured.length} channel${uncaptured.length === 1 ? "" : "s"} you use ${uncaptured.length === 1 ? "is" : "are"} not captured` : `${unretained.length} channel${unretained.length === 1 ? "" : "s"} captured without a retained copy`, meta: `${uncaptured.length ? `${uncaptured.map((g) => g.channel).join(", ")}: business conducted there cannot be produced on request.` : ""}${uncaptured.length && unretained.length ? " " : ""}${unretained.length ? `${unretained.map((g) => g.channel).join(", ").replace(/^./, (x) => x.toUpperCase())} ${unretained.length === 1 ? "is" : "are"} read but not retained.` : ""}`, right: "Connect" }] : []),
     ...blocking.filter((c) => !coverageRules.has(c.ruleId)).map((c) => ({ icon: "shield" as const, tone: "critical" as const, href: "/supervision", title: c.ruleTitle, meta: `${c.subjectLabel} · ${c.citation}`, right: "Disposition" })),
     ...(escalated.length ? [{ icon: "esign" as const, tone: "caution" as const, href: "/onboarding", title: `${escalated.length} form${escalated.length === 1 ? "" : "s"} past the escalation deadline`, meta: escalated.slice(0, 3).map((w) => w.form).join(", "), right: "Chase" }] : []),
-    ...(service.filter((r) => r.overdue).length ? [{ icon: "clock" as const, tone: "caution" as const, href: "/servicing", title: `${service.filter((r) => r.overdue).length} service request${service.filter((r) => r.overdue).length === 1 ? "" : "s"} past target`, meta: "Money movement needs a callback to a number on file", right: "Call back" }] : []),
+    ...(serviceOverdue.length ? [{ icon: "clock" as const, tone: "caution" as const, href: "/servicing", title: `${serviceOverdue.length} service request${serviceOverdue.length === 1 ? "" : "s"} past target`, meta: serviceOverdue.slice(0, 3).map((r) => `${v.clientOf(r.clientId)?.name ?? r.clientId}: ${r.kind}${r.callbackRequired ? ", callback first" : ""}`).join("; "), right: serviceOverdue.some((r) => r.callbackRequired) ? "Call back" : "Open" }] : []),
     ...(overdue.length ? [{ icon: "check" as const, tone: "caution" as const, href: "/follow-ups", title: `${overdue.length} task${overdue.length === 1 ? "" : "s"} overdue`, meta: overdue.slice(0, 3).map((t) => t.text).join("; "), right: "Open" }] : []),
   ];
 
@@ -125,15 +106,19 @@ export function Overview({ advisorId }: { advisorId: string }) {
     ];
   };
 
-  const others: { id: string; name: string; icon: IconName; state: "clear" | "attention" | "blocked" | "off"; line: string; href: string }[] = [
-    { id: "consequence", name: "Consequences", icon: "hourglass", state: "clear", line: `${simulableOpps.length} proposals carried to the morning after`, href: "/simulate" },
-    { id: "discovery", name: "Discovery", icon: "search", state: candidates.length ? "attention" : "clear", line: `${candidates.length} opportunities found in what clients said`, href: "/discovery" },
-    { id: "research", name: "Research", icon: "briefing", state: unknowns ? "attention" : "clear", line: `${briefings.length} briefings, ${unknowns} things not established`, href: "/research" },
-    { id: "retrieval", name: "Retrieval", icon: "library", state: staleDocs ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} documents, ${staleDocs} past review`, href: "/documents" },
-    { id: "proposer", name: "Rule proposer", icon: "flag", state: proposals.length ? "attention" : "clear", line: `${proposals.length} rule changes proposed to a principal`, href: "/compliance" },
-    { id: "meetings", name: "Meetings", icon: "calendar", state: "clear", line: `${meetings.length} meetings today, review packs built`, href: "/meetings" },
-    { id: "ranking", name: "Ranking", icon: "settings", state: "clear", line: `${flagged.length} ranked by ${sourceLabel(rankingProfile.provenance["triage.classWeights"]).toLowerCase()} weights; tune them`, href: "/triage#tune" },
-  ];
+  // What each morning agent on the roster did today. Names, icons and links come from lib/agents/roster.ts, the one list every page counts.
+  const today: Record<string, { state: "clear" | "attention" | "blocked" | "off"; line: string }> = {
+    consequence: { state: "clear", line: `${simulableOpps.length} proposals carried to the morning after` },
+    discovery: { state: candidates.length ? "attention" : "clear", line: `${candidates.length} opportunities found in what clients said` },
+    research: { state: unknowns ? "attention" : "clear", line: `${briefings.length} briefings, ${unknowns} things not established` },
+    retrieval: { state: staleDocs ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} documents, ${staleDocs} past review` },
+    proposer: { state: proposals.length ? "attention" : "clear", line: `${proposals.length} rule changes proposed to a principal` },
+    meetings: { state: "clear", line: `${meetings.length} meetings today, review packs built` },
+    ranking: { state: "clear", line: `${flagged.length} ranked by ${sourceLabel(rankingProfile.provenance["triage.classWeights"]).toLowerCase()} weights; tune them` },
+  };
+  // An agent the advisor switched off shows as off, and says so.
+  const off = rosterOff[advisorId] ?? [];
+  const others = MORNING.map((a) => ({ id: a.id, name: a.name, icon: a.icon as IconName, href: off.includes(a.id) ? "/agents" : a.href, ...(off.includes(a.id) ? { state: "off" as const, line: "Switched off by you" } : today[a.id] ?? { state: "off" as const, line: "Did not run" }) }));
   const clean = statuses.filter((s) => s.state === "clear").length + others.filter((o) => o.state === "clear").length;
   const firstName = (advisor?.name ?? "").split(" ")[0];
 
@@ -146,7 +131,7 @@ export function Overview({ advisorId }: { advisorId: string }) {
         name="Overnight"
         at="day 0, 06:40"
         says={<>
-          {agents.length + others.length} agents read {recordsRead.toLocaleString()} records across {found.accountsScanned} households, {found.messagesScanned} captured messages, {channelsWatched} channels and {corpus.filter((d) => d.usable).length} documents, against {policy.rules.filter((r) => r.enabled).length} rules{mounted ? `, in ${run.ms} ms` : ""}.{" "}
+          {agents.length + others.filter((o) => o.state !== "off").length} agents read {recordsRead.toLocaleString()} records across {found.accountsScanned} households, {found.messagesScanned} captured messages, {channelsWatched} channels and {corpus.filter((d) => d.usable).length} documents, against {policy.rules.filter((r) => r.enabled).length} rules{mounted ? `, in ${run.ms} ms` : ""}.{" "}
           {decisions.length ? <><span className="font-medium">{decisions.length} thing{decisions.length === 1 ? "" : "s"} need{decisions.length === 1 ? "s" : ""} you</span>, worst first below. </> : "Nothing needs a decision from you. "}
           {pending.length ? <>{pending.length} actions are drafted and waiting; accepting one sends nothing, you do.</> : "Nothing is waiting on you."}{" "}
           {flagged.length ? <>{flagged.length} opportunities are on <Link href="/triage" className="underline">today&apos;s list</Link>.</> : null}

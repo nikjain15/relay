@@ -32,7 +32,7 @@ import { score, DEFAULT_WEIGHTS } from "@/lib/ranking/rank";
 import { resolveProfile, sourceLabel, type Overlay } from "@/lib/profile";
 import { rankProspects, prospectScore, PATH_LABEL } from "@/lib/prospecting/rank";
 import { triage } from "@/lib/servicing/classify";
-import { allTasks, dueLabel } from "@/lib/followups";
+import { tasksOf, dueLabel } from "@/lib/followups";
 import { SHELF } from "@/lib/fixtures/shelf";
 import { POLICY } from "@/lib/data/policy";
 import { CONNECTORS_DATA, ADVISORS_DATA, PROSPECTS, SERVICE_REQUESTS } from "@/lib/data";
@@ -150,7 +150,7 @@ export function answer(question: string, ctx: AskContext): Answer {
   if (has(q, /\b(scor\w*|rank\w*|ranking|weights?|why is .* (first|top|at the top)|order of (the|today'?s) list)\b/)) {
     const r = rankingFor(ctx);
     if (has(q, /\b(how (do|can) i|change|tune|adjust|personali[sz]e|customi[sz]e)\b/)) {
-      return done({ text: `Open Tune the ranking on Today's list. Move the weight for any kind of signal between 0.3 and 1 and set how many items the list keeps (5 to 20); the list re-ranks as you move them and shows what moved. It applies to your list only, for this session, and never changes which options pass a household's rules. Now: ${Object.entries(r.weights).map(([k, v]) => `${CLASS_WORDS[k] ?? k} ${v}`).join(", ")}, ${r.cap} items (${r.source}).`, links: [{ label: "Tune the ranking", href: "/triage#tune" }], cites: [{ label: "Ranking settings", record: "data/profiles/schema.json#triage.classWeights" }], via: "the settings schema" });
+      return done({ text: `Open Tune the ranking on Today's list. Move the weight for any kind of signal between 0.3 and 1 and set how many items the list keeps (5 to 20); the list re-ranks as you move them and shows what moved. It applies to your list only, is kept in this browser until you reset it, and never changes which options pass a household's rules. Now: ${Object.entries(r.weights).map(([k, v]) => `${CLASS_WORDS[k] ?? k} ${v}`).join(", ")}, ${r.cap} items (${r.source}).`, links: [{ label: "Tune the ranking", href: "/triage#tune" }], cites: [{ label: "Ranking settings", record: "data/profiles/schema.json#triage.classWeights" }], via: "the settings schema" });
     }
     const opps = mine.flatMap((k) => k.opportunities.map((o) => ({ o, k }))).sort((a, b) => score(b.o, r.weights) - score(a.o, r.weights) || a.o.id.localeCompare(b.o.id));
     return done({
@@ -192,7 +192,7 @@ export function answer(question: string, ctx: AskContext): Answer {
 
   // Follow-ups: the tasks on file, overdue first.
   if (has(q, /\b(follow[- ]?ups?|tasks?|to-?dos?|overdue|promis\w*)\b/)) {
-    const t = allTasks().filter((x) => x.advisorId === ctx.advisorId);
+    const t = tasksOf(mine);
     const late = t.filter((x) => x.dueDay < 0);
     return done({ text: t.length ? `${t.length} tasks, ${late.length} overdue. ${t.slice(0, 5).map((x) => `${x.clientName}: ${x.text} (${x.owner}, ${dueLabel(x.dueDay)})`).join("; ")}.` : "No tasks on file.", cites: [...new Set(t.slice(0, 5).map((x) => x.clientId))].map((id) => ({ label: `${ctx.clients.find((k) => k.id === id)?.name ?? id} tasks`, record: `data/clients/${id}.json#tasks` })), links: [{ label: "Follow-ups", href: "/follow-ups" }], via: "the tasks on each client file" });
   }

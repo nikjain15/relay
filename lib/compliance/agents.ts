@@ -35,6 +35,8 @@ export interface AgentDefinition {
   ruleIds: string[];
   cadence: Cadence;
   enabled: boolean;
+  /** Removed for this advisor, with a principal's approval. Kept in the resolved list so the log can name it. */
+  deleted?: boolean;
   /** When it last ran, on the prototype clock ("day 0, 06:20"). */
   lastRunAt?: string;
   /** Which layer last set each field, once resolved for an advisor. Absent on the catalog entry. */

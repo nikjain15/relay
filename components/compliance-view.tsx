@@ -149,7 +149,9 @@ function RuleCard({
   );
 }
 
-export function ComplianceView({ advisorId }: { advisorId: string }) {
+export function ComplianceView() {
+  // The signed-in advisor, from session state: every screen follows the same one.
+  const advisorId = useRelay().advisorId;
   const { ruleEdits, editRule, connections, proposalDecisions, decideProposal, book } = useRelay();
   const [declining, setDeclining] = useState<string | null>(null);
   const [declineReason, setDeclineReason] = useState("");
@@ -178,7 +180,8 @@ export function ComplianceView({ advisorId }: { advisorId: string }) {
   }, [advisorId, connections, policy, connected, agents]);
 
   // The proposer reads the standing sweep and the past 90 days of findings.
-  const proposed = useMemo(() => propose(policy, sweep(advisorId, policy, connections, undefined, agents).cases, ruleEdits), [policy, advisorId, connections, ruleEdits, agents]);
+  // Over the session book, as every other screen sweeps it: a connected household's findings count here too.
+  const proposed = useMemo(() => propose(policy, sweep(advisorId, policy, connections, book.clients, agents).cases, ruleEdits), [policy, advisorId, connections, book.clients, ruleEdits, agents]);
   const openProposals = proposed.proposals.filter((p) => !proposalDecisions[p.id]);
   const accept = (p: (typeof proposed.proposals)[number]) => {
     editRule({

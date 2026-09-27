@@ -28,7 +28,9 @@ function subjectOf(ruleId?: string, agentId?: string): string {
   return BASELINE.find((r) => r.id === ruleId)?.title ?? ruleId ?? "";
 }
 
-export function ChangeLogView({ advisorId }: { advisorId: string }) {
+export function ChangeLogView() {
+  // The signed-in advisor, from session state: every screen follows the same one.
+  const advisorId = useRelay().advisorId;
   const { ruleEdits, revertEdit } = useRelay();
   const [asOf, setAsOf] = useState<string | undefined>(undefined);
 

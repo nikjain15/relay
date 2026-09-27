@@ -1,4 +1,5 @@
 import { AGENTS } from "@/lib/compliance/agents";
+import { MORNING_COUNT, ON_REQUEST } from "@/lib/agents/roster";
 import { BASELINE } from "@/lib/compliance/policy";
 import { CLIENTS, ADVISORS_DATA } from "@/lib/data";
 import { CATALOG } from "@/lib/connectors/catalog";
@@ -15,7 +16,7 @@ export default function HowItWorks() {
       <Takeaways
         items={[
           <>Relay sits on top of the CRM, custodian, planning and archive tools a practice already runs. It reads them and writes nothing back.</>,
-          <>{AGENTS.length + 6} agents run on a cadence: they detect, cite, draft and carry each option to the morning after. Every result names the records it read.</>,
+          <>{MORNING_COUNT} agents run on the book every morning, and {ON_REQUEST.length} more when you ask: they detect, cite, draft and carry each option to the morning after. Every result names the records it read.</>,
           <>The advisor decides and sends from their own tools. No module in Relay can reach an outbound transport, and a guard proves it on every build.</>,
         ]}
       />

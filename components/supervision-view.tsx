@@ -6,17 +6,15 @@
 // are what the advisor brought you. Agent findings are what nobody brought you:
 // the sweep runs whether or not anyone opened the account. Both end the same way,
 // at a principal, because Relay dispositions nothing it finds.
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { household } from "@/lib/fixtures/households";
 import { opportunity } from "@/lib/fixtures/opportunities";
 import { runChecks } from "@/lib/policy/checks";
 import { useRelay, type Disposition } from "@/components/state";
+import { useView } from "@/components/view";
 import { Brief, Banner, Card, CardGrid, More, PageTitle, Pill, Section, StatRow, TableScroll, btn, btnPrimary, input, td, th } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
-import { policyFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep } from "@/lib/compliance/sweep";
 import type { Case } from "@/lib/compliance/agents";
 import { Sparkline } from "@/components/charts";
 import { prepareActions, KIND } from "@/lib/compliance/actions";
@@ -53,17 +51,16 @@ function Disposer({ id, onAct }: { id: string; onAct: (d: Disposition, comment?:
   );
 }
 
-export function SupervisionView({ advisorId }: { advisorId: string }) {
-  const { queue, dispose, ruleEdits, connections, caseDispositions, disposeCase, actionDecisions, decideAction, book } = useRelay();
+export function SupervisionView() {
+  const { queue, dispose, caseDispositions, disposeCase, actionDecisions, decideAction } = useRelay();
   const [tab, setTab] = useState<"findings" | "drafts">("findings");
   const [comment, setComment] = useState<Record<string, string>>({});
 
-  const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
-  const policy = useMemo(() => policyFrom(ruleEdits, scope, undefined, book.rules), [ruleEdits, scope, book.rules]);
-  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients), [advisorId, policy, connections, book.clients]);
-
-  const open = found.cases.filter((c) => !caseDispositions[c.id]);
-  const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired");
+  // The same sweep the Overview and the header count: the desks as configured, the rules added this session.
+  const v = useView();
+  const { policy, found } = v;
+  const open = v.openCases;
+  const blocking = v.blocking;
   const pendingDrafts = queue.filter((q) => !q.disposition);
 
   return (

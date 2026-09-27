@@ -13,7 +13,9 @@ import { ADVISORS_DATA } from "@/lib/data";
 
 export function DiscoveryView() {
   const { book, discoveryDecisions, decideDiscovery } = useRelay();
-  const candidates = useMemo(() => discover(book.clients, book.documents), [book.clients, book.documents]);
+  // What the signed-in advisor's clients said: the same candidates the Overview counts.
+  const { advisorId } = useRelay();
+  const candidates = useMemo(() => discover(book.clients, book.documents).filter((k) => k.advisorId === advisorId), [book.clients, book.documents, advisorId]);
   const open = candidates.filter((k) => !discoveryDecisions[k.id]);
   const accepted = candidates.filter((k) => discoveryDecisions[k.id]?.decision === "accepted");
   const byKind = EXTRACTORS.map((x) => ({ label: x.label, value: candidates.filter((k) => k.extractor.id === x.id).length })).filter((b) => b.value > 0).sort((a, b) => b.value - a.value);
@@ -28,7 +30,7 @@ export function DiscoveryView() {
         name="Discovery"
         icon="search"
         at="day 0, 06:40"
-        says={<>I read {book.clients.reduce((n, c) => n + (c.messages?.length ?? 0) + c.notes.length + c.contactHistory.length, 0)} messages, notes and contact summaries for what clients said, not what the feeds show. {open.length ? <>{open.length} look like opportunities and wait on you, each cited to its sentence with a confidence.</> : "Everything I found has been decided."} {accepted.length ? `${accepted.length} accepted onto today's list this session.` : ""}{candidates.some((k) => !k.evidence.length) ? ` ${candidates.filter((k) => !k.evidence.length).length} have no citable document, so the evidence screen will refuse them.` : ""}</>}
+        says={<>I read {book.clients.filter((c) => c.advisorId === advisorId).reduce((n, c) => n + (c.messages?.length ?? 0) + c.notes.length + c.contactHistory.length, 0)} messages, notes and contact summaries for what clients said, not what the feeds show. {open.length ? <>{open.length} look like opportunities and wait on you, each cited to its sentence with a confidence.</> : "Everything I found has been decided."} {accepted.length ? `${accepted.length} accepted onto today's list this session.` : ""}{candidates.some((k) => !k.evidence.length) ? ` ${candidates.filter((k) => !k.evidence.length).length} have no citable document, so the evidence screen will refuse them.` : ""}</>}
         points={open.slice(0, 3).map((k) => ({ text: `${k.clientName}: ${k.extractor.label}, "${k.source.excerpt.slice(0, 80)}${k.source.excerpt.length > 80 ? "..." : ""}"`, who: "client" as const, icon: "quote" as const }))}
         next={open.length ? { label: "Decide the first one", href: "#found" } : undefined}
         note="In production a model would read free text for these events; here a set of extractors does, and either way a person accepts each one."

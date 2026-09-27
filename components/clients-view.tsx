@@ -11,13 +11,12 @@
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { useIngest } from "@/components/ingest";
 import { Icon } from "@/components/icons";
 import { Brief, Legend, More, PageTitle, Pill, Row, Section, TableScroll, Timeline, Who, btn, btnPrimary, td, th } from "@/components/ui";
-import { ADVISORS_DATA, SERVICE_REQUESTS } from "@/lib/data";
 import { liquidityMonths } from "@/lib/household-math";
 import { openItems } from "@/lib/onboarding/status";
-import { meetingFor } from "@/lib/meetings/prep";
 import { dossier, type Dossier, type DossierItem } from "@/lib/research/dossier";
 import { usd } from "@/lib/format";
 import { APP } from "@/lib/data/policy";
@@ -108,6 +107,9 @@ function DossierPanel({ d, onFile, filed }: { d: Dossier; onFile: () => void; fi
 
 export function ClientsView() {
   const { book, connections, dataset, addNote, notesAdded } = useRelay();
+  // The signed-in advisor's households as the session holds them: the same list every other screen counts.
+  const v = useView();
+  const clients = v.clients;
   const { onFiles, busy } = useIngest();
   const input = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<string | null>(null);
@@ -120,12 +122,12 @@ export function ClientsView() {
     setRan((r) => ({ ...r, [id]: { d, ms: Math.max(1, Math.round(performance.now() - t0)) } }));
     setOpen(id);
   };
-  const connected = dataset.clients.length;
+  const connected = dataset.clients.filter((c) => c.advisorId === v.advisor.id).length;
   const stats = useMemo(() => {
-    const silent = book.clients.filter((c) => { const last = Math.max(...c.contactHistory.map((e) => e.day), -9999); return -last > 90; }).length;
-    const pub = book.clients.reduce((s, c) => s + (c.publicRecord?.length ?? 0), 0);
-    return { silent, pub, forms: book.clients.reduce((s, c) => s + openItems(c).length, 0) };
-  }, [book.clients]);
+    const silent = clients.filter((c) => { const last = Math.max(...c.contactHistory.map((e) => e.day), -9999); return -last > 90; }).length;
+    const pub = clients.reduce((s, c) => s + (c.publicRecord?.length ?? 0), 0);
+    return { silent, pub, forms: v.paperwork.length };
+  }, [clients, v.paperwork]);
 
   return (
     <>
@@ -136,8 +138,8 @@ export function ClientsView() {
         name="Book"
         icon="people"
         at="day 0, 06:30"
-        says={<>I read {book.clients.length} households{connected ? `, ${connected} of them connected from your files this session` : ""}. {stats.silent ? `${stats.silent} ${stats.silent === 1 ? "has" : "have"} not been spoken to in 90 days.` : "Every household has been spoken to in the last 90 days."} {stats.forms} forms are open and {stats.pub} public-record items are on file, unverified until you confirm them. Ask me to research any household and I read the file, the CRM, every captured message, the firm&apos;s documents and the public record, and draft the note you file.</>}
-        points={book.clients.filter((c) => { const last = Math.max(...c.contactHistory.map((e) => e.day), -9999); return -last > 90; }).slice(0, 3).map((c) => ({ text: `${c.name}: last contact ${-Math.max(...c.contactHistory.map((e) => e.day))} days ago.`, who: "client" as const, tone: "caution" as const, href: `#${c.id}` }))}
+        says={<>I read {v.advisor.name}&apos;s {clients.length} households{connected ? `, ${connected} of them connected from your files this session` : ""}. {stats.silent ? `${stats.silent} ${stats.silent === 1 ? "has" : "have"} not been spoken to in 90 days.` : "Every household has been spoken to in the last 90 days."} {stats.forms} forms are open and {stats.pub} public-record items are on file, unverified until you confirm them. Ask me to research any household and I read the file, the CRM, every captured message, the firm&apos;s documents and the public record, and draft the note you file.</>}
+        points={clients.filter((c) => { const last = Math.max(...c.contactHistory.map((e) => e.day), -9999); return -last > 90; }).slice(0, 3).map((c) => ({ text: `${c.name}: last contact ${-Math.max(...c.contactHistory.map((e) => e.day))} days ago.`, who: "client" as const, tone: "caution" as const, href: `#${c.id}` }))}
         next={{ label: busy ? `Reading ${busy}` : "Connect your client list", onClick: () => input.current?.click() }}
       />
       <input ref={input} type="file" multiple accept=".csv,.xlsx,.json,.md,.txt" className="sr-only" aria-label="Connect a client list" onChange={(e) => { if (e.target.files?.length) void onFiles(e.target.files); e.target.value = ""; }} />
@@ -151,8 +153,8 @@ export function ClientsView() {
         </More>
       </section>
 
-      {ADVISORS_DATA.map((a) => {
-        const mine = book.clients.filter((c) => c.advisorId === a.id);
+      {[v.advisor].map((a) => {
+        const mine = clients;
         return (
           <Section key={a.id} title={`${a.name} (${mine.length} shown of ${a.walkthrough?.households ?? "?"})`}>
             <TableScroll>
@@ -176,9 +178,9 @@ export function ClientsView() {
                     const months = liquidityMonths(c);
                     const paper = openItems(c);
                     const escalated = paper.filter((w) => w.status === "escalated").length;
-                    const reqs = SERVICE_REQUESTS.filter((r) => r.clientId === c.id).length;
+                    const reqs = v.serviceRequests.filter((r) => r.clientId === c.id).length;
                     const last = c.contactHistory.reduce<(typeof c.contactHistory)[number] | undefined>((m, e) => (!m || e.day > m.day ? e : m), undefined);
-                    const mtg = meetingFor(c.id);
+                    const mtg = v.meetings.find((m) => m.clientId === c.id);
                     const r = ran[c.id];
                     const filed = (notesAdded[c.id] ?? []).some((n) => n.from === "Research agent");
                     return (

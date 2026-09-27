@@ -1,27 +1,33 @@
+"use client";
+
 // Every briefing at once: which households carry the most the advisor does not
 // know, and which of those are in today's calendar. The agent ran for all of
 // them before anyone opened this page.
 import Link from "next/link";
+import { useMemo } from "react";
 import { briefAll } from "@/lib/research/brief";
-import { todaysMeetings, clientName } from "@/lib/meetings/prep";
-import { ADVISORS_DATA, CLIENTS } from "@/lib/data";
+import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { APP } from "@/lib/data/policy";
 import { Brief, More, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 import { Bars, Meter } from "@/components/charts";
 import { Icon } from "@/components/icons";
 
 export default function ResearchIndex() {
-  const all = briefAll();
-  const meetings = todaysMeetings();
+  // The signed-in advisor's households as the session holds them (connected sources, filed notes), and their calendar.
+  const { connections, book } = useRelay();
+  const v = useView();
+  const all = useMemo(() => briefAll(connections, book.clients).filter((b) => v.clients.some((c) => c.id === b.clientId)), [connections, book.clients, v.clients]);
+  const meetings = v.meetings;
   const today = new Set(meetings.map((m) => m.clientId).filter(Boolean));
+  const clientName = (id: string) => v.clientOf(id)?.name ?? id;
   const rows = all
-    .map((b) => ({ b, meeting: meetings.find((m) => m.clientId === b.clientId), advisor: CLIENTS.find((c) => c.id === b.clientId)!.advisorId }))
+    .map((b) => ({ b, meeting: meetings.find((m) => m.clientId === b.clientId) }))
     .sort((a, z) => Number(Boolean(z.meeting)) - Number(Boolean(a.meeting)) || z.b.unknowns.length - a.b.unknowns.length || a.b.name.localeCompare(z.b.name));
   const total = (k: "since" | "observed" | "inferred" | "unknowns") => all.reduce((s, b) => s + b[k].length, 0);
   const byProbe = Object.entries(
     all.flatMap((b) => b.unknowns).reduce<Record<string, number>>((acc, u) => ((acc[u.probe] = (acc[u.probe] ?? 0) + 1), acc), {}),
   ).sort((a, b) => b[1] - a[1]);
-  const label = (id: string) => ADVISORS_DATA.find((a) => a.id === id)?.name ?? id;
 
   return (
     <>
@@ -31,7 +37,7 @@ export default function ResearchIndex() {
         name="Research"
         icon="briefing"
         at="day 0, 06:30"
-        says={<>I briefed all {all.length} households before anyone opened this page: {total("since")} things changed since you last spoke to each, {total("inferred")} things I inferred with a confidence, and {total("unknowns")} I could not establish and say so. Today&apos;s meetings are first.</>}
+        says={<>I briefed all {all.length} of {v.advisor.name}&apos;s households before anyone opened this page: {total("since")} things changed since you last spoke to each, {total("inferred")} things I inferred with a confidence, and {total("unknowns")} I could not establish and say so. Today&apos;s meetings are first.</>}
         points={rows.filter((r) => r.meeting).slice(0, 3).map((r) => ({ text: `${r.meeting!.time} ${r.b.name}: ${r.b.since.length} changed since you spoke, ${r.b.unknowns.length} not established.`, href: `/research/${r.b.clientId}`, who: "client" as const, icon: "calendar" as const }))}
         next={rows[0] ? { label: `Open the ${rows[0].b.name} briefing`, href: `/research/${rows[0].b.clientId}` } : undefined}
         note="A model would phrase a briefing; it would not decide what is observed and what is inferred. Every claim cites a field."
@@ -54,7 +60,6 @@ export default function ResearchIndex() {
             <thead>
               <tr>
                 <th className={th}>Household</th>
-                <th className={th}>Advisor</th>
                 <th className={th}>Today</th>
                 <th className={th}>Since last contact</th>
                 <th className={th}>Observed</th>
@@ -64,10 +69,9 @@ export default function ResearchIndex() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ b, meeting, advisor }) => (
+              {rows.map(({ b, meeting }) => (
                 <tr key={b.clientId}>
                   <td className={td}><span className="flex items-center gap-2"><Icon name="briefing" size={16} className="text-ink-3" /><Link href={`/research/${b.clientId}`} className="underline">{clientName(b.clientId)}</Link></span></td>
-                  <td className={`${td} text-ink-2`}>{label(advisor)}</td>
                   <td className={td}>{meeting ? <Pill tone="accent">{meeting.time} {meeting.title}</Pill> : <span className="text-ink-3">no meeting</span>}</td>
                   <td className={`${td} tabular-nums`}>{b.since.length}</td>
                   <td className={`${td} tabular-nums`}>{b.observed.length}</td>

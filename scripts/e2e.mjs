@@ -405,6 +405,31 @@ try {
   await page.goto(BASE + "/communications");
   check("reload: communications offers the featured proposal when nothing is accepted", (await page.getByRole("button", { name: /Load the featured proposal/ }).count()) === 1);
 
+  // 7b. One source: for every advisor, each count on the Overview equals the count on the screen it links to.
+  // The advisor is switched in the header and the screens are reached by the navigation, as a person would.
+  {
+    const nav = async (label) => { await page.getByRole("navigation").getByRole("link", { name: new RegExp(`^${label}`) }).first().click(); await page.waitForTimeout(500); return (await page.locator("main").innerText()).replace(/\s+/g, " "); };
+    const num = (t, re) => { const m = t.match(re); return m ? Number(m[1]) : 0; };
+    const bad = [];
+    await page.goto(BASE + "/");
+    for (const a of readdirSync(join(ROOT, "data/advisors")).map((f) => f.replace(/\.json$/, ""))) {
+      await page.getByLabel("Signed in as").selectOption(a);
+      const ov = await nav("Overview");
+      const header = (await page.locator("header").first().innerText()).replace(/\s+/g, " ");
+      const pairs = [
+        ["meetings", num(ov, /(\d+) meetings today/), num(await nav("Meetings"), /I read (\d+) meetings/)],
+        ["tasks overdue", num(ov, /(\d+) tasks? overdue/), num(await nav("Follow-ups"), /(\d+) tasks overdue/)],
+        ["service past target", num(ov, /(\d+) service requests? past target/), num(await nav("Service requests"), /(\d+) past target/)],
+        ["forms escalated", num(ov, /(\d+) forms? past the escalation deadline/), num(await nav("Paperwork"), /(\d+) escalated to the branch supervisor/)],
+        ["findings", num(header, /(\d+) findings?/), num(await nav("Supervision queue"), /(\d+) findings? wait/)],
+        ["on today's list", num(ov, /(\d+) opportunities are on/), num(await nav("Today's list"), /kept the top (\d+)/)],
+        ["households", num(ov, /across (\d+) households/), num(await nav("Households"), /'s (\d+) households/)],
+      ];
+      for (const [k, x, y] of pairs) if (x !== y) bad.push(`${a} ${k}: overview ${x}, screen ${y}`);
+    }
+    check("one source: for every advisor, the Overview's counts equal the screens they link to", bad.length === 0, bad.join(" | "));
+  }
+
   // 8. Copy: no firm branding in product copy.
   await page.goto(BASE + "/triage");
   check("copy: no firm name in product copy on today's list", !/\bUBS\b/.test(await page.locator("main").innerText()));

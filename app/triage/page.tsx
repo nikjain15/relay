@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { OPPORTUNITIES } from "@/lib/fixtures/opportunities";
-import { household } from "@/lib/fixtures/households";
-import { rank, score } from "@/lib/ranking/rank";
-import { resolveProfile, sourceLabel } from "@/lib/profile";
+import { score } from "@/lib/ranking/rank";
+import { sourceLabel } from "@/lib/profile";
 import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, CLIENTS, toHousehold } from "@/lib/data";
-import { APP, POLICY } from "@/lib/data/policy";
+import { POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { Brief, CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, stack, td, th } from "@/components/ui";
 import { Icon, CLASS_ICON } from "@/components/icons";
 import { RankingTuner } from "@/components/ranking-tuner";
@@ -17,20 +17,20 @@ import { RankingTuner } from "@/components/ranking-tuner";
 const REASONS = POLICY.triage.dismissReasons;
 
 export default function Triage() {
-  const { dismissed, dismiss, restore, accepted, overlay, book } = useRelay();
+  const { dismissed, dismiss, restore, accepted, book, setAdvisorId } = useRelay();
+  // The signed-in advisor's list, from the same view the Overview counts.
+  const v = useView();
   const shipped = new Set(OPPORTUNITIES.map((o) => o.id));
   const clientOf = (id: string) => book.clients.find((c) => c.id === id);
   const [choosing, setChoosing] = useState<string | null>(null);
   const [reason, setReason] = useState("");
-  const [advisorId, setAdvisorId] = useState(APP.defaultAdvisorId);
-  // Falls back to the first advisor if app.json names one that is not in the data.
-  const advisor = ADVISORS_DATA.find((a) => a.id === advisorId) ?? ADVISORS_DATA[0];
-  const day = advisor.walkthrough ?? { meetings: [], alertsOvernight: 0 };
-  const mine = book.opportunities.filter((o) => clientOf(o.householdId)?.advisorId === advisor.id);
-  const prof = resolveProfile({ advisorId: advisor.id }, overlay);
+  const advisor = v.advisor;
+  const day = { meetings: v.meetings, alertsOvernight: advisor.walkthrough?.alertsOvernight ?? 0 };
+  const mine = v.opportunities;
+  const prof = v.profile;
   const cap = prof.values["triage.dailyCap"];
   const weights = prof.values["triage.classWeights"];
-  const rows = rank(mine, new Set(Object.keys(dismissed)), cap, weights);
+  const rows = v.list;
   const lastContact = (hid: string) => {
     const h = clientOf(hid)?.contactHistory ?? [];
     const last = h.reduce<(typeof h)[number] | undefined>((m, e) => (!m || e.day > m.day ? e : m), undefined);
@@ -91,7 +91,7 @@ export default function Triage() {
           </thead>
           <tbody className={stack.body}>
             {rows.map((o, i) => {
-              const h = household(o.householdId) ?? toHousehold(clientOf(o.householdId)!);
+              const h = toHousehold(clientOf(o.householdId)!);
               const refused = retrieve(o, book.documents).refused;
               const isShipped = shipped.has(o.id) && CLIENTS.some((c) => c.id === h.id);
               const clientHref = isShipped ? `/household/${h.id}` : `/sources#${h.id}`;

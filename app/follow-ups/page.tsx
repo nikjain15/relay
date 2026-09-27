@@ -3,34 +3,29 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ADVISORS_DATA } from "@/lib/data";
-import { allTasks, dueLabel } from "@/lib/followups";
+import { dueLabel } from "@/lib/followups";
 import { clientName } from "@/lib/meetings/prep";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, btn, td, th } from "@/components/ui";
 import { Icon } from "@/components/icons";
-import { policyFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep } from "@/lib/compliance/sweep";
-import { prepareAll, KIND } from "@/lib/compliance/actions";
-import { APP } from "@/lib/data/policy";
+import { KIND } from "@/lib/compliance/actions";
 
 export default function FollowUps() {
-  const { queue, markSent, log, addLog, ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
+  const { queue, markSent, log, addLog, actionDecisions } = useRelay();
   const [done, setDone] = useState<Record<string, boolean>>({});
-  const accepted = (() => {
-    const policy = policyFrom(ruleEdits, scopeFor(APP.defaultAdvisorId));
-    const open = sweep(APP.defaultAdvisorId, policy, connections, book.clients).cases.filter((c) => !caseDispositions[c.id]);
-    return prepareAll(open, policy.rules).filter((a) => actionDecisions[a.id]?.decision === "accepted");
-  })();
+  // The signed-in advisor's actions and tasks, from the view the Overview counts.
+  const v = useView();
+  const accepted = v.actions.filter((a) => actionDecisions[a.id]?.decision === "accepted");
   const approved = queue.filter((q) => q.disposition === "approved");
-  const tasks = allTasks();
+  const tasks = v.tasks;
   return (
     <>
       <PageTitle icon="check" title="Follow-ups" sub="What the team owes after the advice. Relay never sends: the advisor sends approved notes and logs what happened." />
       <AgentBar
         name="Follow-up"
         icon="check"
-        read={`${queue.length} notes in the review queue, ${accepted.length} accepted agent actions and ${tasks.length} tasks across the book`}
+        read={`${queue.length} notes in the review queue, ${accepted.length} accepted agent actions and ${tasks.length} tasks on ${v.advisor.name}'s ${v.clients.length} households`}
         left={[`${approved.length} approved notes waiting for you to send`, `${accepted.length} accepted actions with an owner`, `${tasks.filter((t) => t.dueDay < 0).length} tasks overdue`]}
         steps={[
           { icon: "shield", who: "agent", title: "Read the supervision queue for approved notes", detail: "A note reaches here only after a principal approved it." },

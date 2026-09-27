@@ -6,32 +6,43 @@
 // as a timeline. The other autonomous parts of the system (the research agent,
 // retrieval, the rule-change proposer) sit on the same screen because they are
 // the same kind of thing: work done before anyone asked, handed to a person.
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import type { AgentDefinition } from "@/lib/compliance/agents";
+import type { RosterAgent } from "@/lib/agents/roster";
+import { ON_REQUEST } from "@/lib/agents/roster";
+import { explainAgent, explainRoster } from "@/lib/agents/explain";
+import { AgentCard } from "@/components/agent-card";
+import { DeskEditor, CustomEditor, RosterEditor, CreateAgent } from "@/components/agent-editor";
+import { Icon, type IconName } from "@/components/icons";
 import Link from "next/link";
 import { useRelay } from "@/components/state";
-import { Brief, Card, CardGrid, More, PageTitle, Section, StatRow, StateDot, Timeline, btn } from "@/components/ui";
-import { Icon } from "@/components/icons";
+import { useView } from "@/components/view";
+import { MORNING } from "@/lib/agents/roster";
+import { Brief, CardGrid, More, PageTitle, Section, StatRow, Timeline, btn, btnPrimary } from "@/components/ui";
 import { Bars } from "@/components/charts";
-import { policyFrom, agentsFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep, connectedIds } from "@/lib/compliance/sweep";
-import { prepareAll } from "@/lib/compliance/actions";
+import { connectedIds } from "@/lib/compliance/sweep";
 import { agentStatuses, activity } from "@/lib/compliance/activity";
 import { propose } from "@/lib/compliance/propose";
-import { briefAll, PROBE_IDS } from "@/lib/research/brief";
+import { briefAll } from "@/lib/research/brief";
 import { corpusStates, corpusConflicts } from "@/lib/evidence/corpus";
 import { ADVISORS_DATA } from "@/lib/data";
-import { discover, EXTRACTORS } from "@/lib/discovery/discover";
+import { discover } from "@/lib/discovery/discover";
 
-export function AgentsView({ advisorId }: { advisorId: string }) {
-  const { ruleEdits, connections, caseDispositions, actionDecisions, proposalDecisions, book, discoveryDecisions } = useRelay();
-  const scope = useMemo(() => scopeFor(advisorId), [advisorId]);
-  const policy = useMemo(() => policyFrom(ruleEdits, scope, undefined, book.rules), [ruleEdits, scope, book.rules]);
-  const agents = useMemo(() => agentsFrom(ruleEdits, undefined, scope, book.rules), [ruleEdits, scope, book.rules]);
-  const found = useMemo(() => sweep(advisorId, policy, connections, book.clients, agents), [advisorId, policy, connections, book.clients, agents]);
-  const open = found.cases.filter((c) => !caseDispositions[c.id]);
-  const actions = useMemo(() => prepareAll(open, policy.rules), [open, policy]);
-  const pendingActions = actions.filter((a) => !actionDecisions[a.id]);
+export function AgentsView() {
+  // The signed-in advisor, from session state: every screen follows the same one.
+  const advisorId = useRelay().advisorId;
+  const { ruleEdits, connections, proposalDecisions, book, discoveryDecisions } = useRelay();
+  const v = useView();
+  const { policy, agents, found, actions, pendingActions } = v;
+  const { customAgents, agentRequests, decideAgentRequest, rosterOff } = useRelay();
+  const [desk, setDesk] = useState<AgentDefinition | null>(null);
+  const [custom, setCustom] = useState<string | null>(null);
+  const [roster, setRoster] = useState<RosterAgent | null>(null);
+  const [creating, setCreating] = useState(false);
+  const mineCustom = customAgents.filter((c) => c.advisorId === advisorId);
+  const requests = agentRequests.filter((r) => r.advisorId === advisorId);
+  const off = rosterOff[advisorId] ?? [];
+  const open = v.openCases;
   const connected = useMemo(() => connectedIds(advisorId, connections), [advisorId, connections]);
   const statuses = useMemo(() => agentStatuses(agents, policy, found, actions, open, connected), [agents, policy, found, actions, open, connected]);
   const proposals = useMemo(() => propose(policy, open, ruleEdits), [policy, open, ruleEdits]);
@@ -52,64 +63,143 @@ export function AgentsView({ advisorId }: { advisorId: string }) {
     { at: "day 0, 06:35", icon: "flag", title: `Proposer read ${proposals.findingsRead} findings from ${proposals.windowDays} days`, meta: `${openProposals.length} rule change${openProposals.length === 1 ? "" : "s"} waiting on a principal, ${proposals.observations.length} seen and not proposed.`, tone: openProposals.length ? "caution" : "positive", href: "/compliance" },
   ]);
 
+  const rosterToday: Record<string, { state: "clear" | "attention"; line: string }> = {
+    research: { state: unknowns ? "attention" : "clear", line: `${briefings.length} briefings, ${unknowns} things not established.` },
+    retrieval: { state: stale || conflicts ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} current documents, ${stale} past review, ${conflicts} disagreement${conflicts === 1 ? "" : "s"}.` },
+    discovery: { state: openDiscoveries.length ? "attention" : "clear", line: `${openDiscoveries.length} candidate${openDiscoveries.length === 1 ? "" : "s"} waiting, ${discoveries.length - openDiscoveries.length} decided.` },
+    consequence: { state: "clear", line: "Every option on every proposal carried to the morning after." },
+    proposer: { state: openProposals.length ? "attention" : "clear", line: `${openProposals.length} proposed, ${proposals.observations.length} seen and not proposed.` },
+    meetings: { state: "clear", line: `${v.meetings.length} meetings today, review packs built.` },
+    ranking: { state: "clear", line: `${v.list.length} on today's list, by ${v.profile.provenance["triage.classWeights"]?.includes("tuned") ? "your tuned" : "the firm's"} weights.` },
+  };
+
   return (
     <>
       <PageTitle icon="agent" title="Agents" sub={`${advisor?.name ?? advisorId}. What ran, over what, and what is left for a person. Open any desk to tune it or teach it a policy.`} />
       <Brief
         name="Agent status"
-        says={<>{statuses.filter((s) => s.agent.enabled).length + 4} agents are running for {advisor?.name ?? advisorId}. {open.length} findings are open, {pendingActions.length} prepared actions wait on a person, and {openProposals.length} rule change{openProposals.length === 1 ? "" : "s"} wait on a principal.</>}
+        says={<>{statuses.filter((s) => s.agent.enabled).length + MORNING.filter((a) => !off.includes(a.id)).length} agents are running for {advisor?.name ?? advisorId}. {open.length} findings are open, {pendingActions.length} prepared actions wait on a person, and {openProposals.length} rule change{openProposals.length === 1 ? "" : "s"} wait on a principal.</>}
         points={statuses.filter((s) => s.state !== "clear").slice(0, 3).map((s) => ({ text: `${s.agent.name}: ${s.open} raised${s.blocking ? `, ${s.blocking} blocking` : ""}`, href: `/agents/${s.agent.id}`, tone: (s.state === "blocked" ? "critical" : "caution") as "critical" | "caution" }))}
         next={{ label: "Open the first desk", href: `/agents/${statuses[0]?.agent.id ?? ""}` }}
+        note="Every card below says what the agent is for, what it reads, what it checks, what it prepares and what it never does. Edit any of them; create your own."
       />
 
       <StatRow
         items={[
-          { value: statuses.filter((s) => s.agent.enabled).length + 4, label: "Agents running", icon: "agent" },
+          { value: statuses.filter((s) => s.agent.enabled).length + MORNING.filter((a) => !off.includes(a.id)).length, label: "Agents running", icon: "agent" },
           { value: open.length, label: "Findings open", icon: "shield", tone: open.some((c) => c.severity === "block" && c.reason === "fired") ? "critical" : open.length ? "plain" : "positive" },
           { value: pendingActions.length, label: "Actions prepared, waiting on you", icon: "check", tone: pendingActions.length ? "plain" : "positive" },
           { value: openProposals.length, label: "Rule changes proposed", icon: "flag", tone: openProposals.length ? "plain" : "positive" },
         ]}
       />
 
-      <Section title="Compliance agents">
+      <section className="mb-8 rounded border border-line p-4" aria-label="How an agent works here">
+        <p className="mb-3 text-[13px] font-medium text-ink">How every agent here works</p>
+        <ol className="grid gap-3 text-[13px] sm:grid-cols-4">
+          {[
+            ["eye", "Reads", "Only what it is pointed at: your book, captured messages, proposals or documents. It writes nothing back."],
+            ["rules", "Checks", "Its rules, which you can read in plain words on every card. Every check is arithmetic or a stated condition."],
+            ["check", "Prepares", "A finding with its evidence and the next step: a task, a drafted note, a hold. Nothing is sent."],
+            ["people", "You decide", "Every finding waits on a person. Tighten a desk yourself; loosening one needs a principal."],
+          ].map(([icon, t, d]) => (
+            <li key={t} className="flex gap-2"><Icon name={icon as IconName} size={16} className="mt-0.5 shrink-0 text-agent" /><span><span className="font-medium text-ink">{t}.</span> <span className="text-ink-2">{d}</span></span></li>
+          ))}
+        </ol>
+      </section>
+
+      {requests.filter((r) => r.status === "pending").length > 0 && (
+        <Section title={`Waiting on a principal (${requests.filter((r) => r.status === "pending").length})`}>
+          <ul className="divide-y divide-line rounded border border-line">
+            {requests.filter((r) => r.status === "pending").map((r) => (
+              <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 px-4 py-3">
+                <div className="min-w-0 text-[13px]">
+                  <p className="text-ink">{r.summary}</p>
+                  <p className="mt-0.5 text-ink-2">Why: {r.reason}</p>
+                </div>
+                <span className="flex gap-2">
+                  <button type="button" className={btnPrimary} onClick={() => decideAgentRequest(r.id, true, "Principal")}>Approve, as principal</button>
+                  <button type="button" className={btn} onClick={() => decideAgentRequest(r.id, false, "Principal")}>Refuse</button>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[12px] text-ink-3">In production only a registered principal sees these buttons. Each decision goes in the change log with who made it.</p>
+        </Section>
+      )}
+      {requests.some((r) => r.status !== "pending") && (
+        <p className="-mt-4 mb-8 text-[12px] text-ink-2">
+          {requests.filter((r) => r.status !== "pending").map((r) => `${r.status === "approved" ? "Approved" : "Refused"}: ${r.summary}`).join(" ")}{" "}
+          <Link className="underline" href="/compliance/log">Change log</Link>
+        </p>
+      )}
+
+      <Section title={`Compliance desks (${statuses.filter((s) => !s.agent.id.startsWith("custom-")).length})`}>
         <CardGrid cols={2}>
-          {statuses.map((s) => (
-            <Card key={s.agent.id} icon={s.icon} title={s.agent.name} sub={`${s.cadenceLabel}. Last run ${s.lastRunAt}.`} right={<StateDot state={s.state} />}>
-              <dl className="grid grid-cols-1 gap-x-4 gap-y-1 text-[13px] sm:grid-cols-[auto_1fr]">
-                <dt className="text-ink-3">Read</dt><dd className="text-ink">{s.scanned}</dd>
-                <dt className="text-ink-3">Rules</dt><dd className="text-ink">{s.rulesWatched} in force, {s.rulesEvaluable} evaluable{s.rulesOff ? `, ${s.rulesOff} switched off` : ""}</dd>
-                <dt className="text-ink-3">Raised</dt><dd className="text-ink">{s.open}{s.blocking ? `, ${s.blocking} blocking` : ""}{s.needsConfirming ? `, ${s.needsConfirming} to confirm` : ""}{s.cannotEvaluate ? `, ${s.cannotEvaluate} not evaluable` : ""}</dd>
-                <dt className="text-ink-3">Prepared</dt><dd className="text-ink">{s.actionsPrepared} action{s.actionsPrepared === 1 ? "" : "s"}</dd>
-              </dl>
-              <p className="mt-2 text-[12px]">
-                <Link href={`/agents/${s.agent.id}`} className={btn}>Open, tune, teach a policy</Link>
-              </p>
-            </Card>
+          {statuses.filter((s) => !s.agent.id.startsWith("custom-")).map((s) => (
+            <AgentCard
+              key={s.agent.id}
+              name={s.agent.name}
+              icon={s.icon}
+              kind="Compliance desk"
+              exp={explainAgent(s.agent, policy.rules)}
+              state={s.state}
+              today={<>Last run {s.lastRunAt}. Read {s.scanned}. Raised {s.open}{s.blocking ? `, ${s.blocking} blocking` : ""}{s.needsConfirming ? `, ${s.needsConfirming} to confirm` : ""}. Prepared {s.actionsPrepared} action{s.actionsPrepared === 1 ? "" : "s"}.</>}
+              actions={<>
+                <Link href={`/agents/${s.agent.id}`} className={btn}>Open</Link>
+                <button type="button" className={btn} onClick={() => setDesk(s.agent)}>Edit</button>
+              </>}
+            />
           ))}
         </CardGrid>
       </Section>
 
-      <Section title="The other agents">
-        <CardGrid cols={4}>
-          <Card icon="search" title="Discovery" sub={`Over every message, note and contact summary. ${EXTRACTORS.length} event kinds.`} right={<StateDot state={openDiscoveries.length ? "attention" : "clear"} />}>
-            <p className="text-[13px] text-ink">{openDiscoveries.length} candidate{openDiscoveries.length === 1 ? "" : "s"} waiting, {discoveries.length - openDiscoveries.length} decided.</p>
-            <p className="mt-2 text-[12px]"><Link href="/discovery" className="underline">Discoveries</Link></p>
-          </Card>
-          <Card icon="briefing" title="Research" sub="Before each conversation. Twelve probes." right={<StateDot state={unknowns ? "attention" : "clear"} />}>
-            <p className="text-[13px] text-ink">{briefings.length} briefings, {unknowns} things not established.</p>
-            <p className="mt-1 text-[12px] text-ink-3">{PROBE_IDS.length} probes: {PROBE_IDS.slice(0, 5).join(", ")}, and more.</p>
-            <p className="mt-2 text-[12px]"><Link href="/research" className="underline">Briefings</Link></p>
-          </Card>
-          <Card icon="library" title="Retrieval" sub="On every opportunity. Cites or refuses." right={<StateDot state={stale || conflicts ? "attention" : "clear"} />}>
-            <p className="text-[13px] text-ink">{corpus.filter((d) => d.usable).length} current documents, {stale} past review, {conflicts} disagreement{conflicts === 1 ? "" : "s"}.</p>
-            <p className="mt-2 text-[12px]"><Link href="/documents" className="underline">Library</Link></p>
-          </Card>
-          <Card icon="flag" title="Rule-change proposer" sub="Over 90 days of findings. Stricter only." right={<StateDot state={openProposals.length ? "attention" : "clear"} />}>
-            <p className="text-[13px] text-ink">{openProposals.length} proposed, {proposals.observations.length} seen and not proposed.</p>
-            <p className="mt-2 text-[12px]"><Link href="/compliance" className="underline">Proposals</Link></p>
-          </Card>
+      <Section title={`Your agents (${mineCustom.length})`}>
+        {mineCustom.length === 0 ? (
+          <p className="text-[13px] text-ink-2">None yet. <button type="button" className="underline" onClick={() => setCreating(true)}>Create one</button> to watch something the desks do not: cash cover below a floor, clients you have not spoken to, one stock above a level, or a phrase in what clients write.</p>
+        ) : (
+          <CardGrid cols={2}>
+            {mineCustom.map((c) => {
+              const st = statuses.find((x) => x.agent.id === c.agent.id);
+              return (
+                <AgentCard
+                  key={c.agent.id}
+                  name={c.agent.name}
+                  icon="agent"
+                  kind="Your agent"
+                  exp={explainAgent(c.agent, policy.rules)}
+                  state={c.agent.enabled ? (st?.state ?? "clear") : "off"}
+                  today={c.agent.enabled ? <>Raised {st?.open ?? 0} on your book. Prepared {st?.actionsPrepared ?? 0} action{st?.actionsPrepared === 1 ? "" : "s"}.</> : "Switched off."}
+                  actions={<button type="button" className={btn} onClick={() => setCustom(c.agent.id)}>Edit</button>}
+                />
+              );
+            })}
+          </CardGrid>
+        )}
+        <p className="mt-3"><button type="button" className={btnPrimary} onClick={() => setCreating(true)}>Create an agent</button></p>
+      </Section>
+
+      <Section title={`Every morning (${MORNING.length})`}>
+        <CardGrid cols={2}>
+          {MORNING.map((a) => (
+            <AgentCard key={a.id} name={a.name} icon={a.icon as IconName} kind="Runs on your book" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : rosterToday[a.id]?.state ?? "clear"} today={off.includes(a.id) ? "Switched off by you." : rosterToday[a.id]?.line ?? "Ran."}
+              actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />
+          ))}
         </CardGrid>
       </Section>
+
+      <Section title={`When you ask (${ON_REQUEST.length})`}>
+        <CardGrid cols={2}>
+          {ON_REQUEST.map((a) => (
+            <AgentCard key={a.id} name={a.name} icon={a.icon as IconName} kind="Runs when you ask" exp={explainRoster(a)} state={off.includes(a.id) ? "off" : "clear"} today={off.includes(a.id) ? "Switched off by you." : "Ready."}
+              actions={<><Link href={a.href} className={btn}>Open</Link><button type="button" className={btn} onClick={() => setRoster(a)}>Edit</button></>} />
+          ))}
+        </CardGrid>
+      </Section>
+
+      <DeskEditor agent={desk ? v.agents.find((a) => a.id === desk.id) ?? null : null} onClose={() => setDesk(null)} />
+      <CustomEditor id={custom} onClose={() => setCustom(null)} />
+      <RosterEditor agent={roster} onClose={() => setRoster(null)} />
+      <CreateAgent open={creating} onClose={() => setCreating(false)} onCreated={() => {}} />
 
       <div className="grid gap-8 lg:grid-cols-2">
         <Section title="This morning">

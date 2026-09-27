@@ -7,7 +7,7 @@
 // morning list on a phone between meetings needs the content column to have the
 // whole screen. The drawer closes on navigation and on Escape, and focus goes to
 // it when it opens, so it is usable without a mouse.
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -17,11 +17,8 @@ import { Legend } from "@/components/ui";
 import { Palette } from "@/components/palette";
 import { Ask } from "@/components/ask";
 import { useRelay } from "@/components/state";
-import { policyFrom, agentsFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep } from "@/lib/compliance/sweep";
-import { prepareAll } from "@/lib/compliance/actions";
-import { APP } from "@/lib/data/policy";
+import { useView } from "@/components/view";
+import { ADVISORS_DATA } from "@/lib/data";
 
 /**
  * What the agents are holding, in the header, on every screen.
@@ -32,16 +29,27 @@ import { APP } from "@/lib/data/policy";
  * that only ever appears when something is wrong teaches people to ignore the
  * space it occupies.
  */
+/** Who the session is signed in as. Every screen that says "you" follows it. */
+function AdvisorSwitch() {
+  const { advisorId, setAdvisorId } = useRelay();
+  return (
+    <label className="flex items-center">
+      <span className="sr-only">Signed in as</span>
+      <select
+        value={advisorId}
+        onChange={(e) => setAdvisorId(e.target.value)}
+        className="h-8 max-w-[9rem] rounded border border-line bg-surface px-1.5 text-[12px] text-ink sm:max-w-none"
+      >
+        {ADVISORS_DATA.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+      </select>
+    </label>
+  );
+}
+
 function AgentStatus() {
-  const { ruleEdits, connections, caseDispositions, actionDecisions, book } = useRelay();
-  const { open, prepared } = useMemo(() => {
-    const advisorId = APP.defaultAdvisorId;
-    const policy = policyFrom(ruleEdits, scopeFor(advisorId), undefined, book.rules);
-    const found = sweep(advisorId, policy, connections, book.clients, agentsFrom(ruleEdits, undefined, scopeFor(advisorId), book.rules));
-    const open = found.cases.filter((c) => !caseDispositions[c.id]);
-    const prepared = prepareAll(open, policy.rules).filter((a) => !actionDecisions[a.id]).length;
-    return { open, prepared };
-  }, [ruleEdits, connections, caseDispositions, actionDecisions, book.clients, book.rules]);
+  const v = useView();
+  const open = v.openCases;
+  const prepared = v.pendingActions.length;
   const blocking = open.filter((c) => c.severity === "block" && c.reason === "fired").length;
 
   return (
@@ -135,6 +143,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <Icon name="search" size={16} />
             <span className="hidden sm:inline">Jump to</span>
           </button>
+          <AdvisorSwitch />
           <AgentStatus />
         </div>
       </header>

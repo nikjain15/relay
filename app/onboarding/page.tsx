@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { CLIENTS } from "@/lib/data";
+import { useView } from "@/components/view";
 import { paperStatus, reminderDraft, escalateAfter, ESCALATE_AFTER_DAYS } from "@/lib/onboarding/status";
 import { SEGMENTS } from "@/lib/profile";
 import { AgentBar, PageTitle, Pill, Section, TableScroll, Who, td, th } from "@/components/ui";
 
 export default function Onboarding() {
-  const rows = CLIENTS.flatMap((c) => c.paperwork.map((w) => ({ c, w, after: escalateAfter(c.id), ...paperStatus(w, 0, escalateAfter(c.id)) })));
+  // The signed-in advisor's households, from the same view the Overview counts "past the escalation deadline" from.
+  const v = useView();
+  const rows = v.clients.flatMap((c) => c.paperwork.map((w) => ({ c, w, after: escalateAfter(c.id), ...paperStatus(w, 0, escalateAfter(c.id)) })));
   const order = { escalated: 0, due: 1, signed: 2 } as const;
   rows.sort((a, b) => order[a.status] - order[b.status] || b.daysOpen - a.daysOpen);
   const open = rows.filter((r) => r.status !== "signed");
@@ -19,7 +23,7 @@ export default function Onboarding() {
       <AgentBar
         name="Paperwork"
         icon="esign"
-        read={`${rows.length} forms across ${CLIENTS.length} client files, against each household's escalation threshold`}
+        read={`${rows.length} forms across ${v.advisor.name}'s ${v.clients.length} client files, against each household's escalation threshold`}
         left={[`${open.filter((r) => r.status === "escalated").length} escalated to the branch supervisor`, `${open.filter((r) => r.status === "due").length} reminders drafted`, `${rows.length - open.length} signed and closed`]}
         steps={[
           { icon: "esign", who: "client", title: "Read every form on every file", detail: "Requested day, signed day, and any note the team left." },

@@ -9,34 +9,27 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRelay } from "@/components/state";
+import { useView } from "@/components/view";
 import { Icon } from "@/components/icons";
 import { Who, btn, btnPrimary } from "@/components/ui";
 import { answer, suggestions, type Answer } from "@/lib/ask/answer";
-import { policyFrom, agentsFrom } from "@/lib/compliance/store";
-import { scopeFor } from "@/lib/compliance/scope";
-import { sweep } from "@/lib/compliance/sweep";
-import { prepareAll } from "@/lib/compliance/actions";
-import { APP } from "@/lib/data/policy";
 
 interface Turn { q: string; a: Answer; ms: number }
 
 export function Ask({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { ruleEdits, connections, caseDispositions, actionDecisions, book, overlay } = useRelay();
+  const { connections, book, overlay } = useRelay();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const end = useRef<HTMLDivElement>(null);
-  const advisorId = APP.defaultAdvisorId;
+  // Ask reads the same advisor view as every screen, so an answer and the screen it links to agree.
+  const v = useView();
+  const advisorId = v.advisor.id;
 
-  const ctx = useMemo(() => {
-    const scope = scopeFor(advisorId);
-    const policy = policyFrom(ruleEdits, scope, undefined, book.rules);
-    const agents = agentsFrom(ruleEdits, undefined, scope, book.rules);
-    const found = sweep(advisorId, policy, connections, book.clients, agents);
-    const cases = found.cases.filter((c) => !caseDispositions[c.id]);
-    const actions = prepareAll(cases, policy.rules).filter((a) => !actionDecisions[a.id]);
-    return { advisorId, clients: book.clients, documents: book.documents, cases, actions, policy, agents, connections, overlay };
-  }, [advisorId, ruleEdits, connections, caseDispositions, actionDecisions, book, overlay]);
+  const ctx = useMemo(
+    () => ({ advisorId, clients: book.clients, documents: book.documents, cases: v.openCases, actions: v.pendingActions, policy: v.policy, agents: v.agents, connections, overlay }),
+    [advisorId, book, v, connections, overlay],
+  );
 
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [turns]);
