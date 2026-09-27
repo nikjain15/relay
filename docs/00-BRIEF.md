@@ -334,23 +334,36 @@ each one landed, plus what the audit found that this section had missed.
 | Missing the 2024 baseline that corroborates the 50% growth claim | Low | **Added.** 13 million in 2024; times 1.5 is 19.5 million, consistent with "more than 20 million" |
 | Held-away assets and wallet share absent from the signal taxonomy | Low | **Added** to the external-event trigger class |
 
-**Remaining known risk, stated plainly.** The three STAAT figures that now carry the thesis (20 million
-opportunities, 1,200 hours, the signal taxonomy) come from UBS-owned pages and a Celent citation that
-could not be read first-hand from the machine used for the audit, because those domains were
-unreachable. They are consistent across independent search results, and they are flagged in PRD
-Appendix D as load-bearing. **Nik should open those two pages himself and confirm all three before the
-interview.** It is a five-minute job and it is the last open item in the fact base. A second attempt to
-read `ubs.com` and `celent.com` directly was made during the re-audit and was blocked again by the
-container's network policy, so this cannot be closed from here. The figures are now corroborated across
-UBS's own page, the Celent award citation and Financial Planning's coverage, which is as far as search
-alone can take it.
+**Remaining known risk, stated plainly, and narrowed on 2026-09-26.** The STAAT figures that carry the
+thesis come from UBS-owned pages and a Celent citation. `ubs.com`, `celent.com` and
+`financial-planning.com` are all blocked by this machine's network policy, so **none of them has been
+read first-hand**, and a third attempt confirmed the block rather than clearing it.
+
+What changed is the strength of the corroboration. Each load-bearing figure is now matched to a
+**verbatim sentence** from the page it belongs to, recorded in PRD Appendix D:
+
+- "In 2025, STAAT Insights generated more than 20 million AI-identified client opportunities, a 50
+  percent increase year over year."
+- "Nearly 90 percent of advisor teams actively use the STAAT platform, saving an estimated 1,200 hours of
+  meeting preparation each week." Both load-bearing figures come from this one sentence, which also
+  **scopes** the hours to the teams using the platform.
+- The Chief Data and Analytics Officer "conservatively estimates the firm's U.S. advisors are saving
+  10,000 hours a month by turning to AI to prepare for client meetings", which names AI for meeting
+  preparation firm-wide rather than STAAT alone. That is the likely shape of the 2x gap, and the PRD now
+  says so and uses the lower figure.
+- The signal taxonomy, including assets held away at other firms and the wallet-share framing, is
+  corroborated across three sources.
+
+So the open item is no longer "are these numbers right", it is **"has a human seen the page"**. Nik should
+open the STAAT page and the Celent award page once before the interview. It is a five-minute job, and
+nothing in the thesis is waiting on it.
 
 ---
 
 ## 11. Next steps
 
-1. **Nik confirms the three load-bearing STAAT figures** on the UBS STAAT page and the Celent award
-   page. Five minutes, and it closes the fact base.
+1. **Nik lays eyes on the UBS STAAT page and the Celent award page.** Five minutes. The figures are
+   corroborated verbatim (§10), so this confirms rather than discovers, and it closes the fact base.
 2. Nik reviews `PRD-relay.md` v0.4 and this brief.
 3. Build the low-fidelity working prototype against the PRD. The fact base and the strategy are now
    settled, which was the precondition.

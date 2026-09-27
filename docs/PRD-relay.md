@@ -78,11 +78,16 @@ This section relies on no assumption about UBS's internals, because UBS has publ
   figure, **13 million AI-generated insights delivered to US advisors**, is consistent with that growth
   (13 million times 1.5 is 19.5 million), though it names a slightly different metric.
 - **Adoption.** **Nearly 90% of advisor teams** actively use the platform.
-- **Time saved.** **1,200 hours of meeting preparation per week**, from pre-meeting briefings, on the
-  STAAT page. UBS's Chief Data and Analytics Officer has separately been quoted at **10,000 hours per
-  month** saved by US advisors using AI to prepare for client meetings, described as conservative. These
-  differ by about 1.9x (1,200 per week is about 5,200 per month), most likely because the second covers
-  all AI tooling rather than STAAT alone. Reconciling them is a week-one question.
+- **Time saved.** **1,200 hours of meeting preparation per week**, from pre-meeting briefings. The
+  published sentence scopes it to the teams using the platform: nearly 90% of advisor teams actively use
+  STAAT, "saving an estimated 1,200 hours of meeting preparation each week". UBS's Chief Data and
+  Analytics Officer has separately been quoted at **10,000 hours a month** saved by the firm's US
+  advisors "turning to AI to prepare for client meetings", described as a conservative estimate. These
+  differ by about 1.9x (1,200 a week is about 5,200 a month) for what reads as the same activity, so the
+  difference is scope, vintage or method, not activity: the executive's figure covers AI tooling for
+  meeting preparation firm-wide rather than the STAAT platform alone. **This PRD uses the lower figure
+  throughout**, because a number quoted back to the team has to be one they will not want to correct.
+  Reconciling the two is a week-one question, and asking it is a better move than picking one.
 
 **What is not published is the step in between.** Volume is an output of the engine. Preparation time is
 an input to the advisor's day. Neither says what share of opportunities became a documented, approved,
@@ -888,9 +893,11 @@ on a real date.**
 
 ## Appendix C: Sources
 
-Public sources only, retrieved 2026-09-26. Note: several UBS-owned pages were not directly reachable
-from the machine used to compile this, so figures sourced to UBS pages are recorded as reported by
-search results and secondary coverage and are flagged accordingly in Appendix D.
+Public sources only, retrieved 2026-09-26. The UBS-owned and Celent pages are blocked by the network
+policy of the machine used to compile this, so none of them was read first-hand. Every figure sourced to
+them was instead corroborated from verbatim quotations of those pages returned by search, cross-checked
+against independent coverage, and each is recorded with the sentence it came from. Appendix D lists them
+and says what remains open.
 
 **UBS and its platform**
 - Celent, Model Wealth Manager 2026 award winners (UBS Financial Services Inc., STAAT Insights, Data,
@@ -957,7 +964,10 @@ search results and secondary coverage and are flagged accordingly in Appendix D.
 
 Every UBS figure used in this document, with its source, its date and its confidence. **Anyone with
 internal numbers should correct these.** Figures marked "reported" were not read first-hand from the
-UBS-owned page because that page was unreachable from the machine used to compile this document.
+UBS-owned page, because those domains are blocked by the network policy of the machine used to compile
+this document. On 2026-09-26 each load-bearing figure was instead corroborated from **verbatim
+quotations of the UBS page returned by search**, which is recorded in the row. That is stronger than a
+paraphrase and weaker than reading the page, and the difference is stated rather than smoothed over.
 
 | Figure used | Value as stated here | Source | Date | Confidence |
 |---|---|---|---|---|
@@ -971,13 +981,14 @@ UBS-owned page because that page was unreachable from the machine used to compil
 | Coverage structure | Four regional centers over three tiers, plus an international unit and the Wealth Advice Center | InvestmentNews | Dec 2024 | Reported |
 | Wealth Advice Center scale | 330+ advisors, RMs and CSAs; up to 500 advisors to be added over three years; hubs in Weehawken, Charlotte, Dallas | UBS page and press coverage | 2026 | Reported. The 330+ and the three hubs re-confirmed by the third audit; the "up to 500" was not. **Corrected from "about 400, tripling" in v0.1, which was not supported** |
 | STAAT Insights recognition | 2026 Celent Model Wealth Manager Award, Data, Analytics and AI, to UBS Financial Services Inc. for STAAT Insights | Celent | 2026 | Reported, strong |
-| STAAT opportunity volume | more than 20 million AI-identified client opportunities in 2025, up ~50% YoY | UBS | 2026 | Reported, and **consistent with** the separately reported 13 million for 2024 (times 1.5 is 19.5 million), though that figure names "insights delivered" rather than "opportunities". **Load-bearing; confirm by eye** |
+| STAAT opportunity volume | more than 20 million AI-identified client opportunities in 2025, up ~50% YoY | UBS | 2026 | Reported. Corroborated 2026-09-26 as the verbatim sentence "In 2025, STAAT Insights generated more than 20 million AI-identified client opportunities, a 50 percent increase year over year", and **consistent with** the separately reported 13 million for 2024 (times 1.5 is 19.5 million), though that figure names "insights delivered" rather than "opportunities" |
 | STAAT 2024 baseline | 13 million AI-generated insights delivered to US advisors in 2024 | UBS Annual Report 2024; Financial Planning | 2025 to 2026 | Reported. Corroborates the 50% growth figure |
-| STAAT adoption | nearly 90% of advisor teams actively using | UBS | 2026 | Reported. **Load-bearing; confirm by eye** |
-| Time saved, figure A | 1,200 hours of meeting preparation per week | UBS STAAT page | 2026 | Reported. **Conflicts with figure B by ~2x, see below** |
-| Time saved, figure B | 10,000 hours per month, described as a conservative estimate, attributed to UBS's Chief Data and Analytics Officer | Financial Planning | 2026 | Reported. **Conflicts with figure A** |
+| STAAT adoption | nearly 90% of advisor teams actively using | UBS | 2026 | Reported. Corroborated 2026-09-26 from one verbatim sentence that carries both this figure and the next: "Nearly 90 percent of advisor teams actively use the STAAT platform, saving an estimated 1,200 hours of meeting preparation each week" |
+| Time saved, figure A | 1,200 hours of meeting preparation per week | UBS STAAT page | 2026 | Reported, same verbatim sentence as the row above, which also **scopes it**: the hours are saved by the teams using the platform. **Conflicts with figure B by ~2x, see below.** This document uses figure A |
+| Time saved, figure B | 10,000 hours a month, described as a conservative estimate, attributed to UBS's Chief Data and Analytics Officer | Financial Planning | 2026 | Reported. Corroborated 2026-09-26: the Chief Data and Analytics Officer "conservatively estimates the firm's U.S. advisors are saving 10,000 hours a month by turning to AI to prepare for client meetings", which names **AI for meeting preparation firm-wide**, not the STAAT platform. **Conflicts with figure A** |
+| STAAT advisor reach | more than 5,000 US financial advisors receive STAAT Insights | UBS | 2026 | Reported. Corroborated 2026-09-26. Consistent with the ~5,644 headcount row, and the reason the per-advisor arithmetic in §1.3 is not needed |
 | ~~Seconds of saved prep per opportunity~~ | **Withdrawn in v0.4.** The arithmetic was right (at most 11.2 and 21.6 seconds) but the hours come from meeting briefings, not from opportunities, so the ratio measured nothing about conversion | Third audit | 2026-09-26 | **Do not quote** |
-| STAAT signal types | life events, property transactions, late-stage business funding activity, upcoming maturities, cash-flow events, assets held away at other firms, thousands of internal and external signals | Celent, UBS, Financial Planning | 2026 | Reported, three sources. **Drives the §5.1 taxonomy; confirm by eye** |
+| STAAT signal types | life events, property transactions, late-stage business funding activity, upcoming maturities, cash-flow events, assets held away at other firms, thousands of internal and external signals | Celent, UBS, Financial Planning | 2026 | Reported, three sources, and corroborated again 2026-09-26 on the held-away-assets and wallet-share framing. **Drives the §5.1 taxonomy** |
 | UBS Red | two domain-specific assistants on Azure OpenAI Service and Azure AI Search, synthesising 60,000 documents, supporting Client Advisors | Microsoft customer story | 2025 | Strong. Note: says 60,000, not "over 60,000" |
 | Azure OpenAI reach | roughly 30,000 employees, globally, including Switzerland, Hong Kong, Singapore | Microsoft customer story | 2025 | Strong. **Not a US-FA-specific figure** |
 | Broadridge programme | UBS WM USA anchor client since 2018, multi-year advisor workstation rebuild, public history of timetable slips | Broadridge, AdvisorHub | 2018 to 2026 | Strong |
@@ -990,11 +1001,14 @@ UBS-owned page because that page was unreachable from the machine used to compil
 | Value | 1,200 hours per week | 10,000 hours per month |
 | Per month | about 5,200 | 10,000 |
 | Source | UBS STAAT page | Chief Data and Analytics Officer, quoted in trade press |
-| Scope, most likely | STAAT pre-meeting briefings | All AI used for meeting preparation |
+| Scope, as each source states it | Teams using the STAAT platform, meeting preparation | The firm's US advisors, AI used to prepare for client meetings |
+| Basis | "an estimated" | "conservatively estimates" |
 
-They differ by roughly a factor of two. Possible explanations include different scopes (STAAT only versus
-all AI tooling) or different periods. **The argument in §1.3 does not depend on either**, because v0.4
-no longer divides by them. Do not quote one without the other.
+They differ by roughly a factor of two for what both describe as meeting preparation, so the gap is
+scope, period or method rather than activity: the second is firm-wide AI for meeting preparation, the
+first is the STAAT platform. **The argument in §1.3 does not depend on either**, because v0.4 no longer
+divides by them. This document uses figure A, the lower one, because a figure quoted back to the team
+should be one they will not want to correct. Do not quote one without the other.
 
 **Regulatory items that are PROPOSED, not adopted. Never state these as current rules:**
 
