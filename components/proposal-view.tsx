@@ -24,7 +24,7 @@ import { needText } from "@/lib/need-text";
 import { useRelay } from "@/components/state";
 import { resolveProfile, sourceLabel } from "@/lib/profile";
 import { Icon } from "@/components/icons";
-import { AgentBar, Legend, More, PageTitle, Pill, Row, Section, TableScroll, Who, btn, btnPrimary, td, th } from "@/components/ui";
+import { AgentBar, Legend, More, PageTitle, Pill, Row, Section, TableScroll, Who, btn, btnPrimary, stack, td, th } from "@/components/ui";
 import { economics, type OptionEconomics } from "@/lib/proposals/compare";
 import { simulate, type Simulation, type Tone } from "@/lib/simulate/simulate";
 import { policyFrom } from "@/lib/compliance/store";
@@ -141,8 +141,8 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
           Eligible first, then by {sortBy === "cost" ? "lowest annual cost" : sortBy === "access" ? "fastest access" : "lowest risk"} ({sourceLabel(prof.provenance["proposals.sortBy"])}). Ordering never changes which options pass. Income is after tax at the firm&apos;s illustrative rates; cost is over {POLICY.proposals.horizonYears} years.
         </p>
         <TableScroll>
-          <table className="w-full min-w-[64rem] border-collapse text-[13px]">
-            <thead>
+          <table className={`w-full min-w-[64rem] border-collapse text-[13px] ${stack.table}`}>
+            <thead className={stack.head}>
               <tr>
                 <th className={th}>Select</th>
                 <th className={th}>Product</th>
@@ -156,7 +156,7 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
                 <th className={th}>Result</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className={stack.body}>
               {evs.map((e) => {
                 const p = product(e.candidate.productId)!;
                 const x = econ.get(e.candidate.id)!;
@@ -165,8 +165,8 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
                 const conc = s?.consequences.find((c) => c.key === "concentration");
                 const on = sel?.candidate.id === e.candidate.id;
                 return (
-                  <tr key={e.candidate.id} className={`${e.pass ? "" : "text-ink-2"} ${on ? "bg-selected" : ""}`}>
-                    <td className={td}>
+                  <tr key={e.candidate.id} className={`${e.pass ? "" : "text-ink-2"} ${on ? "bg-selected" : ""} ${stack.row} max-md:px-2`}>
+                    <td className={`${td} ${stack.cell}`}>
                       <input
                         type="radio"
                         name="candidate"
@@ -176,23 +176,26 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
                         onChange={() => setSelected(e.candidate.id)}
                       />
                     </td>
-                    <td className={td}>
+                    <td className={`${td} ${stack.cell}`}>
                       <span className="text-ink">{p.name}</span>
                       <span className="block text-[11px] text-ink-3">risk {p.riskLevel} · {p.costBps} bps · duration {x.durationYears} yr · {p.taxTreatment?.replace("_", " ")}</span>
                     </td>
-                    <td className={td}>{SOURCE[e.candidate.source]}</td>
-                    <td className={`${td} text-right tabular-nums`}>{usd(e.candidate.amountUsd)}</td>
-                    <td className={`${td} text-right tabular-nums`}>{x.yieldPct.toFixed(1)}%</td>
-                    <td className={`${td} text-right tabular-nums`}>
+                    <td className={`${td} ${stack.wide}`}><span className={stack.label}>Funding</span>{SOURCE[e.candidate.source]}</td>
+                    <td className={`${td} text-right tabular-nums ${stack.wide}`}><span className={stack.label}>Amount</span>{usd(e.candidate.amountUsd)}</td>
+                    <td className={`${td} text-right tabular-nums ${stack.wide}`}><span className={stack.label}>Yield</span>{x.yieldPct.toFixed(1)}%</td>
+                    <td className={`${td} text-right tabular-nums ${stack.wide}`}>
+                      <span className={stack.label}>Income after tax, a year</span>
                       <span className={e.candidate.id === bestIncome ? "text-positive" : ""}>{usd(x.afterTaxIncomeUsd)}</span>
                       <span className="block text-[11px] text-ink-3">{usd(x.grossIncomeUsd)} gross, {x.taxPct}% tax</span>
                     </td>
-                    <td className={`${td} text-right tabular-nums`}>
+                    <td className={`${td} text-right tabular-nums ${stack.wide}`}>
+                      <span className={stack.label}>Cost, {POLICY.proposals.horizonYears} yrs</span>
                       <span className={e.candidate.id === bestCost ? "text-positive" : ""}>{usd(x.costOverHorizonUsd)}</span>
                       <span className="block text-[11px] text-ink-3">{usd(e.annualCostUsd)} a year</span>
                     </td>
-                    <td className={td}>{x.accessLabel}{!x.minimumMet && <span className="block text-[11px] text-critical">Below {usd(x.minimumUsd)} minimum</span>}</td>
-                    <td className={`${td} tabular-nums`}>
+                    <td className={`${td} ${stack.wide}`}><span className={stack.label}>Access</span>{x.accessLabel}{!x.minimumMet && <span className="block text-[11px] text-critical">Below {usd(x.minimumUsd)} minimum</span>}</td>
+                    <td className={`${td} tabular-nums ${stack.wide}`}>
+                      <span className={stack.label}>Morning after</span>
                       {s ? (
                         <>
                           <Pill tone={GRADE[s.grade].tone}>{GRADE[s.grade].word}</Pill>
@@ -202,7 +205,7 @@ export function ProposalView({ householdId, oppId, others }: { householdId: stri
                         </>
                       ) : <span className="text-ink-3">n/a</span>}
                     </td>
-                    <td className={td}>
+                    <td className={`${td} ${stack.wide}`}>
                       {e.pass ? (
                         <Pill tone="pass">Eligible</Pill>
                       ) : (

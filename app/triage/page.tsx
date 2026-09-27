@@ -10,7 +10,7 @@ import { retrieve } from "@/lib/evidence/retrieve";
 import { ADVISORS_DATA, CLIENTS, toHousehold } from "@/lib/data";
 import { APP, POLICY } from "@/lib/data/policy";
 import { useRelay } from "@/components/state";
-import { Brief, CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, td, th } from "@/components/ui";
+import { Brief, CLASS_LABEL, NODE_LABEL, PageTitle, Pill, TableScroll, btn, btnPrimary, stack, td, th } from "@/components/ui";
 import { Icon, CLASS_ICON } from "@/components/icons";
 import { RankingTuner } from "@/components/ranking-tuner";
 
@@ -78,8 +78,8 @@ export default function Triage() {
       </div>
       <RankingTuner advisorId={advisor.id} advisorName={advisor.name} opportunities={mine} dismissed={new Set(Object.keys(dismissed))} titleOf={(o) => `${clientOf(o.householdId)?.name ?? o.householdId}, ${o.plainTitle ?? o.title}`} />
       <TableScroll>
-        <table className="w-full min-w-[34rem] border-collapse">
-          <thead>
+        <table className={`w-full min-w-[34rem] border-collapse ${stack.table}`}>
+          <thead className={stack.head}>
             <tr>
               <th className={th}>#</th>
               <th className={th}>Score</th>
@@ -89,7 +89,7 @@ export default function Triage() {
               <th className={th}>Decide</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={stack.body}>
             {rows.map((o, i) => {
               const h = household(o.householdId) ?? toHousehold(clientOf(o.householdId)!);
               const refused = retrieve(o, book.documents).refused;
@@ -97,17 +97,18 @@ export default function Triage() {
               const clientHref = isShipped ? `/household/${h.id}` : `/sources#${h.id}`;
               const proposable = !refused && (o.action === "fund" || o.action === "trim");
               return (
-                <tr key={o.id}>
-                  <td className={td}>{i + 1}</td>
-                  <td className={td}>
+                <tr key={o.id} className={stack.row}>
+                  <td className={`${td} ${stack.cell}`}><span className="md:hidden">#</span>{i + 1}</td>
+                  <td className={`${td} ${stack.cell}`}>
+                    <span className={stack.label}>Score</span>
                     <span className="font-medium tabular-nums">{score(o, weights)}</span>
                     <div className="mt-0.5 whitespace-nowrap text-xs text-ink-2 tabular-nums" title={`Materiality ${o.materiality} times the ${CLASS_LABEL[o.triggerClass].toLowerCase()} weight ${(weights[o.triggerClass] ?? 1).toFixed(2)}`}>{o.materiality} &times; {(weights[o.triggerClass] ?? 1).toFixed(2)}</div>
                   </td>
-                  <td className={td}>
+                  <td className={`${td} ${stack.wide}`}>
                     <span className="inline-flex items-center gap-1.5"><Icon name={CLASS_ICON[o.triggerClass]} size={16} className="text-ink-3" /><Pill tone={o.triggerClass === "market_view" ? "neutral" : "accent"}>{CLASS_LABEL[o.triggerClass]}</Pill></span>
                     <div className="mt-0.5 text-xs text-ink-2">seen day {o.observedDay} of the feed</div>
                   </td>
-                  <td className={td}>
+                  <td className={`${td} ${stack.wide}`}>
                     <Link className="underline decoration-line-strong hover:decoration-accent" href={clientHref}>
                       {h.name}
                     </Link>
@@ -115,7 +116,7 @@ export default function Triage() {
                     <div className="text-xs text-ink-2">{h.tier}</div>
                     <div className="text-xs text-ink-2">{lastContact(h.id)}</div>
                   </td>
-                  <td className={td}>
+                  <td className={`${td} ${stack.wide}`}>
                     <div className="font-medium">{o.plainTitle ?? o.title}</div>
                     <ol className="mt-0.5 flex flex-wrap gap-x-1 text-xs text-ink-2">
                       {o.reasonPath.map((n, k) => (
@@ -133,8 +134,8 @@ export default function Triage() {
                       <span className="text-xs text-ink-2">{refused ? "No document in the corpus supports this" : `Cites ${o.evidenceDocIds.length} document${o.evidenceDocIds.length === 1 ? "" : "s"}`}</span>
                     )}
                   </td>
-                  <td className={`${td} whitespace-nowrap`}>
-                    <div className="flex flex-col items-start gap-1">
+                  <td className={`${td} whitespace-nowrap ${stack.wide} max-md:whitespace-normal`}>
+                    <div className="flex flex-col items-start gap-1 max-md:flex-row max-md:flex-wrap">
                       {proposable && !isShipped ? (
                         <span className="text-xs text-ink-2">Options run on the shipped book; a connected household is evaluated on Supervision and in its briefing</span>
                       ) : proposable ? (

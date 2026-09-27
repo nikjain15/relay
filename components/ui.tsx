@@ -253,6 +253,24 @@ export function Field({ label, hint, children }: { label: string; hint?: ReactNo
 export const input = "h-9 w-full rounded border border-line-strong bg-surface px-2 text-[13px] text-ink sm:max-w-[16rem]";
 export const textarea = "w-full rounded border border-line-strong bg-surface p-2 text-[13px] text-ink";
 /** A table that scrolls sideways instead of squeezing, for the few real tables. */
+/**
+ * A table that becomes a stack of cards below md, so a phone reads each row
+ * top to bottom instead of scrolling sideways past the figures that matter.
+ * Put `stack.table` on the table element, `stack.head` on its head, `stack.body` on
+ * its body, `stack.row` on each row, `stack.cell` on a cell that sits beside the
+ * one before it, and `stack.wide` on a cell that takes the whole card width.
+ * `stack.label` is a caption shown only on the phone, in place of the header.
+ */
+export const stack = {
+  table: "max-md:block max-md:min-w-0",
+  head: "max-md:hidden",
+  body: "max-md:block",
+  row: "max-md:grid max-md:grid-cols-[auto_1fr] max-md:gap-x-3 max-md:border-b max-md:border-line max-md:py-3",
+  cell: "max-md:border-0 max-md:px-0 max-md:py-1",
+  wide: "max-md:col-span-2 max-md:border-0 max-md:px-0 max-md:py-1 max-md:text-left",
+  label: "mr-1 text-[11px] text-ink-3 md:hidden",
+};
+
 export function TableScroll({ children }: { children: ReactNode }) {
   return <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">{children}</div>;
 }
