@@ -3,6 +3,7 @@
 Notable changes, by pull request. Decisions behind each are numbered in the build spec.
 
 ## Unreleased
+- Three agents for wallet share, profitability and time with clients, on one screen each and on the Overview, Agents and every household: Held-away money reads what clients wrote, what the team noted and each opportunity's reason path for money not on the platform, cites each signal, reads the amount only where a record states one, and computes the wallet share the file supports; Book economics puts estimated revenue by tier against recorded hours and flags under-served and time-heavy households, from an illustrative schedule in data/policy.json; Next conversation orders the book by the one reason to call each household this week, cited, with a draft opener. Twenty-two agents now, counted once.
 - An Onboarding agent joins the roster: every morning it finds the forms still waiting for a signature, escalates past each household's threshold and drafts the reminder a person sends. Nineteen agents now, counted once.
 - The day on screen comes from the browser clock: the Overview, Briefings and Meetings name today's weekday, date and time, and the header shows the date and time on every screen, refreshed each minute. The data stays on its relative clock.
 - Every compliance rule carries its status in law, with dates, and links to its primary source; validate() fails on a rule without them. FINRA Rule 3290, approved September 15, 2026 to replace Rules 3270 and 3280, is shown as not yet in force.

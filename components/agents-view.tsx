@@ -10,6 +10,10 @@ import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { ListControls, matches, useList } from "@/components/list-controls";
 import { TEMPLATES } from "@/lib/agents/templates";
+import { heldAway, walletTotals } from "@/lib/growth/held-away";
+import { bookEconomics, economicsTotals } from "@/lib/growth/economics";
+import { conversations } from "@/lib/growth/next-conversation";
+import { usd } from "@/lib/format";
 import { previewTemplate } from "@/lib/agents/preview";
 import type { AgentDefinition } from "@/lib/compliance/agents";
 import type { RosterAgent } from "@/lib/agents/roster";
@@ -70,7 +74,13 @@ export function AgentsView() {
     { at: "day 0, 06:35", icon: "flag", title: `Proposer read ${proposals.findingsRead} findings from ${proposals.windowDays} days`, meta: `${openProposals.length} rule change${openProposals.length === 1 ? "" : "s"} waiting on a principal, ${proposals.observations.length} seen and not proposed.`, tone: openProposals.length ? "caution" : "positive", href: "/compliance" },
   ]);
 
+  const wallet = walletTotals(heldAway(v.clients));
+  const econ = economicsTotals(bookEconomics(v.clients, v.serviceRequests, v.meetings));
+  const calls = conversations(v.clients, v.meetings);
   const rosterToday: Record<string, { state: "clear" | "attention"; line: string }> = {
+    "held-away": { state: wallet.withSignals ? "attention" : "clear", line: `${wallet.withSignals} household${wallet.withSignals === 1 ? "" : "s"} with money elsewhere, ${usd(wallet.heldAwayStatedUsd)} stated and ${wallet.unstated} amount${wallet.unstated === 1 ? "" : "s"} unstated; wallet share ${wallet.walletSharePct}%.` },
+    economics: { state: econ.underServed.length ? "attention" : "clear", line: `${usd(econ.revenueUsd)} estimated a year over ${econ.hours} hours in ${econ.windowDays} days; ${econ.underServed.length} under-served, ${econ.timeHeavy.length} time-heavy.` },
+    conversation: { state: "clear", line: calls[0] ? `${calls.length} households ordered; first is ${calls[0].clientName}, ${calls[0].reason.split(":")[0].toLowerCase()}.` : "Nobody to call." },
     research: { state: unknowns ? "attention" : "clear", line: `${briefings.length} briefings, ${unknowns} things not established.` },
     retrieval: { state: stale || conflicts ? "attention" : "clear", line: `${corpus.filter((d) => d.usable).length} current documents, ${stale} past review, ${conflicts} disagreement${conflicts === 1 ? "" : "s"}.` },
     discovery: { state: openDiscoveries.length ? "attention" : "clear", line: `${openDiscoveries.length} candidate${openDiscoveries.length === 1 ? "" : "s"} waiting, ${discoveries.length - openDiscoveries.length} decided.` },

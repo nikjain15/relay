@@ -35,6 +35,8 @@ import { StateProvider } from "@/components/state";
 import { ViewProvider } from "@/components/view";
 import ClientsPage from "@/app/clients/page";
 import OnboardingPage from "@/app/onboarding/page";
+import WalletSharePage from "@/app/wallet-share/page";
+import ConversationsPage from "@/app/conversations/page";
 import JourneyPage from "@/app/page";
 import ServicingPage from "@/app/servicing/page";
 import MeetingsPage from "@/app/meetings/page";
@@ -155,6 +157,8 @@ const pages: [string, () => ReactElement | Promise<ReactElement>][] = [
   ["/ (journey)", () => <JourneyPage />],
   ["/clients", () => <ClientsPage />],
   ["/onboarding", () => <OnboardingPage />],
+  ["/wallet-share (1000 households)", () => <WalletSharePage />],
+  ["/conversations (1000 households)", () => <ConversationsPage />],
   ["/servicing", () => <ServicingPage />],
   ["/meetings", () => <MeetingsPage />],
   ["/follow-ups", () => <FollowUpsPage />],

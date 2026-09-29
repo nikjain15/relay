@@ -16,6 +16,10 @@ import { useRelay } from "@/components/state";
 import { useView } from "@/components/view";
 import { MORNING } from "@/lib/agents/roster";
 import { useToday } from "@/components/clock";
+import { usd } from "@/lib/format";
+import { heldAway, walletTotals } from "@/lib/growth/held-away";
+import { bookEconomics, economicsTotals } from "@/lib/growth/economics";
+import { conversations } from "@/lib/growth/next-conversation";
 import { Brief, Legend, More, PageTitle, Pill, Row, Section, StateDot, btn, btnPrimary } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { ActionPanel, ACTION_ICON, type TraceStep } from "@/components/action-panel";
@@ -108,7 +112,13 @@ export function Overview() {
   };
 
   // What each morning agent on the roster did today. Names, icons and links come from lib/agents/roster.ts, the one list every page counts.
+  const wallet = walletTotals(heldAway(v.clients));
+  const econ = economicsTotals(bookEconomics(v.clients, v.serviceRequests, meetings));
+  const calls = conversations(v.clients, meetings);
   const ran: Record<string, { state: "clear" | "attention" | "blocked" | "off"; line: string }> = {
+    "held-away": { state: wallet.withSignals ? "attention" : "clear", line: `${wallet.withSignals} households hold money elsewhere, ${usd(wallet.heldAwayStatedUsd)} stated; your wallet share is ${wallet.walletSharePct}%` },
+    economics: { state: econ.underServed.length ? "attention" : "clear", line: `${econ.underServed.length} under-served, ${econ.timeHeavy.length} time-heavy, at ${econ.revenuePerHour === null ? "no hours logged" : `${usd(econ.revenuePerHour)} an hour`}` },
+    conversation: { state: "clear", line: calls[0] ? `${calls.filter((c) => !c.meetingToday).length} to call this week; first is ${calls[0].clientName}: ${calls[0].reason.split(":")[0]}` : "Nobody to call this week" },
     onboarding: { state: escalated.length ? "attention" : "clear", line: `${escalated.length} form${escalated.length === 1 ? "" : "s"} past the escalation deadline, reminders drafted` },
     consequence: { state: "clear", line: `${simulableOpps.length} proposals carried to the morning after` },
     discovery: { state: candidates.length ? "attention" : "clear", line: `${candidates.length} opportunities found in what clients said` },

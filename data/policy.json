@@ -98,6 +98,21 @@
       "callbackRequired": false
     }
   },
+  "economics": {
+    "_note": "Illustrative book economics for the Book economics agent. Fee rates by tier and hours per kind of work are placeholders a firm replaces with its own schedule and time records; every screen that shows a figure from here says so. Never client-facing.",
+    "feeBpsByTier": {
+      "$50M+": 45,
+      "$5M+": 70,
+      "$500K to $5M": 100,
+      "Wealth Advice Center": 60
+    },
+    "windowDays": 90,
+    "hoursPerContact": 1.5,
+    "hoursPerMeeting": 2,
+    "hoursPerServiceRequest": 0.5,
+    "hoursPerOpenTask": 0.75,
+    "quietAfterDays": 60
+  },
   "retrieval": {
     "_note": "Deterministic retrieval. corpusDay is today on the corpus clock (documents carry a publication day on the same clock). floor is the relevance below which a passage is not shown as evidence; topK caps what one screen shows; citedBoost is added when the opportunity record cites the document; stalePenalty multiplies a document past its review date. In production a model rewrites the query and reranks; the floor, the citation and the refusal stay in code.",
     "corpusDay": 60,
