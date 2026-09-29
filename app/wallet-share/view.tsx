@@ -45,7 +45,7 @@ export default function WalletShare() {
       />
 
       <Section title="Wallet share across the book">
-        <Meter ariaLabel="On the platform against stated held-away money" segments={[{ label: "On the platform", value: totals.onPlatformUsd, tone: "plain" }, { label: "Held away, stated", value: totals.heldAwayStatedUsd, tone: "caution" }]} />
+        <Meter ariaLabel="On the platform against stated held-away money" segments={[{ label: "On the platform", value: totals.onPlatformUsd, shown: usd(totals.onPlatformUsd), tone: "plain" }, { label: "Held away, stated", value: totals.heldAwayStatedUsd, shown: usd(totals.heldAwayStatedUsd), tone: "caution" }]} />
         <StatRow items={[{ value: `${totals.walletSharePct}%`, label: "Wallet share, at most", icon: "custodian" }, { value: usd(totals.heldAwayStatedUsd), label: "Held away, stated", icon: "chart", tone: totals.heldAwayStatedUsd ? "critical" : "plain" }, { value: totals.unstated, label: "Signals with no amount", icon: "question" }, { value: withSignals.length, label: "Households with money elsewhere", icon: "people" }]} />
       </Section>
 

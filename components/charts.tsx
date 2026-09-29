@@ -48,6 +48,8 @@ export interface Segment {
   label: string;
   value: number;
   tone?: Tone;
+  /** How the value reads beside the label; the bar still uses the number. */
+  shown?: string;
 }
 
 /** Shares of one whole, as one thin stacked bar with a 2px gap between segments and a worded legend. */
@@ -66,7 +68,7 @@ export function Meter({ segments, ariaLabel }: { segments: Segment[]; ariaLabel:
           <li key={i} className="flex items-center gap-1.5">
             <span className={`inline-block h-2 w-2 rounded ${BAR[s.tone ?? "plain"]}`} aria-hidden="true" />
             <span className="text-ink-2">{s.label}</span>
-            <span className={`tabular-nums ${TEXT[s.tone ?? "plain"]}`}>{s.value}</span>
+            <span className={`tabular-nums ${TEXT[s.tone ?? "plain"]}`}>{s.shown ?? s.value}</span>
           </li>
         ))}
       </ul>
