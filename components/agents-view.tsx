@@ -77,6 +77,7 @@ export function AgentsView() {
     consequence: { state: "clear", line: "Every option on every proposal carried to the morning after." },
     proposer: { state: openProposals.length ? "attention" : "clear", line: `${openProposals.length} proposed, ${proposals.observations.length} seen and not proposed.` },
     meetings: { state: "clear", line: `${v.meetings.length} meetings today, review packs built.` },
+    onboarding: { state: v.escalated.length ? "attention" : "clear", line: `${v.escalated.length} form${v.escalated.length === 1 ? "" : "s"} past the escalation deadline, a reminder drafted for each open form.` },
     ranking: { state: "clear", line: `${v.list.length} on today's list, by ${v.profile.provenance["triage.classWeights"]?.includes("tuned") ? "your tuned" : "the firm's"} weights.` },
   };
 

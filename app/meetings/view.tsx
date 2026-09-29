@@ -3,7 +3,7 @@
 // The signed-in advisor's calendar, from the same view the Overview counts.
 import Link from "next/link";
 import { prospectFor } from "@/lib/meetings/prep";
-import { APP } from "@/lib/data/policy";
+import { useToday } from "@/components/clock";
 import { AgentBar, PageTitle, Pill, Section, Who } from "@/components/ui";
 import { useView } from "@/components/view";
 
@@ -11,11 +11,12 @@ const KIND: Record<string, string> = { call: "Client call", review: "Client revi
 
 export default function Meetings() {
   const v = useView();
+  const today = useToday();
   const a = v.advisor;
   const name = (id: string) => { const c = v.clientOf(id); return c ? (c.persons.length > 1 ? `${c.name} family` : c.persons[0]?.name ?? c.name) : id; };
   return (
     <>
-      <PageTitle icon="calendar" title="Meetings" sub={`${APP.todayLabel}. Each client meeting has a review pack built from the client file.`} />
+      <PageTitle icon="calendar" title="Meetings" sub={`${today.live ? today.date : today.weekday}. Each client meeting has a review pack built from the client file.`} />
       {(() => {
         const all = v.meetings;
         const withClient = all.filter((m) => m.clientId);

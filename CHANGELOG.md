@@ -3,6 +3,8 @@
 Notable changes, by pull request. Decisions behind each are numbered in the build spec.
 
 ## Unreleased
+- An Onboarding agent joins the roster: every morning it finds the forms still waiting for a signature, escalates past each household's threshold and drafts the reminder a person sends. Nineteen agents now, counted once.
+- The day on screen comes from the browser clock: the Overview, Briefings and Meetings name today's weekday, date and time, and the header shows the date and time on every screen, refreshed each minute. The data stays on its relative clock.
 - Every compliance rule carries its status in law, with dates, and links to its primary source; validate() fails on a rule without them. FINRA Rule 3290, approved September 15, 2026 to replace Rules 3270 and 3280, is shown as not yet in force.
 - Desk pages show each rule as a card: the trigger in plain words, settings and bounds, what it prepares, the source it needs, status in law, source links and what it raised today. Rule conditions read in words, not field names.
 - Every agent says how it decides and what it is built on; the agents that are not desks name the regulation behind them, or say they are arithmetic.

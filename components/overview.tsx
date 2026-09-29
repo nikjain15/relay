@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRelay } from "@/components/state";
 import { useView } from "@/components/view";
 import { MORNING } from "@/lib/agents/roster";
+import { useToday } from "@/components/clock";
 import { Brief, Legend, More, PageTitle, Pill, Row, Section, StateDot, btn, btnPrimary } from "@/components/ui";
 import { Icon, type IconName } from "@/components/icons";
 import { ActionPanel, ACTION_ICON, type TraceStep } from "@/components/action-panel";
@@ -23,7 +24,6 @@ import { corpusStates } from "@/lib/evidence/corpus";
 import { discover } from "@/lib/discovery/discover";
 import { propose } from "@/lib/compliance/propose";
 import { simulable } from "@/lib/simulate/simulate";
-import { APP } from "@/lib/data/policy";
 import { connectedIds } from "@/lib/compliance/sweep";
 import { sourceLabel } from "@/lib/profile";
 import { KIND, type PreparedAction } from "@/lib/compliance/actions";
@@ -35,6 +35,7 @@ export function Overview() {
   // Everything "yours" comes from the one advisor view every screen reads, so a count here is the count on the screen it links to.
   const v = useView();
   const { advisor, policy, found, openCases, actions, pendingActions: pending, coverage, blocking, meetings, overdueTasks: overdue, serviceOverdue, escalated, list: flagged } = v;
+  const today = useToday();
   const advisorId = advisor.id;
   const mine = v.clients;
   const agents = useMemo(() => v.agents.filter((a) => a.enabled), [v.agents]);
@@ -107,7 +108,8 @@ export function Overview() {
   };
 
   // What each morning agent on the roster did today. Names, icons and links come from lib/agents/roster.ts, the one list every page counts.
-  const today: Record<string, { state: "clear" | "attention" | "blocked" | "off"; line: string }> = {
+  const ran: Record<string, { state: "clear" | "attention" | "blocked" | "off"; line: string }> = {
+    onboarding: { state: escalated.length ? "attention" : "clear", line: `${escalated.length} form${escalated.length === 1 ? "" : "s"} past the escalation deadline, reminders drafted` },
     consequence: { state: "clear", line: `${simulableOpps.length} proposals carried to the morning after` },
     discovery: { state: candidates.length ? "attention" : "clear", line: `${candidates.length} opportunities found in what clients said` },
     research: { state: unknowns ? "attention" : "clear", line: `${briefings.length} briefings, ${unknowns} things not established` },
@@ -118,13 +120,13 @@ export function Overview() {
   };
   // An agent the advisor switched off shows as off, and says so.
   const off = rosterOff[advisorId] ?? [];
-  const others = MORNING.map((a) => ({ id: a.id, name: a.name, icon: a.icon as IconName, href: off.includes(a.id) ? "/agents" : a.href, ...(off.includes(a.id) ? { state: "off" as const, line: "Switched off by you" } : today[a.id] ?? { state: "off" as const, line: "Did not run" }) }));
+  const others = MORNING.map((a) => ({ id: a.id, name: a.name, icon: a.icon as IconName, href: off.includes(a.id) ? "/agents" : a.href, ...(off.includes(a.id) ? { state: "off" as const, line: "Switched off by you" } : ran[a.id] ?? { state: "off" as const, line: "Did not run" }) }));
   const clean = statuses.filter((s) => s.state === "clear").length + others.filter((o) => o.state === "clear").length;
   const firstName = (advisor?.name ?? "").split(" ")[0];
 
   return (
     <>
-      <PageTitle icon="home" title={`${APP.todayLabel} morning${firstName ? `, ${firstName}` : ""}`} sub="What the agents did while you were away, and the few things only you can decide." />
+      <PageTitle icon="home" title={`${today.weekday} morning${firstName ? `, ${firstName}` : ""}`} sub={`${today.live ? `${today.date}, ${today.time}. ` : ""}What the agents did while you were away, and the few things only you can decide.`} />
       <Legend className="-mt-5 mb-6 lg:hidden" />
 
       <Brief

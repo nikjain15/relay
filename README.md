@@ -23,7 +23,7 @@
 
 **A working prototype of the step after an insight engine.** A wealth manager's AI can flag twenty
 million client opportunities a year; what it cannot do is turn one into a documented, approved,
-client-facing action. Relay is that path, and the agent layer around it: eighteen agents that read the
+client-facing action. Relay is that path, and the agent layer around it: nineteen agents that read the
 advisor's whole book on a cadence, cite every claim, prepare every action short of the human gate,
 and hand each decision to a person.
 

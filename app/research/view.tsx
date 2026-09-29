@@ -8,7 +8,7 @@ import { useMemo } from "react";
 import { briefAll } from "@/lib/research/brief";
 import { useRelay } from "@/components/state";
 import { useView } from "@/components/view";
-import { APP } from "@/lib/data/policy";
+import { useToday } from "@/components/clock";
 import { Brief, More, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 import { Bars, Meter } from "@/components/charts";
 import { Icon } from "@/components/icons";
@@ -17,6 +17,7 @@ export default function ResearchIndex() {
   // The signed-in advisor's households as the session holds them (connected sources, filed notes), and their calendar.
   const { connections, book } = useRelay();
   const v = useView();
+  const clock = useToday();
   const all = useMemo(() => briefAll(connections, book.clients).filter((b) => v.clients.some((c) => c.id === b.clientId)), [connections, book.clients, v.clients]);
   const meetings = v.meetings;
   const today = new Set(meetings.map((m) => m.clientId).filter(Boolean));
@@ -31,7 +32,7 @@ export default function ResearchIndex() {
 
   return (
     <>
-      <PageTitle icon="briefing" title="Briefings" sub={`${APP.todayLabel}. Today's meetings first, then the most unknown.`} />
+      <PageTitle icon="briefing" title="Briefings" sub={`${clock.live ? clock.date : clock.weekday}. Today's meetings first, then the most unknown.`} />
 
       <Brief
         name="Research"
