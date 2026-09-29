@@ -33,3 +33,20 @@ describe("one agent roster", () => {
     }
   });
 });
+
+describe("the day on screen", () => {
+  it("comes from the browser clock, with the data label as the first paint", async () => {
+    const { formatToday } = await import("@/components/clock");
+    const t = formatToday(new Date(2026, 8, 29, 9, 17));
+    expect(t.weekday).toBe("Tuesday");
+    expect(t.date).toContain("2026");
+    expect(t.time).toMatch(/9:17|09:17/);
+    expect(t.live).toBe(true);
+  });
+
+  it("no page reads the day label from data alone", () => {
+    for (const f of ["components/overview.tsx", "app/research/view.tsx", "app/meetings/view.tsx"]) {
+      expect(read(f).includes("APP.todayLabel"), f).toBe(false);
+    }
+  });
+});

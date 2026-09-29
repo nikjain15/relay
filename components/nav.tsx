@@ -18,7 +18,8 @@ export interface NavArea { area: string; links: NavLink[] }
  * bolted on. The third grouped by what the system is, which read as a console.
  * This one is grouped by what the advisor does: today's decisions, the agents
  * that prepared them, the households, the sources they read, the rules they run
- * under, and the pages that explain it all. On a phone only the current area
+ * under, and the pages that explain it all. Documents sit with the sources they
+ * are, and rule-change suggestions with the rules they would change. On a phone only the current area
  * is expanded.
  */
 export const AREAS: NavArea[] = [
@@ -40,8 +41,8 @@ export const AREAS: NavArea[] = [
       { href: "/simulate", label: "Before you act", note: "The morning after, first", icon: "hourglass" },
       { href: "/discovery", label: "Discovery", note: "What clients said", icon: "search" },
       { href: "/research", label: "Briefings", note: "What you do not yet know", icon: "briefing" },
-      { href: "/documents", label: "Documents", note: "What may be quoted", icon: "library" },
-      { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
+      { href: "/conversations", label: "Who to call", note: "One reason per household, cited", icon: "voice" },
+      { href: "/wallet-share", label: "Wallet share", note: "Money elsewhere, hours against revenue", icon: "custodian" },
     ],
   },
   {
@@ -59,6 +60,7 @@ export const AREAS: NavArea[] = [
     area: "Sources",
     links: [
       { href: "/sources", label: "Sources", note: "Your book, your tools, your policies", icon: "link" },
+      { href: "/documents", label: "Documents", note: "What may be quoted", icon: "library" },
       { href: "/personas", label: "Who's who", icon: "crm" },
     ],
   },
@@ -70,6 +72,7 @@ export const AREAS: NavArea[] = [
       { href: "/compliance/replay", label: "Replay", note: "Rules as they stood", icon: "replay" },
       { href: "/profiles", label: "Preferences", icon: "settings" },
       { href: "/measurement", label: "Measurement", icon: "chart" },
+      { href: "/learning", label: "Suggestions", note: "Proposed, never applied", icon: "trend" },
     ],
   },
   {

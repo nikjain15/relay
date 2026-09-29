@@ -6,13 +6,15 @@ import { investableUsd, singleNamePct } from "@/lib/household-math";
 import { usd, pct } from "@/lib/format";
 import type { Goal } from "@/lib/types";
 import { constraintText } from "@/lib/constraint-text";
-import { getClientFile } from "@/lib/data";
+import { getClientFile, clientFile } from "@/lib/data";
 import { HouseholdNotes } from "@/components/household-notes";
 import { paperStatus, escalateAfter } from "@/lib/onboarding/status";
 import { ClientPreferences } from "@/components/profile-panel";
 import { classify } from "@/lib/servicing/classify";
 import { Brief, PageTitle, Pill, Section, TableScroll, td, th } from "@/components/ui";
 import { liquidityMonths } from "@/lib/household-math";
+import { heldAwayFor } from "@/lib/growth/held-away";
+import { conversationFor } from "@/lib/growth/next-conversation";
 
 export function generateStaticParams() {
   return HOUSEHOLDS.map((h) => ({ id: h.id }));
@@ -28,6 +30,9 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
   if (!h) notFound();
   const opps = OPPORTUNITIES.filter((o) => o.householdId === h.id);
   const total = investableUsd(h);
+  const file = clientFile(id);
+  const wallet = file ? heldAwayFor(file) : undefined;
+  const call = file ? conversationFor(file) : undefined;
 
   return (
     <>
@@ -199,6 +204,25 @@ export default async function HouseholdPage({ params }: { params: Promise<{ id: 
           Invented name and figures inside published ranges. <Link className="underline" href="/personas">Who&apos;s who</Link>
         </p>
       </Section>
+      {wallet && call && (
+        <Section title="Money elsewhere, and the next conversation">
+          <p className="text-body">
+            {wallet.signals.length ? <>Wallet share {wallet.walletSharePct}%{wallet.unstated ? " or less" : ""}: {usd(wallet.onPlatformUsd)} on the platform{wallet.heldAwayStatedUsd ? ` against ${usd(wallet.heldAwayStatedUsd)} stated elsewhere` : ""}.</> : <>Nothing on file says money is held elsewhere; wallet share reads as 100%.</>}{" "}
+            <Link className="text-accent underline" href="/wallet-share">Wallet share</Link>
+          </p>
+          {wallet.signals.length > 0 && (
+            <ul className="mt-2 space-y-1 text-meta leading-4 text-ink-2">
+              {wallet.signals.map((s) => (
+                <li key={s.kind}><Pill tone={s.amountUsd ? "fail" : "neutral"}>{s.label}</Pill> {s.amountUsd ? usd(s.amountUsd) : "amount not stated"}: &quot;{s.source.excerpt}&quot; ({s.source.kind} {s.source.id})</li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-3 text-body">
+            Next conversation: {call.reason}. <Link className="text-accent underline" href="/conversations">Who to call</Link>
+          </p>
+          {call.opener && <p className="mt-1 text-meta leading-4 text-ink-2">{call.opener}</p>}
+        </Section>
+      )}
       <Section title="Open opportunities">
         <ul className="space-y-1">
           {opps.map((o) => (

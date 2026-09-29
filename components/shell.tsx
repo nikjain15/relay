@@ -14,6 +14,7 @@ import Link from "next/link";
 import { Nav, NavList } from "@/components/nav";
 import { Icon } from "@/components/icons";
 import { Legend } from "@/components/ui";
+import { Clock } from "@/components/clock";
 import { Palette } from "@/components/palette";
 import { Ask } from "@/components/ask";
 import { useRelay } from "@/components/state";
@@ -144,6 +145,7 @@ export function Shell({ children }: { children: ReactNode }) {
         </span>
 
         <Legend className="ml-2 hidden shrink-0 lg:flex" />
+        <Clock />
         <div className="ml-auto flex items-center gap-2">
           {/* Ask reads as a place to type, not a small button: it is the fastest path to anything. */}
           <button
