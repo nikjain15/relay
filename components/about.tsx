@@ -15,6 +15,7 @@ export const ABOUT = [
   { href: "/features", label: "Features", icon: "list" as IconName, blurb: `${inWords(AGENT_COUNT)} agents, one gate` },
   { href: "/impact", label: "Impact", icon: "trend" as IconName, blurb: "What changes, measured" },
   { href: "/architecture", label: "Architecture", icon: "planning" as IconName, blurb: "The approach" },
+  { href: "/evals", label: "Evals", icon: "check" as IconName, blurb: "How the agents are known to be right" },
 ];
 
 export function AboutNav() {

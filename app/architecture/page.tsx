@@ -59,6 +59,68 @@ export default function Architecture() {
         <p className="mt-2 text-meta text-ink-3">The guard that proves it is a dependency rule over every module and a browser check that a request to another host is blocked.</p>
       </Section>
 
+      <Section title="Where the model sits, and where it never does">
+        <p className="mb-3 text-body text-ink-2">
+          The engines in the middle are deterministic: the same facts always produce the same verdict, so a past decision can be replayed against the rules as they stood. A model is allowed at three edges, drawn dashed. It reads free text into facts, it phrases what an engine decided, and it rewrites a query and reranks passages. It never decides eligibility, rank, regime or a verdict, and a dependency rule stops the engines importing a model client. The prototype makes no model calls: each screen says which step a model would own.
+        </p>
+        <div className="overflow-x-auto rounded border border-line bg-subtle p-4">
+          <svg viewBox="0 0 760 330" role="img" aria-label="The deterministic path from sources to the human gate, with a model at three edges: reading free text into facts, phrasing what the engines decided, and rewriting retrieval queries" className="min-w-[640px] text-ink">
+            {[
+              [20, "Sources, read only", "records", "text-client"],
+              [168, "Facts", "typed, cited", "text-ink"],
+              [316, "Deterministic engines", "no model import", "text-ink"],
+              [464, "Agents", "prepare, cite", "text-agent"],
+              [612, "Human gate", "accept or decline", "text-advisor"],
+            ].map(([x, l, s, cls]) => (
+              <g key={String(x)} className={String(cls)}>
+                <rect x={Number(x)} y={130} width={128} height={54} rx={2} fill="none" stroke="currentColor" strokeWidth={1.5} />
+                <text x={Number(x) + 10} y={152} fontSize={12} fill="currentColor" className="font-medium">{l}</text>
+                <text x={Number(x) + 10} y={170} fontSize={11} fill="currentColor" opacity={0.75}>{s}</text>
+              </g>
+            ))}
+            {[148, 296, 444, 592].map((x) => (
+              <g key={x} className="text-ink-3">
+                <path d={`M${x} 157 h18`} stroke="currentColor" strokeWidth={1.5} />
+                <path d={`M${x + 12} 152 l6 5 -6 5`} stroke="currentColor" strokeWidth={1.5} fill="none" />
+              </g>
+            ))}
+            <g className="text-ink-3">
+              <path d="M380 130 v-14 h-130 v-32 h260 v32 h-130" fill="none" stroke="currentColor" strokeWidth={1.5} />
+              <text x={380} y={101} fontSize={11} fill="currentColor" textAnchor="middle">no model client may be imported here</text>
+              <text x={380} y={114} fontSize={11} fill="currentColor" textAnchor="middle">same facts, same verdict, replayable</text>
+            </g>
+            {[
+              [84, "A model may read", "free text into a fact, with a confidence; under the floor it routes to a person"],
+              [380, "A model may phrase", "a finding, a briefing, a draft the person sends; it never changes the verdict"],
+              [676, "A model may rewrite", "a retrieval query and rerank; the floor and the refusal stay in code"],
+            ].map(([x, l, s]) => (
+              <g key={String(x)} className="text-agent">
+                <rect x={Number(x) - 110} y={230} width={220} height={66} rx={2} fill="none" stroke="currentColor" strokeWidth={1.5} strokeDasharray="5 4" />
+                <text x={Number(x)} y={251} fontSize={12} fill="currentColor" textAnchor="middle" className="font-medium">{l}</text>
+                <foreignObject x={Number(x) - 104} y={258} width={208} height={36}>
+                  <p style={{ fontSize: 10.5, lineHeight: "13px", margin: 0, textAlign: "center", opacity: 0.85 }}>{s}</p>
+                </foreignObject>
+                <path d={`M${Number(x)} 230 v-40`} stroke="currentColor" strokeWidth={1.5} strokeDasharray="5 4" />
+                <path d={`M${Number(x) - 5} 196 l5 -6 5 6`} stroke="currentColor" strokeWidth={1.5} fill="none" />
+              </g>
+            ))}
+          </svg>
+        </div>
+        <p className="mt-2 text-meta text-ink-3">The three dashed edges point at Facts, at Agents and at the retrieval step inside the engines. None points at a verdict. The guard is the dependency rule named deterministic-no-model, seen failing on a planted import before it was cited.</p>
+      </Section>
+
+      <Section title="The data path: read from the systems of record, never written to">
+        <p className="mb-3 text-body text-ink-2">
+          Relay is a layer beside the firm&apos;s systems, not on top of them. The CRM, the custodian, the planning tool and the archive stay the systems of record and are read only. Relay keeps its own store of what it computed and what people decided, and that store never writes back. An accepted note is a draft the advisor sends from their own tools; an accepted task lands on the follow-up list; a disposition is a log entry. In the prototype the store is the data folder shipped with the page; in production it is a database of Relay&apos;s own, fed by a read replica or change feed from each source.
+        </p>
+        <CardGrid cols={3}>
+          <Card icon="link" title="Sources: read replica or change feed"><p className="text-body text-ink-2">Each connector reads a replica or a change-data-capture stream, never the production tables, so Relay cannot lock, slow or alter a system of record. Coverage says which sources are connected and healthy; a rule that needs an absent source reports cannot evaluate.</p></Card>
+          <Card icon="document" title="Relay's own store: documents and an append-only log"><p className="text-body text-ink-2">One document per client, rule, desk and connector, as the data folder is today, and an append-only log of findings, dispositions and rule changes. The log is what replay reads. Nothing in it is ever updated in place.</p></Card>
+          <Card icon="library" title="Retrieval: an index beside the documents"><p className="text-body text-ink-2">The firm&apos;s documents are indexed for search with a reason per score and a floor. In production the index adds embeddings for recall; the floor, the citation and the refusal stay in code.</p></Card>
+        </CardGrid>
+        <p className="mt-2 text-meta text-ink-3">The guard is the same dependency rule that stops any outbound transport: there is no write path in the code to reach a source with.</p>
+      </Section>
+
       <Section title="The approach, in the order it was applied">
         <ol className="space-y-2">
           {PRINCIPLES.map(([t, m], i) => (
