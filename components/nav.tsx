@@ -82,6 +82,7 @@ export const AREAS: NavArea[] = [
       { href: "/features", label: "Features", icon: "list" },
       { href: "/impact", label: "Impact", icon: "trend" },
       { href: "/architecture", label: "Architecture", icon: "planning" },
+      { href: "/evals", label: "Evals", icon: "check" },
     ],
   },
 ];
